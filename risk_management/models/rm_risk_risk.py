@@ -8,11 +8,11 @@ class RiskRisk(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
 
-    name = fields.Char(required=True,tracking=True)
-    code = fields.Char(readonly=True,default='New',tracking=True)
-    description = fields.Html()
-    cause_description = fields.Html()
-    consequence_description = fields.Html()
+    name = fields.Char(string='Risque',required=True,tracking=True)
+    code = fields.Char(string='Code', readonly=True,default='New',tracking=True)
+    description = fields.Html(string='Description')
+    cause_description = fields.Html(string='Cause')
+    consequence_description = fields.Html(string='Conséquence')
     category_id = fields.Many2one('risk.category', required=True,tracking=True)
     subcategory_id = fields.Many2one('risk.subcategory', tracking=True)
     owner_id = fields.Many2one('hr.employee', string='Risk Owner', tracking=True)

@@ -115,6 +115,35 @@ class RiskIncident(models.Model):
     regulatory_notification = fields.Boolean()
 
     regulator_notified_date = fields.Date()
+    root_cause_count = fields.Integer(
+        string='Root Causes',
+        compute='_compute_statistics'
+    )
+
+    loss_count = fields.Integer(
+        string='Losses',
+        compute='_compute_statistics'
+    )
+
+    corrective_action_count = fields.Integer(
+        string='Corrective Actions',
+        compute='_compute_statistics'
+    )
+
+    @api.depends('root_cause_ids','loss_ids','corrective_action_ids')
+    def _compute_statistics(self):
+        for rec in self:
+            rec.root_cause_count = len(
+                rec.root_cause_ids
+            )
+
+            rec.loss_count = len(
+                rec.loss_ids
+            )
+
+            rec.corrective_action_count = len(
+                rec.corrective_action_ids
+            )
 
     @api.depends('loss_ids.amount')
     def _compute_total_loss(self):
@@ -159,3 +188,48 @@ class RiskIncident(models.Model):
         self.write({
             'status': 'closed'
         })
+
+    def action_view_root_causes(self):
+
+        self.ensure_one()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Root Causes',
+            'res_model': 'risk.root.cause',
+            'view_mode': 'list,form',
+            'domain': [('incident_id', '=', self.id)],
+            'context': {
+                'default_incident_id': self.id
+            }
+        }
+
+    def action_view_losses(self):
+
+        self.ensure_one()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Losses',
+            'res_model': 'risk.loss',
+            'view_mode': 'list,form',
+            'domain': [('incident_id', '=', self.id)],
+            'context': {
+                'default_incident_id': self.id
+            }
+        }
+
+    def action_view_corrective_actions(self):
+
+        self.ensure_one()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Corrective Actions',
+            'res_model': 'risk.corrective.action',
+            'view_mode': 'list,form',
+            'domain': [('incident_id', '=', self.id)],
+            'context': {
+                'default_incident_id': self.id
+            }
+        }

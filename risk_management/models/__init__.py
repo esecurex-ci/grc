@@ -14,4 +14,4 @@ from . import rm_risk_kri, rm_risk_control, rm_risk_treatment_plan,  rm_risk_exe
     rm_risk_compliance_obligation, rm_risk_bcp_resource, rm_risk_audit_action_plan, rm_risk_drp_plan, \
     rm_risk_compliance_requirement, rm_risk_compliance_mapping, rm_risk_compliance_control_test, rm_risk_grc_score, \
     rm_risk_grc_history, rm_risk_grc_history_line, rm_risk_root_cause, rm_risk_executive_dashboard_snapshot_line, \
-    rm_risk_heatmap_snapshot,rm_risk_metric_engine, rm_risk_recovery_site
+    rm_risk_heatmap_snapshot,rm_risk_metric_engine, rm_risk_recovery_site, rm_risk_heatmap, rm_risk_heatmap_line

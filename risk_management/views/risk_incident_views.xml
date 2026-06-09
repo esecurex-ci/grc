@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_risk_incident_list" model="ir.ui.view">
+        <field name="name">risk.incident.list</field>
+        <field name="model">risk.incident</field>
+        <field name="arch" type="xml">
+            <list multi_edit="1"
+                  decoration-info="severity == 'moderate'"
+                  decoration-warning="severity == 'high'"
+                  decoration-danger="severity == 'critical'">
+
+                <field name="name"/>
+                <field name="title"/>
+                <field name="incident_date"/>
+                <field name="risk_id"/>
+                <field name="category_id"/>
+                <field name="severity" widget="badge"/>
+                <field name="total_loss" widget="monetary"/>
+                <field name="status" widget="badge"/>
+
+            </list>
+        </field>
+    </record>
+
+    <record id="view_risk_incident_search" model="ir.ui.view">
+        <field name="name">risk.incident.search</field>
+        <field name="model">risk.incident</field>
+        <field name="arch" type="xml">
+            <search>
+
+                <field name="name"/>
+                <field name="title"/>
+                <field name="risk_id"/>
+                <field name="category_id"/>
+                <field name="owner_id"/>
+
+                <filter name="critical"
+                        string="Critique"
+                        domain="[('severity','=','critical')]"/>
+
+                <filter name="high"
+                        string="Elevé"
+                        domain="[('severity','=','high')]"/>
+
+                <filter name="open"
+                        string="Ouvert"
+                        domain="[('status','!=','closed')]"/>
+
+
+            </search>
+        </field>
+    </record>
+
+    <record id="view_risk_incident_form" model="ir.ui.view">
+        <field name="name">risk.incident.form</field>
+        <field name="model">risk.incident</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <header>
+
+                    <button name="action_declare"
+                            string="Déclarer"
+                            type="object"
+                            class="btn-primary"
+                            invisible="status != 'draft'"/>
+
+                    <button name="action_investigate"
+                            string="Investiguer"
+                            type="object"
+                            class="btn-info"
+                            invisible="status != 'declared'"/>
+
+                    <button name="action_action_plan"
+                            string="Plan d'action"
+                            type="object"
+                            class="btn-warning"
+                            invisible="status != 'investigation'"/>
+
+                    <button name="action_close"
+                            string="Clôturer"
+                            type="object"
+                            class="btn-success"
+                            invisible="status != 'action_plan'"/>
+
+                    <field name="status" widget="statusbar"/>
+
+                </header>
+
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <h2>
+                            <field name="title"/>
+                        </h2>
+                    </div>
+                    <div class="oe_button_box" name="button_box">
+
+                        <button name="action_view_root_causes"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-sitemap">
+
+                            <field name="root_cause_count"
+                                   widget="statinfo"
+                                   string="Causes"/>
+
+                        </button>
+
+                        <button name="action_view_losses"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-money">
+
+                            <field name="loss_count"
+                                   widget="statinfo"
+                                   string="Pertes"/>
+
+                        </button>
+
+                        <button name="action_view_corrective_actions"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-tasks">
+
+                            <field name="corrective_action_count"
+                                   widget="statinfo"
+                                   string="Actions"/>
+
+                        </button>
+
+                    </div>
+
+                    <group>
+
+                        <group>
+                            <field name="incident_date"/>
+                            <field name="detection_date"/>
+                            <field name="declaration_date"/>
+                            <field name="severity"/>
+                        </group>
+
+                        <group>
+                            <field name="risk_id"/>
+                            <field name="category_id"/>
+                            <field name="type_id"/>
+                            <field name="owner_id"/>
+                        </group>
+
+                    </group>
+
+                    <group>
+                        <field name="total_loss"
+                               widget="monetary"
+                               readonly="1"/>
+                    </group>
+
+                    <notebook>
+
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+
+                        <page string="Causes Racines">
+
+                            <field name="root_cause_ids">
+
+                                <list editable="bottom">
+
+                                    <field name="cause_type"/>
+                                    <field name="confirmed"/>
+                                    <field name="description"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Pertes">
+
+                            <field name="loss_ids">
+
+                                <list editable="bottom">
+
+                                    <field name="date"/>
+                                    <field name="description"/>
+                                    <field name="amount"/>
+                                    <field name="recovered_amount"/>
+                                    <field name="net_loss"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Actions Correctives">
+
+                            <field name="corrective_action_ids">
+
+                                <list editable="bottom">
+
+                                    <field name="name"/>
+                                    <field name="owner_id"/>
+                                    <field name="due_date"/>
+                                    <field name="progress"/>
+                                    <field name="state"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Régulateur">
+
+                            <group>
+
+                                <field name="market_impact"/>
+
+                                <field name="regulatory_notification"/>
+
+                                <field name="regulator_notified_date"
+                                       invisible="not regulatory_notification"/>
+
+                            </group>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

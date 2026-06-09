@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_kri_list" model="ir.ui.view">
+        <field name="name">risk.kri.list</field>
+        <field name="model">risk.kri</field>
+        <field name="arch" type="xml">
+
+            <list multi_edit="1"
+                  decoration-success="status == 'green'"
+                  decoration-warning="status == 'amber'"
+                  decoration-danger="status == 'red'">
+
+                <field name="code"/>
+                <field name="name"/>
+                <field name="owner_id"/>
+                <field name="current_value"/>
+                <field name="unit"/>
+                <field name="status" widget="badge"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_kri_search" model="ir.ui.view">
+        <field name="name">risk.kri.search</field>
+        <field name="model">risk.kri</field>
+        <field name="arch" type="xml">
+
+            <search>
+
+                <field name="code"/>
+                <field name="name"/>
+                <field name="owner_id"/>
+
+                <filter name="green"
+                        string="Vert"
+                        domain="[('status','=','green')]"/>
+
+                <filter name="amber"
+                        string="Orange"
+                        domain="[('status','=','amber')]"/>
+
+                <filter name="red"
+                        string="Rouge"
+                        domain="[('status','=','red')]"/>
+
+            </search>
+
+        </field>
+    </record>
+
+    <record id="view_risk_kri_form" model="ir.ui.view">
+        <field name="name">risk.kri.form</field>
+        <field name="model">risk.kri</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+
+                        <group>
+                            <field name="code"/>
+                            <field name="owner_id"/>
+                            <field name="unit"/>
+                        </group>
+
+                        <group>
+                            <field name="current_value" readonly="1"/>
+                            <field name="status" widget="badge" readonly="1"/>
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+
+                        <page string="Risques">
+
+                            <field name="risk_ids"
+                                   widget="many2many_tags"/>
+
+                        </page>
+
+                        <page string="Seuils">
+
+                            <group>
+
+                                <field name="threshold_green"/>
+                                <field name="threshold_amber"/>
+                                <field name="threshold_red"/>
+
+                            </group>
+
+                        </page>
+
+                        <page string="Mesures">
+
+                            <field name="measure_ids">
+
+                                <list editable="bottom">
+
+                                    <field name="measure_date"/>
+                                    <field name="value"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>
