@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================== -->
+    <!-- LIST -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_heatmap_line_list" model="ir.ui.view">
+        <field name="name">risk.heatmap.line.list</field>
+        <field name="model">risk.heatmap.line</field>
+        <field name="arch" type="xml">
+
+            <list decoration-success="risk_level == 'low'"
+                  decoration-info="risk_level == 'moderate'"
+                  decoration-warning="risk_level in ('important','high')"
+                  decoration-danger="risk_level == 'critical'">
+
+                <field name="heatmap_id"/>
+                <field name="risk_id"/>
+                <field name="assessment_id"/>
+                <field name="probability"/>
+                <field name="impact"/>
+                <field name="score"/>
+                <field name="risk_level" widget="badge"/>
+                <field name="cell_code"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- SEARCH -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_heatmap_line_search" model="ir.ui.view">
+        <field name="name">risk.heatmap.line.search</field>
+        <field name="model">risk.heatmap.line</field>
+        <field name="arch" type="xml">
+
+            <search>
+
+                <field name="risk_id"/>
+                <field name="heatmap_id"/>
+
+                <filter name="critical"
+                        string="Critique"
+                        domain="[('risk_level','=','critical')]"/>
+
+                <filter name="high"
+                        string="Elevé"
+                        domain="[('risk_level','=','high')]"/>
+
+                <filter name="important"
+                        string="Important"
+                        domain="[('risk_level','=','important')]"/>
+
+                
+            </search>
+
+        </field>
+    </record>
+
+</odoo>

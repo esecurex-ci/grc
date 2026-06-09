@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_risk_risk_list" model="ir.ui.view">
+        <field name="name">risk.risk.list</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <list
+                    string="Risk Register"
+                    decoration-success="residual_level == 'low'"
+                    decoration-info="residual_level == 'medium'"
+                    decoration-warning="residual_level == 'high'"
+                    decoration-danger="residual_level == 'critical'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="process_id"/>
+                <field name="owner_id"/>
+                <field name="inherent_score"/>
+                <field name="residual_score"/>
+                <field name="residual_level" widget="badge"/>
+                <field name="state" widget="badge"/>
+                <field name="next_review_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_risk_risk_search" model="ir.ui.view">
+        <field name="name">risk.risk.search</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="owner_id"/>
+                <field name="category_id"/>
+                <field name="process_id"/>
+                <separator/>
+                <filter name="critical" string="Critical" domain="[('residual_level','=','critical')]"/>
+                <filter name="high" string="High" domain="[('residual_level','=','high')]"/>
+                <filter name="open" string="Open" domain="[('state','=','draft')]"/>
+
+
+            </search>
+        </field>
+    </record>
+    <record id="view_risk_risk_form" model="ir.ui.view">
+        <field name="name">risk.risk.form</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_assess" string="Assess" type="object" class="btn-primary"/>
+                    <button name="action_close" string="Close" type="object" class="btn-secondary"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Risk title"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="category_id"/>
+                            <field name="process_id"/>
+                            <field name="owner_id"/>
+                        </group>
+                        <group>
+                            <field name="risk_type"/>
+                            <field name="risk_source"/>
+                            <field name="next_review_date"/>
+                        </group>
+                    </group>
+
+                    <group col="4">
+                        <field name="inherent_score" widget="progressbar"/>
+                        <field name="residual_score" widget="progressbar"/>
+                        <field name="inherent_level" widget="badge"/>
+                        <field name="residual_level" widget="badge"/>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <group>
+                                <field name="description"/>
+                            </group>
+                            <group col="2">
+                                <group>
+                                    <field name="cause"/>
+                                </group>
+                                <group>
+                                    <field name="risk_event"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="consequence"/>
+                            </group>
+                            <group>
+                                <field name="existing_control"/>
+                            </group>
+                        </page>
+                        <page string="Controls">
+                            <field name="control_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="owner_id"/>
+                                    <field name="effectiveness"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Assessments">
+                            <field name="assessment_ids">
+                                <list>
+                                    <field name="assessment_date"/>
+                                    <field name="inherent_score"/>
+                                    <field name="residual_score"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Incidents">
+                            <field name="incident_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="incident_date"/>
+                                    <field name="severity"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_risk_risk_kanban" model="ir.ui.view">
+        <field name="name">risk.risk.kanban</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="owner_id"/>
+                <field name="residual_level"/>
+                <field name="residual_score"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="mb-2">
+                                <strong>
+                                    <field name="code"/>
+                                </strong>
+                            </div>
+                            <div>
+                                <field name="name"/>
+                            </div>
+                            <div class="mt-2">
+                                <field name="owner_id"/>
+                            </div>
+                            <div class="mt-3">
+                                <field name="residual_level" widget="badge"/>
+                            </div>
+                            <div class="mt-2">
+                                <field name="residual_score" widget="progressbar"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="view_risk_risk_graph" model="ir.ui.view">
+        <field name="name">risk.risk.graph</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <graph string="Risk Exposure">
+                <field name="category_id"/>
+                <field name="residual_score" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_risk_risk_pivot" model="ir.ui.view">
+        <field name="name">risk.risk.pivot</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="category_id" type="row"/>
+                <field name="process_id" type="col"/>
+                <field name="residual_score" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+</odoo>

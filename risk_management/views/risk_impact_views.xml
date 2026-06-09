@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_impact_list" model="ir.ui.view">
+        <field name="name">risk.impact.list</field>
+        <field name="model">risk.impact</field>
+        <field name="arch" type="xml">
+            <list multi_edit="1">
+                <field name="name"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_risk_impact_form" model="ir.ui.view">
+        <field name="name">risk.impact.form</field>
+        <field name="model">risk.impact</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <field name="active"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_risk_impact_search" model="ir.ui.view">
+        <field name="name">risk.impact.search</field>
+        <field name="model">risk.impact</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+
+                <filter name="active"
+                        string="Actif"
+                        domain="[('active','=',True)]"/>
+
+                <filter name="inactive"
+                        string="Inactif"
+                        domain="[('active','=',False)]"/>
+            </search>
+        </field>
+    </record>
+
+</odoo>

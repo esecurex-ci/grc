@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================== -->
+    <!-- DASHBOARD -->
+    <!-- ===================================================== -->
+    <record id="action_grc_dashboard_client" model="ir.actions.client">
+        <field name="name">GRC Executive Dashboard</field>
+        <field name="tag">grc_dashboard</field>
+    </record>
+
+    <record id="action_risk_executive_dashboard_snapshot" model="ir.actions.act_window">
+        <field name="name">Executive Dashboard</field>
+        <field name="res_model">risk.executive.dashboard.snapshot</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="action_risk_grc_score" model="ir.actions.act_window">
+        <field name="name">GRC Scores</field>
+        <field name="res_model">risk.grc.score</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+    </record>
+
+    <record id="action_risk_grc_history" model="ir.actions.act_window">
+        <field name="name">GRC History</field>
+        <field name="res_model">risk.grc.history</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- RISK MANAGEMENT -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_risk" model="ir.actions.act_window">
+        <field name="name">Risk Register</field>
+        <field name="res_model">risk.risk</field>
+        <field name="view_mode">kanban,list,form,graph,pivot</field>
+    </record>
+
+    <record id="action_risk_assessment" model="ir.actions.act_window">
+        <field name="name">Risk Assessments</field>
+        <field name="res_model">risk.assessment</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+    </record>
+
+    <record id="action_risk_assessment_period" model="ir.actions.act_window">
+        <field name="name">Assessment Periods</field>
+        <field name="res_model">risk.assessment.period</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_risk_treatment_plan" model="ir.actions.act_window">
+        <field name="name">Treatment Plans</field>
+        <field name="res_model">risk.treatment.plan</field>
+        <field name="view_mode">kanban,list,form</field>
+
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- CONTROLS -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_control" model="ir.actions.act_window">
+        <field name="name">Controls</field>
+        <field name="res_model">risk.control</field>
+        <field name="view_mode">kanban,list,form,pivot</field>
+
+    </record>
+
+    <record id="action_risk_control_test" model="ir.actions.act_window">
+        <field name="name">Control Tests</field>
+        <field name="res_model">risk.control.test</field>
+        <field name="view_mode">list,form,pivot</field>
+
+    </record>
+
+    <record id="action_risk_kri" model="ir.actions.act_window">
+        <field name="name">KRI</field>
+        <field name="res_model">risk.kri</field>
+        <field name="view_mode">kanban,list,form,graph</field>
+
+    </record>
+
+    <record id="action_risk_kri_measure" model="ir.actions.act_window">
+        <field name="name">KRI Measurements</field>
+        <field name="res_model">risk.kri.measure</field>
+        <field name="view_mode">list,form,graph</field>
+
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- INCIDENTS -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_incident" model="ir.actions.act_window">
+        <field name="name">Incidents</field>
+        <field name="res_model">risk.incident</field>
+        <field name="view_mode">kanban,list,form,graph,pivot</field>
+
+    </record>
+
+    <record id="action_risk_loss" model="ir.actions.act_window">
+        <field name="name">Operational Losses</field>
+        <field name="res_model">risk.loss</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+
+    </record>
+
+    <record id="action_risk_corrective_action" model="ir.actions.act_window">
+        <field name="name">Corrective Actions</field>
+        <field name="res_model">risk.corrective.action</field>
+        <field name="view_mode">kanban,list,form</field>
+
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- AUDIT -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_audit_plan" model="ir.actions.act_window">
+        <field name="name">Audit Plans</field>
+        <field name="res_model">risk.audit.plan</field>
+        <field name="view_mode">list,form</field>
+
+    </record>
+
+    <record id="action_risk_audit" model="ir.actions.act_window">
+        <field name="name">Audit Missions</field>
+        <field name="res_model">risk.audit</field>
+        <field name="view_mode">kanban,list,form,pivot</field>
+
+    </record>
+
+    <record id="action_risk_audit_finding" model="ir.actions.act_window">
+        <field name="name">Audit Findings</field>
+        <field name="res_model">risk.audit.finding</field>
+        <field name="view_mode">kanban,list,form,pivot</field>
+
+    </record>
+    <record id="action_risk_audit_recommendation" model="ir.actions.act_window">
+        <field name="name">Recommandations</field>
+        <field name="res_model">risk.audit.recommendation</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- COMPLIANCE -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_compliance_framework" model="ir.actions.act_window">
+        <field name="name">Frameworks</field>
+        <field name="res_model">risk.compliance.framework</field>
+        <field name="view_mode">list,form</field>
+
+    </record>
+
+    <record id="action_risk_compliance_requirement" model="ir.actions.act_window">
+        <field name="name">Requirements</field>
+        <field name="res_model">risk.compliance.requirement</field>
+        <field name="view_mode">list,form,pivot</field>
+
+    </record>
+
+    <record id="action_risk_compliance_assessment" model="ir.actions.act_window">
+        <field name="name">Compliance Assessments</field>
+        <field name="res_model">risk.compliance.assessment</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- BCM / DRP -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_bia" model="ir.actions.act_window">
+        <field name="name">BIA</field>
+        <field name="res_model">risk.bia</field>
+        <field name="view_mode">list,form</field>
+
+    </record>
+
+    <record id="action_risk_bcp_plan" model="ir.actions.act_window">
+        <field name="name">BCP</field>
+        <field name="res_model">risk.bcp.plan</field>
+        <field name="view_mode">kanban,list,form</field>
+
+    </record>
+
+    <record id="action_risk_drp_plan" model="ir.actions.act_window">
+        <field name="name">DRP</field>
+        <field name="res_model">risk.drp.plan</field>
+        <field name="view_mode">list,form</field>
+
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- CRISIS -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_crisis" model="ir.actions.act_window">
+        <field name="name">Crises</field>
+        <field name="res_model">risk.crisis</field>
+        <field name="view_mode">kanban,list,form</field>
+
+    </record>
+
+    <record id="action_risk_crisis_committee_meeting" model="ir.actions.act_window">
+        <field name="name">Crisis Committee Meetings</field>
+        <field name="res_model">risk.crisis.committee.meeting</field>
+        <field name="view_mode">list,form</field>
+
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- REPORTING -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_board_report" model="ir.actions.act_window">
+        <field name="name">Board Reports</field>
+        <field name="res_model">risk.board.report</field>
+        <field name="view_mode">list,form</field>
+
+    </record>
+
+    <record id="action_risk_regulatory_report" model="ir.actions.act_window">
+        <field name="name">Regulatory Reports</field>
+        <field name="res_model">risk.regulatory.report</field>
+        <field name="view_mode">list,form</field>
+
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- ADMINISTRATION -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_metric_engine" model="ir.actions.act_window">
+        <field name="name">Metric Engine</field>
+        <field name="res_model">risk.metric.engine</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_risk_regulatory_change" model="ir.actions.act_window">
+        <field name="name">Changement</field>
+        <field name="res_model">risk.regulatory.change</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_risk_exercise" model="ir.actions.act_window">
+        <field name="name">Exercice</field>
+        <field name="res_model">risk.exercise</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_risk_crisis_scenario" model="ir.actions.act_window">
+        <field name="name">Scénario de crise</field>
+        <field name="res_model">risk.crisis.scenario</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_risk_heatmap_snapshot" model="ir.actions.act_window">
+        <field name="name">Heatmap Snapshot</field>
+        <field name="res_model">risk.heatmap.snapshot</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_risk_category" model="ir.actions.act_window">
+        <field name="name">Catégorie</field>
+        <field name="res_model">risk.category</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_risk_process" model="ir.actions.act_window">
+        <field name="name">Processus</field>
+        <field name="res_model">risk.process</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_risk_asset" model="ir.actions.act_window">
+        <field name="name">Actif</field>
+        <field name="res_model">risk.asset</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_risk_organization" model="ir.actions.act_window">
+        <field name="name">Organisation</field>
+        <field name="res_model">risk.organization</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+
+
+
+</odoo>

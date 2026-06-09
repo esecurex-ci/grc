@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_crisis_committee_minutes" model="ir.actions.report">
+        <field name="name">Procès-Verbal Comité de Crise</field>
+        <field name="model">risk.crisis.committee.meeting</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">risk_management.report_crisis_committee_minutes</field>
+        <field name="report_file">risk_management.report_crisis_committee_minutes</field>
+        <field name="print_report_name">'PV_Crise_%s' % (object.name)</field>
+    </record>
+
+</odoo>

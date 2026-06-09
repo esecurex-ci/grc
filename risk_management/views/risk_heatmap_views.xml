@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================== -->
+    <!-- LIST -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_heatmap_list" model="ir.ui.view">
+        <field name="name">risk.heatmap.list</field>
+        <field name="model">risk.heatmap</field>
+        <field name="arch" type="xml">
+            <list multi_edit="1"
+                  decoration-success="state == 'validated'"
+                  decoration-info="state == 'draft'">
+
+                <field name="name"/>
+                <field name="assessment_date"/>
+                <field name="period_id"/>
+                <field name="total_risks"/>
+                <field name="high_risks"/>
+                <field name="critical_risks"/>
+                <field name="state" widget="badge"/>
+
+            </list>
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- SEARCH -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_heatmap_search" model="ir.ui.view">
+        <field name="name">risk.heatmap.search</field>
+        <field name="model">risk.heatmap</field>
+        <field name="arch" type="xml">
+            <search>
+
+                <field name="name"/>
+                <field name="period_id"/>
+
+                <filter name="draft"
+                        string="Brouillon"
+                        domain="[('state','=','draft')]"/>
+
+                <filter name="validated"
+                        string="Validée"
+                        domain="[('state','=','validated')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- FORM -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_heatmap_form" model="ir.ui.view">
+        <field name="name">risk.heatmap.form</field>
+        <field name="model">risk.heatmap</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <header>
+
+                    <button name="action_generate"
+                            string="Générer"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_validate"
+                            string="Valider"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'draft'"/>
+
+                    <field name="state"
+                           widget="statusbar"/>
+
+                </header>
+
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+
+                        <group>
+                            <field name="assessment_date"/>
+                            <field name="period_id"/>
+                        </group>
+
+                        <group>
+                            <field name="company_id"/>
+                        </group>
+
+                    </group>
+
+                    <group col="3">
+
+                        <group>
+                            <label for="total_risks"/>
+                            <div>
+                                <field name="total_risks" readonly="1"/>
+                            </div>
+                        </group>
+
+                        <group>
+                            <label for="high_risks"/>
+                            <div>
+                                <field name="high_risks" readonly="1"/>
+                            </div>
+                        </group>
+
+                        <group>
+                            <label for="critical_risks"/>
+                            <div>
+                                <field name="critical_risks" readonly="1"/>
+                            </div>
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Risques">
+
+                            <field name="line_ids">
+
+                                <list decoration-success="risk_level == 'low'"
+                                      decoration-info="risk_level == 'moderate'"
+                                      decoration-warning="risk_level in ('important','high')"
+                                      decoration-danger="risk_level == 'critical'">
+
+                                    <field name="risk_id"/>
+                                    <field name="assessment_id"/>
+                                    <field name="probability"/>
+                                    <field name="impact"/>
+                                    <field name="score"/>
+                                    <field name="risk_level" widget="badge"/>
+                                    <field name="cell_code"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

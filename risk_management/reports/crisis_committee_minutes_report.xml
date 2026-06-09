@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_crisis_committee_minutes">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 style="text-align:center;">
+                            PROCÈS-VERBAL DE LA CELLULE DE CRISE
+                        </h2>
+                        <br/>
+                        <table class="table table-sm table-bordered">
+                            <tr>
+                                <td width="30%">
+                                    <strong>Référence</strong>
+                                </td>
+                                <td>
+                                    <span t-field="o.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Crise</strong>
+                                </td>
+                                <td>
+                                    <span t-field="o.crisis_id.title"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Date réunion</strong>
+                                </td>
+                                <td>
+                                    <span t-field="o.meeting_date"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Lieu</strong>
+                                </td>
+                                <td>
+                                    <span t-field="o.location"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Président</strong>
+                                </td>
+                                <td>
+                                    <span t-field="o.chairman_id.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Secrétaire</strong>
+                                </td>
+                                <td>
+                                    <span t-field="o.secretary_id.name"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <h3>1. Participants</h3>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Fonction</th>
+                                    <th>Présence</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.participant_ids"
+                                    t-as="participant">
+
+                                    <td>
+                                        <span t-field="participant.employee_id.name"/>
+                                    </td>
+
+                                    <td>
+                                        <span t-field="participant.role"/>
+                                    </td>
+
+                                    <td>
+                                        <span t-if="participant.present">
+                                            Présent
+                                        </span>
+                                        <span t-if="not participant.present">
+                                            Absent
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <h3>2. Ordre du jour</h3>
+                        <div t-field="o.agenda"/>
+                        <br/>
+                        <h3>3. Compte rendu</h3>
+                        <div t-field="o.minutes"/>
+                        <br/>
+                        <h3>4. Synthèse des décisions</h3>
+                        <div t-field="o.decision_summary"/>
+                        <br/>
+                        <h3>5. Décisions prises</h3>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Décision</th>
+                                    <th>Responsable</th>
+                                    <th>Echéance</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.decision_ids" t-as="decision">
+                                    <td>
+                                        <span t-field="decision.title"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="decision.owner_id.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="decision.due_date"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="decision.state"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <h3>6. Plan d'actions</h3>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Responsable</th>
+                                    <th>Echéance</th>
+                                    <th>Progression</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.decision_ids"
+                                   t-as="decision">
+
+                                    <tr t-foreach="decision.action_ids"
+                                        t-as="action">
+
+                                        <td>
+                                            <span t-field="action.name"/>
+                                        </td>
+
+                                        <td>
+                                            <span t-field="action.owner_id.name"/>
+                                        </td>
+
+                                        <td>
+                                            <span t-field="action.target_date"/>
+                                        </td>
+
+                                        <td>
+                                            <span t-esc="action.progress"/>
+                                            %
+                                        </td>
+
+                                    </tr>
+
+                                </t>
+
+                            </tbody>
+
+                        </table>
+
+                        <br/>
+                        <br/>
+                        <br/>
+
+                        <table width="100%">
+
+                            <tr>
+
+                                <td width="50%"
+                                    style="text-align:center;">
+
+                                    <strong>
+                                        Président de séance
+                                    </strong>
+
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                    ___________________
+
+                                </td>
+
+                                <td width="50%"
+                                    style="text-align:center;">
+
+                                    <strong>
+                                        Secrétaire de séance
+                                    </strong>
+
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                    ___________________
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                </t>
+
+            </t>
+
+        </t>
+
+    </template>
+
+</odoo>

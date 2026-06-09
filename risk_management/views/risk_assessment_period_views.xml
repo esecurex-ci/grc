@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_assessment_period_list" model="ir.ui.view">
+        <field name="name">risk.assessment.period.list</field>
+        <field name="model">risk.assessment.period</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="assessment_count"/>
+                <field name="state" widget="badge"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_risk_assessment_period_form" model="ir.ui.view">
+        <field name="name">risk.assessment.period.form</field>
+        <field name="model">risk.assessment.period</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group>
+                            <field name="state"/>
+                            <field name="active"/>
+                            <field name="assessment_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Evaluations">
+                            <field name="assessment_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="risk_id"/>
+                                    <field name="assessment_date"/>
+                                    <field name="risk_level"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_risk_assessment_period_search" model="ir.ui.view">
+        <field name="name">risk.assessment.period.search</field>
+        <field name="model">risk.assessment.period</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter name="draft" string="Brouillon" domain="[('state','=','draft')]"/>
+                <filter name="open" string="Ouverte" domain="[('state','=','open')]"/>
+                <filter name="closed" string="Clôturée" domain="[('state','=','closed')]"/>
+            </search>
+        </field>
+    </record>
+</odoo>

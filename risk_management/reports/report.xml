@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <include file="crisis_committee_minutes_report.xml"/>
+        <include file="crisis_committee_minutes_action.xml"/>
+    </data>
+</odoo>

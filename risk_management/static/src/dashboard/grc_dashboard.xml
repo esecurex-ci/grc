@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="risk_management.GrcDashboard">
+<div class="o_grc_dashboard">
+    <h1>
+        Executive GRC Cockpit
+    </h1>
+    <div class="row">
+        <div class="col-3">
+            <div class="card grc-card-primary">
+                <div class="card-body">
+                    <h2>
+                        <t t-esc="state.overall_score"/>
+                    </h2>
+                    <span>GRC Score</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card grc-card-success"
+                 t-on-click="openRisks">
+                <div class="card-body">
+                    <h2>
+                        <t t-esc="state.total_risks"/>
+                    </h2>
+                    <span>Risks</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card grc-card-warning">
+                <div class="card-body">
+                    <h2>
+                        <t t-esc="state.critical_risks"/>
+                    </h2>
+                    <span>Critical Risks</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card grc-card-danger">
+                <div class="card-body">
+                    <h2>
+                        <t t-esc="state.open_incidents"/>
+                    </h2>
+                    <span>Open Incidents</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">
+                    Compliance Rate
+                </div>
+                <div class="card-body">
+                    <h1>
+                        <t t-esc="
+                            state.compliance_rate
+                        "/>
+                        %
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">
+                    Top Critical Risks
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <t t-foreach="state.top_risks" t-as="risk" t-key="risk.id">
+                            <li>
+                                <t t-esc="risk.name"/>
+                                -
+                                <t t-esc="risk.residual_score"/>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</t>
+</templates>

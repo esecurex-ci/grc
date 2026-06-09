@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_subcategory_list" model="ir.ui.view">
+        <field name="name">risk.subcategory.list</field>
+        <field name="model">risk.subcategory</field>
+        <field name="arch" type="xml">
+            <list multi_edit="1">
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_risk_subcategory_form" model="ir.ui.view">
+        <field name="name">risk.subcategory.form</field>
+        <field name="model">risk.subcategory</field>
+        <field name="arch" type="xml">
+            <form>
+
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+
+                        <group>
+                            <field name="category_id"/>
+                        </group>
+
+                        <group>
+                            <field name="active"/>
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="view_risk_subcategory_search" model="ir.ui.view">
+        <field name="name">risk.subcategory.search</field>
+        <field name="model">risk.subcategory</field>
+        <field name="arch" type="xml">
+            <search>
+
+                <field name="name"/>
+                <field name="category_id"/>
+
+                <filter name="active"
+                        string="Actif"
+                        domain="[('active','=',True)]"/>
+
+                            </search>
+        </field>
+    </record>
+
+</odoo>

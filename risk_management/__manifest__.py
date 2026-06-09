@@ -1,0 +1,45 @@
+{
+    'name': 'Risk Management',
+    'version': '19.0.1.0.0',
+    'category': 'Risk Management',
+    'summary': 'Enterprise Risk Management',
+    'author': 'Your Company',
+    'license': 'LGPL-3',
+    'depends': [
+        'base',
+        'mail',
+        'hr'
+    ],
+    'assets': {
+        'web.assets_backend': [
+            'risk_management/static/src/dashboard/grc_dashboard.js',
+            'risk_management/static/src/dashboard/grc_dashboard.xml',
+            'risk_management/static/src/dashboard/grc_dashboard.scss',
+        ],
+    },
+    'data': [
+        'security/ir.model.access.csv',
+        'data/sequence.xml',
+        'views/risk_risk_views.xml',
+        'views/risk_category_views.xml',
+        'views/risk_process_views.xml',
+        'views/risk_organization_views.xml',
+        'views/risk_asset_views.xml',
+        'views/risk_cause_views.xml',
+        'views/risk_assessment_views.xml',
+        'views/risk_assessment_period_views.xml',
+        'views/risk_impact_views.xml',
+        'views/risk_regulation_views.xml',
+        'views/risk_subcategory_views.xml',
+        'views/risk_treatment_plan_views.xml',
+        'views/risk_heatmap_views.xml',
+        'views/risk_heatmap_line_views.xml',
+        'views/grc_actions.xml',
+        'views/grc_menu.xml',
+
+        #'reports/report.xml',
+    ],
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+}

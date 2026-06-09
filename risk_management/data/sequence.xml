@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="seq_risk_risk" model="ir.sequence">
+        <field name="name">Risk Sequence</field>
+        <field name="code">risk.risk</field>
+        <field name="prefix">RISK-</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_risk_control" model="ir.sequence">
+        <field name="name">Risk Control</field>
+        <field name="code">risk.control</field>
+        <field name="prefix">CTRL-</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_risk_incident" model="ir.sequence">
+        <field name="name">Incident Sequence</field>
+        <field name="code">risk.incident</field>
+        <field name="prefix">INC-</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_risk_audit" model="ir.sequence">
+        <field name="name">Audit Sequence</field>
+        <field name="code">risk.audit</field>
+        <field name="prefix">AUD-</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_compliance_assessment" model="ir.sequence">
+        <field name="name">Compliance Assessment</field>
+        <field name="code">risk.compliance.assessment</field>
+        <field name="prefix">CMP-</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_risk_crisis" model="ir.sequence">
+        <field name="name">Crisis Sequence</field>
+        <field name="code">risk.crisis</field>
+        <field name="prefix">CRS-</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_crisis_committee_meeting" model="ir.sequence">
+        <field name="name">Crisis Committee Meeting</field>
+        <field name="code">risk.crisis.committee.meeting</field>
+        <field name="prefix">CCM-</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_risk_grc_score" model="ir.sequence">
+        <field name="name">GRC Score</field>
+        <field name="code">risk.grc.score</field>
+        <field name="prefix">GRC-</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_executive_dashboard_snapshot" model="ir.sequence">
+        <field name="name">Executive Dashboard Snapshot</field>
+        <field name="code">risk.executive.dashboard.snapshot</field>
+        <field name="prefix">SNAP-</field>
+        <field name="padding">5</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================== -->
+    <!-- APPLICATION -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_root"
+        name="GRC"
+        sequence="1"
+        action="action_grc_dashboard_client"
+        web_icon="risk_management,static/description/icon.png"
+    />
+
+    <!-- ===================================================== -->
+    <!-- DASHBOARD -->
+    <!-- ===================================================== -->
+
+
+    <menuitem id="menu_grc_dashboard"
+        name="Cockpit Exécutif"
+        parent="menu_grc_root"
+        sequence="10"
+    />
+
+    <menuitem id="menu_grc_dashboard_snapshot"
+        name="Tableaux de Bord"
+        parent="menu_grc_dashboard"
+        action="action_risk_executive_dashboard_snapshot"
+        sequence="1"
+    />
+
+    <menuitem id="menu_grc_scorecard"
+        name="Scorecards GRC"
+        parent="menu_grc_dashboard"
+        action="action_risk_grc_score"
+        sequence="2"
+    />
+
+    <menuitem id="menu_grc_history"
+        name="Historique GRC"
+        parent="menu_grc_dashboard"
+        action="action_risk_grc_history"
+        sequence="3"
+    />
+
+    <!-- ===================================================== -->
+    <!-- RISK MANAGEMENT -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_risk"
+        name="Gestion des Risques"
+        parent="menu_grc_root"
+        sequence="20"
+    />
+
+    <menuitem id="menu_grc_risk_register"
+        name="Registre des Risques"
+        parent="menu_grc_risk"
+        action="action_risk_risk"
+    />
+
+    <menuitem id="menu_grc_assessment"
+        name="Cartographie"
+        parent="menu_grc_risk"
+        action="action_risk_assessment"
+    />
+
+    <menuitem id="menu_grc_assessment_period"
+        name="Campagnes d'Évaluation"
+        parent="menu_grc_risk"
+        action="action_risk_assessment_period"
+    />
+
+    <menuitem id="menu_grc_treatment_plan"
+        name="Plans de Traitement"
+        parent="menu_grc_risk"
+        action="action_risk_treatment_plan"
+    />
+    
+
+    <!-- ===================================================== -->
+    <!-- CONTROLS -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_controls"
+        name="Contrôles &amp; KRI"
+        parent="menu_grc_root"
+        sequence="30"
+    />
+
+    <menuitem id="menu_grc_control"
+        name="Contrôles"
+        parent="menu_grc_controls"
+        action="action_risk_control"
+    />
+
+    <menuitem id="menu_grc_control_test"
+        name="Tests de Contrôle"
+        parent="menu_grc_controls"
+        action="action_risk_control_test"
+    />
+
+    <menuitem id="menu_grc_kri"
+        name="KRI"
+        parent="menu_grc_controls"
+        action="action_risk_kri"
+    />
+
+    <menuitem id="menu_grc_kri_measure"
+        name="Mesures KRI"
+        parent="menu_grc_controls"
+        action="action_risk_kri_measure"
+    />
+
+    <!-- ===================================================== -->
+    <!-- INCIDENTS -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_incidents"
+        name="Incidents &amp; Pertes"
+        parent="menu_grc_root"
+        sequence="40"
+    />
+
+    <menuitem id="menu_grc_incident"
+        name="Incidents"
+        parent="menu_grc_incidents"
+        action="action_risk_incident"
+    />
+
+    <menuitem id="menu_grc_loss"
+        name="Pertes Opérationnelles"
+        parent="menu_grc_incidents"
+        action="action_risk_loss"
+    />
+
+    <menuitem id="menu_grc_corrective_action"
+        name="Actions Correctives"
+        parent="menu_grc_incidents"
+        action="action_risk_corrective_action"
+    />
+
+    <!-- ===================================================== -->
+    <!-- AUDIT -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_audit"
+        name="Audit"
+        parent="menu_grc_root"
+        sequence="50"
+    />
+
+    <menuitem id="menu_grc_audit_plan"
+        name="Plan d'Audit"
+        parent="menu_grc_audit"
+        action="action_risk_audit_plan"
+    />
+
+    <menuitem id="menu_grc_audit_mission"
+        name="Missions"
+        parent="menu_grc_audit"
+        action="action_risk_audit"
+    />
+
+    <menuitem id="menu_grc_finding"
+        name="Constats"
+        parent="menu_grc_audit"
+        action="action_risk_audit_finding"
+    />
+
+    <menuitem id="menu_grc_recommendation"
+        name="Recommandations"
+        parent="menu_grc_audit"
+        action="action_risk_audit_recommendation"
+    />
+
+    <!-- ===================================================== -->
+    <!-- COMPLIANCE -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_compliance"
+        name="Conformité"
+        parent="menu_grc_root"
+        sequence="60"
+    />
+
+    <menuitem id="menu_grc_framework"
+        name="Référentiels"
+        parent="menu_grc_compliance"
+        action="action_risk_compliance_framework"
+    />
+
+    <menuitem id="menu_grc_requirement"
+        name="Exigences"
+        parent="menu_grc_compliance"
+        action="action_risk_compliance_requirement"
+    />
+
+    <menuitem id="menu_grc_assessment_compliance"
+        name="Évaluations"
+        parent="menu_grc_compliance"
+        action="action_risk_compliance_assessment"
+    />
+
+    <menuitem id="menu_grc_regulatory_change"
+        name="Veille Réglementaire"
+        parent="menu_grc_compliance"
+        action="action_risk_regulatory_change"
+    />
+
+    <!-- ===================================================== -->
+    <!-- BCM -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_bcm"
+        name="Résilience"
+        parent="menu_grc_root"
+        sequence="70"
+    />
+
+    <menuitem id="menu_grc_bia"
+        name="BIA"
+        parent="menu_grc_bcm"
+        action="action_risk_bia"
+    />
+
+    <menuitem id="menu_grc_bcp"
+        name="PCA"
+        parent="menu_grc_bcm"
+        action="action_risk_bcp_plan"
+    />
+
+    <menuitem id="menu_grc_drp"
+        name="PRA"
+        parent="menu_grc_bcm"
+        action="action_risk_drp_plan"
+    />
+
+    <menuitem id="menu_grc_exercise"
+        name="Exercices"
+        parent="menu_grc_bcm"
+        action="action_risk_exercise"
+    />
+
+    <!-- ===================================================== -->
+    <!-- CRISIS -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_crisis"
+        name="Gestion de Crise"
+        parent="menu_grc_root"
+        sequence="80"
+    />
+
+    <menuitem id="menu_grc_crisis_case"
+        name="Crises"
+        parent="menu_grc_crisis"
+        action="action_risk_crisis"
+    />
+
+    <menuitem id="menu_grc_crisis_committee"
+        name="Comités de Crise"
+        parent="menu_grc_crisis"
+        action="action_risk_crisis_committee_meeting"
+    />
+
+    <menuitem id="menu_grc_crisis_scenario"
+        name="Scénarios"
+        parent="menu_grc_crisis"
+        action="action_risk_crisis_scenario"
+    />
+
+    <!-- ===================================================== -->
+    <!-- REPORTING -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_reporting"
+        name="Reporting"
+        parent="menu_grc_root"
+        sequence="90"
+    />
+
+    <menuitem id="menu_grc_board_report"
+        name="Conseil d'Administration"
+        parent="menu_grc_reporting"
+        action="action_risk_board_report"
+    />
+
+    <menuitem id="menu_grc_regulatory_report"
+        name="Rapports Régulateur"
+        parent="menu_grc_reporting"
+        action="action_risk_regulatory_report"
+    />
+
+    <menuitem id="menu_grc_heatmap"
+        name="Heatmaps"
+        parent="menu_grc_reporting"
+        action="action_risk_heatmap_snapshot"
+    />
+
+    <!-- ===================================================== -->
+    <!-- ADMINISTRATION -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_admin"
+        name="Administration"
+        parent="menu_grc_root"
+        sequence="100"
+
+    />
+
+    <menuitem id="menu_grc_metric_engine"
+        name="Moteur de Calcul"
+        parent="menu_grc_admin"
+        action="action_risk_metric_engine"
+    />
+
+    <!-- ===================================================== -->
+    <!-- REFERENTIELS -->
+    <!-- ===================================================== -->
+
+    <menuitem id="menu_grc_master_data"
+        name="Référentiels"
+        parent="menu_grc_root"
+        sequence="110"
+    />
+
+    <menuitem id="menu_grc_categories"
+        name="Catégories de Risques"
+        parent="menu_grc_master_data"
+        action="action_risk_category"
+    />
+
+    <menuitem id="menu_grc_processes"
+        name="Processus"
+        parent="menu_grc_master_data"
+        action="action_risk_process"
+    />
+
+    <menuitem id="menu_grc_assets"
+        name="Actifs"
+        parent="menu_grc_master_data"
+        action="action_risk_asset"
+    />
+
+    <menuitem id="menu_grc_org_units"
+        name="Entités Organisationnelles"
+        parent="menu_grc_master_data"
+        action="action_risk_organization"
+    />
+
+</odoo>
