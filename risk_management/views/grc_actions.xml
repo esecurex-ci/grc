@@ -236,63 +236,63 @@
     <record id="action_risk_metric_engine" model="ir.actions.act_window">
         <field name="name">Metric Engine</field>
         <field name="res_model">risk.metric.engine</field>
-        <field name="view_mode">form</field>
+        <field name="view_mode">list,form</field>
         <field name="target">current</field>
     </record>
 
     <record id="action_risk_regulatory_change" model="ir.actions.act_window">
         <field name="name">Changement</field>
         <field name="res_model">risk.regulatory.change</field>
-        <field name="view_mode">form</field>
+        <field name="view_mode">list,form</field>
         <field name="target">current</field>
     </record>
 
     <record id="action_risk_exercise" model="ir.actions.act_window">
         <field name="name">Exercice</field>
         <field name="res_model">risk.exercise</field>
-        <field name="view_mode">form</field>
+        <field name="view_mode">list,form</field>
         <field name="target">current</field>
     </record>
 
     <record id="action_risk_crisis_scenario" model="ir.actions.act_window">
         <field name="name">Scénario de crise</field>
         <field name="res_model">risk.crisis.scenario</field>
-        <field name="view_mode">form</field>
+        <field name="view_mode">list,form</field>
         <field name="target">current</field>
     </record>
 
     <record id="action_risk_heatmap_snapshot" model="ir.actions.act_window">
         <field name="name">Heatmap Snapshot</field>
         <field name="res_model">risk.heatmap.snapshot</field>
-        <field name="view_mode">form</field>
+        <field name="view_mode">list,form</field>
         <field name="target">current</field>
     </record>
 
     <record id="action_risk_category" model="ir.actions.act_window">
         <field name="name">Catégorie</field>
         <field name="res_model">risk.category</field>
-        <field name="view_mode">form</field>
+        <field name="view_mode">list,form</field>
         <field name="target">current</field>
     </record>
 
     <record id="action_risk_process" model="ir.actions.act_window">
         <field name="name">Processus</field>
         <field name="res_model">risk.process</field>
-        <field name="view_mode">form</field>
+        <field name="view_mode">list,form</field>
         <field name="target">current</field>
     </record>
 
     <record id="action_risk_asset" model="ir.actions.act_window">
         <field name="name">Actif</field>
         <field name="res_model">risk.asset</field>
-        <field name="view_mode">form</field>
+        <field name="view_mode">list,form</field>
         <field name="target">current</field>
     </record>
 
     <record id="action_risk_organization" model="ir.actions.act_window">
         <field name="name">Organisation</field>
         <field name="res_model">risk.organization</field>
-        <field name="view_mode">form</field>
+        <field name="view_mode">list,form</field>
         <field name="target">current</field>
     </record>
 
