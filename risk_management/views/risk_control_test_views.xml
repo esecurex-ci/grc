@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_control_test_list" model="ir.ui.view">
+        <field name="name">risk.control.test.list</field>
+        <field name="model">risk.control.test</field>
+        <field name="arch" type="xml">
+
+            <list multi_edit="1"
+                  decoration-success="result == 'effective'"
+                  decoration-warning="result == 'partially'"
+                  decoration-danger="result == 'ineffective'">
+
+                <field name="name"/>
+                <field name="control_id"/>
+                <field name="test_date"/>
+                <field name="tester_id"/>
+                <field name="sample_size"/>
+                <field name="error_count"/>
+                <field name="result_score"/>
+                <field name="result" widget="badge"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_control_test_form" model="ir.ui.view">
+        <field name="name">risk.control.test.form</field>
+        <field name="model">risk.control.test</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <group>
+                            <field name="name"/>
+                            <field name="control_id"/>
+                            <field name="tester_id"/>
+                        </group>
+
+                        <group>
+                            <field name="test_date"/>
+                            <field name="sample_size"/>
+                            <field name="error_count"/>
+                        </group>
+
+                    </group>
+
+                    <group>
+
+                        <field name="result_score"/>
+
+                        <field name="result"/>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Observations">
+                            <field name="observation"/>
+                        </page>
+
+                        <page string="Recommandations">
+                            <field name="recommendation"/>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_root_cause_list" model="ir.ui.view">
+        <field name="name">risk.root.cause.list</field>
+        <field name="model">risk.root.cause</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="incident_id"/>
+                <field name="cause_type"/>
+                <field name="confirmed"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

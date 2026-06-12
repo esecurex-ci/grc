@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_corrective_action_list" model="ir.ui.view">
+        <field name="name">risk.corrective.action.list</field>
+        <field name="model">risk.corrective.action</field>
+        <field name="arch" type="xml">
+
+            <list multi_edit="1"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'in_progress'"
+                  decoration-success="state == 'completed'"
+                  decoration-danger="state == 'cancelled'">
+
+                <field name="name"/>
+                <field name="incident_id"/>
+                <field name="owner_id"/>
+                <field name="due_date"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="state" widget="badge"/>
+
+            </list>
+
+        </field>
+    </record>
+
+</odoo>

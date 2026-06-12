@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_kri_measure_list" model="ir.ui.view">
+        <field name="name">risk.kri.measure.list</field>
+        <field name="model">risk.kri.measure</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="kri_id"/>
+                <field name="measure_date"/>
+                <field name="value"/>
+            </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_kri_measure_form" model="ir.ui.view">
+        <field name="name">risk.kri.measure.form</field>
+        <field name="model">risk.kri.measure</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="kri_id"/>
+                        <field name="measure_date"/>
+                        <field name="value"/>
+                    </group>
+                    <group>
+                        <field name="comment"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_risk_kri_measure_graph" model="ir.ui.view">
+        <field name="name">risk.kri.measure.graph</field>
+        <field name="model">risk.kri.measure</field>
+        <field name="arch" type="xml">
+            <graph string="Evolution des KRI" type="line">
+                <field name="measure_date" interval="month"/>
+                <field name="kri_id"/>
+                <field name="value" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_risk_kri_measure_pivot" model="ir.ui.view">
+        <field name="name">risk.kri.measure.pivot</field>
+        <field name="model">risk.kri.measure</field>
+        <field name="arch" type="xml">
+            <pivot string="Analyse KRI">
+                <field name="kri_id" type="row"/>
+                <field name="measure_date" type="col" interval="month"/>
+                <field name="value" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_incident_category_list" model="ir.ui.view">
+        <field name="name">risk.incident.category.list</field>
+        <field name="model">risk.incident.category</field>
+        <field name="arch" type="xml">
+            <list multi_edit="1">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_risk_incident_category_form" model="ir.ui.view">
+        <field name="name">risk.incident.category.form</field>
+        <field name="model">risk.incident.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="active"/>
+                    </group>
+
+                    <group>
+                        <field name="description"/>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>
