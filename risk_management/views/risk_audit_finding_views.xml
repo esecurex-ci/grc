@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_audit_finding_list" model="ir.ui.view">
+        <field name="name">risk.audit.finding.list</field>
+        <field name="model">risk.audit.finding</field>
+        <field name="arch" type="xml">
+
+            <list multi_edit="1"
+                  decoration-danger="severity == 'critical'"
+                  decoration-warning="severity == 'high'">
+
+                <field name="title"/>
+                <field name="audit_id"/>
+                <field name="risk_id"/>
+                <field name="control_id"/>
+                <field name="severity" widget="badge"/>
+                <field name="state" widget="badge"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_audit_finding_form" model="ir.ui.view">
+        <field name="name">risk.audit.finding.form</field>
+        <field name="model">risk.audit.finding</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <group>
+                            <field name="audit_id"/>
+                            <field name="title"/>
+                            <field name="severity"/>
+                        </group>
+
+                        <group>
+                            <field name="risk_id"/>
+                            <field name="control_id"/>
+                            <field name="state"/>
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Constat">
+                            <field name="description"/>
+                        </page>
+
+                        <page string="Cause Racine">
+                            <field name="root_cause"/>
+                        </page>
+
+                        <page string="Réglementation">
+                            <field name="regulation_ids"
+                                   widget="many2many_tags"/>
+                        </page>
+
+                        <page string="Conformité">
+                            <field name="compliance_requirement_ids"
+                                   widget="many2many_tags"/>
+                        </page>
+
+                        <page string="Recommandations">
+
+                            <field name="recommendation_ids">
+
+                                <list>
+                                    <field name="priority"/>
+                                    <field name="owner_id"/>
+                                    <field name="target_date"/>
+                                    <field name="state"/>
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================== -->
+    <!-- LIST -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_compliance_scorecard_list" model="ir.ui.view">
+        <field name="name">risk.compliance.scorecard.list</field>
+        <field name="model">risk.compliance.scorecard</field>
+        <field name="arch" type="xml">
+
+            <list>
+
+                <field name="name"/>
+
+                <field name="reference_date"/>
+
+                <field name="framework_count"/>
+
+                <field name="compliance_rate"/>
+
+                <field name="compliance_level"
+                       widget="badge"/>
+
+                <field name="state"
+                       widget="badge"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- FORM -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_compliance_scorecard_form" model="ir.ui.view">
+        <field name="name">risk.compliance.scorecard.form</field>
+        <field name="model">risk.compliance.scorecard</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_generate"
+                            type="object"
+                            string="Générer"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_validate"
+                            type="object"
+                            string="Valider"
+                            class="btn-success"
+                            invisible="state != 'draft'"/>
+
+                    <field name="state"
+                           widget="statusbar"/>
+
+                </header>
+
+                <sheet>
+
+                    <div class="oe_title">
+
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+
+                    </div>
+
+                    <group>
+
+                        <group>
+
+                            <field name="reference_date"/>
+
+                        </group>
+
+                        <group>
+
+                            <field name="compliance_level"
+                                   widget="badge"/>
+
+                        </group>
+
+                    </group>
+
+                    <group string="Indicateurs Globaux">
+
+                        <field name="compliance_rate"
+                               widget="progressbar"/>
+
+                        <field name="compliant_count"/>
+
+                        <field name="partial_count"/>
+
+                        <field name="non_compliant_count"/>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Référentiels">
+
+                            <field name="line_ids">
+
+                                <list decoration-success="compliance_level == 'excellent'"
+                                      decoration-info="compliance_level == 'good'"
+                                      decoration-warning="compliance_level == 'average'"
+                                      decoration-danger="compliance_level == 'poor'">
+
+                                    <field name="framework_id"/>
+
+                                    <field name="requirement_count"/>
+
+                                    <field name="compliant_count"/>
+
+                                    <field name="non_compliant_count"/>
+
+                                    <field name="compliance_rate"/>
+
+                                    <field name="risk_score"/>
+
+                                    <field name="compliance_level"
+                                           widget="badge"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+
+    </record>
+
+</odoo>

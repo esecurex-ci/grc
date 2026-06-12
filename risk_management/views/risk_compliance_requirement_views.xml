@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_compliance_requirement_list" model="ir.ui.view">
+        <field name="name">risk.compliance.requirement.list</field>
+        <field name="model">risk.compliance.requirement</field>
+        <field name="arch" type="xml">
+
+            <list multi_edit="1">
+
+                <field name="code"/>
+                <field name="title"/>
+                <field name="framework_id"/>
+                <field name="article"/>
+                <field name="mandatory"/>
+                <field name="active"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_compliance_requirement_form" model="ir.ui.view">
+        <field name="name">risk.compliance.requirement.form</field>
+        <field name="model">risk.compliance.requirement</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <div class="oe_button_box" name="button_box">
+
+                        <button name="action_view_assessments"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-check-circle">
+
+                            <field name="assessment_count"
+                                   widget="statinfo"
+                                   string="Evaluations"/>
+
+                        </button>
+
+                        <button name="action_view_obligations"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-gavel">
+
+                            <field name="obligation_count"
+                                   widget="statinfo"
+                                   string="Obligations"/>
+
+                        </button>
+
+                        <button name="action_view_control_tests"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shield">
+
+                            <field name="test_count"
+                                   widget="statinfo"
+                                   string="Tests"/>
+
+                        </button>
+
+                    </div>
+
+                    <group>
+
+                        <group>
+                            <field name="code"/>
+                            <field name="title"/>
+                            <field name="framework_id"/>
+                            <field name="article"/>
+                        </group>
+
+                        <group>
+                            <field name="mandatory"/>
+                            <field name="active"/>
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+
+                        <page string="Risques">
+                            <field name="risk_ids"
+                                   widget="many2many_tags"/>
+                        </page>
+
+                        <page string="Contrôles">
+                            <field name="control_ids"
+                                   widget="many2many_tags"/>
+                        </page>
+
+                        <page string="Mappings">
+
+                            <field name="mapping_ids">
+
+                                <list editable="bottom">
+
+                                    <field name="process_id"/>
+                                    <field name="risk_id"/>
+                                    <field name="control_id"/>
+                                    <field name="organization_id"/>
+                                    <field name="coverage_level"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Tests">
+
+                            <field name="control_test_ids">
+
+                                <list>
+
+                                    <field name="name"/>
+                                    <field name="test_date"/>
+                                    <field name="result"/>
+                                    <field name="score"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

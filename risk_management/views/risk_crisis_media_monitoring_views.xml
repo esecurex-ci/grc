@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_media_monitoring_list"
+            model="ir.ui.view">
+
+        <field name="name">risk.crisis.media.monitoring.list</field>
+        <field name="model">risk.crisis.media.monitoring</field>
+
+        <field name="arch" type="xml">
+
+            <list decoration-danger="sentiment == 'negative'"
+                  decoration-success="sentiment == 'positive'">
+
+                <field name="publication_date"/>
+
+                <field name="source"/>
+
+                <field name="title"/>
+
+                <field name="sentiment"
+                       widget="badge"/>
+
+                <field name="impact_level"
+                       widget="badge"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+</odoo>

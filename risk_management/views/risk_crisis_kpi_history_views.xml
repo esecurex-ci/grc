@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_kpi_history_list"
+            model="ir.ui.view">
+
+        <field name="name">risk.crisis.kpi.history.list</field>
+        <field name="model">risk.crisis.kpi.history</field>
+        <field name="arch" type="xml">
+
+            <list>
+
+                <field name="snapshot_date"/>
+
+                <field name="open_crisis_count"/>
+
+                <field name="critical_crisis_count"/>
+
+                <field name="mttr_hours"/>
+
+                <field name="open_action_count"/>
+
+                <field name="crisis_management_score"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+    <record id="view_risk_crisis_kpi_history_graph"
+            model="ir.ui.view">
+
+        <field name="name">risk.crisis.kpi.history.graph</field>
+        <field name="model">risk.crisis.kpi.history</field>
+        <field name="arch" type="xml">
+
+            <graph string="Evolution KPI Crise">
+
+                <field name="snapshot_date"/>
+
+                <field name="open_crisis_count"
+                       type="measure"/>
+
+                <field name="critical_crisis_count"
+                       type="measure"/>
+
+                <field name="mttr_hours"
+                       type="measure"/>
+
+            </graph>
+
+        </field>
+
+    </record>
+
+</odoo>

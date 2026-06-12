@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_recovery_site_list"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.recovery.site.list
+        </field>
+
+        <field name="model">
+            risk.recovery.site
+        </field>
+
+        <field name="arch" type="xml">
+
+            <list>
+
+                <field name="name"/>
+
+                <field name="location"/>
+
+                <field name="site_type"
+                       widget="badge"/>
+
+                <field name="active"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+    <record id="view_risk_recovery_site_form"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.recovery.site.form
+        </field>
+
+        <field name="model">
+            risk.recovery.site
+        </field>
+
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <field name="name"/>
+
+                        <field name="location"/>
+
+                        <field name="site_type"/>
+
+                        <field name="active"/>
+
+                    </group>
+
+                    <group>
+
+                        <field name="capacity"/>
+
+                    </group>
+
+                </sheet>
+
+            </form>
+
+        </field>
+
+    </record>
+
+</odoo>

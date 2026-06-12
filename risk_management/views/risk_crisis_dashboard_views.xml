@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_dashboard_form"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.crisis.dashboard.form
+        </field>
+
+        <field name="model">
+            risk.crisis.dashboard
+        </field>
+
+        <field name="arch" type="xml">
+
+            <form create="false"
+                  edit="false">
+
+                <header>
+
+                    <button name="action_refresh"
+                            type="object"
+                            string="Actualiser"
+                            class="btn-primary"/>
+
+                </header>
+
+                <sheet>
+
+                    <div class="oe_title">
+
+                        <h1>
+                            Dashboard Gestion de Crise
+                        </h1>
+
+                    </div>
+
+                    <group col="4">
+
+                        <field name="open_crisis_count"/>
+
+                        <field name="critical_crisis_count"/>
+
+                        <field name="mttr_hours"/>
+
+                        <field name="committee_meeting_count"/>
+
+                    </group>
+
+                    <group col="4">
+
+                        <field name="overdue_decision_count"/>
+
+                        <field name="open_action_count"/>
+
+                        <field name="regulator_communication_count"/>
+
+                        <field name="closed_rex_count"/>
+
+                    </group>
+
+                    <group string="Score Global">
+
+                        <field name="crisis_management_score"
+                               widget="progressbar"/>
+
+                        <field name="dashboard_level"
+                               widget="badge"/>
+
+                    </group>
+                    <notebook>
+                        <page string="Détail des Crises">
+
+                            <field name="line_ids">
+
+                                <list decoration-success="performance_level == 'excellent'"
+                                      decoration-info="performance_level == 'good'"
+                                      decoration-warning="performance_level == 'average'"
+                                      decoration-danger="performance_level == 'critical'">
+
+                                    <field name="crisis_id"/>
+
+                                    <field name="crisis_level"/>
+
+                                    <field name="duration_hours"/>
+
+                                    <field name="meeting_count"/>
+
+                                    <field name="open_action_count"/>
+
+                                    <field name="score"/>
+
+                                    <field name="performance_level"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+                    </notebook>
+
+
+                </sheet>
+
+            </form>
+
+        </field>
+
+    </record>
+    <record id="view_risk_crisis_dashboard_graph"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.crisis.dashboard.graph
+        </field>
+
+        <field name="model">
+            risk.crisis.dashboard
+        </field>
+
+        <field name="arch" type="xml">
+
+            <graph string="Crisis KPI">
+
+                <field name="snapshot_date"/>
+
+                <field name="open_crisis_count"
+                       type="measure"/>
+
+                <field name="critical_crisis_count"
+                       type="measure"/>
+
+                <field name="open_action_count"
+                       type="measure"/>
+
+            </graph>
+
+        </field>
+
+    </record>
+    <record id="view_risk_crisis_dashboard_pivot"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.crisis.dashboard.pivot
+        </field>
+
+        <field name="model">
+            risk.crisis.dashboard
+        </field>
+
+        <field name="arch" type="xml">
+
+            <pivot>
+
+                <field name="snapshot_date"
+                       type="row"/>
+
+                <field name="open_crisis_count"
+                       type="measure"/>
+
+                <field name="critical_crisis_count"
+                       type="measure"/>
+
+                <field name="mttr_hours"
+                       type="measure"/>
+
+                <field name="open_action_count"
+                       type="measure"/>
+
+            </pivot>
+
+        </field>
+
+    </record>
+
+</odoo>

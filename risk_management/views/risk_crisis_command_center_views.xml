@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_command_center_form"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.crisis.command.center.form
+        </field>
+
+        <field name="model">
+            risk.crisis.command.center
+        </field>
+
+        <field name="arch" type="xml">
+
+            <form create="false"
+                  edit="false">
+
+                <sheet>
+
+                    <div class="oe_title">
+
+                        <h1>
+                            Centre de Commandement de Crise
+                        </h1>
+
+                    </div>
+
+                    <group col="4">
+
+                        <field name="open_crisis_count"/>
+
+                        <field name="critical_crisis_count"/>
+
+                        <field name="mttr_hours"/>
+
+                        <field name="active_warroom_count"/>
+
+                    </group>
+
+                    <group col="4">
+
+                        <field name="overdue_action_count"/>
+
+                        <field name="overdue_decision_count"/>
+
+                        <field name="regulator_reporting_count"/>
+
+                        <field name="regulator_communication_count"/>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Crises Actives">
+
+                            <field name="active_crisis_ids">
+
+                                <list>
+
+                                    <field name="name"/>
+
+                                    <field name="crisis_level"/>
+
+                                    <field name="state"/>
+
+                                    <field name="crisis_manager_id"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="War Rooms">
+
+                            <field name="active_warroom_ids">
+
+                                <list>
+
+                                    <field name="crisis_id"/>
+
+                                    <field name="location"/>
+
+                                    <field name="activation_date"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Timeline Temps Réel">
+
+                            <field name="recent_timeline_ids">
+
+                                <list>
+
+                                    <field name="event_date"/>
+
+                                    <field name="event_type"/>
+
+                                    <field name="title"/>
+
+                                    <field name="owner_id"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+            </form>
+
+        </field>
+
+    </record>
+
+</odoo>

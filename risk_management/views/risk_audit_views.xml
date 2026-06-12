@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_audit_list" model="ir.ui.view">
+        <field name="name">risk.audit.list</field>
+        <field name="model">risk.audit</field>
+        <field name="arch" type="xml">
+
+            <list multi_edit="1"
+                  decoration-info="state == 'planning'"
+                  decoration-warning="state == 'fieldwork'"
+                  decoration-primary="state == 'reporting'"
+                  decoration-success="state == 'closed'">
+
+                <field name="name"/>
+                <field name="title"/>
+                <field name="audit_type"/>
+                <field name="lead_auditor_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="finding_count"/>
+                <field name="state" widget="badge"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_audit_form" model="ir.ui.view">
+        <field name="name">risk.audit.form</field>
+        <field name="model">risk.audit</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <div class="oe_button_box" name="button_box">
+
+                        <button type="object"
+                                name="action_view_findings"
+                                class="oe_stat_button"
+                                icon="fa-search">
+
+                            <field name="finding_count"
+                                   widget="statinfo"
+                                   string="Constats"/>
+
+                        </button>
+
+                    </div>
+
+                    <div class="oe_title">
+
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+
+                        <h2>
+                            <field name="title"/>
+                        </h2>
+
+                    </div>
+
+                    <group>
+
+                        <group>
+                            <field name="plan_id"/>
+                            <field name="audit_type"/>
+                            <field name="lead_auditor_id"/>
+                        </group>
+
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="state"/>
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Objectifs">
+                            <field name="objective"/>
+                        </page>
+
+                        <page string="Périmètre">
+                            <field name="scope"/>
+                        </page>
+
+                        <page string="Processus">
+                            <field name="process_ids"
+                                   widget="many2many_tags"/>
+                        </page>
+
+                        <page string="Organisation">
+                            <field name="organization_ids"
+                                   widget="many2many_tags"/>
+                        </page>
+
+                        <page string="Constats">
+
+                            <field name="finding_ids">
+
+                                <list>
+                                    <field name="title"/>
+                                    <field name="severity"/>
+                                    <field name="state"/>
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Pièces Jointes">
+                            <field name="attachment_ids"
+                                   widget="many2many_binary"/>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

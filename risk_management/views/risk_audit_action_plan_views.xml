@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_audit_action_plan_list" model="ir.ui.view">
+        <field name="name">risk.audit.action.plan.list</field>
+        <field name="model">risk.audit.action.plan</field>
+        <field name="arch" type="xml">
+
+            <list multi_edit="1"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'in_progress'"
+                  decoration-success="state in ('completed','validated')">
+
+                <field name="name"/>
+                <field name="owner_id"/>
+                <field name="target_date"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="state" widget="badge"/>
+
+            </list>
+
+        </field>
+    </record>
+
+</odoo>

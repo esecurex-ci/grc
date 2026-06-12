@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_compliance_assessment_list" model="ir.ui.view">
+        <field name="name">risk.compliance.assessment.list</field>
+        <field name="model">risk.compliance.assessment</field>
+        <field name="arch" type="xml">
+
+            <list multi_edit="1"
+                  decoration-success="compliance_level == 'compliant'"
+                  decoration-warning="compliance_level == 'partially'"
+                  decoration-danger="compliance_level == 'non_compliant'">
+
+                <field name="name"/>
+                <field name="assessment_date"/>
+                <field name="requirement_id"/>
+                <field name="assessor_id"/>
+                <field name="compliance_level"
+                       widget="badge"/>
+                <field name="compliance_percentage"/>
+                <field name="state"
+                       widget="badge"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_compliance_assessment_form" model="ir.ui.view">
+        <field name="name">risk.compliance.assessment.form</field>
+        <field name="model">risk.compliance.assessment</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <div class="oe_button_box" name="button_box">
+
+                        <button name="action_view_evidence"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-folder-open">
+
+                            <field name="evidence_count"
+                                   widget="statinfo"
+                                   string="Preuves"/>
+
+                        </button>
+
+                        <button name="action_view_action_plans"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-tasks">
+
+                            <field name="action_plan_count"
+                                   widget="statinfo"
+                                   string="Plans d'Actions"/>
+
+                        </button>
+
+                    </div>
+
+                    <group>
+
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="assessment_date"/>
+                            <field name="requirement_id"/>
+                        </group>
+
+                        <group>
+                            <field name="assessor_id"/>
+                            <field name="compliance_level"/>
+                            <field name="compliance_percentage"
+                                   readonly="1"/>
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Commentaires">
+                            <field name="comment"/>
+                        </page>
+
+                        <page string="Preuves">
+
+                            <field name="evidence_ids">
+
+                                <list editable="bottom">
+
+                                    <field name="name"/>
+                                    <field name="evidence_date"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Plans d'Actions">
+
+                            <field name="action_plan_ids">
+
+                                <list>
+
+                                    <field name="name"/>
+                                    <field name="owner_id"/>
+                                    <field name="target_date"/>
+                                    <field name="progress"/>
+                                    <field name="state"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                    <field name="state"/>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

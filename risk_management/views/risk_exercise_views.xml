@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_exercise_form"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.exercise.form
+        </field>
+
+        <field name="model">
+            risk.exercise
+        </field>
+
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <field name="name"/>
+
+                        <field name="exercise_date"/>
+
+                        <field name="exercise_type"/>
+
+                        <field name="scenario_id"/>
+
+                        <field name="state"/>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Objectifs">
+
+                            <field name="objective"/>
+
+                        </page>
+
+                        <page string="Résultats">
+
+                            <field name="result"/>
+
+                        </page>
+
+                        <page string="Constats">
+
+                            <field name="finding_ids">
+
+                                <list editable="bottom">
+
+                                    <field name="severity"/>
+
+                                    <field name="recommendation"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+            </form>
+
+        </field>
+
+    </record>
+
+</odoo>

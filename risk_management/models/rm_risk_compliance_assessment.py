@@ -61,8 +61,58 @@ class RiskComplianceAssessment(models.Model):
         compute='_compute_compliance_percentage',
         store=True
     )
+    evidence_count = fields.Integer(
+        compute='_compute_statistics'
+    )
 
-    from odoo import api
+    action_plan_count = fields.Integer(
+        compute='_compute_statistics'
+    )
+
+    @api.depends(
+        'evidence_ids',
+        'action_plan_ids'
+    )
+    def _compute_statistics(self):
+
+        for rec in self:
+            rec.evidence_count = len(
+                rec.evidence_ids
+            )
+
+            rec.action_plan_count = len(
+                rec.action_plan_ids
+            )
+
+    def action_view_evidence(self):
+
+        self.ensure_one()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Evidence',
+            'res_model': 'risk.compliance.evidence',
+            'view_mode': 'list,form',
+            'domain': [
+                ('assessment_id', '=', self.id)
+            ]
+        }
+
+    def action_view_action_plans(self):
+
+        self.ensure_one()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Action Plans',
+            'res_model': 'risk.compliance.action.plan',
+            'view_mode': 'list,form',
+            'domain': [
+                ('assessment_id', '=', self.id)
+            ]
+        }
+
+
 
     @api.depends('compliance_level')
     def _compute_compliance_percentage(self):

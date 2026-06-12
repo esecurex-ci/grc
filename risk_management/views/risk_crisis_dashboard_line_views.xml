@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_dashboard_line_list"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.crisis.dashboard.line.list
+        </field>
+
+        <field name="model">
+            risk.crisis.dashboard.line
+        </field>
+
+        <field name="arch" type="xml">
+
+            <list decoration-success="performance_level == 'excellent'"
+                  decoration-info="performance_level == 'good'"
+                  decoration-warning="performance_level == 'average'"
+                  decoration-danger="performance_level == 'critical'">
+
+                <field name="crisis_id"/>
+
+                <field name="crisis_level"
+                       widget="badge"/>
+
+                <field name="state"
+                       widget="badge"/>
+
+                <field name="duration_hours"/>
+
+                <field name="meeting_count"/>
+
+                <field name="decision_count"/>
+
+                <field name="open_action_count"/>
+
+                <field name="communication_count"/>
+
+                <field name="score"/>
+
+                <field name="performance_level"
+                       widget="badge"/>
+
+            </list>
+
+        </field>
+
+    </record>
+    <record id="view_risk_crisis_dashboard_line_form"
+        model="ir.ui.view">
+
+    <field name="name">
+        risk.crisis.dashboard.line.form
+    </field>
+
+    <field name="model">
+        risk.crisis.dashboard.line
+    </field>
+
+    <field name="arch" type="xml">
+
+        <form create="false"
+              edit="false">
+
+            <sheet>
+
+                <div class="oe_title">
+
+                    <h1>
+
+                        <field name="crisis_id"/>
+
+                    </h1>
+
+                </div>
+
+                <group>
+
+                    <group>
+
+                        <field name="crisis_level"
+                               widget="badge"/>
+
+                        <field name="state"
+                               widget="badge"/>
+
+                        <field name="crisis_manager_id"/>
+
+                    </group>
+
+                    <group>
+
+                        <field name="duration_hours"/>
+
+                        <field name="meeting_count"/>
+
+                        <field name="decision_count"/>
+
+                    </group>
+
+                </group>
+
+                <group string="Pilotage">
+
+                    <field name="overdue_decision_count"/>
+
+                    <field name="open_action_count"/>
+
+                    <field name="communication_count"/>
+
+                    <field name="regulator_communication_count"/>
+
+                    <field name="log_count"/>
+
+                </group>
+
+                <group string="Performance">
+
+                    <field name="score"
+                           widget="progressbar"/>
+
+                    <field name="performance_level"
+                           widget="badge"/>
+
+                </group>
+
+            </sheet>
+
+        </form>
+
+    </field>
+
+</record>
+
+</odoo>

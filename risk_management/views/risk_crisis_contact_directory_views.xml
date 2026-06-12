@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_contact_directory_list"
+            model="ir.ui.view">
+
+        <field name="name">risk.crisis.contact.directory.list</field>
+        <field name="model">risk.crisis.contact.directory</field>
+
+        <field name="arch" type="xml">
+
+            <list decoration-danger="priority_level == 'critical'"
+                  decoration-warning="priority_level == 'high'">
+
+                <field name="name"/>
+
+                <field name="organization"/>
+
+                <field name="role"/>
+
+                <field name="mobile"/>
+
+                <field name="email"/>
+
+                <field name="priority_level"
+                       widget="badge"/>
+
+                <field name="available_24x7"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+</odoo>

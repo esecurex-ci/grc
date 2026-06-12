@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_warroom_form"
+            model="ir.ui.view">
+
+        <field name="name">risk.crisis.warroom.form</field>
+        <field name="model">risk.crisis.warroom</field>
+
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <group>
+
+                            <field name="crisis_id"/>
+
+                            <field name="activation_date"/>
+
+                        </group>
+
+                        <group>
+
+                            <field name="location"/>
+
+                            <field name="status"/>
+
+                        </group>
+
+                    </group>
+
+                    <group>
+
+                        <field name="meeting_url"/>
+
+                    </group>
+
+                    <field name="notes"/>
+
+                </sheet>
+
+            </form>
+
+        </field>
+
+    </record>
+
+</odoo>

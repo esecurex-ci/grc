@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_compliance_obligation_list" model="ir.ui.view">
+        <field name="name">risk.compliance.obligation.list</field>
+        <field name="model">risk.compliance.obligation</field>
+        <field name="arch" type="xml">
+
+            <list multi_edit="1">
+
+                <field name="name"/>
+                <field name="requirement_id"/>
+                <field name="owner_id"/>
+                <field name="frequency"/>
+                <field name="state"
+                       widget="badge"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_compliance_obligation_form" model="ir.ui.view">
+        <field name="name">risk.compliance.obligation.form</field>
+        <field name="model">risk.compliance.obligation</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <group>
+                            <field name="name"/>
+                            <field name="requirement_id"/>
+                            <field name="owner_id"/>
+                        </group>
+
+                        <group>
+                            <field name="frequency"/>
+                            <field name="state"/>
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+
+                        <page string="Processus">
+                            <field name="process_ids"
+                                   widget="many2many_tags"/>
+                        </page>
+
+                        <page string="Organisation">
+                            <field name="organization_ids"
+                                   widget="many2many_tags"/>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

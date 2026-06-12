@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_scenario_list"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.crisis.scenario.list
+        </field>
+
+        <field name="model">
+            risk.crisis.scenario
+        </field>
+
+        <field name="arch" type="xml">
+
+            <list>
+
+                <field name="name"/>
+
+                <field name="category"
+                       widget="badge"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+</odoo>

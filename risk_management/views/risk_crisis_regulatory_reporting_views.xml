@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_regulatory_reporting_list"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.crisis.regulatory.reporting.list
+        </field>
+
+        <field name="model">
+            risk.crisis.regulatory.reporting
+        </field>
+
+        <field name="arch" type="xml">
+
+            <list>
+
+                <field name="name"/>
+
+                <field name="crisis_id"/>
+
+                <field name="regulator"/>
+
+                <field name="report_date"/>
+
+                <field name="state"
+                       widget="badge"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+    <record id="view_risk_crisis_regulatory_reporting_form"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.crisis.regulatory.reporting.form
+        </field>
+
+        <field name="model">
+            risk.crisis.regulatory.reporting
+        </field>
+
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <field name="name"/>
+
+                        <field name="crisis_id"/>
+
+                        <field name="regulator"/>
+
+                        <field name="report_date"/>
+
+                    </group>
+
+                    <group>
+
+                        <field name="subject"/>
+
+                    </group>
+
+                    <field name="report_content"/>
+
+                    <field name="state"/>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+
+    </record>
+
+</odoo>

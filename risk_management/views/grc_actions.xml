@@ -172,11 +172,26 @@
     <!-- BCM / DRP -->
     <!-- ===================================================== -->
 
+    <record id="action_risk_continuity_dashboard" model="ir.actions.act_window">
+        <field name="name">Tableau de bord Continuité</field>
+        <field name="res_model">risk.continuity.dashboard</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+    </record>
+     <record id="action_crisis_command_center" model="ir.actions.client">
+        <field name="name">Crisis Command Center</field>
+        <field name="tag">risk_crisis_command_center</field>
+    </record>
+    <record id="action_risk_crisis_command_center" model="ir.actions.act_window">
+        <field name="name">Crisis Command Center</field>
+        <field name="res_model">risk.crisis.command.center</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
     <record id="action_risk_bia" model="ir.actions.act_window">
         <field name="name">BIA</field>
         <field name="res_model">risk.bia</field>
         <field name="view_mode">list,form</field>
-
     </record>
 
     <record id="action_risk_bcp_plan" model="ir.actions.act_window">
@@ -196,6 +211,12 @@
     <!-- ===================================================== -->
     <!-- CRISIS -->
     <!-- ===================================================== -->
+
+    <record id="action_risk_crisis_dashboard" model="ir.actions.act_window">
+        <field name="name">Tableau de bord de crise</field>
+        <field name="res_model">risk.crisis.dashboard</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+    </record>
 
     <record id="action_risk_crisis" model="ir.actions.act_window">
         <field name="name">Crises</field>
@@ -295,8 +316,6 @@
         <field name="view_mode">list,form,search</field>
         <field name="target">current</field>
     </record>
-
-
 
 
 </odoo>

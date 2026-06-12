@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================== -->
+    <!-- LIST -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_audit_scope_list" model="ir.ui.view">
+        <field name="name">risk.audit.scope.list</field>
+        <field name="model">risk.audit.scope</field>
+        <field name="arch" type="xml">
+
+            <list decoration-info="scope_type == 'process'"
+                  decoration-success="scope_type == 'control'"
+                  decoration-warning="scope_type == 'risk'"
+                  decoration-primary="scope_type == 'organization'">
+
+                <field name="name"/>
+
+                <field name="audit_id"/>
+
+                <field name="scope_type"  widget="badge"/>
+
+                <field name="display_name_scope"/>
+
+                <field name="owner_id"/>
+
+                <field name="active"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- SEARCH -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_audit_scope_search" model="ir.ui.view">
+        <field name="name">risk.audit.scope.search</field>
+        <field name="model">risk.audit.scope</field>
+        <field name="arch" type="xml">
+
+            <search>
+
+                <field name="name"/>
+
+                <field name="audit_id"/>
+
+                <field name="owner_id"/>
+
+                <separator/>
+
+                <filter name="process"
+                        string="Processus"
+                        domain="[('scope_type','=','process')]"/>
+
+                <filter name="organization"
+                        string="Organisation"
+                        domain="[('scope_type','=','organization')]"/>
+
+                <filter name="risk"
+                        string="Risque"
+                        domain="[('scope_type','=','risk')]"/>
+
+                <filter name="control"
+                        string="Contrôle"
+                        domain="[('scope_type','=','control')]"/>
+
+                <filter name="asset"
+                        string="Actif"
+                        domain="[('scope_type','=','asset')]"/>
+
+                <filter name="regulation"
+                        string="Réglementation"
+                        domain="[('scope_type','=','regulation')]"/>
+
+                <separator/>
+
+
+            </search>
+
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- FORM -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_audit_scope_form" model="ir.ui.view">
+        <field name="name">risk.audit.scope.form</field>
+        <field name="model">risk.audit.scope</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <div class="oe_title">
+
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+
+                    </div>
+
+                    <group>
+
+                        <group>
+
+                            <field name="audit_id"/>
+
+                            <field name="scope_type" widget="badge"/>
+
+                            <field name="owner_id"/>
+
+                        </group>
+
+                        <group>
+
+                            <field name="active"/>
+
+                            <field name="display_name_scope"
+                                   readonly="1"/>
+
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Périmètre">
+
+                            <group>
+
+                                <field name="process_id"
+                                       invisible="scope_type != 'process'"/>
+
+                                <field name="organization_id"
+                                       invisible="scope_type != 'organization'"/>
+
+                                <field name="risk_id"
+                                       invisible="scope_type != 'risk'"/>
+
+                                <field name="control_id"
+                                       invisible="scope_type != 'control'"/>
+
+                                <field name="asset_id"
+                                       invisible="scope_type != 'asset'"/>
+
+                                <field name="regulation_id"
+                                       invisible="scope_type != 'regulation'"/>
+
+                            </group>
+
+                        </page>
+
+                        <page string="Description">
+
+                            <field name="description"/>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

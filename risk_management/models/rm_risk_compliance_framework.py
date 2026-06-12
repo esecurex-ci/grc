@@ -28,3 +28,29 @@ class RiskComplianceFramework(models.Model):
         'risk.compliance.requirement',
         'framework_id'
     )
+    requirement_count = fields.Integer(
+        compute='_compute_statistics'
+    )
+
+    @api.depends('requirement_ids')
+    def _compute_statistics(self):
+        for rec in self:
+            rec.requirement_count = len(
+                rec.requirement_ids
+            )
+
+    def action_view_requirements(self):
+        self.ensure_one()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Requirements',
+            'res_model': 'risk.compliance.requirement',
+            'view_mode': 'list,form',
+            'domain': [
+                ('framework_id', '=', self.id)
+            ],
+            'context': {
+                'default_framework_id': self.id
+            }
+        }

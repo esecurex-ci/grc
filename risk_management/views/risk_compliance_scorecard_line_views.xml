@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_risk_compliance_scorecard_line_list" model="ir.ui.view">
+        <field name="name">risk.compliance.scorecard.line.list</field>
+        <field name="model">risk.compliance.scorecard.line</field>
+        <field name="arch" type="xml">
+
+            <list decoration-success="compliance_level == 'excellent'"
+                  decoration-info="compliance_level == 'good'"
+                  decoration-warning="compliance_level == 'average'"
+                  decoration-danger="compliance_level == 'poor'">
+
+                <field name="framework_id"/>
+
+                <field name="requirement_count"/>
+
+                <field name="mandatory_requirement_count"/>
+
+                <field name="compliant_count"/>
+
+                <field name="partially_compliant_count"/>
+
+                <field name="non_compliant_count"/>
+
+                <field name="compliance_rate"/>
+
+                <field name="overdue_obligation_count"/>
+
+                <field name="overdue_action_plan_count"/>
+
+                <field name="risk_score"/>
+
+                <field name="compliance_level"
+                       widget="badge"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+</odoo>

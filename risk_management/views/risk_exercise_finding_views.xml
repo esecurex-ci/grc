@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_exercise_finding_list"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.exercise.finding.list
+        </field>
+
+        <field name="model">
+            risk.exercise.finding
+        </field>
+
+        <field name="arch" type="xml">
+
+            <list decoration-danger="severity == 'critical'"
+                  decoration-warning="severity == 'high'">
+
+                <field name="exercise_id"/>
+
+                <field name="severity"/>
+
+                <field name="recommendation"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+</odoo>

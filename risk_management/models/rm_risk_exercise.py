@@ -43,3 +43,29 @@ class RiskExercise(models.Model):
         'risk.exercise.finding',
         'exercise_id'
     )
+    finding_count = fields.Integer(
+        compute='_compute_finding_count'
+    )
+
+    @api.depends('finding_ids')
+    def _compute_finding_count(self):
+        for rec in self:
+            rec.finding_count = len(
+                rec.finding_ids
+            )
+
+    def action_view_findings(self):
+        self.ensure_one()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Exercise Findings',
+            'res_model': 'risk.exercise.finding',
+            'view_mode': 'list,form',
+            'domain': [
+                ('exercise_id', '=', self.id)
+            ],
+            'context': {
+                'default_exercise_id': self.id
+            }
+        }

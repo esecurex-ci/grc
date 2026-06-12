@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_crisis_form"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.crisis.form
+        </field>
+
+        <field name="model">
+            risk.crisis
+        </field>
+
+        <field name="arch" type="xml">
+
+            <form>
+
+                <header>
+
+                    <button name="action_activate"
+                            type="object"
+                            string="Activer"
+                            class="btn-primary"
+                            invisible="state != 'declared'"/>
+
+                    <button name="action_manage"
+                            type="object"
+                            string="Gérer"
+                            class="btn-info"
+                            invisible="state != 'activated'"/>
+
+                    <button name="action_resolve"
+                            type="object"
+                            string="Résoudre"
+                            class="btn-success"
+                            invisible="state != 'managed'"/>
+
+                    <button name="action_close"
+                            type="object"
+                            string="Clôturer"
+                            class="btn-secondary"
+                            invisible="state != 'resolved'"/>
+
+                    <field name="state"
+                           widget="statusbar"/>
+
+                </header>
+
+                <sheet>
+
+                    <div class="oe_button_box"
+                         name="button_box">
+
+                        <button name="action_view_meetings"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-users">
+
+                            <field name="meeting_count"
+                                   widget="statinfo"
+                                   string="Comités"/>
+
+                        </button>
+
+                        <button name="action_view_actions"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-tasks">
+
+                            <field name="action_count"
+                                   widget="statinfo"
+                                   string="Actions"/>
+
+                        </button>
+
+                        <button name="action_view_communications"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-bullhorn">
+
+                            <field name="communication_count"
+                                   widget="statinfo"
+                                   string="Communications"/>
+
+                        </button>
+
+                        <button name="action_view_logs"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-history">
+
+                            <field name="log_count"
+                                   widget="statinfo"
+                                   string="Journal"/>
+
+                        </button>
+
+                    </div>
+
+                    <div class="oe_title">
+
+                        <h1>
+                            <field name="name"
+                                   readonly="1"/>
+                        </h1>
+
+                        <h2>
+                            <field name="title"/>
+                        </h2>
+
+                    </div>
+
+                    <group>
+
+                        <group>
+
+                            <field name="scenario_id"/>
+
+                            <field name="incident_id"/>
+
+                            <field name="crisis_level"
+                                   widget="badge"/>
+
+                        </group>
+
+                        <group>
+
+                            <field name="crisis_manager_id"/>
+
+                            <field name="declaration_date"/>
+
+                            <field name="start_date"/>
+
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Situation">
+
+                            <field name="description"/>
+
+                            <field name="impact"/>
+
+                        </page>
+
+                        <page string="Cellule de Crise">
+
+                            <field name="team_ids">
+
+                                <list editable="bottom">
+
+                                    <field name="employee_id"/>
+
+                                    <field name="role"/>
+
+                                    <field name="mobile"/>
+
+                                    <field name="email"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Actions">
+
+                            <field name="action_ids">
+
+                                <list decoration-success="state == 'completed'"
+                                      decoration-warning="state == 'in_progress'">
+
+                                    <field name="name"/>
+
+                                    <field name="owner_id"/>
+
+                                    <field name="due_date"/>
+
+                                    <field name="progress"/>
+
+                                    <field name="state"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Comité de Crise">
+
+                            <field name="crisis_committee_meeting_ids">
+
+                                <list>
+
+                                    <field name="name"/>
+
+                                    <field name="meeting_date"/>
+
+                                    <field name="chairman_id"/>
+
+                                    <field name="state"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Communications">
+
+                            <field name="communication_ids">
+
+                                <list>
+
+                                    <field name="communication_date"/>
+
+                                    <field name="audience"/>
+
+                                    <field name="subject"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Journal">
+
+                            <field name="log_ids">
+
+                                <list>
+
+                                    <field name="log_date"/>
+
+                                    <field name="title"/>
+
+                                    <field name="author_id"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                        <page string="REX">
+
+                            <field name="rex_id">
+
+                                <list>
+
+                                    <field name="completion_status"/>
+
+                                </list>
+
+                            </field>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+
+    </record>
+
+</odoo>

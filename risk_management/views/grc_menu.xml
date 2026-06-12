@@ -218,6 +218,11 @@
         parent="menu_grc_root"
         sequence="70"
     />
+    <menuitem id="menu_grc_dashboard"
+        name="Tableau de bord"
+        parent="menu_grc_dashboard"
+        action="action_risk_continuity_dashboard"
+    />
 
     <menuitem id="menu_grc_bia"
         name="BIA"
@@ -251,6 +256,17 @@
         name="Gestion de Crise"
         parent="menu_grc_root"
         sequence="80"
+    />
+    <menuitem id="menu_grc_crisis_command_center"
+          name="Centre de Commandement"
+          parent="menu_grc_crisis"
+          action="action_risk_crisis_command_center"
+          sequence="1"/>
+
+    <menuitem id="menu_grc_dashboard"
+        name="Tableau de bord"
+        parent="menu_grc_dashboard"
+        action="action_risk_crisis_dashboard"
     />
 
     <menuitem id="menu_grc_crisis_case"

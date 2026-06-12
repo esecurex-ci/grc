@@ -1,0 +1,117 @@
+<record id="view_risk_crisis_committee_meeting_form"
+        model="ir.ui.view">
+
+    <field name="name">
+        risk.crisis.committee.meeting.form
+    </field>
+
+    <field name="model">
+        risk.crisis.committee.meeting
+    </field>
+
+    <field name="arch" type="xml">
+
+        <form>
+
+            <header>
+
+                <button name="action_hold"
+                        type="object"
+                        string="Tenue"
+                        class="btn-success"
+                        invisible="state != 'planned'"/>
+
+                <button name="action_cancel"
+                        type="object"
+                        string="Annuler"
+                        class="btn-danger"
+                        invisible="state == 'cancelled'"/>
+
+                <field name="state"
+                       widget="statusbar"/>
+
+            </header>
+
+            <sheet>
+
+                <group>
+
+                    <field name="crisis_id"/>
+
+                    <field name="title"/>
+
+                    <field name="meeting_date"/>
+
+                    <field name="location"/>
+
+                </group>
+
+                <group>
+
+                    <field name="chairman_id"/>
+
+                    <field name="secretary_id"/>
+
+                </group>
+
+                <notebook>
+
+                    <page string="Ordre du Jour">
+                        <field name="agenda"/>
+                    </page>
+
+                    <page string="Participants">
+
+                        <field name="participant_ids">
+
+                            <list editable="bottom">
+
+                                <field name="employee_id"/>
+
+                                <field name="role"/>
+
+                                <field name="present"/>
+
+                            </list>
+
+                        </field>
+
+                    </page>
+
+                    <page string="Décisions">
+
+                        <field name="decision_ids">
+
+                            <list editable="bottom">
+
+                                <field name="title"/>
+
+                                <field name="owner_id"/>
+
+                                <field name="due_date"/>
+
+                                <field name="state"/>
+
+                            </list>
+
+                        </field>
+
+                    </page>
+
+                    <page string="PV">
+
+                        <field name="minutes"/>
+
+                        <field name="decision_summary"/>
+
+                    </page>
+
+                </notebook>
+
+            </sheet>
+
+        </form>
+
+    </field>
+
+</record>

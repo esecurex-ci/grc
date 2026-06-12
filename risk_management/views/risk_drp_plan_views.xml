@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_drp_plan_list"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.drp.plan.list
+        </field>
+
+        <field name="model">
+            risk.drp.plan
+        </field>
+
+        <field name="arch" type="xml">
+
+            <list>
+
+                <field name="name"/>
+
+                <field name="system_id"/>
+
+                <field name="recovery_site_id"/>
+
+                <field name="state"
+                       widget="badge"/>
+
+            </list>
+
+        </field>
+
+    </record>
+
+    <record id="view_risk_drp_plan_form"
+            model="ir.ui.view">
+
+        <field name="name">
+            risk.drp.plan.form
+        </field>
+
+        <field name="model">
+            risk.drp.plan
+        </field>
+
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <field name="name"/>
+
+                        <field name="system_id"/>
+
+                        <field name="recovery_site_id"/>
+
+                        <field name="state"/>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Procédure">
+
+                            <field name="recovery_procedure"/>
+
+                        </page>
+
+                        <page string="Sauvegarde">
+
+                            <field name="backup_strategy"/>
+
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+            </form>
+
+        </field>
+
+    </record>
+
+</odoo>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+<t t-name="risk_management.CrisisCommandCenter">
+
+<div class="o_crisis_dashboard">
+
+    <div class="o_dashboard_title">
+
+        Crisis Command Center
+
+    </div>
+
+    <div class="o_kpi_row">
+
+        <div class="o_kpi_card">
+
+            <span class="kpi_value"
+                  t-esc="state.data.open_crises"/>
+
+            <span class="kpi_label">
+
+                Crises Ouvertes
+
+            </span>
+
+        </div>
+
+        <div class="o_kpi_card danger">
+
+            <span class="kpi_value"
+                  t-esc="state.data.critical_crises"/>
+
+            <span class="kpi_label">
+
+                Crises Critiques
+
+            </span>
+
+        </div>
+
+        <div class="o_kpi_card warning">
+
+            <span class="kpi_value"
+                  t-esc="state.data.overdue_actions"/>
+
+            <span class="kpi_label">
+
+                Actions en Retard
+
+            </span>
+
+        </div>
+
+        <div class="o_kpi_card success">
+
+            <span class="kpi_value"
+                  t-esc="state.data.warrooms"/>
+
+            <span class="kpi_label">
+
+                War Rooms
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="o_dashboard_section">
+
+        <h3>
+
+            Timeline Temps Réel
+
+        </h3>
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Date</th>
+
+                    <th>Type</th>
+
+                    <th>Evénement</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr t-foreach="state.data.timeline || []"
+                    t-as="event"
+                    t-key="event.date">
+
+                    <td>
+
+                        <t t-esc="event.date"/>
+
+                    </td>
+
+                    <td>
+
+                        <t t-esc="event.type"/>
+
+                    </td>
+
+                    <td>
+
+                        <t t-esc="event.title"/>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</t>
+
+</templates>

@@ -108,6 +108,60 @@ class RiskCrisis(models.Model):
     meeting_count = fields.Integer(
         compute='_compute_meeting_count'
     )
+    team_count = fields.Integer(
+        compute='_compute_statistics'
+    )
+
+    action_count = fields.Integer(
+        compute='_compute_statistics'
+    )
+
+    communication_count = fields.Integer(
+        compute='_compute_statistics'
+    )
+
+    decision_count = fields.Integer(
+        compute='_compute_statistics'
+    )
+
+    log_count = fields.Integer(
+        compute='_compute_statistics'
+    )
+
+    rex_count = fields.Integer(
+        compute='_compute_statistics'
+    )
+
+    @api.depends(
+        'team_ids',
+        'action_ids',
+        'communication_ids',
+        'decision_ids',
+        'log_ids',
+        'rex_id'
+    )
+    def _compute_statistics(self):
+
+        for rec in self:
+            rec.team_count = len(rec.team_ids)
+
+            rec.action_count = len(rec.action_ids)
+
+            rec.communication_count = len(
+                rec.communication_ids
+            )
+
+            rec.decision_count = len(
+                rec.decision_ids
+            )
+
+            rec.log_count = len(
+                rec.log_ids
+            )
+
+            rec.rex_count = len(
+                rec.rex_id
+            )
 
     @api.depends('crisis_committee_meeting_ids')
     def _compute_meeting_count(self):

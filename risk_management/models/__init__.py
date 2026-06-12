@@ -1,6 +1,7 @@
-from . import rm_risk_kri, rm_risk_control, rm_risk_treatment_plan,  rm_risk_executive_dashboard_snapshot,rm_risk_assessment_period, rm_risk_assessment, rm_risk_risk, \
+from . import rm_risk_kri, rm_risk_control, rm_risk_treatment_plan, rm_risk_executive_dashboard_snapshot, \
+    rm_risk_assessment_period, rm_risk_assessment, rm_risk_risk, \
     rm_risk_regulation, rm_risk_subcategory, rm_risk_kri_measure, rm_risk_control_test, rm_risk_category, \
-    rm_risk_process, rm_risk_organization, rm_risk_impact, rm_risk_asset, rm_risk_cause,  \
+    rm_risk_process, rm_risk_organization, rm_risk_impact, rm_risk_asset, rm_risk_cause, \
     rm_risk_compliance_assessment, rm_risk_crisis, rm_risk_loss, rm_risk_kpi, rm_risk_crisis_log, rm_risk_crisis_rex, \
     rm_risk_kpi_measure, rm_risk_compliance_framework, rm_risk_crisis_team, rm_risk_crisis_communication, \
     rm_risk_crisis_action, rm_risk_corrective_action, rm_risk_bia, rm_risk_dashboard, rm_risk_crisis_member, \
@@ -14,4 +15,9 @@ from . import rm_risk_kri, rm_risk_control, rm_risk_treatment_plan,  rm_risk_exe
     rm_risk_compliance_obligation, rm_risk_bcp_resource, rm_risk_audit_action_plan, rm_risk_drp_plan, \
     rm_risk_compliance_requirement, rm_risk_compliance_mapping, rm_risk_compliance_control_test, rm_risk_grc_score, \
     rm_risk_grc_history, rm_risk_grc_history_line, rm_risk_root_cause, rm_risk_executive_dashboard_snapshot_line, \
-    rm_risk_heatmap_snapshot,rm_risk_metric_engine, rm_risk_recovery_site, rm_risk_heatmap, rm_risk_heatmap_line
+    rm_risk_heatmap_snapshot, rm_risk_metric_engine, rm_risk_recovery_site, rm_risk_heatmap, rm_risk_heatmap_line, \
+    rm_risk_compliance_scorecard_line, rm_risk_continuity_dashboard, rm_risk_crisis_dashboard, \
+    rm_risk_crisis_dashboard_line, rm_risk_crisis_regulatory_reporting, rm_risk_crisis_heatmap, \
+    rm_risk_crisis_lessons_learned_dashboard, rm_risk_crisis_communication_template, rm_risk_crisis_kpi_history, \
+    rm_risk_crisis_timeline, rm_risk_crisis_warroom, rm_risk_crisis_command_center, rm_risk_crisis_media_monitoring, \
+    rm_risk_crisis_contact_directory

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_compliance_evidence_list" model="ir.ui.view">
+        <field name="name">risk.compliance.evidence.list</field>
+        <field name="model">risk.compliance.evidence</field>
+        <field name="arch" type="xml">
+
+            <list>
+
+                <field name="name"/>
+                <field name="assessment_id"/>
+                <field name="evidence_date"/>
+
+            </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_compliance_evidence_form" model="ir.ui.view">
+        <field name="name">risk.compliance.evidence.form</field>
+        <field name="model">risk.compliance.evidence</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <sheet>
+
+                    <group>
+
+                        <field name="assessment_id"/>
+                        <field name="name"/>
+                        <field name="evidence_date"/>
+
+                    </group>
+
+                    <group>
+                        <field name="description"/>
+                    </group>
+
+                    <group>
+                        <field name="attachment_ids"
+                               widget="many2many_binary"/>
+                    </group>
+
+                </sheet>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>
