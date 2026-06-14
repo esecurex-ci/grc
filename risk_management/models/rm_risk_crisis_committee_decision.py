@@ -36,3 +36,17 @@ class RiskCrisisCommitteeDecision(models.Model):
         ],
         default='open'
     )
+
+    # ⬇️ CE CHAMP EST OBLIGATOIRE ⬇️
+    crisis_id = fields.Many2one(
+        'risk.crisis',
+        string='Crisis',
+        required=True,
+        ondelete='cascade'
+    )
+
+    # ⬇️ CHAMP SOUVENT MANQUANT ⬇️
+    deadline = fields.Date(
+        string='Deadline',
+        help='Date limite pour réaliser l\'action'
+    )

@@ -1,42 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_risk_crisis_form"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.crisis.form
-        </field>
-
-        <field name="model">
-            risk.crisis
-        </field>
-
+    <record id="view_risk_crisis_form" model="ir.ui.view">
+        <field name="name">risk.crisis.form</field>
+        <field name="model">risk.crisis</field>
         <field name="arch" type="xml">
-
             <form>
-
                 <header>
-
-                    <button name="action_activate"
+                    <!-- name="action_activate"  -->
+                    <button
                             type="object"
                             string="Activer"
                             class="btn-primary"
                             invisible="state != 'declared'"/>
-
-                    <button name="action_manage"
+                    <!-- name="action_manage"  -->
+                    <button
                             type="object"
                             string="Gérer"
                             class="btn-info"
                             invisible="state != 'activated'"/>
-
-                    <button name="action_resolve"
+                    <!-- name="action_resolve"  -->
+                    <button
                             type="object"
                             string="Résoudre"
                             class="btn-success"
                             invisible="state != 'managed'"/>
-
-                    <button name="action_close"
+                    <!-- name="action_close"  -->
+                    <button
                             type="object"
                             string="Clôturer"
                             class="btn-secondary"
@@ -51,8 +41,8 @@
 
                     <div class="oe_button_box"
                          name="button_box">
-
-                        <button name="action_view_meetings"
+                        <!--  name="action_view_meetings"   -->
+                        <button
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-users">
@@ -62,8 +52,8 @@
                                    string="Comités"/>
 
                         </button>
-
-                        <button name="action_view_actions"
+                        <!--  name="action_view_actions"  -->
+                        <button
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-tasks">
@@ -73,19 +63,13 @@
                                    string="Actions"/>
 
                         </button>
-
-                        <button name="action_view_communications"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-bullhorn">
-
-                            <field name="communication_count"
-                                   widget="statinfo"
-                                   string="Communications"/>
+                        <!--  name="action_view_communications"  -->
+                        <button type="object" class="oe_stat_button" icon="fa-bullhorn">
+                            <field name="communication_count" widget="statinfo" string="Communications"/>
 
                         </button>
-
-                        <button name="action_view_logs"
+                        <!--  name="action_view_logs"  -->
+                        <button
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-history">

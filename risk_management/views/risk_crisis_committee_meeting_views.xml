@@ -1,117 +1,111 @@
-<record id="view_risk_crisis_committee_meeting_form"
-        model="ir.ui.view">
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
 
-    <field name="name">
-        risk.crisis.committee.meeting.form
-    </field>
+    <record id="view_risk_crisis_committee_meeting_form" model="ir.ui.view">
+        <field name="name">risk.crisis.committee.meeting.form</field>
+        <field name="model">risk.crisis.committee.meeting</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
 
-    <field name="model">
-        risk.crisis.committee.meeting
-    </field>
+                    <button name="action_hold"
+                            type="object"
+                            string="Tenue"
+                            class="btn-success"
+                            invisible="state != 'planned'"/>
 
-    <field name="arch" type="xml">
+                    <button name="action_cancel"
+                            type="object"
+                            string="Annuler"
+                            class="btn-danger"
+                            invisible="state == 'cancelled'"/>
 
-        <form>
+                    <field name="state"
+                           widget="statusbar"/>
 
-            <header>
+                </header>
 
-                <button name="action_hold"
-                        type="object"
-                        string="Tenue"
-                        class="btn-success"
-                        invisible="state != 'planned'"/>
+                <sheet>
 
-                <button name="action_cancel"
-                        type="object"
-                        string="Annuler"
-                        class="btn-danger"
-                        invisible="state == 'cancelled'"/>
+                    <group>
 
-                <field name="state"
-                       widget="statusbar"/>
+                        <field name="crisis_id"/>
 
-            </header>
+                        <field name="title"/>
 
-            <sheet>
+                        <field name="meeting_date"/>
 
-                <group>
+                        <field name="location"/>
 
-                    <field name="crisis_id"/>
+                    </group>
 
-                    <field name="title"/>
+                    <group>
 
-                    <field name="meeting_date"/>
+                        <field name="chairman_id"/>
 
-                    <field name="location"/>
+                        <field name="secretary_id"/>
 
-                </group>
+                    </group>
 
-                <group>
+                    <notebook>
 
-                    <field name="chairman_id"/>
+                        <page string="Ordre du Jour">
+                            <field name="agenda"/>
+                        </page>
 
-                    <field name="secretary_id"/>
+                        <page string="Participants">
 
-                </group>
+                            <field name="participant_ids">
 
-                <notebook>
+                                <list editable="bottom">
 
-                    <page string="Ordre du Jour">
-                        <field name="agenda"/>
-                    </page>
+                                    <field name="employee_id"/>
 
-                    <page string="Participants">
+                                    <field name="role"/>
 
-                        <field name="participant_ids">
+                                    <field name="present"/>
 
-                            <list editable="bottom">
+                                </list>
 
-                                <field name="employee_id"/>
+                            </field>
 
-                                <field name="role"/>
+                        </page>
 
-                                <field name="present"/>
+                        <page string="Décisions">
 
-                            </list>
+                            <field name="decision_ids">
 
-                        </field>
+                                <list editable="bottom">
 
-                    </page>
+                                    <field name="title"/>
 
-                    <page string="Décisions">
+                                    <field name="owner_id"/>
 
-                        <field name="decision_ids">
+                                    <field name="due_date"/>
 
-                            <list editable="bottom">
+                                    <field name="state"/>
 
-                                <field name="title"/>
+                                </list>
 
-                                <field name="owner_id"/>
+                            </field>
 
-                                <field name="due_date"/>
+                        </page>
 
-                                <field name="state"/>
+                        <page string="PV">
 
-                            </list>
+                            <field name="minutes"/>
 
-                        </field>
+                            <field name="decision_summary"/>
 
-                    </page>
+                        </page>
 
-                    <page string="PV">
+                    </notebook>
 
-                        <field name="minutes"/>
+                </sheet>
 
-                        <field name="decision_summary"/>
+            </form>
 
-                    </page>
+        </field>
 
-                </notebook>
-
-            </sheet>
-
-        </form>
-
-    </field>
-
-</record>
+    </record>
+</odoo>

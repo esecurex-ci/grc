@@ -20,4 +20,4 @@ from . import rm_risk_kri, rm_risk_control, rm_risk_treatment_plan, rm_risk_exec
     rm_risk_crisis_dashboard_line, rm_risk_crisis_regulatory_reporting, rm_risk_crisis_heatmap, \
     rm_risk_crisis_lessons_learned_dashboard, rm_risk_crisis_communication_template, rm_risk_crisis_kpi_history, \
     rm_risk_crisis_timeline, rm_risk_crisis_warroom, rm_risk_crisis_command_center, rm_risk_crisis_media_monitoring, \
-    rm_risk_crisis_contact_directory
+    rm_risk_crisis_contact_directory, risk_crisis_regulatory_communication

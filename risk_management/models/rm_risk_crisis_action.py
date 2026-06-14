@@ -40,3 +40,9 @@ class RiskCrisisAction(models.Model):
         ],
         default='planned'
     )
+
+    # ⬇️ CHAMP SOUVENT MANQUANT ⬇️
+    deadline = fields.Date(
+        string='Deadline',
+        help='Date limite pour réaliser l\'action'
+    )

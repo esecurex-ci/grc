@@ -6,7 +6,7 @@
         <field name="model">risk.compliance.framework</field>
         <field name="arch" type="xml">
 
-            <list multi_edit="1">
+            <list>
 
                 <field name="code"/>
                 <field name="name"/>

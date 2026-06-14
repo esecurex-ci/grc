@@ -12,19 +12,12 @@
                   decoration-info="risk_level == 'medium'"
                   decoration-warning="risk_level == 'high'"
                   decoration-danger="risk_level == 'critical'">
-
                 <field name="name"/>
-
                 <field name="scenario_id"/>
-
                 <field name="likelihood"/>
-
                 <field name="impact"/>
-
                 <field name="score"/>
-
-                <field name="risk_level"
-                       widget="badge"/>
+                <field name="risk_level" widget="badge"/>
 
             </list>
 

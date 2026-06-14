@@ -1,60 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_risk_bcp_plan_list"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.bcp.plan.list
-        </field>
-
-        <field name="model">
-            risk.bcp.plan
-        </field>
-
+    <record id="view_risk_bcp_plan_list" model="ir.ui.view">
+        <field name="name">risk.bcp.plan.list</field>
+        <field name="model">risk.bcp.plan</field>
         <field name="arch" type="xml">
-
             <list>
-
                 <field name="name"/>
-
                 <field name="process_id"/>
-
                 <field name="owner_id"/>
-
-                <field name="state"
-                       widget="badge"/>
-
+                <field name="state" widget="badge"/>
             </list>
-
         </field>
-
     </record>
 
-    <record id="view_risk_bcp_plan_form"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.bcp.plan.form
-        </field>
-
-        <field name="model">
-            risk.bcp.plan
-        </field>
-
+    <record id="view_risk_bcp_plan_form" model="ir.ui.view">
+        <field name="name">risk.bcp.plan.form</field>
+        <field name="model">risk.bcp.plan</field>
         <field name="arch" type="xml">
-
             <form>
-
                 <sheet>
-                    <div class="oe_button_box"
-                         name="button_box">
-
+                    <div class="oe_button_box" name="button_box">
                         <button name="action_view_resources"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-server">
-
                             <field name="resource_count"
                                    widget="statinfo"
                                    string="Ressources"/>
@@ -64,29 +34,19 @@
                     </div>
 
                     <group>
-
                         <field name="name"/>
-
                         <field name="process_id"/>
-
                         <field name="owner_id"/>
-
                         <field name="state"/>
-
                     </group>
 
                     <notebook>
 
                         <page string="Critères d'Activation">
-
                             <field name="activation_criteria"/>
-
                         </page>
-
                         <page string="Stratégie de Reprise">
-
                             <field name="recovery_strategy"/>
-
                         </page>
 
                         <page string="Communication">

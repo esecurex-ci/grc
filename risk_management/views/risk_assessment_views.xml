@@ -9,8 +9,7 @@
         <field name="name">risk.assessment.list</field>
         <field name="model">risk.assessment</field>
         <field name="arch" type="xml">
-            <list multi_edit="1"
-                  decoration-success="risk_level == 'low'"
+            <list decoration-success="risk_level == 'low'"
                   decoration-info="risk_level == 'moderate'"
                   decoration-warning="risk_level == 'important'"
                   decoration-danger="risk_level in ('high','critical')">

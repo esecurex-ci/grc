@@ -6,8 +6,7 @@
         <field name="model">risk.audit</field>
         <field name="arch" type="xml">
 
-            <list multi_edit="1"
-                  decoration-info="state == 'planning'"
+            <list decoration-info="state == 'planning'"
                   decoration-warning="state == 'fieldwork'"
                   decoration-primary="state == 'reporting'"
                   decoration-success="state == 'closed'">

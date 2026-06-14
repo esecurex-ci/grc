@@ -92,6 +92,14 @@ class RiskCrisisDashboardLine(models.Model):
         store=True
     )
 
+    # ⬇️ AJOUTEZ CE CHAMP ⬇️
+    crisis_manager_id = fields.Many2one(
+        'hr.employee',
+        string='Crisis Manager',
+        help='Person responsible for managing this crisis',
+        tracking=True
+    )
+
     performance_level = fields.Selection(
         [
             ('excellent', 'Excellent'),

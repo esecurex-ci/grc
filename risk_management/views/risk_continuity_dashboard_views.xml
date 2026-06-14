@@ -1,50 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="view_risk_continuity_dashboard_form"
-        model="ir.ui.view">
+    <record id="view_risk_continuity_dashboard_form" model="ir.ui.view">
+        <field name="name">risk.continuity.dashboard.form</field>
+        <field name="model">risk.continuity.dashboard</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false">
+                <sheet>
+                    <group col="4">
+                        <field name="avg_rto"/>
+                        <field name="avg_rpo"/>
+                        <field name="avg_mtd"/>
+                        <field name="exercise_count"/>
+                    </group>
+                    <group col="2">
+                        <field name="bcp_coverage"
+                               widget="progressbar"/>
+                        <field name="drp_coverage"
+                               widget="progressbar"/>
 
-    <field name="name">
-        risk.continuity.dashboard.form
-    </field>
+                    </group>
 
-    <field name="model">
-        risk.continuity.dashboard
-    </field>
+                </sheet>
 
-    <field name="arch" type="xml">
+            </form>
 
-        <form create="false"
-              edit="false">
+        </field>
 
-            <sheet>
-
-                <group col="4">
-
-                    <field name="avg_rto"/>
-
-                    <field name="avg_rpo"/>
-
-                    <field name="avg_mtd"/>
-
-                    <field name="exercise_count"/>
-
-                </group>
-
-                <group col="2">
-
-                    <field name="bcp_coverage"
-                           widget="progressbar"/>
-
-                    <field name="drp_coverage"
-                           widget="progressbar"/>
-
-                </group>
-
-            </sheet>
-
-        </form>
-
-    </field>
-
-</record>
+    </record>
 </odoo>

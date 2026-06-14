@@ -16,8 +16,7 @@
     <!-- DASHBOARD -->
     <!-- ===================================================== -->
 
-
-    <menuitem id="menu_grc_dashboard"
+    <menuitem id="menu_grc_dashboard_root"
         name="Cockpit Exécutif"
         parent="menu_grc_root"
         sequence="10"
@@ -25,21 +24,21 @@
 
     <menuitem id="menu_grc_dashboard_snapshot"
         name="Tableaux de Bord"
-        parent="menu_grc_dashboard"
+        parent="menu_grc_dashboard_root"
         action="action_risk_executive_dashboard_snapshot"
         sequence="1"
     />
 
     <menuitem id="menu_grc_scorecard"
         name="Scorecards GRC"
-        parent="menu_grc_dashboard"
+        parent="menu_grc_dashboard_root"
         action="action_risk_grc_score"
         sequence="2"
     />
 
     <menuitem id="menu_grc_history"
         name="Historique GRC"
-        parent="menu_grc_dashboard"
+        parent="menu_grc_dashboard_root"
         action="action_risk_grc_history"
         sequence="3"
     />
@@ -77,7 +76,6 @@
         parent="menu_grc_risk"
         action="action_risk_treatment_plan"
     />
-    
 
     <!-- ===================================================== -->
     <!-- CONTROLS -->
@@ -210,7 +208,7 @@
     />
 
     <!-- ===================================================== -->
-    <!-- BCM -->
+    <!-- BCM (Résilience) -->
     <!-- ===================================================== -->
 
     <menuitem id="menu_grc_bcm"
@@ -218,9 +216,11 @@
         parent="menu_grc_root"
         sequence="70"
     />
-    <menuitem id="menu_grc_dashboard"
-        name="Tableau de bord"
-        parent="menu_grc_dashboard"
+
+    <!-- ✅ CORRIGÉ : parent différent et id unique -->
+    <menuitem id="menu_grc_continuity_dashboard"
+        name="Tableau de bord Continuité"
+        parent="menu_grc_bcm"
         action="action_risk_continuity_dashboard"
     />
 
@@ -257,15 +257,18 @@
         parent="menu_grc_root"
         sequence="80"
     />
-    <menuitem id="menu_grc_crisis_command_center"
-          name="Centre de Commandement"
-          parent="menu_grc_crisis"
-          action="action_risk_crisis_command_center"
-          sequence="1"/>
 
-    <menuitem id="menu_grc_dashboard"
-        name="Tableau de bord"
-        parent="menu_grc_dashboard"
+    <menuitem id="menu_grc_crisis_command_center"
+        name="Centre de Commandement"
+        parent="menu_grc_crisis"
+        action="action_risk_crisis_command_center"
+        sequence="1"
+    />
+
+    <!-- ✅ CORRIGÉ : id unique -->
+    <menuitem id="menu_grc_crisis_dashboard"
+        name="Tableau de bord Crise"
+        parent="menu_grc_crisis"
         action="action_risk_crisis_dashboard"
     />
 
@@ -323,7 +326,6 @@
         name="Administration"
         parent="menu_grc_root"
         sequence="100"
-
     />
 
     <menuitem id="menu_grc_metric_engine"

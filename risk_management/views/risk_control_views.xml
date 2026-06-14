@@ -5,7 +5,7 @@
         <field name="name">risk.control.list</field>
         <field name="model">risk.control</field>
         <field name="arch" type="xml">
-            <list multi_edit="1"
+            <list
                   decoration-success="effectiveness &gt;= 80"
                   decoration-warning="effectiveness &gt;= 50 and effectiveness &lt; 80"
                   decoration-danger="effectiveness &lt; 50">
