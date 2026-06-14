@@ -128,6 +128,14 @@ class RiskCrisis(models.Model):
         compute='_compute_statistics'
     )
 
+    # ⬇️ AJOUTEZ CE CHAMP ⬇️
+    command_center_id = fields.Many2one(
+        'risk.crisis.command.center',
+        string='Command Center',
+        ondelete='set null',
+        help='Centre de commandement associé à cette crise'
+    )
+
     # =====================================================
     # MÉTHODES DE WORKFLOW (CORRIGÉES)
     # =====================================================

@@ -58,10 +58,24 @@ class RiskCrisisCommandCenter(models.Model):
         string='War Rooms'
     )
 
+    active_warroom_ids = fields.One2many(
+        'risk.crisis.warroom',
+        'command_center_id',
+        string='Active War Rooms',
+        domain=[('state', '=', 'active')]
+    )
+
     active_warroom_count = fields.Integer(
         compute='_compute_active_warroom_count',
         string='Active War Rooms',
         help='Nombre de salles de crise actives'
+    )
+
+    recent_timeline_ids = fields.One2many(
+        'risk.crisis.timeline',
+        'command_center_id',
+        string='Recent Timeline',
+        domain=[('is_recent', '=', True)]  # ou utilisez un champ date
     )
 
     # =====================================================
@@ -125,6 +139,28 @@ class RiskCrisisCommandCenter(models.Model):
         help='Nombre de communications réglementaires'
     )
 
+    # ⬇️ AJOUTEZ CE CHAMP (relation vers les crises)
+    crisis_ids = fields.One2many(
+        'risk.crisis',
+        'command_center_id',  # À vérifier : champ Many2one dans risk.crisis
+        string='Crises'
+    )
+
+    # =====================================================
+    # CHAMPS CALCULÉS
+    # =====================================================
+
+    open_crisis_count = fields.Integer(
+        compute='_compute_crisis_counts',
+        string='Open Crises'
+    )
+
+    critical_crisis_count = fields.Integer(
+        compute='_compute_crisis_counts',
+        string='Critical Crises'
+    )
+
+
     # =====================================================
     # CHAMPS DE COMPTAGE STANDARD
     # =====================================================
@@ -140,10 +176,29 @@ class RiskCrisisCommandCenter(models.Model):
         string='Meetings Count'
     )
 
-    open_crisis_count = fields.Integer(
-        compute='_compute_open_crisis_count',
-        string='Open Crises'
+    # ⬇️ AJOUTEZ CE CHAMP ⬇️
+    # Crises actives uniquement (filtrées)
+    active_crisis_ids = fields.One2many(
+        'risk.crisis',
+        'command_center_id',
+        string='Active Crises',
+        domain=[('state', 'in', ['declared', 'activated', 'managed'])]
     )
+
+    # Crises critiques
+    critical_crisis_ids = fields.One2many(
+        'risk.crisis',
+        'command_center_id',
+        string='Critical Crises',
+        domain=[('crisis_level', '=', 'critical')]
+    )
+
+    @api.depends('crisis_ids')
+    def _compute_critical_crisis_count(self):
+        for record in self:
+            record.critical_crisis_count = len(
+                record.crisis_ids.filtered(lambda c: c.crisis_level == 'critical')
+            )
 
     # =====================================================
     # MÉTHODES DE CALCUL MTTR
@@ -312,3 +367,43 @@ class RiskCrisisCommandCenter(models.Model):
         self.state = 'closed'
         if not self.end_date:
             self.end_date = fields.Datetime.now()
+
+        # =====================================================
+        # MÉTHODES DE CALCUL
+        # =====================================================
+
+        @api.depends('crisis_ids', 'crisis_ids.state', 'crisis_ids.crisis_level')
+        def _compute_crisis_counts(self):
+            for record in self:
+                # Compter les crises ouvertes (déclarées ou activées ou gérées)
+                record.open_crisis_count = len(
+                    record.crisis_ids.filtered(
+                        lambda c: c.state in ['declared', 'activated', 'managed']
+                    )
+                )
+
+                # Compter les crises critiques
+                record.critical_crisis_count = len(
+                    record.crisis_ids.filtered(
+                        lambda c: c.crisis_level == 'critical'
+                    )
+                )
+
+                # Calculer le MTTR moyen (en heures)
+                resolved_crises = record.crisis_ids.filtered(
+                    lambda c: c.state == 'resolved' and c.start_date and c.resolution_date
+                )
+                if resolved_crises:
+                    total_hours = sum(
+                        (c.resolution_date - c.start_date).total_seconds() / 3600
+                        for c in resolved_crises
+                    )
+                    record.mttr_hours = total_hours / len(resolved_crises)
+                else:
+                    record.mttr_hours = 0.0
+
+                # Compter les salles de crise actives
+                active_warrooms = record.crisis_ids.mapped('warroom_ids').filtered(
+                    lambda w: w.state == 'active'
+                )
+                record.active_warroom_count = len(active_warrooms)

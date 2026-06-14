@@ -41,3 +41,11 @@ class RiskCrisisWarroom(models.Model):
         ('active', 'Active'),
         ('closed', 'Closed')
     ], string='Status', default='planned')
+
+    command_center_id = fields.Many2one(
+        'risk.crisis.command.center',
+        string='Command Center',
+        ondelete='set null',
+        index=True,
+        help='Centre de commandement parent'
+    )
