@@ -8,25 +8,25 @@
             <form>
                 <header>
                     <!-- name="action_activate"  -->
-                    <button
+                    <button name="action_activate"
                             type="object"
                             string="Activer"
                             class="btn-primary"
                             invisible="state != 'declared'"/>
                     <!-- name="action_manage"  -->
-                    <button
+                    <button name="action_manage"
                             type="object"
                             string="Gérer"
                             class="btn-info"
                             invisible="state != 'activated'"/>
-                    <!-- name="action_resolve"  -->
-                    <button
+                    <!--   -->
+                    <button name="action_resolve"
                             type="object"
                             string="Résoudre"
                             class="btn-success"
                             invisible="state != 'managed'"/>
-                    <!-- name="action_close"  -->
-                    <button
+                    <!--   -->
+                    <button name="action_close"
                             type="object"
                             string="Clôturer"
                             class="btn-secondary"
@@ -41,8 +41,8 @@
 
                     <div class="oe_button_box"
                          name="button_box">
-                        <!--  name="action_view_meetings"   -->
-                        <button
+                        <!--     -->
+                        <button name="action_view_meetings"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-users">
@@ -52,8 +52,8 @@
                                    string="Comités"/>
 
                         </button>
-                        <!--  name="action_view_actions"  -->
-                        <button
+                        <!--    -->
+                        <button name="action_view_actions"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-tasks">
@@ -64,12 +64,13 @@
 
                         </button>
                         <!--  name="action_view_communications"  -->
-                        <button type="object" class="oe_stat_button" icon="fa-bullhorn">
+                        <button name="action_view_communications" type="object" class="oe_stat_button"
+                                icon="fa-bullhorn">
                             <field name="communication_count" widget="statinfo" string="Communications"/>
 
                         </button>
-                        <!--  name="action_view_logs"  -->
-                        <button
+                        <!--  name=""  -->
+                        <button name="action_view_logs"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-history">
