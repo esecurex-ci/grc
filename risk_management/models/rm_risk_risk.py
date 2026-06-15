@@ -21,8 +21,6 @@ class RiskRisk(models.Model):
         ('medium', 'Medium'), ('high', 'High'), ('critical', 'Critical'),], default='medium')
     state = fields.Selection([ ('draft', 'Draft'),('validated', 'Validated'), ('obsolete', 'Obsolete')
     ], default='draft', tracking=True)
-    #process_ids = fields.Many2many('risk.process', string='Processes')
-    process_id = fields.Many2one('risk.process', string='Processes')
     cause_ids = fields.Many2many('risk.cause', string='Causes')
     impact_ids = fields.Many2many('risk.impact', string='Impacts')
     regulation_ids = fields.Many2many(  'risk.regulation',  string='Regulations')
@@ -137,7 +135,42 @@ class RiskRisk(models.Model):
         string='Assessments'
     )
 
+    activity_id = fields.Many2one(
+        'risk.activity',
+        string='Activité',
+        ondelete='set null',
+        tracking=True,
+        help='Activité concernée par ce risque'
+    )
 
+    # Lien vers le processus (via l'activité)
+    process_id = fields.Many2one(
+        'risk.process',
+        related='activity_id.process_id',
+        store=True,
+        string='Processus'
+    )
+
+    risk_level = fields.Selection(
+        [
+            ('1', 'Très faible'),
+            ('2', 'Faible'),
+            ('3', 'Moyen'),
+            ('4', 'Élevé'),
+            ('5', 'Critique')
+        ],
+        string='Niveau de risque',
+        default='1',
+        help='Niveau de risque (1 = Très faible, 5 = Critique)'
+    )
+
+    # Lien vers le macro-processus (via l'activité)
+    macro_process_id = fields.Many2one(
+        'risk.macro.process',
+        related='activity_id.macro_process_id',
+        store=True,
+        string='Macro Processus'
+    )
 
     @api.depends(
         'last_review_date',
@@ -281,6 +314,28 @@ class RiskRisk(models.Model):
         return super().create(vals_list)
 
     def action_assess(self):
-        pass
+        """Ouvre l'assistant d'évaluation des risques"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Évaluation du risque',
+            'res_model': 'risk.assessment',  # À adapter selon votre modèle
+            'view_mode': 'form',
+            'target': 'new',  # Ouvre en popup
+            'context': {
+                'default_risk_id': self.id,
+            },
+        }
+
     def action_close(self):
-        pass
+        """Ferme le risque"""
+        for record in self:
+            record.state = 'obsolete'
+            record.active = False  # Si vous avez un champ actif
+        return True
+
+    @api.onchange('activity_id')
+    def _onchange_activity_id(self):
+        if self.activity_id:
+            self.process_id = self.activity_id.process_id
+            self.macro_process_id = self.activity_id.macro_process_id

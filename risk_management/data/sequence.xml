@@ -55,4 +55,20 @@
         <field name="padding">5</field>
     </record>
 
+    <record id="seq_risk_macro_process" model="ir.sequence">
+        <field name="name">Risk Macro Process</field>
+        <field name="code">risk.macro.process</field>
+        <field name="prefix">MP-%y-%</field>
+        <field name="padding">3</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_risk_activity" model="ir.sequence">
+        <field name="name">Risk Activity</field>
+        <field name="code">risk.activity</field>
+        <field name="prefix">ACT-%y-%</field>
+        <field name="padding">3</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
 </odoo>

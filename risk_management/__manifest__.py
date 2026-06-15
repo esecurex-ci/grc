@@ -26,7 +26,9 @@
 
         # ========== 1. VUES DE BASE (Modèles simples) ==========
         'views/risk_category_views.xml',
+        'views/risk_macro_process_views.xml',
         'views/risk_process_views.xml',
+        'views/risk_activity_views.xml',
         'views/risk_organization_views.xml',
         'views/risk_asset_views.xml',
         'views/risk_cause_views.xml',

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================== -->
+    <!-- ACTION -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_macro_process" model="ir.actions.act_window">
+        <field name="name">Macro-Processus</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">risk.macro.process</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_sm">
+                Créez votre premier macro-processus
+            </p>
+            <p>
+                Les macro-processus représentent les grands domaines d'activité de l'organisation.
+                Ils regroupent les processus et sous-processus associés.
+            </p>
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- LIST VIEW -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_macro_process_list" model="ir.ui.view">
+        <field name="name">risk.macro.process.list</field>
+        <field name="model">risk.macro.process</field>
+        <field name="arch" type="xml">
+            <list multi_edit="1">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="process_count" widget="statinfo"/>
+                <field name="owner_id"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- KANBAN VIEW -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_macro_process_kanban" model="ir.ui.view">
+        <field name="name">risk.macro.process.kanban</field>
+        <field name="model">risk.macro.process</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="owner_id"/>
+                <field name="state"/>
+                <field name="process_count"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="code"/> - <field name="name"/>
+                                </strong>
+                                <div>
+                                    <t t-if="record.owner_id.raw_value">
+                                        Responsable: <field name="owner_id"/>
+                                    </t>
+                                </div>
+                                <div class="o_kanban_tags">
+                                    <field name="state" widget="badge"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- SEARCH VIEW (créée séparément) -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_macro_process_search" model="ir.ui.view">
+        <field name="name">risk.macro.process.search</field>
+        <field name="model">risk.macro.process</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="owner_id"/>
+                <filter name="active"
+                        string="Actifs"
+                        domain="[('state','=','active')]"/>
+                <filter name="draft"
+                        string="Brouillon"
+                        domain="[('state','=','draft')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- FORM VIEW -->
+    <!-- ===================================================== -->
+
+    <record id="view_risk_macro_process_form" model="ir.ui.view">
+        <field name="name">risk.macro.process.form</field>
+        <field name="model">risk.macro.process</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate"
+                            type="object"
+                            string="Activer"
+                            class="btn-success"
+                            invisible="state != 'draft'"/>
+                    <button name="action_archive"
+                            type="object"
+                            string="Archiver"
+                            class="btn-secondary"
+                            invisible="state != 'active'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_processes"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-sitemap">
+                            <field name="process_count" widget="statinfo" string="Processus"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <!--field name="code" class="o_accent"/ -->
+                            <field name="name" placeholder="Nom du macro-processus..."/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="sequence" widget="handle"/>
+                            <field name="owner_id"/>
+                        </group>
+                        <group>
+                            <field name="state"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+</odoo>

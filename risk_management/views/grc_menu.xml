@@ -343,7 +343,12 @@
         parent="menu_grc_root"
         sequence="110"
     />
-
+    <menuitem id="menu_risk_macro_process"
+        name="Macro-Processus"
+        parent="menu_grc_master_data"
+        action="action_risk_macro_process"
+        sequence="5"
+    />
     <menuitem id="menu_grc_categories"
         name="Catégories de Risques"
         parent="menu_grc_master_data"
@@ -354,6 +359,13 @@
         name="Processus"
         parent="menu_grc_master_data"
         action="action_risk_process"
+    />
+
+    <menuitem id="menu_risk_activity"
+              name="Activités"
+              parent="menu_grc_master_data"
+              action="action_risk_activity"
+              sequence="15"
     />
 
     <menuitem id="menu_grc_assets"

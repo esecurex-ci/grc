@@ -54,6 +54,41 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <!--group string="Hiérarchie">
+                    <group>
+                        <field name="macro_process_id"
+                               string="Macro Processus"
+                               widget="many2one"
+                               options="{'no_create': True}"/>
+                        <field name="process_id"
+                               string="Processus"
+                               widget="many2one"
+                               options="{'no_create': True}"
+                               domain="[('macro_process_id', '=', macroa_process_id)]"/>
+                        <field name="activity_id"
+                               string="Activité"
+                               widget="many2one"
+                               options="{'no_create': True}"
+                               domain="[('process_id', '=', process_id)]"/>
+                    </group>
+                </group-->
+                    <group string="Hiérarchie">
+                        <group>
+                            <field name="activity_id"
+                                   string="Activité"
+                                   widget="many2one"
+                                   required="1"
+                                   options="{'no_create': True}"/>
+                            <field name="process_id"
+                                   string="Processus"
+                                   widget="many2one"
+                                   readonly="1"/>
+                            <field name="macro_process_id"
+                                   string="Macro Processus"
+                                   widget="many2one"
+                                   readonly="1"/>
+                        </group>
+                    </group>
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="Risk title"/>

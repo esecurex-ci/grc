@@ -52,6 +52,14 @@ class RiskKri(models.Model):
         'kri_id'
     )
 
+    # Dans rm_risk_kri.py, ajoutez :
+    activity_id = fields.Many2one(
+        'risk.activity',
+        string='Activité',
+        ondelete='set null'
+    )
+
+
     @api.depends(
         'measure_ids.value'
     )
