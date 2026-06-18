@@ -53,7 +53,22 @@
         <field name="name">Treatment Plans</field>
         <field name="res_model">risk.treatment.plan</field>
         <field name="view_mode">kanban,list,form</field>
+    </record>
 
+    <record id="action_risk_cartography" model="ir.actions.act_window">
+        <field name="name">📊 Cartographie des risques</field>
+        <field name="res_model">risk.risk</field>
+        <field name="view_mode">list,graph,pivot</field>
+        <field name="view_id" ref="view_risk_cartography_list"/>
+        <field name="search_view_id" ref="view_risk_cartography_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📊 Cartographie des risques
+            </p>
+            <p>
+                Visualisez l'ensemble des risques avec leurs dernières évaluations.
+            </p>
+        </field>
     </record>
 
     <!-- ===================================================== -->

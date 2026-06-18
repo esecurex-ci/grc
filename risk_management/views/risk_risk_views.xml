@@ -11,6 +11,12 @@
                     decoration-warning="residual_level == 'high'"
                     decoration-danger="residual_level == 'critical'">
                 <field name="code"/>
+                <header>
+                    <button name="%(action_report_risk_register)d"
+                            string="Imprimer"
+                            type="action" 
+                            class="btn-secondary"/>
+                </header>
                 <field name="name"/>
                 <field name="category_id"/>
                 <field name="process_id"/>

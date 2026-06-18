@@ -19,6 +19,9 @@
             'risk_management/static/src/xml/crisis_command_center.xml',
             'risk_management/static/src/scss/crisis_command_center.scss',
         ],
+        'web.report_assets_common': [  # ⬅️ AJOUTEZ CETTE SECTION
+            'risk_management/static/src/css/report_style.css',
+        ],
     },
     'data': [
         'security/ir.model.access.csv',
@@ -46,6 +49,7 @@
         'views/risk_incident_views.xml',
         'views/risk_loss_views.xml',
         'views/risk_corrective_action_views.xml',
+        'views/risk_cartography_views.xml',
 
         # ========== 3. VUES AUDIT ==========
         'views/risk_audit_views.xml',
@@ -104,6 +108,7 @@
         'views/grc_menu.xml',
 
         # 'reports/report.xml',
+        'reports/risk_register_report.xml',
     ],
     'installable': True,
     'application': True,

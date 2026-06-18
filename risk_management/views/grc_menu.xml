@@ -59,10 +59,15 @@
         action="action_risk_risk"
     />
 
-    <menuitem id="menu_grc_assessment"
-        name="Cartographie"
+    <!--menuitem id="menu_grc_assessment"
+        name="📊 Cartographie"
         parent="menu_grc_risk"
         action="action_risk_assessment"
+    /-->
+    <menuitem id="menu_grc_cartography"
+        name="📊 Cartographie"
+        parent="menu_grc_risk"
+        action="action_risk_cartography"
     />
 
     <menuitem id="menu_grc_assessment_period"

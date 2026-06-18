@@ -1,0 +1,56 @@
+.page {
+    padding: 20mm;
+    font-family: 'Arial', sans-serif;
+}
+
+.header {
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.footer {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    font-size: 10px;
+    color: #666;
+}
+
+.card {
+    margin-bottom: 20px;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+}
+
+.card-header {
+    padding: 10px;
+    border-bottom: 1px solid #e3e3e3;
+}
+
+.bg-primary { background-color: #007bff; }
+.bg-info { background-color: #17a2b8; }
+.bg-secondary { background-color: #6c757d; }
+
+.text-white { color: white; }
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+}
+
+.badge-warning { background-color: #ffc107; color: black; }
+.badge-danger { background-color: #dc3545; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-success { background-color: #28a745; color: white; }
