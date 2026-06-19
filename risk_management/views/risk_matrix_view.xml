@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue Graphique Scatter - Matrice des risques -->
+    <record id="view_risk_matrix_scatter" model="ir.ui.view">
+        <field name="name">risk.matrix.scatter</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <graph type="scatter">
+                <field name="inherent_impact" type="measure"/>
+                <field name="inherent_probability" type="measure"/>
+                <field name="inherent_level" type="row"/>
+                <field name="category_id" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vue Graphique Barres - Distribution des risques -->
+    <record id="view_risk_matrix_bar" model="ir.ui.view">
+        <field name="name">risk.matrix.bar</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="category_id"/>
+                <field name="inherent_level"/>
+                <field name="inherent_score" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vue Pivot - Analyse croisée -->
+    <record id="view_risk_pivot" model="ir.ui.view">
+        <field name="name">risk.pivot</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="category_id" type="col"/>
+                <field name="inherent_level" type="row"/>
+                <field name="risk_type" type="col"/>
+                <field name="inherent_score" type="measure"/>
+                <field name="residual_score" type="measure"/>
+                <field name="incident_count" type="measure"/>
+                <field name="total_loss_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+</odoo>

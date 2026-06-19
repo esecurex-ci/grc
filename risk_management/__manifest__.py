@@ -19,60 +19,59 @@
             'risk_management/static/src/xml/crisis_command_center.xml',
             'risk_management/static/src/scss/crisis_command_center.scss',
         ],
+        'web.report_assets_common': [  # ⬅️ AJOUTEZ CETTE SECTION
+            'risk_management/static/src/css/report_style.css',
+        ],
     },
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
-        'views/risk_risk_views.xml',
+
+        # ========== 1. VUES DE BASE (Modèles simples) ==========
         'views/risk_category_views.xml',
+        'views/risk_macro_process_views.xml',
         'views/risk_process_views.xml',
+        'views/risk_activity_views.xml',
         'views/risk_organization_views.xml',
         'views/risk_asset_views.xml',
         'views/risk_cause_views.xml',
-        'views/risk_assessment_views.xml',
-        'views/risk_assessment_period_views.xml',
         'views/risk_impact_views.xml',
-        'views/risk_regulation_views.xml',
-        'views/risk_subcategory_views.xml',
-        'views/risk_treatment_plan_views.xml',
-        'views/risk_heatmap_views.xml',
-        'views/risk_heatmap_line_views.xml',
+        'views/risk_incident_category_views.xml',
+        'views/risk_incident_type_views.xml',
+        'views/risk_root_cause_views.xml',
+
+        # ========== 2. VUES PRINCIPALES ==========
+        'views/risk_risk_views.xml',
         'views/risk_control_views.xml',
         'views/risk_control_test_views.xml',
         'views/risk_kri_views.xml',
         'views/risk_kri_measure_views.xml',
         'views/risk_incident_views.xml',
-        'views/risk_incident_category_views.xml',
-        'views/risk_incident_type_views.xml',
-        'views/risk_root_cause_views.xml',
         'views/risk_loss_views.xml',
         'views/risk_corrective_action_views.xml',
-        'views/risk_audit_plan_views.xml',
+        'views/risk_cartography_views.xml',
+
+        # ========== 3. VUES AUDIT ==========
         'views/risk_audit_views.xml',
+        'views/risk_audit_plan_views.xml',
         'views/risk_audit_finding_views.xml',
         'views/risk_audit_recommendation_views.xml',
         'views/risk_audit_action_plan_views.xml',
         'views/risk_audit_scope_views.xml',
-        'views/risk_compliance_framework_views.xml',
-        'views/risk_compliance_requirement_views.xml',
-        'views/risk_compliance_assessment_views.xml',
-        'views/risk_compliance_obligation_views.xml',
-        'views/risk_compliance_evidence_views.xml',
-        'views/risk_compliance_action_plan_views.xml',
-        'views/risk_compliance_scorecard_views.xml',
-        'views/risk_compliance_scorecard_line_views.xml',
+
+        # ========== 4. VUES BIA ==========
         'views/risk_bia_views.xml',
         'views/risk_bia_activity_views.xml',
+
+        # ========== 5. VUES BCP/DRP (Modèles dépendants) ==========
         'views/risk_bcp_plan_views.xml',
         'views/risk_bcp_resource_views.xml',
         'views/risk_drp_plan_views.xml',
-        'views/risk_crisis_scenario_views.xml',
-        'views/risk_exercise_views.xml',
-        'views/risk_exercise_finding_views.xml',
         'views/risk_recovery_site_views.xml',
-        'views/risk_continuity_dashboard_views.xml',
-        'views/risk_crisis_views.xml',
 
+        # ========== 6. VUES CRISIS ==========
+        'views/risk_crisis_scenario_views.xml',
+        'views/risk_crisis_views.xml',
         'views/risk_crisis_committee_meeting_views.xml',
         'views/risk_crisis_dashboard_views.xml',
         'views/risk_crisis_dashboard_line_views.xml',
@@ -86,11 +85,30 @@
         'views/risk_crisis_warroom_views.xml',
         'views/risk_crisis_timeline_views.xml',
         'views/risk_crisis_command_center_views.xml',
+        'views/risk_exercise_views.xml',
+        'views/risk_exercise_finding_views.xml',
 
+        # ========== 7. VUES COMPLIANCE ==========
+        'views/risk_compliance_framework_views.xml',
+        'views/risk_compliance_requirement_views.xml',
+        'views/risk_compliance_assessment_views.xml',
+        'views/risk_compliance_obligation_views.xml',
+        'views/risk_compliance_evidence_views.xml',
+        'views/risk_compliance_action_plan_views.xml',
+        'views/risk_compliance_scorecard_views.xml',
+        'views/risk_compliance_scorecard_line_views.xml',
+
+        # ========== 8. VUES DASHBOARD ==========
+        'views/risk_heatmap_views.xml',
+        'views/risk_heatmap_line_views.xml',
+        'views/risk_continuity_dashboard_views.xml',
+
+        # ========== 9. MENUS ET ACTIONS (TOUJOURS EN DERNIER) ==========
         'views/grc_actions.xml',
         'views/grc_menu.xml',
 
         # 'reports/report.xml',
+        'reports/risk_register_report.xml',
     ],
     'installable': True,
     'application': True,

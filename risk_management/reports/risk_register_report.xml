@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Action pour générer le rapport -->
+    <record id="action_report_risk_register" model="ir.actions.report">
+        <field name="name">Registre des risques</field>
+        <field name="model">risk.risk</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">risk_management.report_risk_register</field>
+        <field name="report_file">risk_management.report_risk_register</field>
+        <field name="binding_model_id" ref="model_risk_risk"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Registre des risques - %s' % (datetime.now().strftime('%Y-%m-%d'))</field>
+    </record>
+
+    <!-- Template QWeb du rapport -->
+    <template id="report_risk_register">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="risk_management.report_risk_register_document" t-lang="fr_FR"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_risk_register_document">
+        <div class="page">
+            <div class="header">
+                <div class="row">
+                    <div class="col-6">
+                        <h2>Registre des risques</h2>
+                        <p>Date: <span t-field="doc.write_date" t-options='{"format": "dd/MM/yyyy HH:mm"}'/></p>
+                    </div>
+                    <div class="col-6 text-right">
+                        <img src="/web/static/src/img/logo.png" style="max-height: 60px;"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 t-field="doc.name"/>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th width="30%">Code</th>
+                                <td width="70%" t-field="doc.code"/>
+                            </tr>
+                            <tr>
+                                <th>Catégorie</th>
+                                <td t-field="doc.category_id.name"/>
+                            </tr>
+                            <tr>
+                                <th>Responsable</th>
+                                <td t-field="doc.owner_id.name"/>
+                            </tr>
+                            <tr>
+                                <th>Statut</th>
+                                <td><span class="badge" t-attf-class="#{doc.state == 'draft' ? 'badge-warning' : 'badge-success'}"> <t t-out="doc.state"/></span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5>Évaluation du risque</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th></th>
+                                    <th>Score</th>
+                                    <th>Niveau</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Risque inhérent</th>
+                                    <td><span t-field="doc.inherent_score"/>%</td>
+                                    <td><span class="badge" t-attf-class="#{doc.inherent_level == 'high' ? 'badge-danger' : (doc.inherent_level == 'medium' ? 'badge-warning' : 'badge-info')}"><t t-out="doc.inherent_level"/></span></td>
+                                </tr>
+                                <tr>
+                                    <th>Risque résiduel</th>
+                                    <td><span t-field="doc.residual_score"/>%</td>
+                                    <td><span class="badge" t-attf-class="#{doc.residual_level == 'high' ? 'badge-danger' : (doc.residual_level == 'medium' ? 'badge-warning' : 'badge-info')}"><t t-out="doc.residual_level"/></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5>Description</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Causes:</strong> <span t-field="doc.cause"/></p>
+                        <p><strong>Conséquences:</strong> <span t-field="doc.consequence"/></p>
+                        <p><strong>Contrôles existants:</strong> <span t-field="doc.existing_control"/></p>
+                    </div>
+                </div>
+
+                <div class="card mb-4" t-if="doc.control_ids">
+                    <div class="card-header bg-secondary text-white">
+                        <h5>Contrôles associés</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Contrôle</th>
+                                    <th>Responsable</th>
+                                    <th>Efficacité</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="doc.control_ids" t-as="control">
+                                    <td><t t-out="control.name"/></td>
+                                    <td><t t-out="control.owner_id.name or '-'"/></td>
+                                    <td><t t-out="control.effectiveness"/>%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <p>Généré par Odoo GRC - Page <span class="page_number"/> / <span class="total_page_count"/></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</odoo>

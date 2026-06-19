@@ -21,8 +21,6 @@ class RiskRisk(models.Model):
         ('medium', 'Medium'), ('high', 'High'), ('critical', 'Critical'),], default='medium')
     state = fields.Selection([ ('draft', 'Draft'),('validated', 'Validated'), ('obsolete', 'Obsolete')
     ], default='draft', tracking=True)
-    #process_ids = fields.Many2many('risk.process', string='Processes')
-    process_id = fields.Many2one('risk.process', string='Processes')
     cause_ids = fields.Many2many('risk.cause', string='Causes')
     impact_ids = fields.Many2many('risk.impact', string='Impacts')
     regulation_ids = fields.Many2many(  'risk.regulation',  string='Regulations')
@@ -137,7 +135,113 @@ class RiskRisk(models.Model):
         string='Assessments'
     )
 
+    activity_id = fields.Many2one(
+        'risk.activity',
+        string='Activité',
+        ondelete='set null',
+        tracking=True,
+        help='Activité concernée par ce risque'
+    )
 
+    # Lien vers le processus (via l'activité)
+    process_id = fields.Many2one(
+        'risk.process',
+        related='activity_id.process_id',
+        store=True,
+        string='Processus'
+    )
+
+    risk_level = fields.Selection(
+        [
+            ('1', 'Très faible'),
+            ('2', 'Faible'),
+            ('3', 'Moyen'),
+            ('4', 'Élevé'),
+            ('5', 'Critique')
+        ],
+        string='Niveau de risque',
+        default='1',
+        help='Niveau de risque (1 = Très faible, 5 = Critique)'
+    )
+
+    # Lien vers le macro-processus (via l'activité)
+    macro_process_id = fields.Many2one(
+        'risk.macro.process',
+        related='activity_id.macro_process_id',
+        store=True,
+        string='Macro Processus'
+    )
+    last_assessment_id = fields.Many2one(
+        'risk.assessment',
+        compute='_compute_last_assessment',
+        compute_sudo=True,
+        store=True,
+        string='Dernière évaluation'
+    )
+
+    last_assessment_date = fields.Date(
+        compute='_compute_last_assessment',
+        compute_sudo=True,
+        store=True,
+        string='Date dernière évaluation'
+    )
+
+    last_inherent_score = fields.Integer(
+        compute='_compute_last_assessment',
+        compute_sudo=True,
+        store=True,
+        string='Score inhérent (dernière éval.)'
+    )
+
+    last_residual_score = fields.Integer(
+        compute='_compute_last_assessment',
+        compute_sudo=True,
+        store=True,
+        string='Score résiduel (dernière éval.)'
+    )
+
+    last_risk_level = fields.Selection(
+        [
+            ('low', 'Faible'),
+            ('moderate', 'Modéré'),
+            ('important', 'Important'),
+            ('high', 'Élevé'),
+            ('critical', 'Critique')
+        ],
+        compute='_compute_last_assessment',
+        compute_sudo=True,
+        store=True,
+        string='Niveau de risque (dernière éval.)'
+    )
+
+    last_over_appetite = fields.Boolean(
+        compute='_compute_last_assessment',
+        compute_sudo=True,
+        store=True,
+        string='Hors appétit (dernière éval.)'
+    )
+
+    # CORRECTION : Utiliser les mêmes sélections que risk.assessment
+    last_inherent_probability = fields.Integer(
+        compute='_compute_last_assessment',
+        compute_sudo=True,
+        store=True,  # <-- CHANGÉ : store=True
+        string='Probabilité inhérente (dernière éval.)'
+    )
+
+    last_inherent_impact = fields.Integer(
+        compute='_compute_last_assessment',
+        compute_sudo=True,
+        store=True,  # <-- CHANGÉ : store=True
+        string='Impact inhérent (dernière éval.)'
+    )
+
+    assessment_count = fields.Integer(
+        compute='_compute_assessment_count',
+        compute_sudo=True,
+        store=True,
+        string="Nombre d'évaluations"
+    )
 
     @api.depends(
         'last_review_date',
@@ -281,6 +385,155 @@ class RiskRisk(models.Model):
         return super().create(vals_list)
 
     def action_assess(self):
-        pass
+        """Ouvre l'assistant d'évaluation des risques"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Évaluation du risque',
+            'res_model': 'risk.assessment',  # À adapter selon votre modèle
+            'view_mode': 'form',
+            'target': 'new',  # Ouvre en popup
+            'context': {
+                'default_risk_id': self.id,
+            },
+        }
+
     def action_close(self):
-        pass
+        """Ferme le risque"""
+        for record in self:
+            record.state = 'obsolete'
+            record.active = False  # Si vous avez un champ actif
+        return True
+
+    @api.onchange('activity_id')
+    def _onchange_activity_id(self):
+        if self.activity_id:
+            self.process_id = self.activity_id.process_id
+            self.macro_process_id = self.activity_id.macro_process_id
+
+
+    # ============================================================
+    # MÉTHODE POUR LA MATRICE (appelée depuis la vue)
+    # ============================================================
+
+    def get_matrix_color(self, score):
+        """Retourne la classe CSS pour un score donné"""
+        if score <= 4:
+            return 'bg-success'  # Vert
+        elif score <= 9:
+            return 'bg-warning'  # Jaune
+        elif score <= 16:
+            return 'bg-orange'  # Orange
+        else:
+            return 'bg-danger'  # Rouge
+
+    def get_risk_distribution(self):
+        """Retourne la distribution des risques par niveau"""
+        levels = {
+            'low': 0,
+            'moderate': 0,
+            'important': 0,
+            'high': 0,
+            'critical': 0
+        }
+
+        for risk in self.search([('active', '=', True)]):
+            level = risk.last_risk_level or 'low'
+            if level in levels:
+                levels[level] += 1
+
+        return levels
+
+    @api.depends('assessment_ids', 'assessment_ids.assessment_date')
+    def _compute_last_assessment(self):
+        """Récupère la dernière évaluation pour chaque risque"""
+        for risk in self:
+            # Trier les évaluations par date (la plus récente en premier)
+            last = risk.assessment_ids.sorted(
+                key=lambda r: r.assessment_date or r.create_date,
+                reverse=True
+            )[:1]
+
+            if last:
+                risk.last_assessment_id = last.id
+                risk.last_assessment_date = last.assessment_date
+                risk.last_inherent_score = last.inherent_score
+                risk.last_residual_score = last.residual_score
+                risk.last_risk_level = last.risk_level
+                risk.last_over_appetite = last.over_appetite
+                # CORRECTION : Assigner directement les entiers
+                risk.last_inherent_probability = last.inherent_probability
+                risk.last_inherent_impact = last.inherent_impact
+            else:
+                risk.last_assessment_id = False
+                risk.last_assessment_date = False
+                risk.last_inherent_score = 0
+                risk.last_residual_score = 0
+                risk.last_risk_level = False
+                risk.last_over_appetite = False
+                risk.last_inherent_probability = 0
+                risk.last_inherent_impact = 0
+
+    @api.depends('assessment_ids', 'assessment_ids.assessment_date')
+    def _compute_last_assessment(self):
+        """Récupère la dernière évaluation pour chaque risque"""
+        for risk in self:
+            # Trier les évaluations par date (la plus récente en premier)
+            last = risk.assessment_ids.sorted(
+                key=lambda r: r.assessment_date or r.create_date,
+                reverse=True
+            )[:1]
+
+            if last:
+                risk.last_assessment_id = last.id
+                risk.last_assessment_date = last.assessment_date
+                risk.last_inherent_score = last.inherent_score
+                risk.last_residual_score = last.residual_score
+                risk.last_risk_level = last.risk_level
+                risk.last_over_appetite = last.over_appetite
+                risk.last_inherent_probability = last.inherent_probability
+                risk.last_inherent_impact = last.inherent_impact
+            else:
+                risk.last_assessment_id = False
+                risk.last_assessment_date = False
+                risk.last_inherent_score = 0
+                risk.last_residual_score = 0
+                risk.last_risk_level = False
+                risk.last_over_appetite = False
+                risk.last_inherent_probability = 0
+                risk.last_inherent_impact = 0
+
+    @api.depends('assessment_ids')
+    def _compute_assessment_count(self):
+        """Compte le nombre d'évaluations"""
+        for risk in self:
+            risk.assessment_count = len(risk.assessment_ids)
+
+    impact_value = fields.Integer(
+        compute='_compute_impact_values',
+        store=False,
+        string='Impact Value'
+    )
+
+    probability_value = fields.Integer(
+        compute='_compute_impact_values',
+        store=False,
+        string='Probability Value'
+    )
+
+    @api.depends('inherent_impact', 'inherent_probability')
+    def _compute_impact_values(self):
+        """Convertit les sélections en valeurs numériques pour le graphique"""
+        # Si inherent_impact est un Selection, convertissez les valeurs
+        impact_map = {
+            '1': 1, '2': 2, '3': 3, '4': 4, '5': 5,
+            'insignificant': 1, 'minor': 2, 'moderate': 3, 'major': 4, 'catastrophic': 5
+        }
+        prob_map = {
+            '1': 1, '2': 2, '3': 3, '4': 4, '5': 5,
+            'very_low': 1, 'low': 2, 'medium': 3, 'high': 4, 'very_high': 5
+        }
+
+        for record in self:
+            record.impact_value = impact_map.get(record.inherent_impact, 1)
+            record.probability_value = prob_map.get(record.inherent_probability, 1)

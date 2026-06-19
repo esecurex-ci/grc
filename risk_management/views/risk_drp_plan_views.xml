@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_risk_drp_plan_list"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.drp.plan.list
-        </field>
-
-        <field name="model">
-            risk.drp.plan
-        </field>
-
+    <record id="view_risk_drp_plan_list" model="ir.ui.view">
+        <field name="name">risk.drp.plan.list</field>
+        <field name="model">risk.drp.plan</field>
         <field name="arch" type="xml">
 
             <list>
@@ -31,17 +23,9 @@
 
     </record>
 
-    <record id="view_risk_drp_plan_form"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.drp.plan.form
-        </field>
-
-        <field name="model">
-            risk.drp.plan
-        </field>
-
+    <record id="view_risk_drp_plan_form" model="ir.ui.view">
+        <field name="name">risk.drp.plan.form</field>
+        <field name="model">risk.drp.plan</field>
         <field name="arch" type="xml">
 
             <form>

@@ -4,7 +4,7 @@
         <field name="name">risk.incident.list</field>
         <field name="model">risk.incident</field>
         <field name="arch" type="xml">
-            <list multi_edit="1"
+            <list
                   decoration-info="severity == 'moderate'"
                   decoration-warning="severity == 'high'"
                   decoration-danger="severity == 'critical'">

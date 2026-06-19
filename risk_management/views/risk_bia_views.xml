@@ -5,202 +5,116 @@
     <!-- LIST -->
     <!-- ===================================================== -->
 
-    <record id="view_risk_bia_list"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.bia.list
-        </field>
-
-        <field name="model">
-            risk.bia
-        </field>
-
+    <record id="view_risk_bia_list" model="ir.ui.view">
+        <field name="name">risk.bia.list</field>
+        <field name="model">risk.bia</field>
         <field name="arch" type="xml">
 
-            <list multi_edit="1">
+            <list>
 
                 <field name="name"/>
-
-                <field name="process_id"/>
-
-                <field name="owner_id"/>
-
-                <field name="assessment_date"/>
-
-                <field name="state"
-                       widget="badge"/>
+                <field name="priority"/>
+                <field name="impact_operational"/>
+                <field name="impact_financial"/>
+                <field name="state" widget="badge"/>
 
             </list>
 
         </field>
-
     </record>
 
     <!-- ===================================================== -->
     <!-- SEARCH -->
-    <!-- ===================================================== -->
+    <!-- =====================================================  x
 
-    <record id="view_risk_bia_search"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.bia.search
-        </field>
-
-        <field name="model">
-            risk.bia
-        </field>
-
+    <record id="view_risk_bia_search" model="ir.ui.view">
+        <field name="name">risk.bia.search</field>
+        <field name="model">risk.bia</field>
         <field name="arch" type="xml">
 
             <search>
 
                 <field name="name"/>
 
-                <field name="process_id"/>
+                <filter name="draft"
+                        string="Brouillon"
+                        domain="[('state','=','draft')]"/>
 
-                <field name="owner_id"/>
+                <filter name="approved"
+                        string="Approuvé"
+                        domain="[('state','=','approved')]"/>
 
-                <filter name="validated"
-                        string="Validé"
-                        domain="[('state','=','validated')]"/>
+                <filter name="archived"
+                        string="Archivé"
+                        domain="[('state','=','archived')]"/>
 
                 <group string="Regrouper par">
-
-                    <filter name="group_process"
-                            string="Processus"
-                            context="{'group_by':'process_id'}"/>
-
-                    <filter name="group_owner"
-                            string="Responsable"
-                            context="{'group_by':'owner_id'}"/>
-
+                    <filter name="group_priority"
+                            string="Priorité"
+                            context="{'group_by':'priority'}"/>
+                    <filter name="group_operational"
+                            string="Impact Opérationnel"
+                            context="{'group_by':'impact_operational'}"/>
+                    <filter name="group_financial"
+                            string="Impact Financier"
+                            context="{'group_by':'impact_financial'}"/>
                 </group>
 
             </search>
 
         </field>
-
     </record>
-
+    -->
     <!-- ===================================================== -->
     <!-- FORM -->
     <!-- ===================================================== -->
 
-    <record id="view_risk_bia_form"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.bia.form
-        </field>
-
-        <field name="model">
-            risk.bia
-        </field>
-
+    <record id="view_risk_bia_form" model="ir.ui.view">
+        <field name="name">risk.bia.form</field>
+        <field name="model">risk.bia</field>
         <field name="arch" type="xml">
-
             <form>
-
                 <header>
-
-                    <button name="action_validate"
+                    <button name="action_approve"
                             string="Valider"
                             type="object"
                             class="btn-success"
                             invisible="state != 'draft'"/>
-
-                    <field name="state"
-                           widget="statusbar"/>
-
+                    <field name="state" widget="statusbar"/>
                 </header>
-
                 <sheet>
-
                     <div class="oe_title">
-
                         <h1>
                             <field name="name"/>
                         </h1>
-
-                    </div>
-                    <div class="oe_button_box"
-                         name="button_box">
-
-                        <button name="action_view_activities"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-tasks">
-
-                            <field name="activity_count"
-                                   widget="statinfo"
-                                   string="Activités"/>
-
-                        </button>
-
                     </div>
 
                     <group>
-
                         <group>
-
-                            <field name="process_id"/>
-
-                            <field name="owner_id"/>
-
+                            <field name="priority"/>
+                            <field name="impact_operational"/>
+                            <field name="impact_financial"/>
                         </group>
-
                         <group>
-
-                            <field name="assessment_date"/>
-
+                            <field name="mtd" string="MTD (heures)"/>
+                            <field name="rto" string="RTO (heures)"/>
+                            <field name="rpo" string="RPO (heures)"/>
                         </group>
-
                     </group>
 
                     <notebook>
-
                         <page string="Description">
-
                             <field name="description"/>
-
                         </page>
-
-                        <page string="Activités Critiques">
-
-                            <field name="activity_ids">
-
-                                <list editable="bottom"
-                                      decoration-danger="criticality == 'critical'"
-                                      decoration-warning="criticality == 'high'">
-
-                                    <field name="name"/>
-
-                                    <field name="criticality"/>
-
-                                    <field name="rto_hours"/>
-
-                                    <field name="rpo_hours"/>
-
-                                    <field name="mtd_hours"/>
-
-                                    <field name="financial_impact"/>
-
-                                </list>
-
-                            </field>
-
-                        </page>
-
                     </notebook>
 
                 </sheet>
 
+                <chatter/>
+
             </form>
 
         </field>
-
     </record>
 
 </odoo>

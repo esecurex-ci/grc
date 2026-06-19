@@ -5,7 +5,7 @@
         <field name="name">risk.asset.list</field>
         <field name="model">risk.asset</field>
         <field name="arch" type="xml">
-            <list multi_edit="1">
+            <list>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="asset_type" widget="badge"/>

@@ -6,7 +6,7 @@
         <field name="model">risk.compliance.assessment</field>
         <field name="arch" type="xml">
 
-            <list multi_edit="1"
+            <list
                   decoration-success="compliance_level == 'compliant'"
                   decoration-warning="compliance_level == 'partially'"
                   decoration-danger="compliance_level == 'non_compliant'">

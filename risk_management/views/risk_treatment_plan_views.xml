@@ -9,7 +9,7 @@
         <field name="name">risk.treatment.plan.list</field>
         <field name="model">risk.treatment.plan</field>
         <field name="arch" type="xml">
-            <list multi_edit="1"
+            <list
                   decoration-info="state == 'draft'"
                   decoration-warning="state == 'in_progress'"
                   decoration-success="state == 'completed'"

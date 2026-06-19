@@ -6,7 +6,7 @@
         <field name="model">risk.audit.finding</field>
         <field name="arch" type="xml">
 
-            <list multi_edit="1"
+            <list
                   decoration-danger="severity == 'critical'"
                   decoration-warning="severity == 'high'">
 

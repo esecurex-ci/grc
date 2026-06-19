@@ -5,25 +5,15 @@
         <field name="name">risk.bia.activity.list</field>
         <field name="model">risk.bia.activity</field>
         <field name="arch" type="xml">
-            <list decoration-danger="criticality == 'critical'"
-                  decoration-warning="criticality == 'high'">
-
+            <list decoration-danger="criticality == 'critical'" decoration-warning="criticality == 'high'">
                 <field name="bia_id"/>
-
                 <field name="name"/>
-
                 <field name="criticality"/>
-
                 <field name="rto_hours"/>
-
                 <field name="rpo_hours"/>
-
                 <field name="mtd_hours"/>
-
                 <field name="financial_impact"/>
-
             </list>
-
         </field>
 
     </record>
@@ -37,98 +27,47 @@
             </graph>
         </field>
     </record>
-    <record id="view_risk_bia_activity_graph_rpo"
-        model="ir.ui.view">
+    <record id="view_risk_bia_activity_graph_rpo" model="ir.ui.view">
 
-    <field name="name">
-        risk.bia.activity.graph.rpo
-    </field>
+        <field name="name">risk.bia.activity.graph.rpo</field>
+            <field name="model">risk.bia.activity</field>
+            <field name="arch" type="xml">
 
-    <field name="model">
-        risk.bia.activity
-    </field>
+            <graph string="RPO par Activité" type="bar">
+                <field name="name"/>
+                <field name="rpo_hours" type="measure"/>
+            </graph>
 
-    <field name="arch" type="xml">
-
-        <graph string="RPO par Activité"
-               type="bar">
-
-            <field name="name"/>
-
-            <field name="rpo_hours"
-                   type="measure"/>
-
-        </graph>
-
-    </field>
-
-</record>
-    <record id="view_risk_bia_activity_graph_criticality"
-        model="ir.ui.view">
-
-    <field name="name">
-        risk.bia.activity.graph.criticality
-    </field>
-
-    <field name="model">
-        risk.bia.activity
-    </field>
-
-    <field name="arch" type="xml">
-
-        <graph string="Répartition Criticité"
-               type="pie">
-
-            <field name="criticality"/>
-
-        </graph>
-
-    </field>
-
-</record>
-    <?xml version="1.0" encoding="utf-8"?>
-<odoo>
-
-    <record id="view_risk_bia_activity_pivot"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.bia.activity.pivot
         </field>
 
-        <field name="model">
-            risk.bia.activity
-        </field>
-
+    </record>
+    <record id="view_risk_bia_activity_graph_criticality" model="ir.ui.view">
+        <field name="name">risk.bia.activity.graph.criticality</field>
+        <field name="model">risk.bia.activity</field>
         <field name="arch" type="xml">
 
+        <graph string="Répartition Criticité" type="pie">
+            <field name="criticality"/>
+        </graph>
+    </field>
+
+    </record>
+
+    <record id="view_risk_bia_activity_pivot" model="ir.ui.view">
+        <field name="name">risk.bia.activity.pivot</field>
+        <field name="model">risk.bia.activity</field>
+        <field name="arch" type="xml">
             <pivot string="Analyse BIA">
-
-                <field name="criticality"
-                       type="row"/>
-
-                <field name="bia_id"
-                       type="row"/>
-
-                <field name="rto_hours"
-                       type="measure"/>
-
-                <field name="rpo_hours"
-                       type="measure"/>
-
-                <field name="mtd_hours"
-                       type="measure"/>
-
-                <field name="financial_impact"
-                       type="measure"/>
-
+                <field name="criticality" type="row"/>
+                <field name="bia_id" type="row"/>
+                <field name="rto_hours" type="measure"/>
+                <field name="rpo_hours" type="measure"/>
+                <field name="mtd_hours" type="measure"/>
+                <field name="financial_impact" type="measure"/>
             </pivot>
 
         </field>
 
     </record>
-
-</odoo>
-    
 
 </odoo>

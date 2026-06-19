@@ -5,7 +5,7 @@
         <field name="name">risk.organization.list</field>
         <field name="model">risk.organization</field>
         <field name="arch" type="xml">
-            <list multi_edit="1">
+            <list>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="manager_id"/>

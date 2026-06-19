@@ -229,3 +229,15 @@ class RiskComplianceScorecard(models.Model):
 
             else:
                 rec.compliance_level = 'poor'
+
+    def action_generate(self):
+        """Génère la scorecard"""
+        for record in self:
+            record.state = 'generated'
+        return True
+
+    def action_validate(self):
+        """Valide la scorecard"""
+        for record in self:
+            record.state = 'validated'
+        return True

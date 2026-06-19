@@ -93,3 +93,15 @@ class RiskAudit(models.Model):
                 )
 
         return super().create(vals_list)
+
+    def action_view_findings(self):
+        """Ouvre la vue des constats liés à cet audit"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Constats',
+            'res_model': 'risk.finding',  # ou le nom du modèle des constats
+            'view_mode': 'tree,form',
+            'domain': [('audit_id', '=', self.id)],
+            'context': {'default_audit_id': self.id},
+        }

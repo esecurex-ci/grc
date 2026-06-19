@@ -71,7 +71,7 @@
                             <field name="audit_ids">
 
                                 <list editable="bottom">
-                                    <field name="name"/>
+                                    <!-- ⬇️ name a été supprimé, on garde title ⬇️ -->
                                     <field name="title"/>
                                     <field name="audit_type"/>
                                     <field name="start_date"/>

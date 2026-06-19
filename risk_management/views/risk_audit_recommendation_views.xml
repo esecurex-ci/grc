@@ -6,7 +6,7 @@
         <field name="model">risk.audit.recommendation</field>
         <field name="arch" type="xml">
 
-            <list multi_edit="1">
+            <list>
 
                 <field name="finding_id"/>
                 <field name="owner_id"/>

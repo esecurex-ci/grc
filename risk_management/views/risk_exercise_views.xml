@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_risk_exercise_form"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.exercise.form
-        </field>
-
-        <field name="model">
-            risk.exercise
-        </field>
-
+    <record id="view_risk_exercise_form" model="ir.ui.view">
+        <field name="name">risk.exercise.form</field>
+        <field name="model">risk.exercise</field>
         <field name="arch" type="xml">
-
             <form>
 
                 <sheet>

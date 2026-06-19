@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_risk_crisis_timeline_list"
-            model="ir.ui.view">
-
+    <record id="view_risk_crisis_timeline_list" model="ir.ui.view">
         <field name="name">risk.crisis.timeline.list</field>
         <field name="model">risk.crisis.timeline</field>
-
         <field name="arch" type="xml">
-
             <list decoration-info="event_type == 'communication'"
                   decoration-warning="event_type == 'decision'"
                   decoration-success="event_type == 'resolution'">

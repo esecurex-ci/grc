@@ -6,7 +6,7 @@
         <field name="model">risk.corrective.action</field>
         <field name="arch" type="xml">
 
-            <list multi_edit="1"
+            <list
                   decoration-info="state == 'draft'"
                   decoration-warning="state == 'in_progress'"
                   decoration-success="state == 'completed'"

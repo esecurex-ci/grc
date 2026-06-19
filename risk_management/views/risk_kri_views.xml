@@ -6,7 +6,7 @@
         <field name="model">risk.kri</field>
         <field name="arch" type="xml">
 
-            <list multi_edit="1"
+            <list
                   decoration-success="status == 'green'"
                   decoration-warning="status == 'amber'"
                   decoration-danger="status == 'red'">

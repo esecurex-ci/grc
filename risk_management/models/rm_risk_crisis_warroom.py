@@ -26,3 +26,26 @@ class RiskCrisisWarroom(models.Model):
     )
 
     notes = fields.Html()
+
+    # ⬇️ CE CHAMP EST OBLIGATOIRE ⬇️
+    crisis_id = fields.Many2one(
+        'risk.crisis',
+        string='Crisis',
+        required=True,
+        ondelete='cascade'
+    )
+
+    # ⬇️ CE CHAMP state DOIT EXISTER ⬇️
+    state = fields.Selection([
+        ('planned', 'Planned'),
+        ('active', 'Active'),
+        ('closed', 'Closed')
+    ], string='Status', default='planned')
+
+    command_center_id = fields.Many2one(
+        'risk.crisis.command.center',
+        string='Command Center',
+        ondelete='set null',
+        index=True,
+        help='Centre de commandement parent'
+    )

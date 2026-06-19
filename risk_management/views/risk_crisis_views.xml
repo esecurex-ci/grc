@@ -1,41 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_risk_crisis_form"
-            model="ir.ui.view">
-
-        <field name="name">
-            risk.crisis.form
-        </field>
-
-        <field name="model">
-            risk.crisis
-        </field>
-
+    <record id="view_risk_crisis_form" model="ir.ui.view">
+        <field name="name">risk.crisis.form</field>
+        <field name="model">risk.crisis</field>
         <field name="arch" type="xml">
-
             <form>
-
                 <header>
-
+                    <!-- name="action_activate"  -->
                     <button name="action_activate"
                             type="object"
                             string="Activer"
                             class="btn-primary"
                             invisible="state != 'declared'"/>
-
+                    <!-- name="action_manage"  -->
                     <button name="action_manage"
                             type="object"
                             string="Gérer"
                             class="btn-info"
                             invisible="state != 'activated'"/>
-
+                    <!--   -->
                     <button name="action_resolve"
                             type="object"
                             string="Résoudre"
                             class="btn-success"
                             invisible="state != 'managed'"/>
-
+                    <!--   -->
                     <button name="action_close"
                             type="object"
                             string="Clôturer"
@@ -51,7 +41,7 @@
 
                     <div class="oe_button_box"
                          name="button_box">
-
+                        <!--     -->
                         <button name="action_view_meetings"
                                 type="object"
                                 class="oe_stat_button"
@@ -62,7 +52,7 @@
                                    string="Comités"/>
 
                         </button>
-
+                        <!--    -->
                         <button name="action_view_actions"
                                 type="object"
                                 class="oe_stat_button"
@@ -73,18 +63,13 @@
                                    string="Actions"/>
 
                         </button>
-
-                        <button name="action_view_communications"
-                                type="object"
-                                class="oe_stat_button"
+                        <!--  name="action_view_communications"  -->
+                        <button name="action_view_communications" type="object" class="oe_stat_button"
                                 icon="fa-bullhorn">
-
-                            <field name="communication_count"
-                                   widget="statinfo"
-                                   string="Communications"/>
+                            <field name="communication_count" widget="statinfo" string="Communications"/>
 
                         </button>
-
+                        <!--  name=""  -->
                         <button name="action_view_logs"
                                 type="object"
                                 class="oe_stat_button"
