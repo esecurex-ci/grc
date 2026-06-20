@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="risk_management.risk_matrix">
+        <div class="o_risk_matrix">
+            <div class="matrix-container"/>
+        </div>
+    </t>
+
+</templates>

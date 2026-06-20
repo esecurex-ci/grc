@@ -48,7 +48,7 @@
     <!-- ===================================================== -->
 
     <menuitem id="menu_grc_risk"
-        name="Gestion des Risques"
+        name="📊 Gestion des Risques"
         parent="menu_grc_root"
         sequence="20"
     />
@@ -62,13 +62,20 @@
     <!--menuitem id="menu_grc_assessment"
         name="📊 Cartographie"
         parent="menu_grc_risk"
-        action="action_risk_assessment"
-    /-->
+        action="action_risk_assessment"/
+
+    <menuitem id="menu_grc_dashboard"
+              name="📊 Tableau de bord"
+              parent="menu_grc_risk"
+              action="action_risk_dashboard"
+              sequence="5"/>
+    -->
+    <!-- Cartographie -->
     <menuitem id="menu_grc_cartography"
-        name="📊 Cartographie"
-        parent="menu_grc_risk"
-        action="action_risk_cartography"
-    />
+              name="📋 Cartographie"
+              parent="menu_grc_risk"
+              action="action_risk_cartography"
+              sequence="10"/>
 
     <menuitem id="menu_grc_assessment_period"
         name="Campagnes d'Évaluation"
