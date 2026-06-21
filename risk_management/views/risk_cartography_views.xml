@@ -13,18 +13,6 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="category_id"/>
-
-                <filter name="active"
-                        string="Actifs"
-                        domain="[('active','=',True)]"/>
-
-                <filter name="critical"
-                        string="Critiques"
-                        domain="[('inherent_level','=','critical')]"/>
-
-                <filter name="high_risk"
-                        string="Élevés"
-                        domain="[('inherent_level','in',['high','critical'])]"/>
             </search>
         </field>
     </record>
@@ -66,38 +54,40 @@
     <!-- GRAPHIQUE - MATRICE (Scatter)                              -->
     <!-- ========================================================== -->
 
-    <!--
-    <record id="view_risk_cartography_graph" model="ir.ui.view">
+    <!--record id="view_risk_cartography_graph" model="ir.ui.view">
         <field name="name">risk.cartography.graph</field>
         <field name="model">risk.risk</field>
         <field name="arch" type="xml">
             <graph type="scatter">
-                <field name="impact_value" type="measure"/>
-                <field name="probability_value" type="measure"/>
+                <field name="inherent_score" type="measure"/>
+                <field name="residual_score" type="measure"/>
                 <field name="inherent_level" type="row"/>
                 <field name="category_id" type="col"/>
             </graph>
         </field>
-    </record>
-    -->
+    </record-->
 
     <!-- ========================================================== -->
     <!-- ACTION - CARTOGRAPHIE                                      -->
     <!-- ========================================================== -->
 
-    <record id="action_risk_cartography" model="ir.actions.act_window">
-        <field name="name">📊 Cartographie des risques</field>
-        <field name="res_model">risk.risk</field>
-        <field name="view_mode">list,graph,form</field>
-        <field name="view_id" ref="view_risk_cartography_list"/>
-        <field name="search_view_id" ref="view_risk_cartography_search"/>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                📊 Cartographie des risques
-            </p>
-            <p>
-                Visualisez l'ensemble des risques de votre organisation.
-            </p>
+    <!-- ========================================================== -->
+<!-- PIVOT - MATRICE DES RISQUES (CORRIGÉ)                      -->
+<!-- ========================================================== -->
+
+    <!-- ========================================================== -->
+<!-- GRAPHIQUE - MATRICE EN BARRES EMPILÉES                     -->
+<!-- ========================================================== -->
+
+    <record id="view_risk_cartography_bar_matrix" model="ir.ui.view">
+        <field name="name">risk.cartography.bar.matrix</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <graph type="bar" stacked="True" string="Distribution Impact × Probabilité">
+                <field name="inherent_impact" type="col"/>
+                <field name="inherent_probability" type="row"/>
+                <field name="inherent_score" type="measure"/>
+            </graph>
         </field>
     </record>
 

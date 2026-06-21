@@ -10,19 +10,6 @@
         'mail',
         'hr'
     ],
-    'assets': {
-        'web.assets_backend': [
-            'risk_management/static/src/dashboard/grc_dashboard.js',
-            'risk_management/static/src/dashboard/grc_dashboard.xml',
-            'risk_management/static/src/dashboard/grc_dashboard.scss',
-            'risk_management/static/src/js/crisis_command_center.js',
-            'risk_management/static/src/xml/crisis_command_center.xml',
-            'risk_management/static/src/scss/crisis_command_center.scss',
-        ],
-        'web.report_assets_common': [  # ⬅️ AJOUTEZ CETTE SECTION
-            'risk_management/static/src/css/report_style.css',
-        ],
-    },
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
@@ -102,6 +89,7 @@
         'views/risk_heatmap_views.xml',
         'views/risk_heatmap_line_views.xml',
         'views/risk_continuity_dashboard_views.xml',
+        'views/risk_risk_dashboard_views.xml',
 
         # ========== 9. MENUS ET ACTIONS (TOUJOURS EN DERNIER) ==========
         'views/grc_actions.xml',
@@ -110,6 +98,23 @@
         # 'reports/report.xml',
         'reports/risk_register_report.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'risk_management/static/src/dashboard/grc_dashboard.js',
+            'risk_management/static/src/dashboard/grc_dashboard.xml',
+            'risk_management/static/src/dashboard/grc_dashboard.scss',
+            'risk_management/static/src/js/crisis_command_center.js',
+            'risk_management/static/src/xml/crisis_command_center.xml',
+            'risk_management/static/src/scss/crisis_command_center.scss',
+            'risk_management/static/src/scss/risk_risk_dashboard.scss',
+            #'risk_management/static/src/js/risk_matrix_widget.js',
+            #'risk_management/static/src/xml/risk_matrix_widget.xml',
+            #'risk_management/static/src/scss/risk_matrix.scss',
+        ],
+        'web.report_assets_common': [  # ⬅️ AJOUTEZ CETTE SECTION
+            'risk_management/static/src/css/report_style.css',
+        ],
+    },
     'installable': True,
     'application': True,
     'auto_install': False,

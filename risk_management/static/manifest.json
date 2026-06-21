@@ -1,0 +1,11 @@
+{
+    "name": "Risk Management Assets",
+    "version": "1.0",
+    "assets": {
+        "web.assets_backend": [
+            "risk_management/static/src/js/risk_matrix_widget.js",
+            "risk_management/static/src/xml/risk_matrix_widget.xml",
+            "risk_management/static/src/scss/risk_matrix.scss"
+        ]
+    }
+}

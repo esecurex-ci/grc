@@ -31,10 +31,19 @@
     <!-- RISK MANAGEMENT -->
     <!-- ===================================================== -->
 
+    <!-- ACTION - TABLEAU DE BORD -->
+    <record id="action_risk_dashboard" model="ir.actions.act_window">
+        <field name="name">📊 Tableau de bord</field>
+        <field name="res_model">risk.risk</field>
+        <field name="view_mode">kanban,graph</field>
+        <field name="view_id" ref="view_risk_dashboard_kanban"/>
+        <field name="search_view_id" ref="view_risk_cartography_search"/>
+    </record>
+
     <record id="action_risk_risk" model="ir.actions.act_window">
         <field name="name">Risk Register</field>
         <field name="res_model">risk.risk</field>
-        <field name="view_mode">kanban,list,form,graph,pivot</field>
+        <field name="view_mode">kanban,list,form,graph</field>
     </record>
 
     <record id="action_risk_assessment" model="ir.actions.act_window">
@@ -55,20 +64,13 @@
         <field name="view_mode">kanban,list,form</field>
     </record>
 
+    <!-- ACTION - CARTOGRAPHIE -->
     <record id="action_risk_cartography" model="ir.actions.act_window">
-        <field name="name">📊 Cartographie des risques</field>
+        <field name="name">📋 Cartographie</field>
         <field name="res_model">risk.risk</field>
-        <field name="view_mode">list,graph,pivot</field>
+        <field name="view_mode">list,graph</field>
         <field name="view_id" ref="view_risk_cartography_list"/>
         <field name="search_view_id" ref="view_risk_cartography_search"/>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                📊 Cartographie des risques
-            </p>
-            <p>
-                Visualisez l'ensemble des risques avec leurs dernières évaluations.
-            </p>
-        </field>
     </record>
 
     <!-- ===================================================== -->
