@@ -64,13 +64,32 @@
         <field name="view_mode">kanban,list,form</field>
     </record>
 
-    <!-- ACTION - CARTOGRAPHIE -->
+    <!-- ACTION - CARTOGRAPHIE (Liste) -->
     <record id="action_risk_cartography" model="ir.actions.act_window">
         <field name="name">📋 Cartographie</field>
         <field name="res_model">risk.risk</field>
-        <field name="view_mode">list,graph</field>
-        <field name="view_id" ref="view_risk_cartography_list"/>
+        <field name="view_mode">form,graph</field>
+        <field name="view_id" ref="view_risk_cartography_heatmap"/>
         <field name="search_view_id" ref="view_risk_cartography_search"/>
+        <field name="target">current</field>
+        <field name="context">{'form_view_ref': 'risk_management.view_risk_cartography_heatmap', 'create': False}</field>
+    </record>
+
+    <!-- ACTION - HEATMAP (Matrice visuelle) -->
+    <record id="action_risk_heatmap" model="ir.actions.act_window">
+        <field name="name">🔥 Heatmap</field>
+        <field name="res_model">risk.risk</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_risk_cartography_heatmap"/>
+        <field name="target">current</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                🔥 Carte de chaleur des risques
+            </p>
+            <p>
+                Visualisez la concentration de vos risques par niveau de criticité.
+            </p>
+        </field>
     </record>
 
     <!-- ===================================================== -->

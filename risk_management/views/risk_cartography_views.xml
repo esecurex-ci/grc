@@ -18,6 +18,24 @@
     </record>
 
     <!-- ========================================================== -->
+    <!-- VUE HEATMAP HTML - Matrice 5x5                             -->
+    <!-- ========================================================== -->
+
+    <record id="view_risk_cartography_heatmap" model="ir.ui.view">
+        <field name="name">risk.cartography.heatmap</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="o_heatmap_container" style="padding:20px;">
+                        <field name="heatmap_html" nolabel="1" style="width:100%;"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================================== -->
     <!-- LISTE - CARTOGRAPHIE                                       -->
     <!-- ========================================================== -->
 
@@ -79,15 +97,21 @@
 <!-- GRAPHIQUE - MATRICE EN BARRES EMPILÉES                     -->
 <!-- ========================================================== -->
 
-    <record id="view_risk_cartography_bar_matrix" model="ir.ui.view">
-        <field name="name">risk.cartography.bar.matrix</field>
+    <record id="view_risk_dashboard_kanban" model="ir.ui.view">
+        <field name="name">risk.dashboard.kanban</field>
         <field name="model">risk.risk</field>
         <field name="arch" type="xml">
-            <graph type="bar" stacked="True" string="Distribution Impact × Probabilité">
-                <field name="inherent_impact" type="col"/>
-                <field name="inherent_probability" type="row"/>
-                <field name="inherent_score" type="measure"/>
-            </graph>
+            <kanban>
+                <field name="heatmap_html"/>
+
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <field name="heatmap_html" nolabel="1"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 

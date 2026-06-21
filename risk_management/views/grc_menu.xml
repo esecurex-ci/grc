@@ -57,36 +57,35 @@
         name="Registre des Risques"
         parent="menu_grc_risk"
         action="action_risk_risk"
+        sequence="1"
     />
 
-    <!--menuitem id="menu_grc_assessment"
-        name="📊 Cartographie"
-        parent="menu_grc_risk"
-        action="action_risk_assessment"/
-
-    <menuitem id="menu_grc_dashboard"
-              name="📊 Tableau de bord"
-              parent="menu_grc_risk"
-              action="action_risk_dashboard"
-              sequence="5"/>
-    -->
-    <!-- Cartographie -->
     <menuitem id="menu_grc_cartography"
-              name="📋 Cartographie"
-              parent="menu_grc_risk"
-              action="action_risk_cartography"
-              sequence="10"/>
+        name="📋 Cartographie"
+        parent="menu_grc_risk"
+        action="action_risk_cartography"
+        sequence="10"
+    />
+
+    <!--menuitem id="menu_grc_heatmap"
+        name="🔥 Heatmap"
+        parent="menu_grc_risk"
+        action="action_risk_heatmap"
+        sequence="15"
+    /-->
 
     <menuitem id="menu_grc_assessment_period"
         name="Campagnes d'Évaluation"
         parent="menu_grc_risk"
         action="action_risk_assessment_period"
+        sequence="20"
     />
 
     <menuitem id="menu_grc_treatment_plan"
         name="Plans de Traitement"
         parent="menu_grc_risk"
         action="action_risk_treatment_plan"
+        sequence="25"
     />
 
     <!-- ===================================================== -->

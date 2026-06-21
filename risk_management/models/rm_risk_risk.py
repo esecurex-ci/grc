@@ -523,3 +523,399 @@ class RiskRisk(models.Model):
         for record in self:
             record.impact_value = mapping.get(record.inherent_impact, 1)
             record.probability_value = mapping.get(record.inherent_probability, 1)
+
+    # models/rm_risk_risk.py
+
+    def get_heatmap_data(self):
+        """Récupère les données pour la heatmap"""
+        data = {}
+        risks = self.search([('active', '=', True)])
+        for risk in risks:
+            impact = int(risk.inherent_impact or 1)
+            prob = int(risk.inherent_probability or 1)
+            key = f"{prob}_{impact}"
+            if key not in data:
+                data[key] = []
+            data[key].append({
+                'id': risk.id,
+                'name': risk.name,
+                'code': risk.code,
+                'level': risk.inherent_level,
+                'score': risk.inherent_score
+            })
+        return data
+
+    # Ajoutez ce champ à la fin de la classe RiskRisk
+    heatmap_html = fields.Html(
+        compute='_compute_heatmap_html',
+        string='Carte de chaleur',
+        sanitize=False,
+        store=False
+    )
+
+    @api.depends('inherent_impact', 'inherent_probability', 'inherent_level')
+    def _compute_heatmap_html(self):
+        """Génère la heatmap en HTML avec statistiques améliorées"""
+        # Récupérer tous les risques actifs
+        risks = self.search([('active', '=', True)])
+
+        if not risks:
+            for record in self:
+                record.heatmap_html = '''
+                <div style="padding:40px;text-align:center;color:#6c757d;background:#f8f9fa;border-radius:12px;">
+                    <i class="fa fa-exclamation-triangle" style="font-size:48px;color:#ffc107;"></i>
+                    <h3>Aucun risque actif</h3>
+                    <p>Créez votre premier risque pour visualiser la heatmap.</p>
+                </div>
+                '''
+            return
+
+        # Créer la matrice 5x5
+        matrix = {}
+        for i in range(1, 6):
+            for j in range(1, 6):
+                matrix[f"{i}_{j}"] = []
+
+        for risk in risks:
+            impact = int(risk.inherent_impact or 1)
+            prob = int(risk.inherent_probability or 1)
+            key = f"{prob}_{impact}"
+            if key in matrix:
+                matrix[key].append({
+                    'id': risk.id,
+                    'name': risk.name,
+                    'code': risk.code,
+                    'level': risk.inherent_level,
+                    'score': risk.inherent_score
+                })
+
+        # Statistiques
+        total = len(risks)
+        critical = len([r for r in risks if r.inherent_level == 'critical'])
+        high = len([r for r in risks if r.inherent_level == 'high'])
+        medium = len([r for r in risks if r.inherent_level == 'medium'])
+        low = len([r for r in risks if r.inherent_level == 'low'])
+
+        # Score moyen
+        total_score = sum([r.inherent_score or 0 for r in risks])
+        avg_score = round(total_score / total, 1) if total > 0 else 0
+
+        html = """
+        <style>
+            .heatmap-container {
+                padding: 25px;
+                background: #ffffff;
+                border-radius: 12px;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+                max-width: 850px;
+                margin: 0 auto;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            }
+            .heatmap-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+            .heatmap-title {
+                font-size: 24px;
+                font-weight: 700;
+                color: #1a237e;
+            }
+            .heatmap-title .badge-count {
+                font-size: 14px;
+                background: #e8eaf6;
+                color: #1a237e;
+                padding: 2px 12px;
+                border-radius: 20px;
+                margin-left: 10px;
+            }
+            .heatmap-table {
+                width: 100%;
+                max-width: 650px;
+                margin: 0 auto;
+                border-collapse: collapse;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .heatmap-table th, .heatmap-table td {
+                border: 1px solid #dee2e6;
+                padding: 12px 16px;
+                text-align: center;
+                min-width: 50px;
+                font-size: 14px;
+            }
+            .heatmap-table .label-cell {
+                background: #f8f9fa;
+                font-weight: 700;
+                color: #495057;
+                min-width: 90px;
+            }
+            .heatmap-table .header-cell {
+                background: #f8f9fa;
+                font-weight: 700;
+                color: #495057;
+            }
+            .heatmap-table .cell {
+                font-weight: 600;
+                transition: all 0.3s ease;
+                position: relative;
+                cursor: default;
+                height: 55px;
+                vertical-align: middle;
+            }
+            .heatmap-table .cell.has-risks {
+                cursor: pointer;
+                border: 2px solid rgba(255,255,255,0.6);
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+            .heatmap-table .cell.has-risks:hover {
+                transform: scale(1.12);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+                z-index: 10;
+                border-color: #fff;
+            }
+            .heatmap-table .cell .risk-count {
+                font-size: 22px;
+                font-weight: 800;
+                color: white;
+                text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            }
+            .heatmap-table .cell .risk-count.small {
+                font-size: 16px;
+            }
+            .heatmap-table .cell .tooltip-text {
+                display: none;
+                position: absolute;
+                background: #1a237e;
+                color: white;
+                padding: 10px 14px;
+                border-radius: 8px;
+                font-size: 12px;
+                z-index: 999;
+                bottom: 120%;
+                left: 50%;
+                transform: translateX(-50%);
+                min-width: 200px;
+                max-width: 320px;
+                white-space: normal;
+                text-align: left;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+                line-height: 1.6;
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+            .heatmap-table .cell .tooltip-text:after {
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-top: 8px solid #1a237e;
+            }
+            .heatmap-table .cell .tooltip-text .risk-item {
+                padding: 2px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .heatmap-table .cell .tooltip-text .risk-item:last-child {
+                border-bottom: none;
+            }
+            .heatmap-table .cell .tooltip-text .risk-code {
+                font-weight: 700;
+                color: #ffc107;
+            }
+            .heatmap-table .cell .tooltip-text .risk-level {
+                font-size: 10px;
+                padding: 1px 8px;
+                border-radius: 12px;
+                margin-left: 5px;
+            }
+            .heatmap-table .cell .tooltip-text .risk-level.critical { background: #dc3545; }
+            .heatmap-table .cell .tooltip-text .risk-level.high { background: #fd7e14; }
+            .heatmap-table .cell .tooltip-text .risk-level.medium { background: #ffc107; color: #000; }
+            .heatmap-table .cell .tooltip-text .risk-level.low { background: #28a745; }
+            .heatmap-table .cell.has-risks:hover .tooltip-text {
+                display: block;
+            }
+            .heatmap-legend {
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                margin: 20px 0 15px 0;
+                flex-wrap: wrap;
+                padding: 12px 20px;
+                background: #f8f9fa;
+                border-radius: 8px;
+            }
+            .heatmap-legend .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+                font-weight: 500;
+                color: #495057;
+            }
+            .heatmap-legend .color-box {
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                border-radius: 4px;
+                border: 1px solid #dee2e6;
+            }
+            .heatmap-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 12px;
+                margin-top: 20px;
+                padding: 16px;
+                background: #f8f9fa;
+                border-radius: 8px;
+            }
+            .heatmap-stats .stat-item {
+                text-align: center;
+                padding: 8px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            }
+            .heatmap-stats .stat-value {
+                font-size: 26px;
+                font-weight: 700;
+                color: #1a237e;
+            }
+            .heatmap-stats .stat-label {
+                font-size: 12px;
+                color: #6c757d;
+                margin-top: 2px;
+            }
+            .heatmap-stats .stat-critical .stat-value { color: #dc3545; }
+            .heatmap-stats .stat-high .stat-value { color: #fd7e14; }
+            .heatmap-stats .stat-medium .stat-value { color: #ffc107; }
+            .heatmap-stats .stat-low .stat-value { color: #28a745; }
+            .heatmap-stats .stat-avg .stat-value { color: #1a237e; }
+            .heatmap-empty-cell {
+                opacity: 0.15;
+                cursor: default !important;
+            }
+            .heatmap-empty-cell:hover {
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            /* Couleurs des niveaux dans les tooltips */
+            .level-critical { color: #dc3545; }
+            .level-high { color: #fd7e14; }
+            .level-medium { color: #ffc107; }
+            .level-low { color: #28a745; }
+        </style>
+
+        <div class="heatmap-container">
+            <div class="heatmap-header">
+                <div class="heatmap-title">
+                    🔥 Carte de chaleur
+                    <span class="badge-count">{total} risques</span>
+                </div>
+            </div>
+            <table class="heatmap-table">
+                <tr>
+                    <th class="label-cell">Gravité →</th>
+        """
+
+        for i in range(1, 6):
+            html += f'<th class="header-cell">{i}</th>'
+        html += '</tr>'
+
+        for prob in range(5, 0, -1):
+            html += f'<tr><td class="label-cell">{prob}</td>'
+            for impact in range(1, 6):
+                score = prob * impact
+                color = self._get_heatmap_color(score)
+                key = f"{prob}_{impact}"
+                risks_in_cell = matrix.get(key, [])
+
+                if risks_in_cell:
+                    # Compter par niveau pour afficher des couleurs de texte différentes
+                    levels_in_cell = {}
+                    for r in risks_in_cell:
+                        lvl = r['level'] or 'unknown'
+                        levels_in_cell[lvl] = levels_in_cell.get(lvl, 0) + 1
+
+                    tooltip_lines = []
+                    for r in risks_in_cell:
+                        level_class = r['level'] or 'unknown'
+                        tooltip_lines.append(
+                            f'<div class="risk-item"><span class="risk-code">{r["code"]}</span> - {r["name"]} '
+                            f'<span class="risk-level {level_class}">{r["level"] or "N/A"}</span>'
+                            f' <span style="font-size:10px;color:#aaa;">score: {r["score"]}</span></div>'
+                        )
+                    tooltip_text = ''.join(tooltip_lines)
+
+                    count = len(risks_in_cell)
+                    count_class = 'small' if count < 10 else ''
+                    html += f'''
+                    <td class="cell has-risks" style="background-color:{color};color:white;">
+                        <span class="risk-count {count_class}">{count}</span>
+                        <div class="tooltip-text">{tooltip_text}</div>
+                    </td>
+                    '''
+                else:
+                    html += f'<td class="cell heatmap-empty-cell" style="background-color:{color};color:white;opacity:0.15;">&nbsp;</td>'
+            html += '</tr>'
+
+        html += """
+            </table>
+            <div class="heatmap-legend">
+                <span class="legend-item">
+                    <span class="color-box" style="background:#28a745;"></span> Faible (1-4)
+                </span>
+                <span class="legend-item">
+                    <span class="color-box" style="background:#ffc107;"></span> Moyen (5-9)
+                </span>
+                <span class="legend-item">
+                    <span class="color-box" style="background:#fd7e14;"></span> Élevé (10-16)
+                </span>
+                <span class="legend-item">
+                    <span class="color-box" style="background:#dc3545;"></span> Critique (17-25)
+                </span>
+            </div>
+        """
+
+        html += f"""
+            <div class="heatmap-stats">
+                <div class="stat-item">
+                    <div class="stat-value">{total}</div>
+                    <div class="stat-label">Total risques</div>
+                </div>
+                <div class="stat-item stat-critical">
+                    <div class="stat-value">{critical}</div>
+                    <div class="stat-label">🔴 Critiques</div>
+                </div>
+                <div class="stat-item stat-high">
+                    <div class="stat-value">{high}</div>
+                    <div class="stat-label">🟠 Élevés</div>
+                </div>
+                <div class="stat-item stat-medium">
+                    <div class="stat-value">{medium}</div>
+                    <div class="stat-label">🟡 Moyens</div>
+                </div>
+                <div class="stat-item stat-low">
+                    <div class="stat-value">{low}</div>
+                    <div class="stat-label">🟢 Faibles</div>
+                </div>
+                <div class="stat-item stat-avg">
+                    <div class="stat-value">{avg_score}</div>
+                    <div class="stat-label">📊 Score moyen</div>
+                </div>
+            </div>
+        </div>
+        """
+
+        for record in self:
+            record.heatmap_html = html
+
+    def _get_heatmap_color(self, score):
+        if score <= 4: return '#28a745'
+        if score <= 9: return '#ffc107'
+        if score <= 16: return '#fd7e14'
+        return '#dc3545'
