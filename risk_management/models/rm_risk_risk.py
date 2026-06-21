@@ -919,3 +919,659 @@ class RiskRisk(models.Model):
         if score <= 9: return '#ffc107'
         if score <= 16: return '#fd7e14'
         return '#dc3545'
+
+    dashboard_html = fields.Html(
+        compute='_compute_dashboard_html',
+        string='Dashboard KPI',
+        sanitize=False,
+        store=False
+    )
+
+    @api.depends('inherent_impact', 'inherent_probability', 'inherent_level', 'assessment_ids')
+    def _compute_dashboard_html(self):
+        """Génère un dashboard KPI complet en HTML avec heatmap interactive"""
+
+        # === Récupération des données ===
+        risks = self.search([('active', '=', True)])
+        total_risks = len(risks)
+
+        # Statistiques par niveau
+        critical = len([r for r in risks if r.inherent_level == 'critical'])
+        high = len([r for r in risks if r.inherent_level == 'high'])
+        medium = len([r for r in risks if r.inherent_level == 'medium'])
+        low = len([r for r in risks if r.inherent_level == 'low'])
+
+        # Score moyen
+        total_score = sum([r.inherent_score or 0 for r in risks])
+        avg_score = round(total_score / total_risks, 1) if total_risks > 0 else 0
+
+        # Statistiques par catégorie
+        category_stats = {}
+        for risk in risks:
+            cat = risk.category_id.name or 'Non catégorisé'
+            if cat not in category_stats:
+                category_stats[cat] = {'count': 0, 'score': 0}
+            category_stats[cat]['count'] += 1
+            category_stats[cat]['score'] += risk.inherent_score or 0
+
+        # Données pour la heatmap avec survole
+        matrix_data = {}
+        for i in range(1, 6):
+            for j in range(1, 6):
+                matrix_data[f"{i}_{j}"] = []
+
+        for risk in risks:
+            impact = int(risk.inherent_impact or 1)
+            prob = int(risk.inherent_probability or 1)
+            key = f"{prob}_{impact}"
+            if key in matrix_data:
+                matrix_data[key].append({
+                    'id': risk.id,
+                    'name': risk.name,
+                    'code': risk.code,
+                    'level': risk.inherent_level,
+                    'score': risk.inherent_score
+                })
+
+        # Données résiduelles
+        residual_matrix = {}
+        for i in range(1, 6):
+            for j in range(1, 6):
+                residual_matrix[f"{i}_{j}"] = 0
+        for risk in risks:
+            impact = int(risk.residual_impact or 1)
+            prob = int(risk.residual_probability or 1)
+            key = f"{prob}_{impact}"
+            if key in residual_matrix:
+                residual_matrix[key] += 1
+
+        # Données des contrôles
+        control_stats = {'effective': 0, 'partial': 0, 'ineffective': 0}
+        for risk in risks:
+            for control in risk.control_ids:
+                effectiveness = control.effectiveness or 0
+                if effectiveness >= 80:
+                    control_stats['effective'] += 1
+                elif effectiveness >= 50:
+                    control_stats['partial'] += 1
+                else:
+                    control_stats['ineffective'] += 1
+
+        # ================================================================
+        # GÉNÉRATION DU HTML
+        # ================================================================
+
+        html = """
+        <style>
+            .kpi-dashboard {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                padding: 15px;
+                background: #f5f7fa;
+                border-radius: 12px;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            .kpi-dashboard h2 {
+                color: #1a237e;
+                font-size: 22px;
+                font-weight: 700;
+                margin-bottom: 15px;
+                padding-bottom: 8px;
+                border-bottom: 3px solid #e8eaf6;
+            }
+            .kpi-summary {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+            .kpi-summary .kpi-box {
+                background: white;
+                border-radius: 10px;
+                padding: 12px 15px;
+                text-align: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+                border: 1px solid #e8eaf6;
+            }
+            .kpi-summary .kpi-box .kpi-value {
+                font-size: 24px;
+                font-weight: 700;
+                color: #1a237e;
+            }
+            .kpi-summary .kpi-box .kpi-label {
+                font-size: 11px;
+                color: #6c757d;
+                margin-top: 2px;
+            }
+            .kpi-summary .kpi-box.critical .kpi-value { color: #dc3545; }
+            .kpi-summary .kpi-box.high .kpi-value { color: #fd7e14; }
+            .kpi-summary .kpi-box.medium .kpi-value { color: #ffc107; }
+            .kpi-summary .kpi-box.low .kpi-value { color: #28a745; }
+            .kpi-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                margin-bottom: 15px;
+            }
+            .kpi-card {
+                background: white;
+                border-radius: 10px;
+                padding: 15px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+                border: 1px solid #e8eaf6;
+            }
+            .kpi-card h3 {
+                font-size: 13px;
+                font-weight: 600;
+                color: #1a237e;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+                border-bottom: 2px solid #e8eaf6;
+            }
+            .kpi-card .legend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-top: 1px solid #eee;
+            }
+            .kpi-card .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 10px;
+                color: #495057;
+            }
+            .kpi-card .legend-item .color-box {
+                width: 14px;
+                height: 14px;
+                border-radius: 3px;
+                border: 1px solid #dee2e6;
+            }
+            .bar-chart {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .bar-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .bar-row .bar-label {
+                width: 60px;
+                font-size: 11px;
+                color: #495057;
+                text-align: right;
+            }
+            .bar-row .bar-track {
+                flex: 1;
+                height: 16px;
+                background: #f0f0f0;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .bar-row .bar-fill {
+                height: 100%;
+                border-radius: 8px;
+            }
+            .bar-row .bar-value {
+                width: 30px;
+                font-size: 11px;
+                font-weight: 600;
+                color: #1a237e;
+            }
+            /* Heatmaps with tooltip */
+            .heatmaps-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+            .heatmap-wrapper {
+                background: white;
+                border-radius: 10px;
+                padding: 15px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+                border: 1px solid #e8eaf6;
+            }
+            .heatmap-wrapper h3 {
+                font-size: 13px;
+                font-weight: 600;
+                color: #1a237e;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+                border-bottom: 2px solid #e8eaf6;
+            }
+            .heatmap-table {
+                width: 100%;
+                max-width: 350px;
+                margin: 0 auto;
+                border-collapse: collapse;
+            }
+            .heatmap-table th, .heatmap-table td {
+                border: 1px solid #dee2e6;
+                padding: 8px;
+                text-align: center;
+                min-width: 30px;
+                font-size: 12px;
+            }
+            .heatmap-table .label-cell {
+                background: #f8f9fa;
+                font-weight: 600;
+                color: #495057;
+                min-width: 50px;
+                font-size: 10px;
+            }
+            .heatmap-table .header-cell {
+                background: #f8f9fa;
+                font-weight: 600;
+                color: #495057;
+                font-size: 10px;
+            }
+            .heatmap-table .cell {
+                font-weight: 600;
+                transition: all 0.2s ease;
+                position: relative;
+                cursor: default;
+                min-height: 30px;
+                vertical-align: middle;
+            }
+            .heatmap-table .cell.has-risks {
+                cursor: pointer;
+                border: 2px solid rgba(255,255,255,0.5);
+            }
+            .heatmap-table .cell.has-risks:hover {
+                transform: scale(1.08);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10;
+            }
+            .heatmap-table .cell .risk-count {
+                font-size: 14px;
+                font-weight: 700;
+                color: white;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            }
+            .heatmap-table .cell .tooltip-text {
+                display: none;
+                position: absolute;
+                background: #1a237e;
+                color: white;
+                padding: 6px 10px;
+                border-radius: 6px;
+                font-size: 10px;
+                z-index: 999;
+                bottom: 110%;
+                left: 50%;
+                transform: translateX(-50%);
+                min-width: 150px;
+                max-width: 250px;
+                white-space: normal;
+                text-align: left;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                line-height: 1.4;
+            }
+            .heatmap-table .cell .tooltip-text:after {
+                content: '';
+                position: absolute;
+                bottom: -6px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-top: 6px solid #1a237e;
+            }
+            .heatmap-table .cell .tooltip-text .risk-item {
+                padding: 2px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .heatmap-table .cell .tooltip-text .risk-item:last-child {
+                border-bottom: none;
+            }
+            .heatmap-table .cell .tooltip-text .risk-code {
+                font-weight: 700;
+                color: #ffc107;
+            }
+            .heatmap-table .cell .tooltip-text .risk-level {
+                font-size: 8px;
+                padding: 1px 6px;
+                border-radius: 10px;
+                margin-left: 4px;
+            }
+            .heatmap-table .cell .tooltip-text .risk-level.critical { background: #dc3545; }
+            .heatmap-table .cell .tooltip-text .risk-level.high { background: #fd7e14; }
+            .heatmap-table .cell .tooltip-text .risk-level.medium { background: #ffc107; color: #000; }
+            .heatmap-table .cell .tooltip-text .risk-level.low { background: #28a745; }
+            .heatmap-table .cell.has-risks:hover .tooltip-text {
+                display: block;
+            }
+            .heatmap-table .cell.empty {
+                opacity: 0.15;
+                cursor: default !important;
+            }
+            .heatmap-table .cell.empty:hover {
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            .heatmap-legend {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-top: 10px;
+                flex-wrap: wrap;
+                padding: 8px 12px;
+                background: #f8f9fa;
+                border-radius: 6px;
+            }
+            .heatmap-legend .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 10px;
+                color: #495057;
+            }
+            .heatmap-legend .color-box {
+                width: 16px;
+                height: 16px;
+                border-radius: 3px;
+                border: 1px solid #dee2e6;
+            }
+            .heatmap-total {
+                text-align: center;
+                margin-top: 8px;
+                font-size: 11px;
+                color: #6c757d;
+            }
+            @media (max-width: 768px) {
+                .kpi-grid, .heatmaps-row {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <div class="kpi-dashboard">
+            <h2>🎯 Risk Management KPI Dashboard</h2>
+
+            <!-- KPI Summary -->
+            <div class="kpi-summary">
+                <div class="kpi-box">
+                    <div class="kpi-value">""" + str(total_risks) + """</div>
+                    <div class="kpi-label">Total Risques</div>
+                </div>
+                <div class="kpi-box critical">
+                    <div class="kpi-value">""" + str(critical) + """</div>
+                    <div class="kpi-label">🔴 Critiques</div>
+                </div>
+                <div class="kpi-box high">
+                    <div class="kpi-value">""" + str(high) + """</div>
+                    <div class="kpi-label">🟠 Élevés</div>
+                </div>
+                <div class="kpi-box medium">
+                    <div class="kpi-value">""" + str(medium) + """</div>
+                    <div class="kpi-label">🟡 Moyens</div>
+                </div>
+                <div class="kpi-box low">
+                    <div class="kpi-value">""" + str(low) + """</div>
+                    <div class="kpi-label">🟢 Faibles</div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-value">""" + str(avg_score) + """</div>
+                    <div class="kpi-label">📊 Score moyen</div>
+                </div>
+            </div>
+
+            <!-- Grid 2 colonnes -->
+            <div class="kpi-grid">
+                <!-- Inherent Risk By Period -->
+                <div class="kpi-card">
+                    <h3>📈 Inherent Risk By Period</h3>
+                    <div class="bar-chart">
+        """
+
+        periods = [
+            {'name': 'Current', 'value': critical, 'color': '#dc3545'},
+            {'name': 'P-1', 'value': high, 'color': '#fd7e14'},
+            {'name': 'P-2', 'value': medium, 'color': '#ffc107'},
+            {'name': 'P-3', 'value': low, 'color': '#28a745'},
+        ]
+        max_period = max([p['value'] for p in periods]) or 1
+
+        for period in periods:
+            pct = round((period['value'] / max_period) * 100, 1) if max_period > 0 else 0
+            html += f"""
+                        <div class="bar-row">
+                            <span class="bar-label">{period['name']}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:{pct}%;background:{period['color']};"></div>
+                            </div>
+                            <span class="bar-value">{period['value']}</span>
+                        </div>
+            """
+
+        html += """
+                    </div>
+                    <div class="legend">
+                        <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
+                        <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
+                        <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
+                        <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
+                    </div>
+                </div>
+
+                <!-- Risk Category By Total Risk Rating -->
+                <div class="kpi-card">
+                    <h3>📊 Risk Category By Total Risk Rating</h3>
+                    <div class="bar-chart">
+        """
+
+        category_colors = ['#1a237e', '#0d47a1', '#1565c0', '#1e88e5', '#42a5f5', '#90caf9']
+        max_cat = max([v['count'] for v in category_stats.values()]) or 1
+        cat_idx = 0
+        for cat_name, cat_data in category_stats.items():
+            pct = round((cat_data['count'] / max_cat) * 100, 1) if max_cat > 0 else 0
+            color = category_colors[cat_idx % len(category_colors)]
+            html += f"""
+                        <div class="bar-row">
+                            <span class="bar-label">{cat_name[:12]}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:{pct}%;background:{color};"></div>
+                            </div>
+                            <span class="bar-value">{cat_data['count']}</span>
+                        </div>
+            """
+            cat_idx += 1
+
+        html += """
+                    </div>
+                </div>
+
+                <!-- Residual Risk By Period -->
+                <div class="kpi-card">
+                    <h3>📉 Residual Risk By Period</h3>
+                    <div class="bar-chart">
+        """
+
+        residual_periods = [
+            {'name': 'Current', 'value': len([r for r in risks if r.residual_level == 'critical']), 'color': '#dc3545'},
+            {'name': 'P-1', 'value': len([r for r in risks if r.residual_level == 'high']), 'color': '#fd7e14'},
+            {'name': 'P-2', 'value': len([r for r in risks if r.residual_level == 'medium']), 'color': '#ffc107'},
+            {'name': 'P-3', 'value': len([r for r in risks if r.residual_level == 'low']), 'color': '#28a745'},
+        ]
+        max_residual = max([p['value'] for p in residual_periods]) or 1
+
+        for period in residual_periods:
+            pct = round((period['value'] / max_residual) * 100, 1) if max_residual > 0 else 0
+            html += f"""
+                        <div class="bar-row">
+                            <span class="bar-label">{period['name']}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:{pct}%;background:{period['color']};"></div>
+                            </div>
+                            <span class="bar-value">{period['value']}</span>
+                        </div>
+            """
+
+        html += """
+                    </div>
+                    <div class="legend">
+                        <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
+                        <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
+                        <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
+                        <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
+                    </div>
+                </div>
+
+                <!-- Control Rate By Period -->
+                <div class="kpi-card">
+                    <h3>🎯 Control Rate By Period</h3>
+                    <div class="bar-chart">
+        """
+
+        control_periods = [
+            {'name': 'Effective', 'value': control_stats['effective'], 'color': '#28a745'},
+            {'name': 'Partial', 'value': control_stats['partial'], 'color': '#ffc107'},
+            {'name': 'Ineffective', 'value': control_stats['ineffective'], 'color': '#dc3545'},
+        ]
+        max_control = max([p['value'] for p in control_periods]) or 1
+
+        for period in control_periods:
+            pct = round((period['value'] / max_control) * 100, 1) if max_control > 0 else 0
+            html += f"""
+                        <div class="bar-row">
+                            <span class="bar-label">{period['name'][:8]}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:{pct}%;background:{period['color']};"></div>
+                            </div>
+                            <span class="bar-value">{period['value']}</span>
+                        </div>
+            """
+
+        html += """
+                    </div>
+                    <div class="legend">
+                        <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Effective</span>
+                        <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Partially Effective</span>
+                        <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Ineffective</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heatmaps side by side -->
+            <div class="heatmaps-row">
+                <!-- Heatmap avec survole -->
+                <div class="heatmap-wrapper">
+                    <h3>🔥 Heat Map (survolez pour les détails)</h3>
+                    <table class="heatmap-table">
+                        <tr>
+                            <th class="label-cell">Gravité →</th>
+        """
+
+        for i in range(1, 6):
+            html += f'<th class="header-cell">{i}</th>'
+        html += '</tr>'
+
+        for prob in range(5, 0, -1):
+            html += f'<tr><td class="label-cell">{prob}</td>'
+            for impact in range(1, 6):
+                score = prob * impact
+                color = self._get_heatmap_color(score)
+                key = f"{prob}_{impact}"
+                risks_in_cell = matrix_data.get(key, [])
+
+                if risks_in_cell:
+                    tooltip_lines = []
+                    for r in risks_in_cell[:5]:  # Limiter à 5 risques pour le tooltip
+                        level_class = r['level'] or 'unknown'
+                        tooltip_lines.append(
+                            f'<div class="risk-item"><span class="risk-code">{r["code"]}</span> - {r["name"]} '
+                            f'<span class="risk-level {level_class}">{r["level"] or "N/A"}</span>'
+                            f' <span style="font-size:8px;color:#aaa;">score: {r["score"]}</span></div>'
+                        )
+                    if len(risks_in_cell) > 5:
+                        tooltip_lines.append(f'<div class="risk-item">... et {len(risks_in_cell) - 5} autres</div>')
+                    tooltip_text = ''.join(tooltip_lines)
+                    count = len(risks_in_cell)
+                    html += f'''
+                    <td class="cell has-risks" style="background-color:{color};color:white;">
+                        <span class="risk-count">{count}</span>
+                        <div class="tooltip-text">{tooltip_text}</div>
+                    </td>
+                    '''
+                else:
+                    html += f'<td class="cell empty" style="background-color:{color};color:white;opacity:0.15;">&nbsp;</td>'
+            html += '</tr>'
+
+        html += """
+                    </table>
+                    <div class="heatmap-legend">
+                        <span class="legend-item">
+                            <span class="color-box" style="background:#28a745;"></span> Faible
+                        </span>
+                        <span class="legend-item">
+                            <span class="color-box" style="background:#ffc107;"></span> Moyen
+                        </span>
+                        <span class="legend-item">
+                            <span class="color-box" style="background:#fd7e14;"></span> Élevé
+                        </span>
+                        <span class="legend-item">
+                            <span class="color-box" style="background:#dc3545;"></span> Critique
+                        </span>
+                    </div>
+                    <div class="heatmap-total">Total: """ + str(total_risks) + """ risques</div>
+                </div>
+
+                <!-- Residual Risk Heat Map -->
+                <div class="heatmap-wrapper">
+                    <h3>🔥 Residual Risk Heat Map</h3>
+                    <table class="heatmap-table">
+                        <tr>
+                            <th class="label-cell">Gravité →</th>
+        """
+
+        labels = ['Insig', 'Minor', 'Mod', 'Major', 'Catas']
+        for label in labels:
+            html += f'<th class="header-cell">{label}</th>'
+        html += '</tr>'
+
+        prob_labels = ['Remote', 'Unlikely', 'Possible', 'H.Prob', 'Certain']
+        for prob_idx, prob_label in enumerate(prob_labels):
+            html += f'<tr><td class="label-cell">{prob_label}</td>'
+            prob = prob_idx + 1
+            for impact in range(1, 6):
+                score = prob * impact
+                color = self._get_heatmap_color(score)
+                key = f"{prob}_{impact}"
+                cell_data = residual_matrix.get(key, 0)
+                if cell_data > 0:
+                    html += f'<td class="cell has-risks" style="background-color:{color};color:white;cursor:pointer;" title="{cell_data} risque(s) résiduel(s)">'
+                    html += f'<span class="risk-count">{cell_data}</span>'
+                    html += '</td>'
+                else:
+                    html += f'<td class="cell empty" style="background-color:{color};color:white;opacity:0.15;">&nbsp;</td>'
+            html += '</tr>'
+
+        html += """
+                    </table>
+                    <div class="heatmap-legend">
+                        <span class="legend-item">
+                            <span class="color-box" style="background:#28a745;"></span> Faible
+                        </span>
+                        <span class="legend-item">
+                            <span class="color-box" style="background:#ffc107;"></span> Moyen
+                        </span>
+                        <span class="legend-item">
+                            <span class="color-box" style="background:#fd7e14;"></span> Élevé
+                        </span>
+                        <span class="legend-item">
+                            <span class="color-box" style="background:#dc3545;"></span> Critique
+                        </span>
+                    </div>
+                    <div class="heatmap-total">Résiduels: """ + str(
+            len([r for r in risks if r.residual_level in ['critical', 'high', 'medium', 'low']])) + """ risques</div>
+                </div>
+            </div>
+        </div>
+        """
+
+        for record in self:
+            record.dashboard_html = html

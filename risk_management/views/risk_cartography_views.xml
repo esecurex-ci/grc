@@ -28,7 +28,7 @@
             <form>
                 <sheet>
                     <div class="o_heatmap_container" style="padding:20px;">
-                        <field name="heatmap_html" nolabel="1" style="width:100%;"/>
+                        <field name="dashboard_html" nolabel="1" style="width:100%;"/>
                     </div>
                 </sheet>
             </form>
