@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- ========================================================== -->
+    <!-- VUE HEATMAP - CARTOGRAPHIE                                 -->
+    <!-- ========================================================== -->
 
+    <record id="view_risk_heatmap_graph" model="ir.ui.view">
+        <field name="name">risk.heatmap.graph</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <graph type="bar" stacked="True" string="🔥 Matrice des risques">
+                <field name="inherent_impact" type="col"/>
+                <field name="inherent_probability" type="row"/>
+                <field name="inherent_score" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <!--
     <record id="view_risk_dashboard_kanban" model="ir.ui.view">
         <field name="name">risk.dashboard.kanban</field>
         <field name="model">risk.risk</field>
@@ -17,7 +32,6 @@
                 <field name="create_date"/>
 
                 <templates>
-                    <!-- ⚠️ Le t-name DOIT être "card" et non "kanban-box" -->
                     <t t-name="card">
                         <div class="oe_kanban_global_click"
                              t-attf-class="oe_kanban_global_click card-{{record.inherent_level.raw_value || 'secondary'}}">
@@ -63,5 +77,70 @@
             </kanban>
         </field>
     </record>
+    -->
+    <!-- ========================================================== -->
+    <!-- VUE KANBAN - DASHBOARD (SANS WIDGET)                      -->
+    <!-- ========================================================== -->
+
+    <record id="view_risk_dashboard_kanban" model="ir.ui.view">
+        <field name="name">risk.dashboard.kanban</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="inherent_level"/>
+                <field name="inherent_score"/>
+                <field name="category_id"/>
+                <field name="owner_id"/>
+                <field name="state"/>
+
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="code"/> - <field name="name"/>
+                                </strong>
+                                <div class="text-muted">
+                                    <field name="category_id"/>
+                                </div>
+                                <div>
+                                    <span class="badge">
+                                        <field name="inherent_level"/>
+                                    </span>
+                                    <span class="badge">
+                                        Score: <field name="inherent_score"/>
+                                    </span>
+                                    <span class="badge">
+                                        <field name="state"/>
+                                    </span>
+                                </div>
+                                <div>
+                                    <i class="fa fa-user"/> <field name="owner_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ========================================================== -->
+    <!-- GRAPHIQUE - DASHBOARD                                      -->
+    <!-- ========================================================== -->
+
+    <record id="view_risk_dashboard_graph" model="ir.ui.view">
+        <field name="name">risk.dashboard.graph</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <graph type="bar" string="Distribution des risques par niveau">
+                <field name="inherent_level" type="row"/>
+                <field name="inherent_score" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
 
 </odoo>
