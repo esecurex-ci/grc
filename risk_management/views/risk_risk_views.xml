@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_risk_form" model="ir.ui.view">
-        <field name="name">risk.form</field>
+    <record id="view_risk_form_new" model="ir.ui.view">
+        <field name="name">risk.form.new</field>
         <field name="model">risk.risk</field>
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <!-- CORRECTION : remplacer states par invisible -->
+
                     <button name="action_assess"
                             string="Évaluer"
                             type="object"
@@ -26,7 +26,7 @@
                 </header>
 
                 <sheet>
-                    <!-- En-tête -->
+
                     <div class="oe_title">
                         <h1>
                             <field name="code" readonly="1"/>
@@ -34,7 +34,7 @@
                         </h1>
                     </div>
 
-                    <!-- Informations générales -->
+
                     <group name="header_group">
                         <group name="left_group">
                             <field name="category_id" required="1"/>
@@ -56,7 +56,7 @@
 
                     <notebook>
 
-                        <!-- Page Description -->
+
                         <page string="Description" name="description">
                             <group style="min-width:40% !important;">
                                 <field name="description" placeholder="Description du risque..."/>
@@ -71,7 +71,7 @@
                             </group>
                         </page>
 
-                        <!-- Page Matrice -->
+
                         <page string="📊 Matrice" name="matrix">
                             <group style="width:100% !important;overflow:auto;padding:10px;">
 
@@ -80,7 +80,7 @@
                             </group>
                         </page>
 
-                        <!-- Page Évaluation -->
+
                         <page string="Évaluation" name="evaluation">
                             <group name="evaluation_group" string="Évaluation du risque">
                                 <group>
@@ -97,7 +97,7 @@
                             </group>
                         </page>
 
-                        <!-- Page Contrôles -->
+
                         <page string="🔒 Contrôles" name="controls">
                             <group name="controls_group">
                                 <field name="existing_control" nolabel="1" placeholder="Contrôles existants..."/>
@@ -105,7 +105,7 @@
                             </group>
                         </page>
 
-                        <!-- Page KRI & Compliance -->
+
                         <page string="📈 KRI &amp; Compliance" name="kri">
                             <group name="kri_group">
                                 <field name="kri_ids"/>
@@ -114,7 +114,7 @@
                             </group>
                         </page>
 
-                        <!-- Page Actifs & Organisation -->
+
                         <page string="🏢 Actifs &amp; Organisation" name="assets">
                             <group name="assets_group">
                                 <field name="asset_ids"/>
@@ -124,7 +124,7 @@
                             </group>
                         </page>
 
-                        <!-- Page Incidents & Audits -->
+
                         <page string="⚠️ Incidents &amp; Audits" name="incidents">
                             <group name="incidents_group">
                                 <field name="incident_count"/>
@@ -135,7 +135,7 @@
                             </group>
                         </page>
 
-                        <!-- Page Révisions -->
+
                         <page string="📅 Révisions" name="review">
                             <group name="review_group">
                                 <group name="dates_group" string="Calendrier">
@@ -147,7 +147,7 @@
                             </group>
                         </page>
 
-                        <!-- Page Historique -->
+
                         <page string="💬 Historique" name="history">
                             <div class="oe_chatter">
                                 <field name="message_follower_ids"/>
@@ -159,6 +159,54 @@
                     </notebook>
                 </sheet>
             </form>
+
+        </field>
+    </record>
+
+        <record id="view_risk_cartography_list" model="ir.ui.view">
+        <field name="name">risk.cartography.list</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <list
+                decoration-success="inherent_level == 'low'"
+                decoration-info="inherent_level == 'medium'"
+                decoration-warning="inherent_level == 'high'"
+                decoration-danger="inherent_level == 'critical'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="inherent_score"/>
+                <field name="residual_score"/>
+                <field name="inherent_level" widget="badge"
+                   class="badge"
+                   decoration-success="inherent_level == 'low'"
+                   decoration-info="inherent_level == 'medium'"
+                   decoration-warning="inherent_level == 'high'"
+                   decoration-danger="inherent_level == 'critical'"/>
+                <field name="state" widget="badge"
+                   class="badge"
+                   decoration-success="state == 'validated'"
+                   decoration-warning="state == 'draft'"
+                   decoration-danger="state == 'obsolete'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_risk_dashboard_kanban" model="ir.ui.view">
+        <field name="name">risk.dashboard.kanban</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="heatmap_html"/>
+
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <field name="heatmap_html" nolabel="1"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 
