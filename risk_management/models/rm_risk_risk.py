@@ -9,13 +9,12 @@ class RiskRisk(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
 
-    name = fields.Char(string='Risque', required=True, tracking=True)
+    name = fields.Char(string='Risque',  tracking=True)
     code = fields.Char(string='Code', readonly=True, default='New', tracking=True)
     description = fields.Html(string='Description')
     cause_description = fields.Html(string='Cause')
     consequence_description = fields.Html(string='Conséquence')
-    category_id = fields.Many2one('risk.category', required=True, tracking=True,
-                                  default=lambda self: self._get_default_category())
+    category_id = fields.Many2one('risk.category', tracking=True,   default=lambda self: self._get_default_category())
 
     @api.model
     def _get_default_category(self):

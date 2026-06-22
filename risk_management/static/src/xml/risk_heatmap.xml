@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="rm_risk.RiskHeatMapTemplate" owl="1">
+        <div class="o_risk_heatmap_container p-4">
+            <h3 class="text-center mb-4">Residual Risk Heat Map</h3>
+
+            <div class="d-flex justify-content-center">
+                <div class="d-flex flex-column justify-content-between align-items-end pe-2 fw-bold" style="margin-top: 25px; margin-bottom: 30px;">
+                    <div>Catastrophic</div>
+                    <div>Major</div>
+                    <div>Moderate</div>
+                    <div>Minor</div>
+                    <div>Insignificant</div>
+                </div>
+
+                <div>
+                    <div class="heatmap-grid">
+                        <t t-foreach="[5, 4, 3, 2, 1]" t-as="impact" t-key="impact">
+                            <div class="d-flex">
+                                <t t-foreach="[1, 2, 3, 4, 5]" t-as="likelihood" t-key="likelihood">
+                                    <div t-att-class="'heatmap-cell d-flex justify-content-center align-items-center text-white fw-bold cursor-pointer ' + getCellClass(impact, likelihood)"
+                                         t-on-click="() => this.openRiskList(impact, likelihood)">
+                                        <t t-esc="state.matrix[impact][likelihood]"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+
+                    <div class="d-flex justify-content-between text-center fw-bold mt-2">
+                        <div style="width: 80px;">Remote</div>
+                        <div style="width: 80px;">Unlikely</div>
+                        <div style="width: 80px;">Possible</div>
+                        <div style="width: 80px;">Probable</div>
+                        <div style="width: 80px;">Highly Probable</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center fw-bold mt-3">Likelihood</div>
+            <div class="position-absolute" style="transform: rotate(-90deg); left: 10px; top: 50%; font-weight: bold;">Impact</div>
+        </div>
+    </t>
+</templates>
