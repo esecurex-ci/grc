@@ -60,12 +60,18 @@
         sequence="1"
     />
 
-    <!--menuitem id="menu_grc_heatmap"
+    <menuitem id="menu_grc_cartography"
+              name="📋 Cartographie"
+              parent="menu_grc_risk"
+              action="action_risk_cartography"
+              sequence="10"/>
+
+    <menuitem id="menu_grc_heatmap"
         name="🔥 Heatmap"
         parent="menu_grc_risk"
         action="action_risk_heatmap"
         sequence="15"
-    /-->
+    />
 
     <menuitem id="menu_grc_assessment_period"
         name="Campagnes d'Évaluation"
