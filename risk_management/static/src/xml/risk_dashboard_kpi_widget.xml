@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="risk_management.risk_dashboard_kpi">
+        <div class="o_risk_dashboard_kpi" style="padding:20px;background:#f5f7fa;min-height:100%;">
+            <div class="dashboard-content"/>
+        </div>
+    </t>
+
+</templates>

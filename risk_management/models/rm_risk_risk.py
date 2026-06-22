@@ -14,7 +14,15 @@ class RiskRisk(models.Model):
     description = fields.Html(string='Description')
     cause_description = fields.Html(string='Cause')
     consequence_description = fields.Html(string='Conséquence')
-    category_id = fields.Many2one('risk.category', required=True, tracking=True)
+    category_id = fields.Many2one('risk.category', required=True, tracking=True,
+                                  default=lambda self: self._get_default_category())
+
+    @api.model
+    def _get_default_category(self):
+        """Retourne une catégorie par défaut"""
+        category = self.env['risk.category'].search([], limit=1)
+        return category.id if category else False
+
     subcategory_id = fields.Many2one('risk.subcategory', tracking=True)
     owner_id = fields.Many2one('hr.employee', string='Risk Owner', tracking=True)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
@@ -1329,10 +1337,10 @@ class RiskRisk(models.Model):
         """
 
         periods = [
-            {'name': 'Current', 'value': critical, 'color': '#dc3545'},
-            {'name': 'P-1', 'value': high, 'color': '#fd7e14'},
-            {'name': 'P-2', 'value': medium, 'color': '#ffc107'},
-            {'name': 'P-3', 'value': low, 'color': '#28a745'},
+            {'name': 'Critiques', 'value': critical, 'color': '#dc3545'},
+            {'name': 'Élevés', 'value': high, 'color': '#fd7e14'},
+            {'name': 'Moyens', 'value': medium, 'color': '#ffc107'},
+            {'name': 'Faibles', 'value': low, 'color': '#28a745'},
         ]
         max_period = max([p['value'] for p in periods]) or 1
 
@@ -1392,10 +1400,11 @@ class RiskRisk(models.Model):
         """
 
         residual_periods = [
-            {'name': 'Current', 'value': len([r for r in risks if r.residual_level == 'critical']), 'color': '#dc3545'},
-            {'name': 'P-1', 'value': len([r for r in risks if r.residual_level == 'high']), 'color': '#fd7e14'},
-            {'name': 'P-2', 'value': len([r for r in risks if r.residual_level == 'medium']), 'color': '#ffc107'},
-            {'name': 'P-3', 'value': len([r for r in risks if r.residual_level == 'low']), 'color': '#28a745'},
+            {'name': 'Critiques', 'value': len([r for r in risks if r.residual_level == 'critical']),
+             'color': '#dc3545'},
+            {'name': 'Élevés', 'value': len([r for r in risks if r.residual_level == 'high']), 'color': '#fd7e14'},
+            {'name': 'Moyens', 'value': len([r for r in risks if r.residual_level == 'medium']), 'color': '#ffc107'},
+            {'name': 'Faibles', 'value': len([r for r in risks if r.residual_level == 'low']), 'color': '#28a745'},
         ]
         max_residual = max([p['value'] for p in residual_periods]) or 1
 
@@ -1428,9 +1437,9 @@ class RiskRisk(models.Model):
         """
 
         control_periods = [
-            {'name': 'Effective', 'value': control_stats['effective'], 'color': '#28a745'},
-            {'name': 'Partial', 'value': control_stats['partial'], 'color': '#ffc107'},
-            {'name': 'Ineffective', 'value': control_stats['ineffective'], 'color': '#dc3545'},
+            {'name': 'Efficaces', 'value': control_stats['effective'], 'color': '#28a745'},
+            {'name': 'Partiels', 'value': control_stats['partial'], 'color': '#ffc107'},
+            {'name': 'Inefficaces', 'value': control_stats['ineffective'], 'color': '#dc3545'},
         ]
         max_control = max([p['value'] for p in control_periods]) or 1
 
@@ -1575,3 +1584,18 @@ class RiskRisk(models.Model):
 
         for record in self:
             record.dashboard_html = html
+
+    def get_dashboard_html(self):
+        """Retourne le HTML du dashboard pour l'action client"""
+        # Récupérer un enregistrement existant
+        record = self.search([('active', '=', True)], limit=1)
+        if record:
+            # Forcer le calcul du dashboard
+            record._compute_dashboard_html()
+            return record.dashboard_html or '<div style="padding:20px;text-align:center;color:#6c757d;">Aucune donnée disponible</div>'
+        return '''
+        <div style="padding:40px;text-align:center;color:#6c757d;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <h3>📊 Aucun risque actif</h3>
+            <p>Créez votre premier risque pour visualiser le dashboard.</p>
+        </div>
+        '''

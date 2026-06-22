@@ -43,7 +43,10 @@
     <record id="action_risk_risk" model="ir.actions.act_window">
         <field name="name">Risk Register</field>
         <field name="res_model">risk.risk</field>
-        <field name="view_mode">kanban,list,form,graph</field>
+        <field name="context">{}</field>
+        <field name="view_mode">list,form,kanban,graph</field>
+        <field name="view_id" ref="view_risk_cartography_list"/>
+        <field name="view_id" ref="view_risk_form_new"/>
     </record>
 
     <record id="action_risk_assessment" model="ir.actions.act_window">
@@ -71,7 +74,7 @@
         <field name="view_mode">form,graph</field>
         <field name="view_id" ref="view_risk_cartography_heatmap"/>
         <field name="search_view_id" ref="view_risk_cartography_search"/>
-        <field name="res_id">1</field> 
+        <field name="res_id">1</field>
         <field name="context">{
             'form_view_ref': 'risk_management.view_risk_cartography_heatmap',
             'create': False,
