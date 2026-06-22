@@ -72,6 +72,11 @@
         action="action_risk_heatmap"
         sequence="15"
     />
+    <menuitem id="menu_risk_dashboard"
+          name="Tableau de bord Owl" 
+          parent="menu_grc_risk"
+          action="action_risk_heatmap_dashboard"
+          sequence="1"/>
 
     <menuitem id="menu_grc_assessment_period"
         name="Campagnes d'Évaluation"

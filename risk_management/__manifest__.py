@@ -113,9 +113,13 @@
             # 'risk_management/static/src/js/risk_dashboard_heatmap.js',
             # 'risk_management/static/src/xml/risk_dashboard_heatmap.xml',
             # 'risk_management/static/src/scss/risk_dashboard_heatmap.scss',
-            #'risk_management/static/src/js/risk_matrix_widget.js',
-            #'risk_management/static/src/xml/risk_matrix_widget.xml',
-            #'risk_management/static/src/scss/risk_matrix.scss',
+            # 'risk_management/static/src/js/risk_matrix_widget.js',
+            # 'risk_management/static/src/xml/risk_matrix_widget.xml',
+            # 'risk_management/static/src/scss/risk_matrix.scss',
+
+            'risk_management/static/src/js/risk_heatmap.js',
+            'risk_management/static/src/xml/risk_heatmap.xml',
+            'risk_management/static/src/scss/risk_heatmap.scss',
         ],
         'web.report_assets_common': [  # ⬅️ AJOUTEZ CETTE SECTION
             'risk_management/static/src/css/report_style.css',
