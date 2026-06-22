@@ -930,7 +930,6 @@ class RiskRisk(models.Model):
 
     dashboard_html = fields.Html(
         compute='_compute_dashboard_html',
-        string='Dashboard KPI',
         sanitize=False,
         store=False
     )
