@@ -75,6 +75,17 @@ class RiskControl(models.Model):
         string='Compliance Requirements'
     )
 
+    effectiveness_level = fields.Selection(
+        selection=[
+            ('1', 'Efficace'),
+            ('2', 'Partiellement efficace'),
+            ('3', 'Inefficace ou informel'),
+        ],
+        string='Niveau d\'efficacité',
+        tracking=True,
+        help='Niveau d\'efficacité du contrôle interne'
+    )
+
     @api.depends('test_ids.result_score')
     def _compute_effectiveness(self):
 

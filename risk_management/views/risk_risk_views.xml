@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <record id="view_risk_form_new" model="ir.ui.view">
-        <field name="name">risk.form.new</field>
+    <record id="view_risk_form" model="ir.ui.view">
+        <field name="name">risk.risk.form</field>
         <field name="model">risk.risk</field>
+        <field name="priority">1</field>
         <field name="arch" type="xml">
             <form>
                 <header>
@@ -163,8 +163,8 @@
         </field>
     </record>
 
-        <record id="view_risk_cartography_list" model="ir.ui.view">
-        <field name="name">risk.cartography.list</field>
+        <record id="view_risk_list" model="ir.ui.view">
+        <field name="name">risk.list</field>
         <field name="model">risk.risk</field>
         <field name="arch" type="xml">
             <list
@@ -192,7 +192,7 @@
         </field>
     </record>
 
-    <record id="view_risk_dashboard_kanban" model="ir.ui.view">
+    <!--record id="view_risk_dashboard_kanban" model="ir.ui.view">
         <field name="name">risk.dashboard.kanban</field>
         <field name="model">risk.risk</field>
         <field name="arch" type="xml">
@@ -208,6 +208,6 @@
                 </templates>
             </kanban>
         </field>
-    </record>
+    </record-->
 
 </odoo>
