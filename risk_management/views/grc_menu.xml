@@ -60,20 +60,20 @@
         sequence="1"
     />
 
-    <menuitem id="menu_grc_cartography"
+    <!--menuitem id="menu_grc_cartography"
               name="📋 Cartographie"
               parent="menu_grc_risk"
               action="action_risk_cartography"
-              sequence="10"/>
+              sequence="10"/-->
 
-    <menuitem id="menu_grc_heatmap"
+    <!--menuitem id="menu_grc_heatmap"
         name="🔥 Heatmap"
         parent="menu_grc_risk"
         action="action_risk_heatmap"
         sequence="15"
-    />
+    /-->
     <menuitem id="menu_risk_dashboard"
-          name="Tableau de bord Owl" 
+          name="📋 Tableau de Bord"
           parent="menu_grc_risk"
           action="action_risk_heatmap_dashboard"
           sequence="1"/>
