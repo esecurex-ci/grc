@@ -348,6 +348,17 @@
         parent="menu_grc_admin"
         action="action_risk_metric_engine"
     />
+    <menuitem id="menu_risk_config"
+          name="⚙️ Configuration des échelles"
+          parent="menu_grc_admin"
+          action="action_risk_config_settings"
+          sequence="5"/>
+
+    <menuitem id="menu_risk_scale_value"
+          name="Valeurs d'échelle"
+          parent="menu_grc_admin"
+          action="action_risk_scale_value"
+          sequence="6"/>
 
     <!-- ===================================================== -->
     <!-- REFERENTIELS -->

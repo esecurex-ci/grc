@@ -380,5 +380,17 @@
         <field name="target">current</field>
     </record>
 
+    <record id="action_risk_scale_value" model="ir.actions.act_window">
+        <field name="name">Valeurs d'échelle</field>
+        <field name="res_model">risk.scale.value</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_risk_config_settings" model="ir.actions.act_window">
+        <field name="name">Configurer les échelles</field>
+        <field name="res_model">risk.config.settings</field>
+        <field name="view_mode">form</field>
+    </record>
+
 
 </odoo>

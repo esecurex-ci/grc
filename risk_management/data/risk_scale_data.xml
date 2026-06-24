@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ========================================================== -->
+        <!-- ÉCHELLE DE PROBABILITÉ                                     -->
+        <!-- ========================================================== -->
+
+        <record id="scale_prob_1" model="risk.scale.value">
+            <field name="name">Très faible</field>
+            <field name="value">1</field>
+            <field name="numeric_value">1</field>
+            <field name="scale_type">probability</field>
+            <field name="color">#28a745</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="scale_prob_2" model="risk.scale.value">
+            <field name="name">Faible</field>
+            <field name="value">2</field>
+            <field name="numeric_value">2</field>
+            <field name="scale_type">probability</field>
+            <field name="color">#6fcf97</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="scale_prob_3" model="risk.scale.value">
+            <field name="name">Moyen</field>
+            <field name="value">3</field>
+            <field name="numeric_value">3</field>
+            <field name="scale_type">probability</field>
+            <field name="color">#ffc107</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="scale_prob_4" model="risk.scale.value">
+            <field name="name">Élevé</field>
+            <field name="value">4</field>
+            <field name="numeric_value">4</field>
+            <field name="scale_type">probability</field>
+            <field name="color">#fd7e14</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="scale_prob_5" model="risk.scale.value">
+            <field name="name">Très élevé</field>
+            <field name="value">5</field>
+            <field name="numeric_value">5</field>
+            <field name="scale_type">probability</field>
+            <field name="color">#dc3545</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- ========================================================== -->
+        <!-- ÉCHELLE D'IMPACT                                           -->
+        <!-- ========================================================== -->
+
+        <record id="scale_impact_1" model="risk.scale.value">
+            <field name="name">Insignifiant</field>
+            <field name="value">1</field>
+            <field name="numeric_value">1</field>
+            <field name="scale_type">impact</field>
+            <field name="color">#28a745</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="scale_impact_2" model="risk.scale.value">
+            <field name="name">Mineur</field>
+            <field name="value">2</field>
+            <field name="numeric_value">2</field>
+            <field name="scale_type">impact</field>
+            <field name="color">#6fcf97</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="scale_impact_3" model="risk.scale.value">
+            <field name="name">Modéré</field>
+            <field name="value">3</field>
+            <field name="numeric_value">3</field>
+            <field name="scale_type">impact</field>
+            <field name="color">#ffc107</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="scale_impact_4" model="risk.scale.value">
+            <field name="name">Majeur</field>
+            <field name="value">4</field>
+            <field name="numeric_value">4</field>
+            <field name="scale_type">impact</field>
+            <field name="color">#fd7e14</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="scale_impact_5" model="risk.scale.value">
+            <field name="name">Catastrophique</field>
+            <field name="value">5</field>
+            <field name="numeric_value">5</field>
+            <field name="scale_type">impact</field>
+            <field name="color">#dc3545</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- ========================================================== -->
+        <!-- NIVEAUX DE RISQUE                                          -->
+        <!-- ========================================================== -->
+
+        <record id="scale_level_low" model="risk.scale.value">
+            <field name="name">Faible</field>
+            <field name="value">low</field>
+            <field name="scale_type">level</field>
+            <field name="color">#28a745</field>
+            <field name="score_min">0</field>
+            <field name="score_max">4</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="scale_level_medium" model="risk.scale.value">
+            <field name="name">Moyen</field>
+            <field name="value">medium</field>
+            <field name="scale_type">level</field>
+            <field name="color">#ffc107</field>
+            <field name="score_min">5</field>
+            <field name="score_max">9</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="scale_level_high" model="risk.scale.value">
+            <field name="name">Élevé</field>
+            <field name="value">high</field>
+            <field name="scale_type">level</field>
+            <field name="color">#fd7e14</field>
+            <field name="score_min">10</field>
+            <field name="score_max">15</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="scale_level_critical" model="risk.scale.value">
+            <field name="name">Critique</field>
+            <field name="value">critical</field>
+            <field name="scale_type">level</field>
+            <field name="color">#dc3545</field>
+            <field name="score_min">16</field>
+            <field name="score_max">25</field>
+            <field name="sequence">40</field>
+        </record>
+
+    </data>
+</odoo>

@@ -13,6 +13,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
+        'data/risk_scale_data.xml',
 
         # ========== 1. VUES DE BASE (Modèles simples) ==========
         'views/risk_category_views.xml',
@@ -90,6 +91,7 @@
         'views/risk_heatmap_line_views.xml',
         'views/risk_continuity_dashboard_views.xml',
         'views/risk_risk_dashboard_views.xml',
+        'views/risk_config_views.xml',
 
         # ========== 9. MENUS ET ACTIONS (TOUJOURS EN DERNIER) ==========
         'views/grc_actions.xml',
