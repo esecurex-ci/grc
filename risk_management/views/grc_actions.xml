@@ -37,7 +37,8 @@
     <!-- ✅ ACTION CLIENT - Tableau de bord Processus -->
     <record id="action_process_dashboard" model="ir.actions.client">
         <field name="name">📋 Tableau de bord Processus</field>
-        <field name="tag">process_dashboard</field>
+        <field name="tag">risk_management.process_dashboard</field>
+        <field name="target">new</field>
     </record>
 
     <!-- ===================================================== -->

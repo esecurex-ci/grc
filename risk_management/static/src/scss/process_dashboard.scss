@@ -7,10 +7,36 @@
     background: #f5f7fa;
     border-radius: 12px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    /* ✅ AJOUT : Scroll */
     max-height: calc(100vh - 80px);
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+/* ========================================================== */
+/* HEADER                                                      */
+/* ========================================================== */
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.dashboard-header h2 {
+    color: #1a237e;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.dashboard-date {
+    font-size: 13px;
+    color: #6c757d;
+    background: #f8f9fa;
+    padding: 6px 12px;
+    border-radius: 20px;
 }
 
 /* ========================================================== */
@@ -55,6 +81,64 @@
 .kpi-low .kpi-value { color: #28a745; }
 .kpi-avg { border-left-color: #1a237e; }
 .kpi-avg .kpi-value { color: #1a237e; }
+
+.kpi-progress {
+    margin-top: 6px;
+}
+
+.kpi-progress .progress-track {
+    height: 4px;
+    background: #f0f0f0;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.kpi-progress .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+}
+
+/* ========================================================== */
+/* DONUT CHARTS                                                */
+/* ========================================================== */
+
+.donut-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    margin: 10px 0;
+}
+
+.donut-item {
+    text-align: center;
+}
+
+.donut-circle {
+    max-width: 120px;
+    margin: 0 auto;
+}
+
+.donut-circle svg {
+    width: 100%;
+    height: auto;
+}
+
+.donut-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #495057;
+    margin-top: 4px;
+}
+
+.donut-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+}
 
 /* ========================================================== */
 /* CHART CARDS                                                */
@@ -101,6 +185,12 @@
     background: #f8f9fa;
 }
 
+.cell-danger { background: #ffebee; font-weight: bold; color: #dc3545; }
+.cell-warning { background: #fff8e1; font-weight: bold; color: #fd7e14; }
+.cell-info { background: #e3f2fd; font-weight: bold; color: #1976d2; }
+.cell-success { background: #e8f5e9; font-weight: bold; color: #28a745; }
+.cell-empty { color: #bdbdbd; }
+
 /* ========================================================== */
 /* BARRES                                                      */
 /* ========================================================== */
@@ -136,6 +226,18 @@
     height: 100%;
     border-radius: 10px;
     transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    min-width: 30px;
+}
+
+.bar-value-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .bar-value {
@@ -188,6 +290,12 @@
     color: #1a237e;
 }
 
+.cat-percent {
+    font-size: 11px;
+    color: #6c757d;
+    min-width: 40px;
+}
+
 /* ========================================================== */
 /* BADGES                                                      */
 /* ========================================================== */
@@ -209,15 +317,156 @@
 .risk-level-badge.low { background: #28a745; }
 
 /* ========================================================== */
-/* RISK ITEMS                                                  */
+/* PROCESSUS ITEMS                                            */
 /* ========================================================== */
 
-.risk-item {
+.process-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f5f5f5;
     cursor: pointer;
+    transition: background 0.2s;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.risk-item:hover {
+.process-item:hover {
     background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.process-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.process-name {
+    font-weight: 500;
+    font-size: 13px;
+    color: #333;
+}
+
+.process-code {
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.process-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.process-owner {
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.rank-badge {
+    font-weight: 700;
+    color: #1a237e;
+    font-size: 12px;
+    min-width: 20px;
+}
+
+/* ========================================================== */
+/* PROCESSUS SANS RISQUE                                      */
+/* ========================================================== */
+
+.no-risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 8px;
+}
+
+.no-risk-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #6c757d;
+}
+
+.no-risk-code {
+    font-weight: 600;
+    color: #1a237e;
+    font-size: 12px;
+}
+
+.no-risk-name {
+    font-size: 12px;
+    color: #495057;
+}
+
+/* ========================================================== */
+/* RAPPORT NARRATIF                                           */
+/* ========================================================== */
+
+.narrative-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.narrative-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.narrative-item:last-child {
+    border-bottom: none;
+}
+
+.narr-icon {
+    font-size: 18px;
+    width: 30px;
+    text-align: center;
+}
+
+.narr-text {
+    font-size: 13px;
+    color: #495057;
+}
+
+/* ========================================================== */
+/* LÉGENDE                                                    */
+/* ========================================================== */
+
+.dashboard-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 12px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.dashboard-legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #495057;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.legend-separator {
+    color: #dee2e6 !important;
 }
 
 /* ========================================================== */
@@ -262,5 +511,19 @@
     .bar-label {
         width: 60px;
         font-size: 10px;
+    }
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .dashboard-header h2 {
+        font-size: 18px;
+    }
+    .donut-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .no-risk-grid {
+        grid-template-columns: 1fr;
     }
 }
