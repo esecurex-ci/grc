@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="risk_management.process_dashboard" owl="1">
+        <div class="process-dashboard-container">
+
+            <!-- ========================================= -->
+            <!-- CHARGEMENT                               -->
+            <!-- ========================================= -->
+            <div t-if="state.loading" style="text-align:center;padding:50px;color:#6c757d;">
+                <i class="fa fa-spinner fa-spin fa-3x" style="color:#1a237e;"></i>
+                <p style="margin-top:15px;">Chargement du tableau de bord...</p>
+            </div>
+
+            <div t-else="">
+
+                <!-- ========================================= -->
+                <!-- TITRE                                    -->
+                <!-- ========================================= -->
+                <h2 class="text-center mb-4" style="color:#1a237e;font-weight:700;">📋 Tableau de Bord des Processus Métiers</h2>
+
+                <!-- ========================================= -->
+                <!-- KPI CARDS                                -->
+                <!-- ========================================= -->
+                <div class="row g-2 mb-4">
+                    <div class="col-2">
+                        <div class="kpi-card" t-on-click="openAllProcesses">
+                            <div class="kpi-label">Total Processus</div>
+                            <div class="kpi-value"><t t-esc="state.totalProcesses"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-critical">
+                            <div class="kpi-label">🔴 Critiques</div>
+                            <div class="kpi-value"><t t-esc="state.critical"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-high">
+                            <div class="kpi-label">🟠 Élevés</div>
+                            <div class="kpi-value"><t t-esc="state.high"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-medium">
+                            <div class="kpi-label">🟡 Moyens</div>
+                            <div class="kpi-value"><t t-esc="state.medium"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-low">
+                            <div class="kpi-label">🟢 Faibles</div>
+                            <div class="kpi-value"><t t-esc="state.low"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-avg" t-on-click="openCriticalProcesses">
+                            <div class="kpi-label">🔴 Critiques</div>
+                            <div class="kpi-value"><t t-esc="state.critical"/> / <t t-esc="state.totalProcesses"/></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- MATRICE DES PROCESSUS PAR CATÉGORIE     -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="chart-card">
+                            <h5 class="chart-title">🔥 Matrice des Processus par Catégorie</h5>
+                            <table class="matrix-table">
+                                <thead>
+                                    <tr>
+                                        <th>Catégorie ↓</th>
+                                        <th>🔴 Critiques</th>
+                                        <th>🟠 Élevés</th>
+                                        <th>🟡 Moyens</th>
+                                        <th>🟢 Faibles</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="Object.keys(state.matrix)" t-as="cat" t-key="cat">
+                                        <td><strong><t t-esc="formatCategory(cat)"/></strong></td>
+                                        <td><t t-esc="state.matrix[cat].critical || 0"/></td>
+                                        <td><t t-esc="state.matrix[cat].high || 0"/></td>
+                                        <td><t t-esc="state.matrix[cat].medium || 0"/></td>
+                                        <td><t t-esc="state.matrix[cat].low || 0"/></td>
+                                        <td><strong><t t-esc="state.matrix[cat].total || 0"/></strong></td>
+                                    </tr>
+                                    <tr style="font-weight:bold;background:#f8f9fa;">
+                                        <td>Total</td>
+                                        <td><t t-esc="state.critical"/></td>
+                                        <td><t t-esc="state.high"/></td>
+                                        <td><t t-esc="state.medium"/></td>
+                                        <td><t t-esc="state.low"/></td>
+                                        <td><t t-esc="state.totalProcesses"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- TOP RISQUES & PROCESSUS CRITIQUES        -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">🎯 Processus Critiques</h5>
+                            <div t-if="state.criticalProcesses.length > 0">
+                                <div class="risk-item" t-foreach="state.criticalProcesses" t-as="process" t-key="process.id">
+                                    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;" t-on-click="() => openProcessById(process.id)">
+                                        <div>
+                                            <span class="risk-level-badge critical">Critical</span>
+                                            <span style="font-size:13px;font-weight:500;margin-left:8px;"><t t-esc="process.name"/></span>
+                                            <span style="font-size:11px;color:#6c757d;margin-left:8px;"><t t-esc="process.code"/></span>
+                                        </div>
+                                        <div>
+                                            <span class="badge badge-secondary"><t t-esc="process.count"/> risques</span>
+                                            <span style="font-size:11px;color:#6c757d;margin-left:8px;"><t t-esc="process.owner"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#" class="view-all-link" t-on-click.prevent="openCriticalProcesses">
+                                    Voir tous les processus critiques →
+                                </a>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucun processus critique
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📋 Top 5 Processus à risque</h5>
+                            <!-- ✅ CORRIGÉ : utilisation de process_index -->
+                            <div class="risk-item" t-foreach="state.topProcesses" t-as="process" t-key="process.id">
+                                <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;" t-on-click="() => openProcessById(process.id)">
+                                    <div>
+                                        <span style="font-weight:700;color:#1a237e;font-size:12px;">#<t t-esc="process_index + 1"/></span>
+                                        <span class="risk-level-badge" t-attf-class="risk-level-badge #{getLevelBadge(process.level)}">
+                                            <t t-esc="getLevelBadge(process.level)"/>
+                                        </span>
+                                        <span style="font-size:13px;font-weight:500;margin-left:8px;"><t t-esc="process.name"/></span>
+                                        <span style="font-size:11px;color:#6c757d;margin-left:8px;"><t t-esc="process.code"/></span>
+                                    </div>
+                                    <div>
+                                        <span class="badge badge-secondary"><t t-esc="process.count"/> risques</span>
+                                        <span style="font-size:11px;color:#6c757d;margin-left:8px;"><t t-esc="process.owner"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#" class="view-all-link" t-on-click.prevent="openAllProcesses">
+                                Voir tous les processus →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- RÉPARTITION DES RISQUES                   -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📊 Répartition des Processus par Niveau de Risque</h5>
+                            <div class="bar-chart">
+                                <div class="bar-row" t-foreach="state.riskDistribution" t-as="item" t-key="item.label">
+                                    <span class="bar-label"><t t-esc="item.label"/></span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" t-attf-style="width:#{(item.value / getMaxDistribution()) * 100}%;background:#{item.color};"></div>
+                                    </div>
+                                    <span class="bar-value"><t t-esc="item.value"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📈 Évolution par Catégorie</h5>
+                            <div class="category-bars">
+                                <div class="category-row" t-foreach="Object.entries(state.categoryStats)" t-as="item" t-key="item[0]">
+                                    <span class="cat-label"><t t-esc="item[0]"/></span>
+                                    <div class="cat-track">
+                                        <div class="cat-fill" t-attf-style="width:#{(item[1] / getCategoryMax()) * 100}%;background:#1a237e;"></div>
+                                    </div>
+                                    <span class="cat-value"><t t-esc="item[1]"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- PROCESSUS SANS RISQUE                     -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="chart-card">
+                            <h5 class="chart-title">⬜ Processus sans risque identifié</h5>
+                            <div t-if="state.processesWithoutRisk.length > 0">
+                                <div class="risk-item" t-foreach="state.processesWithoutRisk" t-as="process" t-key="process.id">
+                                    <span style="font-size:13px;">
+                                        <t t-esc="process.code"/> - <t t-esc="process.name"/>
+                                        <span class="badge badge-secondary"><t t-esc="process.category"/></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Tous les processus ont des risques identifiés
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- RAPPORT NARRATIF                         -->
+                <!-- ========================================= -->
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📝 Rapport Narratif - Principaux changements</h5>
+                            <div t-foreach="state.narratives" t-as="item" t-key="item.icon">
+                                <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f5f5f5;">
+                                    <span style="font-size:16px;"><t t-esc="item.icon"/></span>
+                                    <span style="font-size:13px;color:#495057;"><t t-esc="item.text"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- LÉGENDE                                  -->
+                <!-- ========================================= -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div style="display:flex;justify-content:center;gap:20px;padding:8px;background:#f8f9fa;border-radius:6px;flex-wrap:wrap;">
+                            <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                                <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#dc3545;"></span> Critique
+                            </span>
+                            <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                                <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#fd7e14;"></span> Élevé
+                            </span>
+                            <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                                <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#ffc107;"></span> Moyen
+                            </span>
+                            <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                                <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#28a745;"></span> Faible
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

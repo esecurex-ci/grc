@@ -117,7 +117,8 @@
                                     </span>
                                 </div>
                                 <div>
-                                    <i class="fa fa-user"/> <field name="owner_id"/>
+                                    <i class="fa fa-user" title="Propriétaire"/>
+                                    <field name="owner_id"/>
                                 </div>
                             </div>
                         </div>

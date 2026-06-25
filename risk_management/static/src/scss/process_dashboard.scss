@@ -1,0 +1,266 @@
+/* static/src/scss/process_dashboard.scss */
+
+.process-dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f5f7fa;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* ✅ AJOUT : Scroll */
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ========================================================== */
+/* KPI CARDS                                                   */
+/* ========================================================== */
+
+.kpi-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #6c757d;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.kpi-card .kpi-label {
+    font-size: 11px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kpi-card .kpi-value {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.kpi-critical { border-left-color: #dc3545; }
+.kpi-critical .kpi-value { color: #dc3545; }
+.kpi-high { border-left-color: #fd7e14; }
+.kpi-high .kpi-value { color: #fd7e14; }
+.kpi-medium { border-left-color: #f0ad4e; }
+.kpi-medium .kpi-value { color: #f0ad4e; }
+.kpi-low { border-left-color: #28a745; }
+.kpi-low .kpi-value { color: #28a745; }
+.kpi-avg { border-left-color: #1a237e; }
+.kpi-avg .kpi-value { color: #1a237e; }
+
+/* ========================================================== */
+/* CHART CARDS                                                */
+/* ========================================================== */
+
+.chart-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    height: 100%;
+}
+
+.chart-card .chart-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a237e;
+    margin-bottom: 12px;
+}
+
+/* ========================================================== */
+/* MATRICE                                                     */
+/* ========================================================== */
+
+.matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.matrix-table th, .matrix-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.matrix-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+.matrix-table tr:hover {
+    background: #f8f9fa;
+}
+
+/* ========================================================== */
+/* BARRES                                                      */
+/* ========================================================== */
+
+.bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bar-label {
+    width: 80px;
+    font-size: 12px;
+    color: #495057;
+    text-align: right;
+}
+
+.bar-track {
+    flex: 1;
+    height: 20px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.bar-value {
+    width: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a237e;
+}
+
+/* ========================================================== */
+/* CATÉGORIES                                                  */
+/* ========================================================== */
+
+.category-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.category-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cat-label {
+    width: 100px;
+    font-size: 12px;
+    color: #495057;
+    text-align: right;
+}
+
+.cat-track {
+    flex: 1;
+    height: 18px;
+    background: #f0f0f0;
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+.cat-fill {
+    height: 100%;
+    border-radius: 9px;
+}
+
+.cat-value {
+    width: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a237e;
+}
+
+/* ========================================================== */
+/* BADGES                                                      */
+/* ========================================================== */
+
+.risk-level-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: white;
+    min-width: 50px;
+    display: inline-block;
+    text-align: center;
+}
+
+.risk-level-badge.critical { background: #dc3545; }
+.risk-level-badge.high { background: #fd7e14; }
+.risk-level-badge.medium { background: #f0ad4e; color: #000; }
+.risk-level-badge.low { background: #28a745; }
+
+/* ========================================================== */
+/* RISK ITEMS                                                  */
+/* ========================================================== */
+
+.risk-item {
+    cursor: pointer;
+}
+
+.risk-item:hover {
+    background: #f8f9fa;
+}
+
+/* ========================================================== */
+/* LIENS                                                       */
+/* ========================================================== */
+
+.view-all-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #1a237e;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
+
+/* ========================================================== */
+/* RESPONSIVE                                                  */
+/* ========================================================== */
+
+@media (max-width: 768px) {
+    .process-dashboard-container {
+        max-height: calc(100vh - 60px);
+        padding: 10px;
+    }
+    .kpi-card .kpi-value {
+        font-size: 20px;
+    }
+    .matrix-table th, .matrix-table td {
+        font-size: 11px;
+        padding: 4px 6px;
+    }
+    .cat-label {
+        width: 70px;
+        font-size: 10px;
+    }
+    .bar-label {
+        width: 60px;
+        font-size: 10px;
+    }
+}

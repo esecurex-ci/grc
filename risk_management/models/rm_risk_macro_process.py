@@ -20,7 +20,7 @@ class RiskMacroProcess(models.Model):
     )
 
     sequence = fields.Integer(
-        string='Sequence',
+        string='Séquence',
         default=10,
         help='Ordre d\'affichage'
     )
@@ -30,12 +30,12 @@ class RiskMacroProcess(models.Model):
     )
 
     color = fields.Integer(
-        string='Color',
+        string='Couleur',
         help='Couleur pour l\'affichage kanban'
     )
 
     image_128 = fields.Image(
-        string='Icone',
+        string='Icône',
         max_width=128,
         max_height=128,
         help='Image représentant le macro-processus'
@@ -65,41 +65,63 @@ class RiskMacroProcess(models.Model):
         string='Processus'
     )
 
-    # Champs statistiques
+    # ✅ CHAMPS STATISTIQUES CORRIGÉS - Tous avec les mêmes propriétés
     process_count = fields.Integer(
         compute='_compute_counts',
+        compute_sudo=True,  # ← AJOUTÉ
+        store=True,  # ← store=True pour tous
         string='Nombre de processus'
     )
 
     activity_count = fields.Integer(
         compute='_compute_counts',
+        compute_sudo=True,  # ← AJOUTÉ
+        store=True,  # ← store=True (cohérent avec les autres)
         string='Nombre d\'activités'
     )
 
     risk_count = fields.Integer(
         compute='_compute_counts',
+        compute_sudo=True,  # ← AJOUTÉ
+        store=True,  # ← store=True pour tous
         string='Nombre de risques'
     )
 
     critical_risk_count = fields.Integer(
         compute='_compute_counts',
+        compute_sudo=True,  # ← AJOUTÉ
+        store=True,  # ← store=True (cohérent)
         string='Risques critiques'
     )
 
-    @api.depends('process_ids', 'process_ids.activity_ids', 'process_ids.activity_ids.risk_ids')
+    @api.depends('process_ids', 'process_ids.risk_ids')
     def _compute_counts(self):
         for record in self:
+            # Nombre de processus
             record.process_count = len(record.process_ids)
 
-            activities = record.process_ids.mapped('activity_ids')
-            record.activity_count = len(activities)
+            # Compter les risques et activités
+            risk_count = 0
+            critical_count = 0
+            activity_count = 0
 
-            risks = activities.mapped('risk_ids')
-            record.risk_count = len(risks)
+            for process in record.process_ids:
+                # Compter les risques
+                process_risks = process.risk_ids
+                risk_count += len(process_risks)
 
-            record.critical_risk_count = len(
-                risks.filtered(lambda r: getattr(r, 'risk_level', '0') in ['4', '5', 'critical', 'high'])
-            )
+                # Compter les risques critiques (niveau 5)
+                for risk in process_risks:
+                    if risk.risk_level == '5' or risk.inherent_level == 'critical':
+                        critical_count += 1
+
+                # Compter les activités (si le champ existe)
+                if hasattr(process, 'activity_ids'):
+                    activity_count += len(process.activity_ids)
+
+            record.risk_count = risk_count
+            record.critical_risk_count = critical_count
+            record.activity_count = activity_count
 
     def action_view_processes(self):
         self.ensure_one()

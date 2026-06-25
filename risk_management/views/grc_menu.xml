@@ -49,11 +49,11 @@
           action="action_risk_executive_dashboard"
           sequence="3"/>
 
-    <menuitem id="menu_grc_dashboard_executive"
-        name="🏛️ Tableau de bord Processus"
+    <menuitem id="menu_process_dashboard"
+        name="📋 Tableau de bord Processus"
         parent="menu_grc_risk"
-        action="action_risk_executive_dashboard"
-        sequence="2"
+        action="action_process_dashboard"
+        sequence="5"
     />
 
     <!-- ===================================================== -->
@@ -344,6 +344,13 @@
         name="Heatmaps"
         parent="menu_grc_reporting"
         action="action_risk_heatmap_snapshot"
+    />
+
+    <menuitem id="menu_risk_process_board_report"
+        name="📊 Rapport Conseil"
+        parent="menu_grc_reporting"
+        action="action_risk_process_board_report"
+        sequence="5"
     />
 
     <!-- ===================================================== -->

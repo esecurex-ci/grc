@@ -135,7 +135,7 @@ class RiskRisk(models.Model):
         ('3', 'Moyen'),
         ('4', 'Élevé'),
         ('5', 'Critique')
-    ], string='Niveau de risque', default='1', help='Niveau de risque (1 = Très faible, 5 = Critique)')
+    ], string='Niveau de risque', default='1', help='Niveau de risque (1 = Très faible, 5 = Critique)', store=True)
     macro_process_id = fields.Many2one('risk.macro.process', related='activity_id.macro_process_id', store=True,
                                        string='Macro-processus')
     last_assessment_id = fields.Many2one('risk.assessment', compute='_compute_last_assessment', compute_sudo=True,
