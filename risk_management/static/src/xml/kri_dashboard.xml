@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="risk_management.kri_dashboard" owl="1">
+        <!-- ✅ AJOUT : classe kri-dashboard-container pour le scroll -->
+        <div class="kri-dashboard-container">
+
+            <!-- ========================================= -->
+            <!-- CHARGEMENT                               -->
+            <!-- ========================================= -->
+            <div t-if="state.loading" style="text-align:center;padding:50px;color:#6c757d;">
+                <i class="fa fa-spinner fa-spin fa-3x" style="color:#1a237e;"></i>
+                <p style="margin-top:15px;">Chargement du tableau de bord KRI...</p>
+            </div>
+
+            <div t-else="">
+
+                <!-- ========================================= -->
+                <!-- HEADER                                    -->
+                <!-- ========================================= -->
+                <div class="dashboard-header">
+                    <h2>📊 Tableau de Bord des KRI</h2>
+                    <div class="dashboard-date">
+                        <i class="fa fa-calendar" title="Date de mise à jour"/>
+                        Généré le <t t-esc="new Date().toLocaleDateString('fr-FR')"/>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- KPI CARDS                                -->
+                <!-- ========================================= -->
+                <div class="row g-2 mb-4">
+                    <div class="col-2">
+                        <div class="kpi-card" t-on-click="openAllKris">
+                            <div class="kpi-label">Total KRI</div>
+                            <div class="kpi-value"><t t-esc="state.totalKris"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-green" t-on-click="openAllKris">
+                            <div class="kpi-label">🟢 Vert</div>
+                            <div class="kpi-value"><t t-esc="state.green"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-amber" t-on-click="openAmberKris">
+                            <div class="kpi-label">🟡 Orange</div>
+                            <div class="kpi-value"><t t-esc="state.amber"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-red" t-on-click="openRedKris">
+                            <div class="kpi-label">🔴 Rouge</div>
+                            <div class="kpi-value"><t t-esc="state.red"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-overdue" t-on-click="openOverdueKris">
+                            <div class="kpi-label">⏰ En retard</div>
+                            <div class="kpi-value"><t t-esc="state.overdue"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-health">
+                            <div class="kpi-label">📊 Santé globale</div>
+                            <div class="kpi-value" style="font-size:18px;">
+                                <span t-attf-class="badge #{state.red > 0 ? 'badge-danger' : state.amber > 0 ? 'badge-warning' : 'badge-success'}" style="font-size:18px;padding:8px 16px;">
+                                    <t t-if="state.red > 0">🔴 Critique</t>
+                                    <t t-elif="state.amber > 0">🟡 Attention</t>
+                                    <t t-else="">🟢 Bonne</t>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DONUT CHARTS                             -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📊 Distribution par Statut</h5>
+                            <div t-out="renderDonutChart(state.statusDistribution, state.totalKris)"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📊 Distribution par Catégorie</h5>
+                            <div t-out="renderDonutChart(state.categoryDistribution, state.totalKris)"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- ALERTES RÉCENTES                         -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <!-- ✅ AJOUT : classe scrollable-card pour le scroll interne -->
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🚨 Alertes Récentes</h5>
+                            <div t-if="state.recentAlerts.length > 0">
+                                <div class="alert-item" t-foreach="state.recentAlerts" t-as="alert" t-key="alert.id">
+                                    <div class="alert-row" t-on-click="() => openKriById(alert.id)">
+                                        <span class="alert-status" t-attf-class="badge #{getStatusClass(alert.status)}">
+                                            <t t-esc="getStatusBadge(alert.status)"/>
+                                        </span>
+                                        <span class="alert-name"><t t-esc="alert.name"/></span>
+                                        <span class="alert-code"><t t-esc="alert.code"/></span>
+                                        <span class="alert-value">
+                                            <strong><t t-esc="alert.value"/></strong> <t t-esc="alert.unit"/>
+                                            <span class="text-muted">(seuil: <t t-esc="alert.threshold"/>)</span>
+                                        </span>
+                                        <span class="alert-date"><i class="fa fa-calendar"/> <t t-esc="alert.date"/></span>
+                                        <span class="alert-owner"><i class="fa fa-user"/> <t t-esc="alert.owner"/></span>
+                                    </div>
+                                </div>
+                                <a href="#" class="view-all-link" t-on-click.prevent="openRedKris">
+                                    Voir toutes les alertes →
+                                </a>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucune alerte récente
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- ✅ AJOUT : classe scrollable-card pour le scroll interne -->
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">📈 Top 5 KRI les plus critiques</h5>
+                            <div t-if="state.topWorst.length > 0">
+                                <div class="top-item" t-foreach="state.topWorst" t-as="kri" t-key="kri.id">
+                                    <div class="top-row" t-on-click="() => openKriById(kri.id)">
+                                        <span class="rank-badge">#<t t-esc="kri_index + 1"/></span>
+                                        <span class="top-status" t-attf-class="badge #{getStatusClass(kri.status)}">
+                                            <t t-esc="getStatusBadge(kri.status)"/>
+                                        </span>
+                                        <span class="top-name"><t t-esc="kri.name"/></span>
+                                        <span class="top-code"><t t-esc="kri.code"/></span>
+                                        <span class="top-value">
+                                            <strong><t t-esc="kri.value"/></strong> <t t-esc="kri.unit"/>
+                                        </span>
+                                        <span class="top-owner"><i class="fa fa-user"/> <t t-esc="kri.owner"/></span>
+                                    </div>
+                                </div>
+                                <a href="#" class="view-all-link" t-on-click.prevent="openAllKris">
+                                    Voir tous les KRI →
+                                </a>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucun KRI critique
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- TENDANCES                                 -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📈 Tendances des KRI</h5>
+                            <div class="trend-grid">
+                                <div class="trend-item" style="border-left:4px solid #dc3545;">
+                                    <span class="trend-icon">📈</span>
+                                    <span class="trend-label">En hausse</span>
+                                    <span class="trend-value"><t t-esc="state.trends.up"/></span>
+                                </div>
+                                <div class="trend-item" style="border-left:4px solid #28a745;">
+                                    <span class="trend-icon">📉</span>
+                                    <span class="trend-label">En baisse</span>
+                                    <span class="trend-value"><t t-esc="state.trends.down"/></span>
+                                </div>
+                                <div class="trend-item" style="border-left:4px solid #ffc107;">
+                                    <span class="trend-icon">➡️</span>
+                                    <span class="trend-label">Stable</span>
+                                    <span class="trend-value"><t t-esc="state.trends.stable"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- RAPPORT NARRATIF                         -->
+                <!-- ========================================= -->
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="chart-card narrative-card">
+                            <h5 class="chart-title">📝 Rapport Narratif</h5>
+                            <div t-foreach="state.narratives" t-as="item" t-key="item.icon">
+                                <div class="narrative-item">
+                                    <span class="narr-icon"><t t-esc="item.icon"/></span>
+                                    <span class="narr-text"><t t-esc="item.text"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- LÉGENDE                                  -->
+                <!-- ========================================= -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="dashboard-legend">
+                            <span><span class="legend-color" style="background:#28a745;"></span> Vert (OK)</span>
+                            <span><span class="legend-color" style="background:#ffc107;"></span> Orange (Alerte)</span>
+                            <span><span class="legend-color" style="background:#dc3545;"></span> Rouge (Critique)</span>
+                            <span class="legend-separator">|</span>
+                            <span><i class="fa fa-user"/> Propriétaire</span>
+                            <span><i class="fa fa-calendar"/> Date de mesure</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+</templates>

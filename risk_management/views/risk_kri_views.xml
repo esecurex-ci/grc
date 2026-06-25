@@ -1,134 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- ========================================= -->
+    <!-- VUE LISTE - KRI                           -->
+    <!-- ========================================= -->
     <record id="view_risk_kri_list" model="ir.ui.view">
         <field name="name">risk.kri.list</field>
         <field name="model">risk.kri</field>
         <field name="arch" type="xml">
-
-            <list
-                  decoration-success="status == 'green'"
+            <list decoration-success="status == 'green'"
                   decoration-warning="status == 'amber'"
                   decoration-danger="status == 'red'">
-
                 <field name="code"/>
                 <field name="name"/>
+                <field name="category"/>
                 <field name="owner_id"/>
-                <field name="current_value"/>
+                <field name="current_value" sum="Total"/>
                 <field name="unit"/>
                 <field name="status" widget="badge"/>
-
+                <field name="trend" widget="badge"/>
+                <field name="variation"/>
+                <field name="last_measure_date"/>
+                <field name="next_measure_date"/>
+                <field name="overdue" widget="boolean"/>
+                <field name="alert_count" widget="badge"/>
             </list>
-
         </field>
     </record>
 
-    <record id="view_risk_kri_search" model="ir.ui.view">
-        <field name="name">risk.kri.search</field>
-        <field name="model">risk.kri</field>
-        <field name="arch" type="xml">
-
-            <search>
-
-                <field name="code"/>
-                <field name="name"/>
-                <field name="owner_id"/>
-
-                <filter name="green"
-                        string="Vert"
-                        domain="[('status','=','green')]"/>
-
-                <filter name="amber"
-                        string="Orange"
-                        domain="[('status','=','amber')]"/>
-
-                <filter name="red"
-                        string="Rouge"
-                        domain="[('status','=','red')]"/>
-
-            </search>
-
-        </field>
-    </record>
-
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - KRI                      -->
+    <!-- ========================================= -->
     <record id="view_risk_kri_form" model="ir.ui.view">
         <field name="name">risk.kri.form</field>
         <field name="model">risk.kri</field>
         <field name="arch" type="xml">
-
             <form>
-
+                <header>
+                    <button name="action_add_measure" string="➕ Ajouter une mesure" type="object" class="btn-primary"/>
+                    <button name="action_view_measures" string="📊 Voir les mesures" type="object"/>
+                    <field name="status" widget="badge"/>
+                    <field name="trend" widget="badge"/>
+                </header>
                 <sheet>
-
                     <div class="oe_title">
                         <h1>
-                            <field name="name"/>
+                            <field name="name" placeholder="Nom du KRI..."/>
                         </h1>
+                        <span class="oe_subtitle">
+                            <field name="code" placeholder="Code"/>
+                        </span>
                     </div>
 
                     <group>
-
                         <group>
-                            <field name="code"/>
+                            <field name="category"/>
                             <field name="owner_id"/>
                             <field name="unit"/>
+                            <field name="measure_frequency"/>
                         </group>
-
                         <group>
                             <field name="current_value" readonly="1"/>
-                            <field name="status" widget="badge" readonly="1"/>
+                            <field name="previous_value" readonly="1"/>
+                            <field name="variation" readonly="1"/>
+                            <field name="last_measure_date" readonly="1"/>
+                            <field name="next_measure_date" readonly="1"/>
+                            <field name="overdue" readonly="1"/>
                         </group>
+                    </group>
 
+                    <group string="Seuils de déclenchement">
+                        <group>
+                            <field name="threshold_green" string="🟢 Seuil Vert (OK)"/>
+                            <field name="threshold_amber" string="🟡 Seuil Orange (Alerte)"/>
+                            <field name="threshold_red" string="🔴 Seuil Rouge (Critique)"/>
+                        </group>
+                        <group>
+                            <div class="alert alert-info">
+                                <strong>📌 Légende :</strong><br/>
+                                🟢 Vert : Seuil bas ≤ Valeur &lt; Seuil orange<br/>
+                                🟡 Orange : Seuil orange ≤ Valeur &lt; Seuil rouge<br/>
+                                🔴 Rouge : Valeur ≥ Seuil rouge
+                            </div>
+                        </group>
                     </group>
 
                     <notebook>
-
-                        <page string="Description">
+                        <page string="📝 Description">
                             <field name="description"/>
                         </page>
-
-                        <page string="Risques">
-
-                            <field name="risk_ids"
-                                   widget="many2many_tags"/>
-
-                        </page>
-
-                        <page string="Seuils">
-
-                            <group>
-
-                                <field name="threshold_green"/>
-                                <field name="threshold_amber"/>
-                                <field name="threshold_red"/>
-
-                            </group>
-
-                        </page>
-
-                        <page string="Mesures">
-
-                            <field name="measure_ids">
-
-                                <list editable="bottom">
-
+                        <page string="📊 Mesures">
+                            <!-- ✅ CORRIGÉ : id au lieu de active_id -->
+                            <field name="measure_ids" context="{'default_kri_id': id}">
+                                <list editable="bottom" decoration-success="kri_id.status == 'green'" decoration-warning="kri_id.status == 'amber'" decoration-danger="kri_id.status == 'red'">
                                     <field name="measure_date"/>
-                                    <field name="value"/>
-
+                                    <field name="value" sum="Total"/>
+                                    <field name="comment"/>
                                 </list>
-
                             </field>
-
                         </page>
-
+                        <page string="🔗 Risques associés">
+                            <field name="risk_ids"/>
+                        </page>
+                        <page string="🚨 Alertes">
+                            <field name="alert_ids">
+                                <list decoration-warning="status == 'amber'" decoration-danger="status == 'red'">
+                                    <field name="create_date"/>
+                                    <field name="status" widget="badge"/>
+                                    <field name="value"/>
+                                    <field name="threshold"/>
+                                    <field name="acknowledged" widget="boolean"/>
+                                    <field name="resolved" widget="boolean"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="📋 Plan d'action">
+                            <field name="action_plan"/>
+                            <field name="notes"/>
+                        </page>
                     </notebook>
-
                 </sheet>
-
-                <chatter/>
-
             </form>
+        </field>
+    </record>
 
+    <!-- ========================================= -->
+    <!-- VUE RECHERCHE - KRI                       -->
+    <!-- ========================================= -->
+    <record id="view_risk_kri_search" model="ir.ui.view">
+        <field name="name">risk.kri.search</field>
+        <field name="model">risk.kri</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category"/>
+                <field name="owner_id"/>
+                <filter name="status_green" string="🟢 Vert" domain="[('status', '=', 'green')]"/>
+                <filter name="status_amber" string="🟡 Orange" domain="[('status', '=', 'amber')]"/>
+                <filter name="status_red" string="🔴 Rouge" domain="[('status', '=', 'red')]"/>
+                <filter name="overdue" string="⏰ En retard" domain="[('overdue', '=', True)]"/>
+                <separator/>
+                <filter name="group_category" string="Par catégorie" context="{'group_by': 'category'}"/>
+                <filter name="group_status" string="Par statut" context="{'group_by': 'status'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE KANBAN - KRI                          -->
+    <!-- ========================================= -->
+    <record id="view_risk_kri_kanban" model="ir.ui.view">
+        <field name="name">risk.kri.kanban</field>
+        <field name="model">risk.kri</field>
+        <field name="arch" type="xml">
+            <kanban class="o_risk_kri_kanban">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="status"/>
+                <field name="current_value"/>
+                <field name="unit"/>
+                <field name="trend"/>
+                <field name="variation"/>
+                <field name="owner_id"/>
+                <field name="category"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <span class="o_kanban_image_size">
+                                    <i class="fa fa-gauge-high" style="font-size:32px;"/>
+                                </span>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                                <div class="text-muted">
+                                    <field name="code"/>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div class="o_risk_kri_value">
+                                        <span class="kri-value"><field name="current_value"/></span>
+                                        <span class="kri-unit"><field name="unit"/></span>
+                                    </div>
+                                    <div class="o_risk_kri_meta">
+                                        <span class="badge" t-attf-class="#{record.status.raw_value == 'green' ? 'badge-success' : record.status.raw_value == 'amber' ? 'badge-warning' : 'badge-danger'}">
+                                            <field name="status"/>
+                                        </span>
+                                        <span class="badge badge-secondary">
+                                            <field name="trend"/>
+                                        </span>
+                                        <span class="badge badge-info">
+                                            Variation: <field name="variation"/>%
+                                        </span>
+                                    </div>
+                                    <div class="o_risk_kri_owner">
+                                        <i class="fa fa-user"/> <field name="owner_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- ACTION - KRI                             -->
+    <!-- ========================================= -->
+    <record id="action_risk_kri" model="ir.actions.act_window">
+        <field name="name">KRI</field>
+        <field name="res_model">risk.kri</field>
+        <field name="view_mode">kanban,list,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_risk_kri_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📊 Gérez vos Indicateurs Clés de Risque
+            </p>
+            <p>
+                Les KRI vous permettent de surveiller en temps réel l'évolution de vos risques.
+            </p>
         </field>
     </record>
 

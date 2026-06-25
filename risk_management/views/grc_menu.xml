@@ -139,6 +139,13 @@
         action="action_risk_kri_measure"
     />
 
+    <menuitem id="menu_kri_dashboard"
+        name="📊 Tableau de bord KRI"
+        parent="menu_grc_controls"
+        action="action_kri_dashboard"
+        sequence="1"
+    />
+
     <!-- ===================================================== -->
     <!-- INCIDENTS -->
     <!-- ===================================================== -->

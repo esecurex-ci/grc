@@ -142,7 +142,16 @@
     <record id="action_risk_kri" model="ir.actions.act_window">
         <field name="name">KRI</field>
         <field name="res_model">risk.kri</field>
-        <field name="view_mode">kanban,list,form,graph</field>
+        <field name="view_mode">kanban,list,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_risk_kri_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📊 Gérez vos Indicateurs Clés de Risque
+            </p>
+            <p>
+                Les KRI vous permettent de surveiller en temps réel l'évolution de vos risques.
+            </p>
+        </field>
     </record>
 
     <record id="action_risk_kri_measure" model="ir.actions.act_window">
@@ -150,6 +159,13 @@
         <field name="res_model">risk.kri.measure</field>
         <field name="view_mode">list,form,graph,pivot</field>
     </record>
+
+    <record id="action_kri_dashboard" model="ir.actions.client">
+        <field name="name">📊 Tableau de bord KRI</field>
+        <field name="tag">risk_management.kri_dashboard</field>
+    </record>
+
+
 
     <!-- ===================================================== -->
     <!-- INCIDENTS                                             -->
