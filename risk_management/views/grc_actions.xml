@@ -2,8 +2,9 @@
 <odoo>
 
     <!-- ===================================================== -->
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD                                             -->
     <!-- ===================================================== -->
+
     <record id="action_grc_dashboard_client" model="ir.actions.client">
         <field name="name">GRC Executive Dashboard</field>
         <field name="tag">grc_dashboard</field>
@@ -14,6 +15,7 @@
         <field name="res_model">risk.executive.dashboard.snapshot</field>
         <field name="view_mode">list,form</field>
     </record>
+
     <record id="action_risk_grc_score" model="ir.actions.act_window">
         <field name="name">GRC Scores</field>
         <field name="res_model">risk.grc.score</field>
@@ -24,11 +26,19 @@
         <field name="name">GRC History</field>
         <field name="res_model">risk.grc.history</field>
         <field name="view_mode">list,form,graph,pivot</field>
-
     </record>
 
     <!-- ===================================================== -->
-    <!-- RISK MANAGEMENT -->
+    <!-- COCKPIT EXÉCUTIF - TABLEAU DE BORD PROCESSUS         -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_executive_dashboard" model="ir.actions.client">
+        <field name="name">🏛️ Tableau de bord Risk</field>
+        <field name="tag">executive_dashboard</field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- RISK MANAGEMENT                                       -->
     <!-- ===================================================== -->
 
     <!-- ACTION - TABLEAU DE BORD -->
@@ -45,17 +55,21 @@
         <field name="res_model">risk.risk</field>
         <field name="context">{}</field>
         <field name="view_mode">list,form,kanban,graph</field>
-        <!-- ✅ Vue liste -->
         <field name="view_id" ref="view_risk_list"/>
-        <!-- ✅ Force les vues avec view_ids -->
-        <field name="view_ids" eval="[
-            (5, 0, {'view_mode': 'list', 'view_id': ref('view_risk_list')}),
-            (5, 0, {'view_mode': 'form', 'view_id': ref('view_risk_form')})
-        ]"/>
     </record>
+
     <record id="action_risk_heatmap_dashboard" model="ir.actions.client">
-        <field name="name">Risk KPI Dashboard</field>
+        <field name="name">📋 Tableau de Bord KPI</field>
         <field name="tag">rm_risk_heatmap_client_action</field>
+    </record>
+
+    <!-- ACTION - CARTOGRAPHIE -->
+    <record id="action_risk_cartography" model="ir.actions.act_window">
+        <field name="name">📋 Cartographie</field>
+        <field name="res_model">risk.risk</field>
+        <field name="view_mode">list,graph</field>
+        <field name="view_id" ref="view_risk_cartography_list"/>
+        <field name="search_view_id" ref="view_risk_cartography_search"/>
     </record>
 
     <record id="action_risk_assessment" model="ir.actions.act_window">
@@ -76,130 +90,89 @@
         <field name="view_mode">kanban,list,form</field>
     </record>
 
-    <!-- ACTION - CARTOGRAPHIE (Liste)
-    <record id="action_risk_cartography" model="ir.actions.act_window">
-        <field name="name">📋 Cartographie</field>
-        <field name="res_model">risk.risk</field>
-        <field name="view_mode">list,graph</field>
-        <field name="view_id" ref="view_risk_cartography_list"/>
-        <field name="view_mode">form,graph</field>
-        <field name="view_id" ref="view_risk_cartography_heatmap"/>
-        <field name="search_view_id" ref="view_risk_cartography_search"/>
-        <field name="res_id">1</field>
-        <field name="context">{
-            'form_view_ref': 'risk_management.view_risk_cartography_heatmap',
-            'create': False,
-            'edit': False,
-            'form_view_initial_mode': 'readonly'
-            }
-        </field>
-    </record>
-    -->
-    <!-- ACTION - HEATMAP (Matrice visuelle)
-    <record id="action_risk_heatmap" model="ir.actions.act_window">
-        <field name="name">🔥 Heatmap</field>
-        <field name="res_model">risk.risk</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="view_risk_cartography_heatmap"/>
-
-        <field name="context">{
-            'create': False,
-            'edit': False,
-            'form_view_ref': 'risk_management.view_risk_cartography_dashboard',
-            'form_view_initial_mode': 'readonly'
-            }
-        </field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                🔥 Carte de chaleur des risques
-            </p>
-            <p>
-                Visualisez la concentration de vos risques par niveau de criticité.
-            </p>
-        </field>
-    </record>
-    -->
     <!-- ===================================================== -->
-    <!-- CONTROLS -->
+    <!-- PROCESSUS                                             -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_process" model="ir.actions.act_window">
+        <field name="name">Processus</field>
+        <field name="res_model">risk.process</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_id" ref="view_risk_process_kanban"/>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- CONTROLS                                              -->
     <!-- ===================================================== -->
 
     <record id="action_risk_control" model="ir.actions.act_window">
         <field name="name">Controls</field>
         <field name="res_model">risk.control</field>
         <field name="view_mode">kanban,list,form,pivot</field>
-
     </record>
 
     <record id="action_risk_control_test" model="ir.actions.act_window">
         <field name="name">Control Tests</field>
         <field name="res_model">risk.control.test</field>
         <field name="view_mode">list,form,pivot</field>
-
     </record>
 
     <record id="action_risk_kri" model="ir.actions.act_window">
         <field name="name">KRI</field>
         <field name="res_model">risk.kri</field>
         <field name="view_mode">kanban,list,form,graph</field>
-
     </record>
 
     <record id="action_risk_kri_measure" model="ir.actions.act_window">
         <field name="name">KRI Measurements</field>
         <field name="res_model">risk.kri.measure</field>
         <field name="view_mode">list,form,graph,pivot</field>
-
     </record>
 
     <!-- ===================================================== -->
-    <!-- INCIDENTS -->
+    <!-- INCIDENTS                                             -->
     <!-- ===================================================== -->
 
     <record id="action_risk_incident" model="ir.actions.act_window">
         <field name="name">Incidents</field>
         <field name="res_model">risk.incident</field>
         <field name="view_mode">kanban,list,form,graph,pivot</field>
-
     </record>
 
     <record id="action_risk_loss" model="ir.actions.act_window">
         <field name="name">Operational Losses</field>
         <field name="res_model">risk.loss</field>
         <field name="view_mode">list,form,graph,pivot</field>
-
     </record>
 
     <record id="action_risk_corrective_action" model="ir.actions.act_window">
         <field name="name">Corrective Actions</field>
         <field name="res_model">risk.corrective.action</field>
         <field name="view_mode">kanban,list,form</field>
-
     </record>
 
     <!-- ===================================================== -->
-    <!-- AUDIT -->
+    <!-- AUDIT                                                 -->
     <!-- ===================================================== -->
 
     <record id="action_risk_audit_plan" model="ir.actions.act_window">
         <field name="name">Audit Plans</field>
         <field name="res_model">risk.audit.plan</field>
         <field name="view_mode">list,form</field>
-
     </record>
 
     <record id="action_risk_audit" model="ir.actions.act_window">
         <field name="name">Audit Missions</field>
         <field name="res_model">risk.audit</field>
         <field name="view_mode">kanban,list,form,pivot</field>
-
     </record>
 
     <record id="action_risk_audit_finding" model="ir.actions.act_window">
         <field name="name">Audit Findings</field>
         <field name="res_model">risk.audit.finding</field>
         <field name="view_mode">kanban,list,form,pivot</field>
-
     </record>
+
     <record id="action_risk_audit_recommendation" model="ir.actions.act_window">
         <field name="name">Recommandations</field>
         <field name="res_model">risk.audit.recommendation</field>
@@ -207,32 +180,29 @@
     </record>
 
     <!-- ===================================================== -->
-    <!-- COMPLIANCE -->
+    <!-- COMPLIANCE                                            -->
     <!-- ===================================================== -->
 
     <record id="action_risk_compliance_framework" model="ir.actions.act_window">
         <field name="name">Frameworks</field>
         <field name="res_model">risk.compliance.framework</field>
         <field name="view_mode">list,form</field>
-
     </record>
 
     <record id="action_risk_compliance_requirement" model="ir.actions.act_window">
         <field name="name">Requirements</field>
         <field name="res_model">risk.compliance.requirement</field>
         <field name="view_mode">list,form,pivot</field>
-
     </record>
 
     <record id="action_risk_compliance_assessment" model="ir.actions.act_window">
         <field name="name">Compliance Assessments</field>
         <field name="res_model">risk.compliance.assessment</field>
         <field name="view_mode">list,form,graph,pivot</field>
-
     </record>
 
     <!-- ===================================================== -->
-    <!-- BCM / DRP -->
+    <!-- BCM / DRP                                             -->
     <!-- ===================================================== -->
 
     <record id="action_risk_continuity_dashboard" model="ir.actions.act_window">
@@ -240,10 +210,12 @@
         <field name="res_model">risk.continuity.dashboard</field>
         <field name="view_mode">list,form,pivot,graph</field>
     </record>
+
     <record id="action_crisis_command_center" model="ir.actions.client">
         <field name="name">Crisis Command Center</field>
         <field name="tag">risk_crisis_command_center</field>
     </record>
+
     <record id="action_risk_crisis_command_center" model="ir.actions.act_window">
         <field name="name">Crisis Command Center</field>
         <field name="res_model">risk.crisis.command.center</field>
@@ -261,18 +233,16 @@
         <field name="name">BCP</field>
         <field name="res_model">risk.bcp.plan</field>
         <field name="view_mode">kanban,list,form</field>
-
     </record>
 
     <record id="action_risk_drp_plan" model="ir.actions.act_window">
         <field name="name">DRP</field>
         <field name="res_model">risk.drp.plan</field>
         <field name="view_mode">list,form</field>
-
     </record>
 
     <!-- ===================================================== -->
-    <!-- CRISIS -->
+    <!-- CRISIS                                                -->
     <!-- ===================================================== -->
 
     <record id="action_risk_crisis_dashboard" model="ir.actions.act_window">
@@ -285,36 +255,32 @@
         <field name="name">Crises</field>
         <field name="res_model">risk.crisis</field>
         <field name="view_mode">kanban,list,form</field>
-
     </record>
 
     <record id="action_risk_crisis_committee_meeting" model="ir.actions.act_window">
         <field name="name">Crisis Committee Meetings</field>
         <field name="res_model">risk.crisis.committee.meeting</field>
         <field name="view_mode">list,form</field>
-
     </record>
 
     <!-- ===================================================== -->
-    <!-- REPORTING -->
+    <!-- REPORTING                                             -->
     <!-- ===================================================== -->
 
     <record id="action_risk_board_report" model="ir.actions.act_window">
         <field name="name">Board Reports</field>
         <field name="res_model">risk.board.report</field>
         <field name="view_mode">list,form</field>
-
     </record>
 
     <record id="action_risk_regulatory_report" model="ir.actions.act_window">
         <field name="name">Regulatory Reports</field>
         <field name="res_model">risk.regulatory.report</field>
         <field name="view_mode">list,form</field>
-
     </record>
 
     <!-- ===================================================== -->
-    <!-- ADMINISTRATION -->
+    <!-- ADMINISTRATION                                        -->
     <!-- ===================================================== -->
 
     <record id="action_risk_metric_engine" model="ir.actions.act_window">
@@ -359,13 +325,6 @@
         <field name="target">current</field>
     </record>
 
-    <record id="action_risk_process" model="ir.actions.act_window">
-        <field name="name">Processus</field>
-        <field name="res_model">risk.process</field>
-        <field name="view_mode">list,form,search</field>
-        <field name="target">current</field>
-    </record>
-
     <record id="action_risk_asset" model="ir.actions.act_window">
         <field name="name">Actif</field>
         <field name="res_model">risk.asset</field>
@@ -391,6 +350,5 @@
         <field name="res_model">risk.config.settings</field>
         <field name="view_mode">form</field>
     </record>
-
 
 </odoo>

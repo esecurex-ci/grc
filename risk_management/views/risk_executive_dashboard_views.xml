@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================================== -->
+    <!-- VUE DU TABLEAU DE BORD EXÉCUTIF                            -->
+    <!-- ========================================================== -->
+
+    <record id="view_risk_executive_dashboard" model="ir.ui.view">
+        <field name="name">risk.executive.dashboard</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="o_executive_dashboard_container" style="padding:10px;">
+                        <!-- Attention : l'action client ne fonctionne pas comme un widget -->
+                        <!-- Utiliser une action client séparée -->
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

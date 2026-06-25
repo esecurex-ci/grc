@@ -43,6 +43,19 @@
         sequence="3"
     />
 
+    <menuitem id="menu_grc_executive_dashboard"
+          name="🏛️ Tableau de bord Risk"
+          parent="menu_grc_risk"
+          action="action_risk_executive_dashboard"
+          sequence="3"/>
+
+    <menuitem id="menu_grc_dashboard_executive"
+        name="🏛️ Tableau de bord Processus"
+        parent="menu_grc_risk"
+        action="action_risk_executive_dashboard"
+        sequence="2"
+    />
+
     <!-- ===================================================== -->
     <!-- RISK MANAGEMENT -->
     <!-- ===================================================== -->

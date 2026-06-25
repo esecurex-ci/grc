@@ -1,0 +1,132 @@
+.o_executive_dashboard_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f5f7fa;
+    border-radius: 12px;
+}
+
+.kpi-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #6c757d;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.kpi-card .kpi-label {
+    font-size: 11px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kpi-card .kpi-value {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.kpi-critical { border-left-color: #dc3545; }
+.kpi-critical .kpi-value { color: #dc3545; }
+.kpi-high { border-left-color: #fd7e14; }
+.kpi-high .kpi-value { color: #fd7e14; }
+.kpi-medium { border-left-color: #f0ad4e; }
+.kpi-medium .kpi-value { color: #f0ad4e; }
+.kpi-low { border-left-color: #28a745; }
+.kpi-low .kpi-value { color: #28a745; }
+.kpi-avg { border-left-color: #1a237e; }
+.kpi-avg .kpi-value { color: #1a237e; }
+
+.chart-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    height: 100%;
+}
+
+.chart-card .chart-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a237e;
+    margin-bottom: 15px;
+}
+
+.heatmap-cell {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 10;
+}
+
+.hm-red { background: #dc3545; }
+.hm-orange { background: #fd7e14; }
+.hm-yellow { background: #f0ad4e; }
+.hm-green { background: #28a745; }
+.hm-blue { background: #17a2b8; }
+
+.risk-level-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: white;
+    min-width: 50px;
+    display: inline-block;
+    text-align: center;
+}
+
+.risk-level-badge.critical { background: #dc3545; }
+.risk-level-badge.high { background: #fd7e14; }
+.risk-level-badge.medium { background: #f0ad4e; color: #000; }
+.risk-level-badge.low { background: #28a745; }
+
+.view-all-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 13px
+}
+
+.o_executive_dashboard_wrapper {
+    padding: 10px;
+    background: #f5f7fa;
+    min-height: 100vh;
+    overflow-y: auto;
+    max-height: calc(100vh - 100px);
+
+    .o_executive_dashboard_container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f7fa;
+        border-radius: 12px;
+    }
+}
+
+/* Pour les petits écrans */
+@media (max-width: 768px) {
+    .o_executive_dashboard_wrapper {
+        max-height: calc(100vh - 60px);
+        padding: 5px;
+    }
+    .o_executive_dashboard_container {
+        padding: 10px;
+    }
+}

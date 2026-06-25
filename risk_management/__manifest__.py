@@ -92,6 +92,8 @@
         'views/risk_continuity_dashboard_views.xml',
         'views/risk_risk_dashboard_views.xml',
         'views/risk_config_views.xml',
+        'views/risk_process_cartography_views.xml',
+        #'views/risk_executive_dashboard_views.xml',
 
         # ========== 9. MENUS ET ACTIONS (TOUJOURS EN DERNIER) ==========
         'views/grc_actions.xml',
@@ -109,6 +111,9 @@
             'risk_management/static/src/xml/crisis_command_center.xml',
             'risk_management/static/src/scss/crisis_command_center.scss',
             'risk_management/static/src/scss/risk_risk_dashboard.scss',
+            'risk_management/static/src/js/executive_dashboard_widget.js',
+            'risk_management/static/src/xml/executive_dashboard_widget.xml',
+            'risk_management/static/src/scss/executive_dashboard_widget.scss',
             #'risk_management/static/src/js/risk_heatmap_widget.js',
             #'risk_management/static/src/xml/risk_heatmap_widget.xml',
             #'risk_management/static/src/scss/risk_heatmap.scss',

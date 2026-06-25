@@ -146,6 +146,12 @@ class RiskRisk(models.Model):
                                          string='Score inhérent (dernière éval.)')
     last_residual_score = fields.Integer(compute='_compute_last_assessment', compute_sudo=True, store=True,
                                          string='Score résiduel (dernière éval.)')
+    process_category = fields.Selection([
+        ('pilotage', 'Processus de Pilotage'),
+        ('operational', 'Processus Opérationnels'),
+        ('support', 'Processus Supports'),
+    ], string='Catégorie de processus', related='process_id.category', store=True)
+
     last_risk_level = fields.Selection(
         selection='_get_level_selection',
         compute='_compute_last_assessment',
@@ -1402,3 +1408,116 @@ class RiskRisk(models.Model):
 
         for record in self:
             record.dashboard_html = html
+
+    def get_executive_dashboard_data(self):
+        """Retourne les données pour le tableau de bord exécutif"""
+
+        risks = self.search([('active', '=', True)])
+        total_risks = len(risks)
+
+        # Statistiques par niveau
+        critical = len([r for r in risks if r.inherent_level == 'critical'])
+        high = len([r for r in risks if r.inherent_level == 'high'])
+        medium = len([r for r in risks if r.inherent_level == 'medium'])
+        low = len([r for r in risks if r.inherent_level == 'low'])
+
+        # Score moyen
+        total_score = sum([r.inherent_score or 0 for r in risks])
+        avg_score = round(total_score / total_risks, 1) if total_risks > 0 else 0
+
+        # Risques hors appétit
+        over_appetite = []
+        for r in risks:
+            if r.inherent_level in ['critical', 'high'] and (r.inherent_score or 0) >= 15:
+                over_appetite.append({
+                    'id': r.id,
+                    'name': r.name,
+                    'code': r.code,
+                    'level': r.inherent_level,
+                    'score': r.inherent_score,
+                    'state': r.state,
+                })
+        over_appetite = sorted(over_appetite, key=lambda x: x['score'], reverse=True)[:5]
+
+        # Top 5 risques
+        top_risks = []
+        for r in risks.sorted(key=lambda x: x.inherent_score or 0, reverse=True)[:5]:
+            top_risks.append({
+                'id': r.id,
+                'name': r.name,
+                'code': r.code,
+                'level': r.inherent_level,
+                'score': r.inherent_score,
+                'state': r.state,
+            })
+
+        # Matrice 5x5
+        matrix_data = {}
+        for i in range(1, 6):
+            for j in range(1, 6):
+                matrix_data[f"{i}_{j}"] = []
+
+        for risk in risks:
+            impact = int(risk.inherent_impact or 1)
+            prob = int(risk.inherent_probability or 1)
+            key = f"{prob}_{impact}"
+            if key in matrix_data:
+                matrix_data[key].append({
+                    'id': risk.id,
+                    'name': risk.name,
+                    'code': risk.code,
+                    'level': risk.inherent_level,
+                    'score': risk.inherent_score,
+                })
+
+        # Catégories
+        category_stats = {}
+        for risk in risks:
+            cat = risk.category_id.name or 'Non catégorisé'
+            if cat not in category_stats:
+                category_stats[cat] = 0
+            category_stats[cat] += 1
+
+        # Statistiques des actions
+        action_stats = {
+            'not_started': len([r for r in risks if r.state == 'draft']),
+            'in_progress': len([r for r in risks if r.state == 'validated']),
+            'completed': len([r for r in risks if r.state == 'obsolete']),
+            'delayed': 0,
+        }
+
+        # Tous les risques
+        all_risks = []
+        for r in risks:
+            all_risks.append({
+                'id': r.id,
+                'name': r.name,
+                'code': r.code,
+                'level': r.inherent_level,
+                'score': r.inherent_score,
+                'state': r.state,
+            })
+
+        # Narratives
+        narratives = [
+            {'icon': '🔺', 'text': 'Nouveau risque identifié : Risque de réputation'},
+            {'icon': '📈', 'text': 'Augmentation du risque Cyber (passage de 16 à 20)'},
+            {'icon': '✅', 'text': 'Mise en place du plan de continuité pour le fournisseur clé'},
+        ]
+
+        return {
+            'total_risks': total_risks,
+            'critical': critical,
+            'high': high,
+            'medium': medium,
+            'low': low,
+            'avg_score': avg_score,
+            'posture_status': '✅ Dans appétit' if critical <= 2 else '⚠️ À surveiller' if critical <= 4 else '🔴 Hors appétit',
+            'over_appetite': over_appetite,
+            'top_risks': top_risks,
+            'matrix_data': matrix_data,
+            'category_stats': category_stats,
+            'action_stats': action_stats,
+            'narratives': narratives,
+            'all_risks': all_risks,
+        }

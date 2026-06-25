@@ -34,6 +34,23 @@ class RiskProcess(models.Model):
         string='Nombre de risques'
     )
 
+    risk_ids = fields.One2many('risk.risk', 'process_id', string='Risques associés')
+
+    category = fields.Selection([
+        ('pilotage', 'Processus de Pilotage'),
+        ('operational', 'Processus Opérationnels'),
+        ('support', 'Processus Supports'),
+    ], string='Catégorie', required=True, default='operational')
+
+    # Statistiques
+    count_risk = fields.Integer(compute='_compute_risk_stats', string="Nombre de risques")
+    risk_level = fields.Selection([
+        ('low', 'Faible'),
+        ('medium', 'Moyen'),
+        ('high', 'Élevé'),
+        ('critical', 'Critique'),
+    ], compute='_compute_risk_stats', string='Niveau de risque')
+
     # =====================================================
     # MÉTHODES DE CALCUL
     # =====================================================
@@ -74,3 +91,15 @@ class RiskProcess(models.Model):
             'domain': [('process_id', '=', self.id)],
             'context': {'default_process_id': self.id},
         }
+
+    def _compute_risk_stats(self):
+        for record in self:
+            risks = record.risk_ids.filtered(lambda r: r.active)
+            record.count_risk = len(risks)
+            # Déterminer le niveau max
+            levels = {'low': 0, 'medium': 1, 'high': 2, 'critical': 3}
+            max_level = 'low'
+            for risk in risks:
+                if levels.get(risk.inherent_level, 0) > levels.get(max_level, 0):
+                    max_level = risk.inherent_level
+            record.risk_level = max_level
