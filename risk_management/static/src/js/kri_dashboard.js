@@ -12,13 +12,17 @@ export class KriDashboard extends Component {
     static props = {
         '*': { type: Object, optional: true },
     };
+
     static template = "risk_management.kri_dashboard";
 
     setup() {
         console.log("📊 Setup KriDashboard !");
+
+        // ✅ Services
         this.orm = useService("orm");
         this.action = useService("action");
 
+        // État
         this.state = useState({
             loading: true,
             totalKris: 0,
@@ -87,14 +91,12 @@ export class KriDashboard extends Component {
         const red = kris.filter(k => k.status === 'red').length;
         const overdue = kris.filter(k => k.overdue === true).length;
 
-        // Distribution par statut
         const statusDistribution = [
             { label: '🟢 Vert', value: green, color: '#28a745' },
             { label: '🟡 Orange', value: amber, color: '#ffc107' },
             { label: '🔴 Rouge', value: red, color: '#dc3545' },
         ];
 
-        // Distribution par catégorie
         const categoryMap = {};
         kris.forEach(k => {
             const cat = k.category || 'Non catégorisé';
@@ -106,7 +108,6 @@ export class KriDashboard extends Component {
             value: value,
         }));
 
-        // Alertes récentes (top 5)
         const recentAlerts = kris
             .filter(k => k.status === 'red' || k.status === 'amber')
             .sort((a, b) => {
@@ -127,7 +128,6 @@ export class KriDashboard extends Component {
                 owner: k.owner_id ? k.owner_id[1] : 'N/A',
             }));
 
-        // Top 5 pires KRI (par valeur)
         const topWorst = kris
             .filter(k => k.status === 'red' || k.status === 'amber')
             .sort((a, b) => b.current_value - a.current_value)
@@ -142,7 +142,6 @@ export class KriDashboard extends Component {
                 owner: k.owner_id ? k.owner_id[1] : 'N/A',
             }));
 
-        // Tendances
         const trends = {
             'up': kris.filter(k => k.trend === 'up').length,
             'down': kris.filter(k => k.trend === 'down').length,
@@ -360,56 +359,67 @@ export class KriDashboard extends Component {
     }
 
     // ============================================================
-    // ACTIONS / NAVIGATION
+    // ACTIONS / NAVIGATION - CORRIGÉES AVEC OPTIONAL CHAINING
     // ============================================================
-    openAllKris() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'Tous les KRI',
-            res_model: 'risk.kri',
-            views: [[false, 'kanban'], [false, 'tree'], [false, 'form']],
-            domain: [],
-        });
+    openAllKris = () => {
+        if (this.action) {
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                name: 'Tous les KRI',
+                res_model: 'risk.kri',
+                views: [[false, 'kanban'], [false, 'list'], [false, 'form']],
+                domain: [],
+            });
+        }
     }
 
-    openRedKris() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'KRI Rouges',
-            res_model: 'risk.kri',
-            views: [[false, 'tree'], [false, 'form']],
-            domain: [['status', '=', 'red']],
-        });
+    openRedKris = () => {
+        if (this.action) {
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                name: 'KRI Rouges',
+                res_model: 'risk.kri',
+                views: [[false, 'list'], [false, 'form']],
+                domain: [['status', '=', 'red']],
+            });
+        }
     }
 
-    openAmberKris() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'KRI Oranges',
-            res_model: 'risk.kri',
-            views: [[false, 'tree'], [false, 'form']],
-            domain: [['status', '=', 'amber']],
-        });
+    openAmberKris = () => {
+        if (this.action) {
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                name: 'KRI Oranges',
+                res_model: 'risk.kri',
+                views: [[false, 'list'], [false, 'form']],
+                domain: [['status', '=', 'amber']],
+            });
+        }
     }
 
-    openOverdueKris() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'KRI en retard',
-            res_model: 'risk.kri',
-            views: [[false, 'tree'], [false, 'form']],
-            domain: [['overdue', '=', true]],
-        });
+    openOverdueKris = () => {
+        if (this.action) {
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                name: 'KRI en retard',
+                res_model: 'risk.kri',
+                views: [[false, 'list'], [false, 'form']],
+                domain: [['overdue', '=', true]],
+            });
+        }
     }
 
-    openKriById(kriId) {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'Détail du KRI',
-            res_model: 'risk.kri',
-            views: [[false, 'form']],
-            res_id: kriId,
-        });
+    openKriById = (kriId) => {
+        console.log("📊 openKriById appelé avec ID:", kriId);
+        if (this.action) {
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                name: 'Détail du KRI',
+                res_model: 'risk.kri',
+                views: [[false, 'form']],
+                res_id: kriId,
+            });
+        }
     }
 }
 
