@@ -3,264 +3,348 @@
     <t t-name="rm_risk.RiskHeatMapTemplate" owl="1">
         <div class="o_risk_heatmap_container p-4">
 
-            <!-- TITRE -->
-            <h2 class="text-center mb-4">📊 Risk Management KPI Dashboard</h2>
-
-            <!-- KPI CARDS -->
-            <div class="row g-2 mb-4">
-                <div class="col-2">
-                    <div class="kpi-card" t-on-click="openRisks">
-                        <div class="kpi-label">Total Risques</div>
-                        <div class="kpi-value"><t t-esc="state.totalRisks"/></div>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="kpi-card kpi-critical">
-                        <div class="kpi-label">🔴 Critiques</div>
-                        <div class="kpi-value"><t t-esc="state.criticalCount"/></div>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="kpi-card kpi-high">
-                        <div class="kpi-label">🟠 Élevés</div>
-                        <div class="kpi-value"><t t-esc="state.highCount"/></div>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="kpi-card kpi-medium">
-                        <div class="kpi-label">🟡 Moyens</div>
-                        <div class="kpi-value"><t t-esc="state.mediumCount"/></div>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="kpi-card kpi-low">
-                        <div class="kpi-label">🟢 Faibles</div>
-                        <div class="kpi-value"><t t-esc="state.lowCount"/></div>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="kpi-card kpi-avg">
-                        <div class="kpi-label">📊 Score moyen</div>
-                        <div class="kpi-value"><t t-esc="state.avgScore"/></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GRAPHIQUES -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <div class="chart-card">
-                        <h5 class="chart-title">📈 Inherent Risk By Period</h5>
-                        <t t-if="state.inherentData and state.inherentData.length">
-                            <t t-call="rm_risk.BarChart">
-                                <t t-set="data" t-value="state.inherentData"/>
-                            </t>
-                        </t>
-                        <t t-else="">
-                            <div class="text-muted text-center py-3">Aucune donnée</div>
-                        </t>
-                        <div class="chart-legend">
-                            <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
-                            <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
-                            <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
-                            <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="chart-card">
-                        <h5 class="chart-title">📉 Residual Risk By Period</h5>
-                        <t t-if="state.residualData and state.residualData.length">
-                            <t t-call="rm_risk.BarChart">
-                                <t t-set="data" t-value="state.residualData"/>
-                            </t>
-                        </t>
-                        <t t-else="">
-                            <div class="text-muted text-center py-3">Aucune donnée</div>
-                        </t>
-                        <div class="chart-legend">
-                            <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
-                            <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
-                            <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
-                            <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DEUXIÈME LIGNE -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <div class="chart-card">
-                        <h5 class="chart-title">📊 Risk Category By Total Risk Rating</h5>
-                        <t t-if="state.categoryData and state.categoryData.length">
-                            <t t-call="rm_risk.CategoryChart">
-                                <t t-set="data" t-value="state.categoryData"/>
-                            </t>
-                        </t>
-                        <t t-else="">
-                            <div class="text-muted text-center py-3">Aucune donnée</div>
-                        </t>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="chart-card">
-                        <h5 class="chart-title">🎯 Control Rate By Period</h5>
-                        <div class="control-chart">
-                            <div class="control-item">
-                                <div class="control-label">Efficaces</div>
-                                <div class="control-track">
-                                    <div class="control-bar effective"
-                                         t-att-style="'width: ' + ((state.controls.effective || 0) * 20) + '%;'">
-                                        <t t-esc="state.controls.effective || 0"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="control-item">
-                                <div class="control-label">Partiels</div>
-                                <div class="control-track">
-                                    <div class="control-bar partial"
-                                         t-att-style="'width: ' + ((state.controls.partial || 0) * 20) + '%;'">
-                                        <t t-esc="state.controls.partial || 0"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="control-item">
-                                <div class="control-label">Inefficaces</div>
-                                <div class="control-track">
-                                    <div class="control-bar ineffective"
-                                         t-att-style="'width: ' + ((state.controls.ineffective || 0) * 20) + '%;'">
-                                        <t t-esc="state.controls.ineffective || 0"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chart-legend">
-                            <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Effective</span>
-                            <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Partially</span>
-                            <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Ineffective</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- ========================================= -->
-            <!-- MATRICES CÔTE À CÔTE                      -->
+            <!-- CHARGEMENT                               -->
             <!-- ========================================= -->
-            <div class="row g-3">
-                <!-- Heat Map -->
-                <div class="col-md-6">
-                    <div class="heatmap-card">
-                        <h5 class="chart-title">🔥 Heat Map</h5>
-                        <div style="display:flex;justify-content:center;">
-                            <div style="display:flex;flex-direction:column;align-items:center;">
-                                <div style="display:flex;">
-                                    <div style="display:flex;flex-direction:column;justify-content:space-around;padding-right:10px;font-size:12px;font-weight:600;color:#495057;height:230px;">
-                                        <div>5</div>
-                                        <div>4</div>
-                                        <div>3</div>
-                                        <div>2</div>
-                                        <div>1</div>
+            <div t-if="state.loading" style="text-align:center;padding:50px;color:#6c757d;">
+                <i class="fa fa-spinner fa-spin fa-3x" style="color:#1a237e;"></i>
+                <p style="margin-top:15px;">Chargement du tableau de bord...</p>
+            </div>
+
+            <div t-else="">
+
+                <!-- ========================================= -->
+                <!-- TITRE                                    -->
+                <!-- ========================================= -->
+                <div class="dashboard-header">
+                    <h2>📊 Risk Management KPI Dashboard</h2>
+                    <div class="dashboard-date">
+                        <i class="fa fa-calendar" title="Date de mise à jour"/>
+                        Généré le <t t-esc="new Date().toLocaleDateString('fr-FR')"/>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- KPI CARDS                                -->
+                <!-- ========================================= -->
+                <div class="row g-2 mb-4">
+                    <div class="col-2">
+                        <div class="kpi-card" t-on-click="openRisks">
+                            <div class="kpi-label">Total des Risques</div>
+                            <div class="kpi-value"><t t-esc="state.totalRisks"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-critical" t-on-click="openCriticalRisks">
+                            <div class="kpi-label">🔴 Critiques</div>
+                            <div class="kpi-value"><t t-esc="state.criticalCount"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-high">
+                            <div class="kpi-label">🟠 Élevés</div>
+                            <div class="kpi-value"><t t-esc="state.highCount"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-medium">
+                            <div class="kpi-label">🟡 Moyens</div>
+                            <div class="kpi-value"><t t-esc="state.mediumCount"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-low">
+                            <div class="kpi-label">🟢 Faibles</div>
+                            <div class="kpi-value"><t t-esc="state.lowCount"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-avg">
+                            <div class="kpi-label">📊 Score moyen</div>
+                            <div class="kpi-value"><t t-esc="state.avgScore"/></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DEUX COLONNES : Hors Appétit + Top 5     -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🚨 Risques Hors Appétit</h5>
+                            <div t-if="state.outOfAppetite.length > 0">
+                                <div class="risk-item" t-foreach="state.outOfAppetite" t-as="risk" t-key="risk.id">
+                                    <div class="risk-row" t-on-click="() => openRiskById(risk.id)">
+                                        <span class="risk-level" t-attf-class="badge #{getLevelBadge(risk.level)}">
+                                            <t t-esc="getLevelLabel(risk.level)"/>
+                                        </span>
+                                        <span class="risk-name"><t t-esc="risk.name"/></span>
+                                        <span class="risk-code"><t t-esc="risk.code"/></span>
+                                        <span class="risk-score" t-attf-style="background:#{getScoreColor(risk.score)};">
+                                            <t t-esc="risk.score"/>
+                                        </span>
                                     </div>
-                                    <div style="display:flex;flex-direction:column;gap:2px;">
-                                        <t t-foreach="[5, 4, 3, 2, 1]" t-as="impact" t-key="impact">
-                                            <div style="display:flex;gap:2px;">
-                                                <t t-foreach="[1, 2, 3, 4, 5]" t-as="likelihood" t-key="likelihood">
-                                                    <div t-att-class="'heatmap-cell d-flex justify-content-center align-items-center text-white fw-bold cursor-pointer ' + getCellClass(impact, likelihood)"
-                                                         t-on-click="() => this.openRiskList(impact, likelihood)"
-                                                         style="width:40px;height:40px;border-radius:4px;transition:all 0.2s;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-size:14px;font-weight:700;">
-                                                        <t t-esc="state.matrix[impact][likelihood] || 0"/>
-                                                    </div>
-                                                </t>
+                                </div>
+                                <a href="#" class="view-all-link" t-on-click.prevent="openOutOfAppetite">
+                                    Voir tous les risques hors appétit →
+                                </a>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucun risque hors appétit
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🏆 Top 5 Risques Matériels</h5>
+                            <div t-if="state.topRisks.length > 0">
+                                <div class="risk-item" t-foreach="state.topRisks" t-as="risk" t-key="risk.id">
+                                    <div class="risk-row top-risk" t-on-click="() => openRiskById(risk.id)">
+                                        <span class="rank-badge">#<t t-esc="risk.rank"/></span>
+                                        <span class="risk-level" t-attf-class="badge #{getLevelBadge(risk.level)}">
+                                            <t t-esc="getLevelLabel(risk.level)"/>
+                                        </span>
+                                        <span class="risk-name"><t t-esc="risk.name"/></span>
+                                        <span class="risk-code"><t t-esc="risk.code"/></span>
+                                        <span class="risk-score" t-attf-style="background:#{getScoreColor(risk.score)};">
+                                            <t t-esc="risk.score"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <a href="#" class="view-all-link" t-on-click.prevent="openRisks">
+                                    Voir tous les risques →
+                                </a>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#6c757d;">
+                                Aucun risque enregistré
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- GRAPHIQUES                               -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📈 Inherent Risk By Period</h5>
+                            <t t-if="state.inherentData and state.inherentData.length">
+                                <t t-call="rm_risk.BarChart">
+                                    <t t-set="data" t-value="state.inherentData"/>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div class="text-muted text-center py-3">Aucune donnée</div>
+                            </t>
+                            <div class="chart-legend">
+                                <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
+                                <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
+                                <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
+                                <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📉 Residual Risk By Period</h5>
+                            <t t-if="state.residualData and state.residualData.length">
+                                <t t-call="rm_risk.BarChart">
+                                    <t t-set="data" t-value="state.residualData"/>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div class="text-muted text-center py-3">Aucune donnée</div>
+                            </t>
+                            <div class="chart-legend">
+                                <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
+                                <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
+                                <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
+                                <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DEUXIÈME LIGNE DE GRAPHIQUES             -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📊 Risk Category By Total Risk Rating</h5>
+                            <t t-if="state.categoryData and state.categoryData.length">
+                                <t t-call="rm_risk.CategoryChart">
+                                    <t t-set="data" t-value="state.categoryData"/>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div class="text-muted text-center py-3">Aucune donnée</div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📋 Avancement des Actions Correctives</h5>
+                            <div class="actions-grid" t-on-click="openActions">
+                                <div class="action-item" style="border-left:4px solid #dc3545;">
+                                    <span class="action-label">🔴 En retard</span>
+                                    <span class="action-value"><t t-esc="state.actions.overdue"/></span>
+                                </div>
+                                <div class="action-item" style="border-left:4px solid #ffc107;">
+                                    <span class="action-label">🟡 En cours</span>
+                                    <span class="action-value"><t t-esc="state.actions.in_progress"/></span>
+                                </div>
+                                <div class="action-item" style="border-left:4px solid #28a745;">
+                                    <span class="action-label">🟢 Terminé</span>
+                                    <span class="action-value"><t t-esc="state.actions.completed"/></span>
+                                </div>
+                                <div class="action-item" style="border-left:4px solid #6c757d;">
+                                    <span class="action-label">⚪ Non commencé</span>
+                                    <span class="action-value"><t t-esc="state.actions.not_started"/></span>
+                                </div>
+                            </div>
+                            <a href="#" class="view-all-link" t-on-click.prevent="openActions">
+                                Voir toutes les actions →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- HEATMAPS CÔTE À CÔTE                     -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="heatmap-card">
+                            <h5 class="chart-title">🔥 Heat Map</h5>
+                            <div style="display:flex;justify-content:center;">
+                                <div style="display:flex;flex-direction:column;align-items:center;">
+                                    <div style="display:flex;">
+                                        <div style="display:flex;flex-direction:column;justify-content:space-around;padding-right:10px;font-size:12px;font-weight:600;color:#495057;height:230px;">
+                                            <div>5</div>
+                                            <div>4</div>
+                                            <div>3</div>
+                                            <div>2</div>
+                                            <div>1</div>
+                                        </div>
+                                        <div style="display:flex;flex-direction:column;gap:2px;">
+                                            <t t-foreach="[5, 4, 3, 2, 1]" t-as="impact" t-key="impact">
+                                                <div style="display:flex;gap:2px;">
+                                                    <t t-foreach="[1, 2, 3, 4, 5]" t-as="likelihood" t-key="likelihood">
+                                                        <div t-att-class="'heatmap-cell d-flex justify-content-center align-items-center text-white fw-bold cursor-pointer ' + getCellClass(impact, likelihood)"
+                                                             t-on-click="() => this.openRiskList(impact, likelihood)"
+                                                             style="width:40px;height:40px;border-radius:4px;transition:all 0.2s;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-size:14px;font-weight:700;">
+                                                            <t t-esc="state.matrix[impact][likelihood] || 0"/>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </t>
+                                            <div style="display:flex;justify-content:space-around;padding-top:4px;font-size:9px;font-weight:600;color:#495057;">
+                                                <div style="width:40px;text-align:center;">1</div>
+                                                <div style="width:40px;text-align:center;">2</div>
+                                                <div style="width:40px;text-align:center;">3</div>
+                                                <div style="width:40px;text-align:center;">4</div>
+                                                <div style="width:40px;text-align:center;">5</div>
                                             </div>
-                                        </t>
-                                        <div style="display:flex;justify-content:space-around;padding-top:4px;font-size:9px;font-weight:600;color:#495057;">
-                                            <div style="width:40px;text-align:center;">1</div>
-                                            <div style="width:40px;text-align:center;">2</div>
-                                            <div style="width:40px;text-align:center;">3</div>
-                                            <div style="width:40px;text-align:center;">4</div>
-                                            <div style="width:40px;text-align:center;">5</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div style="text-align:center;margin-top:10px;font-size:12px;color:#6c757d;">
-                            Total: <t t-esc="state.totalRisks"/> risques
+                            <div style="text-align:center;margin-top:10px;font-size:12px;color:#6c757d;">
+                                Total: <t t-esc="state.totalRisks"/> risques
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Residual Risk Heat Map -->
-                <div class="col-md-6">
-                    <div class="heatmap-card">
-                        <h5 class="chart-title">🔥 Residual Risk Heat Map</h5>
-                        <div style="display:flex;justify-content:center;">
-                            <div style="display:flex;flex-direction:column;align-items:center;">
-                                <div style="display:flex;">
-                                    <div style="display:flex;flex-direction:column;justify-content:space-around;padding-right:8px;font-size:9px;font-weight:600;color:#495057;height:230px;">
-                                        <div>Catastrophic</div>
-                                        <div>Major</div>
-                                        <div>Moderate</div>
-                                        <div>Minor</div>
-                                        <div>Insignificant</div>
-                                    </div>
-                                    <div style="display:flex;flex-direction:column;gap:2px;">
-                                        <t t-foreach="[5, 4, 3, 2, 1]" t-as="impact" t-key="impact">
-                                            <div style="display:flex;gap:2px;">
-                                                <t t-foreach="[1, 2, 3, 4, 5]" t-as="likelihood" t-key="likelihood">
-                                                    <div t-att-class="'heatmap-cell d-flex justify-content-center align-items-center text-white fw-bold cursor-pointer ' + getCellClass(impact, likelihood)"
-                                                         t-on-click="() => this.openRiskList(impact, likelihood)"
-                                                         style="width:40px;height:40px;border-radius:4px;transition:all 0.2s;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-size:14px;font-weight:700;">
-                                                        <t t-esc="state.residualMatrix[impact][likelihood] || 0"/>
-                                                    </div>
-                                                </t>
+                    <div class="col-md-6">
+                        <div class="heatmap-card">
+                            <h5 class="chart-title">🔥 Residual Risk Heat Map</h5>
+                            <div style="display:flex;justify-content:center;">
+                                <div style="display:flex;flex-direction:column;align-items:center;">
+                                    <div style="display:flex;">
+                                        <div style="display:flex;flex-direction:column;justify-content:space-around;padding-right:8px;font-size:9px;font-weight:600;color:#495057;height:230px;">
+                                            <div>Catastrophic</div>
+                                            <div>Major</div>
+                                            <div>Moderate</div>
+                                            <div>Minor</div>
+                                            <div>Insignificant</div>
+                                        </div>
+                                        <div style="display:flex;flex-direction:column;gap:2px;">
+                                            <t t-foreach="[5, 4, 3, 2, 1]" t-as="impact" t-key="impact">
+                                                <div style="display:flex;gap:2px;">
+                                                    <t t-foreach="[1, 2, 3, 4, 5]" t-as="likelihood" t-key="likelihood">
+                                                        <div t-att-class="'heatmap-cell d-flex justify-content-center align-items-center text-white fw-bold cursor-pointer ' + getCellClass(impact, likelihood)"
+                                                             t-on-click="() => this.openRiskList(impact, likelihood)"
+                                                             style="width:40px;height:40px;border-radius:4px;transition:all 0.2s;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-size:14px;font-weight:700;">
+                                                            <t t-esc="state.residualMatrix[impact][likelihood] || 0"/>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </t>
+                                            <div style="display:flex;justify-content:space-around;padding-top:4px;font-size:8px;font-weight:600;color:#495057;text-align:center;">
+                                                <div style="width:40px;">Remote</div>
+                                                <div style="width:40px;">Unlikely</div>
+                                                <div style="width:40px;">Possible</div>
+                                                <div style="width:40px;">Probable</div>
+                                                <div style="width:40px;">Highly<br/>Probable</div>
                                             </div>
-                                        </t>
-                                        <div style="display:flex;justify-content:space-around;padding-top:4px;font-size:8px;font-weight:600;color:#495057;text-align:center;">
-                                            <div style="width:40px;">Remote</div>
-                                            <div style="width:40px;">Unlikely</div>
-                                            <div style="width:40px;">Possible</div>
-                                            <div style="width:40px;">Probable</div>
-                                            <div style="width:40px;">Highly<br/>Probable</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div style="text-align:center;margin-top:10px;font-size:12px;color:#6c757d;">
-                            Résiduels: <t t-esc="state.totalRisks"/> risques
+                            <div style="text-align:center;margin-top:10px;font-size:12px;color:#6c757d;">
+                                Résiduels: <t t-esc="state.totalRisks"/> risques
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Légende commune -->
-            <div class="row mt-2">
-                <div class="col-12">
-                    <div style="display:flex;justify-content:center;gap:20px;padding:8px;background:#f8f9fa;border-radius:6px;flex-wrap:wrap;">
-                        <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
-                            <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#dc3545;"></span> Critique
-                        </span>
-                        <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
-                            <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#fd7e14;"></span> Élevé
-                        </span>
-                        <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
-                            <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#f0ad4e;"></span> Moyen
-                        </span>
-                        <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
-                            <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#28a745;"></span> Faible
-                        </span>
+                <!-- ========================================= -->
+                <!-- RAPPORT NARRATIF                         -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="chart-card narrative-card">
+                            <h5 class="chart-title">📝 Rapport Narratif - Principaux changements</h5>
+                            <div t-foreach="state.narratives" t-as="item" t-key="item.icon">
+                                <div class="narrative-item">
+                                    <span class="narr-icon"><t t-esc="item.icon"/></span>
+                                    <span class="narr-text"><t t-esc="item.text"/></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+                <!-- ========================================= -->
+                <!-- LÉGENDE COMMUNE                          -->
+                <!-- ========================================= -->
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div class="dashboard-legend">
+                            <span><span class="legend-color" style="background:#dc3545;"></span> Critique</span>
+                            <span><span class="legend-color" style="background:#fd7e14;"></span> Élevé</span>
+                            <span><span class="legend-color" style="background:#ffc107;"></span> Moyen</span>
+                            <span><span class="legend-color" style="background:#28a745;"></span> Faible</span>
+                            <span class="legend-separator">|</span>
+                            <span><i class="fa fa-user"/> Propriétaire</span>
+                            <span><i class="fa fa-exclamation-triangle"/> Score</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </t>
 
-    <!-- BAR CHART TEMPLATE -->
+    <!-- ========================================= -->
+    <!-- BAR CHART TEMPLATE                        -->
+    <!-- ========================================= -->
     <t t-name="rm_risk.BarChart" owl="1">
         <div style="padding:5px 0;">
             <t t-foreach="data" t-as="item" t-key="item.label">
@@ -276,7 +360,9 @@
         </div>
     </t>
 
-    <!-- CATEGORY CHART TEMPLATE -->
+    <!-- ========================================= -->
+    <!-- CATEGORY CHART TEMPLATE                   -->
+    <!-- ========================================= -->
     <t t-name="rm_risk.CategoryChart" owl="1">
         <div style="padding:5px 0;">
             <t t-foreach="data" t-as="item" t-key="item.label">

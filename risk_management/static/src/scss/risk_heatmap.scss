@@ -1,473 +1,642 @@
+// ============================================================
+// RISK HEATMAP DASHBOARD - STYLES COMPLETS
+// ============================================================
+
 .o_risk_heatmap_container {
-    max-width: 1200px;
+    max-height: 100vh;
+    overflow-y: auto;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
     background: #f5f7fa;
     border-radius: 12px;
-}
 
-.kpi-card {
-    background: white;
-    border-radius: 10px;
-    padding: 15px 10px;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border-left: 4px solid #6c757d;
-    transition: transform 0.2s;
-    cursor: pointer;
-}
+    // Scrollbar personnalisée
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
 
-.kpi-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-}
+    &::-webkit-scrollbar-track {
+        background: #f0f0f0;
+        border-radius: 3px;
+    }
 
-.kpi-card .kpi-label {
-    font-size: 11px;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+    &::-webkit-scrollbar-thumb {
+        background: #c1c7cd;
+        border-radius: 3px;
 
-.kpi-card .kpi-value {
-    font-size: 28px;
-    font-weight: bold;
-}
+        &:hover {
+            background: #a8aeb5;
+        }
+    }
 
-.kpi-critical { border-left-color: #dc3545; }
-.kpi-critical .kpi-value { color: #dc3545; }
-.kpi-high { border-left-color: #fd7e14; }
-.kpi-high .kpi-value { color: #fd7e14; }
-.kpi-medium { border-left-color: #f0ad4e; }
-.kpi-medium .kpi-value { color: #f0ad4e; }
-.kpi-low { border-left-color: #28a745; }
-.kpi-low .kpi-value { color: #28a745; }
-.kpi-avg { border-left-color: #1a237e; }
-.kpi-avg .kpi-value { color: #1a237e; }
+    scrollbar-width: thin;
+    scrollbar-color: #c1c7cd #f0f0f0;
 
-.chart-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    height: 100%;
-}
+    // ============================================================
+    // HEADER
+    // ============================================================
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
 
-.chart-card .chart-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a237e;
-    margin-bottom: 12px;
-}
+        h2 {
+            color: #1a237e;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
 
-.bar-chart {
-    padding: 5px 0;
-}
+        .dashboard-date {
+            color: #6c757d;
+            font-size: 14px;
 
-.bar-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 6px;
-    gap: 10px;
-}
+            i {
+                margin-right: 5px;
+            }
+        }
+    }
 
-.bar-label {
-    width: 60px;
-    font-size: 11px;
-    color: #495057;
-    text-align: right;
-    flex-shrink: 0;
-}
+    // ============================================================
+    // KPI CARDS
+    // ============================================================
+    .kpi-card {
+        background: white;
+        border-radius: 10px;
+        padding: 15px 10px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border-left: 4px solid #6c757d;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        height: 100%;
 
-.bar-track {
-    flex: 1;
-    height: 20px;
-    background: #f0f0f0;
-    border-radius: 10px;
-    overflow: hidden;
-}
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
 
-.bar-fill {
-    height: 100%;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    color: white;
-    transition: width 0.5s ease;
-    min-width: 30px;
-}
+        .kpi-label {
+            font-size: 11px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-.chart-legend {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-}
+        .kpi-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
 
-.chart-legend .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    color: #495057;
-}
+        &.kpi-critical {
+            border-left-color: #dc3545;
 
-.chart-legend .color-box {
-    width: 14px;
-    height: 14px;
-    border-radius: 3px;
-    border: 1px solid #dee2e6;
-}
+            .kpi-value {
+                color: #dc3545;
+            }
+        }
 
-.category-chart {
-    padding: 5px 0;
-}
+        &.kpi-high {
+            border-left-color: #fd7e14;
 
-.category-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
-}
+            .kpi-value {
+                color: #fd7e14;
+            }
+        }
 
-.category-item:last-child {
-    border-bottom: none;
-}
+        &.kpi-medium {
+            border-left-color: #f0ad4e;
 
-.category-label {
-    font-size: 13px;
-    color: #495057;
-}
+            .kpi-value {
+                color: #f0ad4e;
+            }
+        }
 
-.category-value {
-    font-weight: bold;
-    font-size: 14px;
-    color: #1a237e;
-    background: #e8eaf6;
-    padding: 0 12px;
-    border-radius: 12px;
-}
+        &.kpi-low {
+            border-left-color: #28a745;
 
-.control-chart {
-    padding: 5px 0;
-}
+            .kpi-value {
+                color: #28a745;
+            }
+        }
 
-.control-item {
-    margin-bottom: 8px;
-}
+        &.kpi-avg {
+            border-left-color: #1a237e;
 
-.control-label {
-    font-size: 11px;
-    color: #6c757d;
-    margin-bottom: 3px;
-}
+            .kpi-value {
+                color: #1a237e;
+            }
+        }
+    }
 
-.control-track {
-    height: 20px;
-    background: #f0f0f0;
-    border-radius: 10px;
-    overflow: hidden;
-}
+    // ============================================================
+    // CHART CARDS
+    // ============================================================
+    .chart-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        height: 100%;
 
-.control-bar {
-    height: 100%;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    color: white;
-    transition: width 0.5s ease;
-    min-width: 30px;
-}
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+    }
 
-.control-bar.effective { background: #28a745; }
-.control-bar.partial { background: #ffc107; color: #000; }
-.control-bar.ineffective { background: #dc3545; }
+    // ============================================================
+    // SCROLLABLE CARD
+    // ============================================================
+    .scrollable-card {
+        max-height: 400px;
+        overflow-y: auto;
 
-.heatmap-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
 
-.heatmap-card .chart-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a237e;
-    margin-bottom: 15px;
-}
+        &::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 2px;
+        }
 
-.heatmap-grid-wrapper {
-    display: flex;
-    justify-content: center;
-}
+        &::-webkit-scrollbar-thumb {
+            background: #c1c7cd;
+            border-radius: 2px;
 
-.heatmap-labels-y {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    padding-right: 10px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #6c757d;
-    min-height: 360px;
-}
+            &:hover {
+                background: #a8aeb5;
+            }
+        }
 
-.heatmap-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
+        scrollbar-width: thin;
+        scrollbar-color: #c1c7cd #f0f0f0;
+    }
 
-.heatmap-cell {
-    width: 65px;
-    height: 65px;
-    margin: 1px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+    // ============================================================
+    // RISK ROWS (Hors Appétit & Top 5)
+    // ============================================================
+    .risk-row {
+        display: flex;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
+        gap: 10px;
+        cursor: pointer;
+        transition: background 0.2s;
+        flex-wrap: wrap;
 
-.heatmap-cell:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    z-index: 10;
-}
+        &:hover {
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
 
-.heatmap-cell .cell-score {
-    font-size: 16px;
-    font-weight: bold;
-    line-height: 1.2;
-}
+        &:last-child {
+            border-bottom: none;
+        }
 
-.heatmap-cell .cell-count {
-    font-size: 11px;
-    opacity: 0.8;
-    background: rgba(0,0,0,0.2);
-    padding: 0 8px;
-    border-radius: 10px;
-}
+        .risk-level {
+            min-width: 80px;
+            font-size: 11px;
+        }
 
-.heatmap-labels-x {
-    display: flex;
-    justify-content: space-around;
-    padding-top: 8px;
-    font-size: 10px;
-    font-weight: 600;
-    color: #6c757d;
-    text-align: center;
-}
+        .risk-name {
+            font-weight: 500;
+            flex: 1;
+            min-width: 150px;
+            font-size: 13px;
+        }
 
-.heatmap-labels-x div {
-    width: 65px;
-}
+        .risk-code {
+            color: #6c757d;
+            font-size: 11px;
+            min-width: 80px;
+        }
 
-.heatmap-total {
-    text-align: center;
-    margin-top: 12px;
-    font-size: 13px;
-    color: #6c757d;
-}
+        .risk-score {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            color: white;
+            min-width: 30px;
+            text-align: center;
+        }
 
-.hm-red { background: #dc3545; }
-.hm-orange { background: #fd7e14; }
-.hm-yellow { background: #f0ad4e; }
-.hm-green { background: #28a745; }
-.hm-blue { background: #17a2b8; }
+        .rank-badge {
+            background: #1a237e;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+    }
 
-.legend-vertical {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    height: 100%;
-    justify-content: center;
-}
+    .top-risk .rank-badge {
+        background: #dc3545;
+    }
 
-.legend-vertical .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-}
+    // ============================================================
+    // VIEW ALL LINK
+    // ============================================================
+    .view-all-link {
+        display: inline-block;
+        margin-top: 10px;
+        color: #1a237e;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 13px;
+        transition: color 0.2s;
 
-.legend-vertical .legend-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-}
+        &:hover {
+            text-decoration: underline;
+            color: #0d1457;
+        }
+    }
 
-@media (max-width: 768px) {
+    // ============================================================
+    // ACTIONS GRID
+    // ============================================================
+    .actions-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        cursor: pointer;
+
+        .action-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background 0.2s;
+
+            &:hover {
+                background: #e9ecef;
+            }
+
+            .action-label {
+                font-size: 13px;
+                font-weight: 500;
+                color: #495057;
+            }
+
+            .action-value {
+                font-size: 20px;
+                font-weight: 700;
+                color: #1a237e;
+            }
+        }
+    }
+
+    // ============================================================
+    // CHART LEGENDS
+    // ============================================================
+    .chart-legend {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: #495057;
+
+            .color-box {
+                width: 14px;
+                height: 14px;
+                border-radius: 3px;
+                border: 1px solid #dee2e6;
+            }
+        }
+    }
+
+    // ============================================================
+    // NARRATIVE CARD
+    // ============================================================
+    .narrative-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-left: 4px solid #1a237e;
+
+        .narrative-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .narr-icon {
+                font-size: 20px;
+                margin-right: 12px;
+                min-width: 30px;
+                text-align: center;
+            }
+
+            .narr-text {
+                color: #495057;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+        }
+    }
+
+    // ============================================================
+    // DASHBOARD LEGEND
+    // ============================================================
+    .dashboard-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 12px 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        font-size: 13px;
+        color: #495057;
+
+        .legend-color {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border: 1px solid #dee2e6;
+        }
+
+        .legend-separator {
+            color: #dee2e6;
+        }
+    }
+
+    // ============================================================
+    // BADGES
+    // ============================================================
+    .badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+
+        &-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        &-warning {
+            background: #fd7e14;
+            color: white;
+        }
+
+        &-info {
+            background: #f0ad4e;
+            color: #212529;
+        }
+
+        &-success {
+            background: #28a745;
+            color: white;
+        }
+
+        &-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        &-primary {
+            background: #1a237e;
+            color: white;
+        }
+    }
+
+    // ============================================================
+    // HEATMAP CARDS
+    // ============================================================
+    .heatmap-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+    }
+
+    // ============================================================
+    // HEATMAP CELLS
+    // ============================================================
     .heatmap-cell {
-        width: 40px;
-        height: 40px;
+        width: 55px;
+        height: 55px;
+        margin: 1px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 700;
+        font-size: 14px;
+        color: white;
+
+        &:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
     }
-    .heatmap-cell .cell-score {
-        font-size: 12px;
+
+    // Couleurs HeatMap
+    .hm-red {
+        background: #dc3545;
     }
-    .heatmap-cell .cell-count {
-        font-size: 9px;
+    .hm-orange {
+        background: #fd7e14;
     }
-    .heatmap-labels-x div {
-        width: 40px;
-        font-size: 8px;
+    .hm-yellow {
+        background: #f0ad4e;
     }
-    .heatmap-labels-y {
-        font-size: 9px;
-        min-height: 220px;
+    .hm-green {
+        background: #28a745;
     }
-    .kpi-card .kpi-value {
-        font-size: 20px;
+    .hm-blue {
+        background: #17a2b8;
     }
-}
 
-/* ========================================= */
-/* HEATMAP - MATRICES (AJOUT)               */
-/* ========================================= */
+    // ============================================================
+    // RESPONSIVE
+    // ============================================================
+    @media (max-width: 992px) {
+        .heatmap-cell {
+            width: 45px;
+            height: 45px;
+            font-size: 12px;
+        }
 
-.heatmap-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
+        .heatmap-labels-x div {
+            width: 45px;
+            font-size: 9px;
+        }
 
-.heatmap-card .chart-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a237e;
-    margin-bottom: 15px;
-}
+        .heatmap-labels-y {
+            font-size: 10px;
+            min-height: 240px;
+        }
 
-.heatmap-grid-wrapper {
-    display: flex;
-    justify-content: center;
-}
-
-.heatmap-labels-y {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    padding-right: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #495057;
-    min-height: 300px;
-}
-
-.heatmap-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.heatmap-cell {
-    width: 55px;
-    height: 55px;
-    margin: 1px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.heatmap-cell:hover {
-    transform: scale(1.08);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    z-index: 10;
-}
-
-.heatmap-cell .cell-count {
-    font-size: 16px;
-    font-weight: 700;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-}
-
-.heatmap-labels-x {
-    display: flex;
-    justify-content: space-around;
-    padding-top: 8px;
-    font-size: 10px;
-    font-weight: 600;
-    color: #495057;
-    text-align: center;
-}
-
-.heatmap-labels-x div {
-    width: 55px;
-}
-
-.heatmap-total {
-    text-align: center;
-    margin-top: 12px;
-    font-size: 13px;
-    color: #6c757d;
-}
-
-/* Couleurs HeatMap */
-.hm-red { background: #dc3545; }
-.hm-orange { background: #fd7e14; }
-.hm-yellow { background: #f0ad4e; }
-.hm-green { background: #28a745; }
-.hm-blue { background: #17a2b8; }
-
-/* Légende verticale */
-.legend-vertical {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    height: 100%;
-    justify-content: center;
-}
-
-.legend-vertical .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-}
-
-.legend-vertical .legend-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .heatmap-cell {
-        width: 35px;
-        height: 35px;
+        .actions-grid {
+            grid-template-columns: 1fr 1fr;
+        }
     }
-    .heatmap-cell .cell-count {
-        font-size: 12px;
+
+    @media (max-width: 768px) {
+        padding: 10px;
+
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+
+            h2 {
+                font-size: 20px;
+            }
+        }
+
+        .kpi-card .kpi-value {
+            font-size: 20px;
+        }
+
+        .heatmap-cell {
+            width: 35px;
+            height: 35px;
+            font-size: 11px;
+        }
+
+        .heatmap-labels-x div {
+            width: 35px;
+            font-size: 8px;
+        }
+
+        .heatmap-labels-y {
+            font-size: 8px;
+            min-height: 180px;
+            padding-right: 5px;
+        }
+
+        .actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .risk-row {
+            padding: 8px 10px;
+
+            .risk-name {
+                min-width: 100px;
+                font-size: 12px;
+            }
+
+            .risk-code {
+                min-width: 60px;
+                font-size: 10px;
+            }
+
+            .risk-score {
+                font-size: 11px;
+                padding: 1px 8px;
+            }
+
+            .risk-level {
+                min-width: 60px;
+                font-size: 10px;
+            }
+        }
+
+        .scrollable-card {
+            max-height: 300px;
+        }
+
+        .dashboard-legend {
+            font-size: 11px;
+            gap: 10px;
+            padding: 10px 15px;
+        }
     }
-    .heatmap-labels-x div {
-        width: 35px;
-        font-size: 8px;
+
+    @media (max-width: 576px) {
+        .heatmap-cell {
+            width: 28px;
+            height: 28px;
+            font-size: 9px;
+        }
+
+        .heatmap-labels-x div {
+            width: 28px;
+            font-size: 6px;
+        }
+
+        .heatmap-labels-y {
+            font-size: 7px;
+            min-height: 140px;
+            padding-right: 3px;
+        }
+
+        .kpi-card .kpi-value {
+            font-size: 16px;
+        }
+
+        .kpi-card .kpi-label {
+            font-size: 9px;
+        }
+
+        .chart-card {
+            padding: 12px;
+        }
+
+        .chart-card .chart-title {
+            font-size: 12px;
+        }
+
+        .narrative-item .narr-text {
+            font-size: 12px;
+        }
+
+        .action-item {
+            padding: 8px 12px;
+
+            .action-label {
+                font-size: 11px;
+            }
+
+            .action-value {
+                font-size: 16px;
+            }
+        }
     }
-    .heatmap-labels-y {
-        font-size: 9px;
-        min-height: 180px;
-    }
-}
-.o_risk_heatmap_container {
-    max-height: 90vh;          /* Hauteur max = 90% de la fenêtre */
-    overflow-y: auto;          /* Active le scroll vertical si besoin */
-    padding: 20px;
 }
