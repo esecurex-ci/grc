@@ -42,6 +42,18 @@
     </record>
 
     <!-- ===================================================== -->
+    <!-- Gouvernance                                    -->
+    <!-- ===================================================== -->
+
+    <record id="action_risk_policy" model="ir.actions.act_window">
+        <field name="name">📋 Politique / Procédures</field>
+        <field name="res_model">risk.policy</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+
+    <!-- ===================================================== -->
     <!-- RISK MANAGEMENT                                       -->
     <!-- ===================================================== -->
 

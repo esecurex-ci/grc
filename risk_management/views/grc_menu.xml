@@ -57,6 +57,21 @@
     />
 
     <!-- ===================================================== -->
+    <!-- Gouvernance -->
+    <!-- ===================================================== -->
+    <menuitem id="menu_grc_governance"
+        name="📊 Gouvernance"
+        parent="menu_grc_root"
+        sequence="15"
+    />
+
+    <menuitem id="menu_grc_document"
+        name="Documents"
+        parent="menu_grc_governance"
+        action="action_risk_policy"
+        sequence="1"
+    />
+    <!-- ===================================================== -->
     <!-- RISK MANAGEMENT -->
     <!-- ===================================================== -->
 

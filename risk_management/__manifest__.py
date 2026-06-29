@@ -93,7 +93,10 @@
         'views/risk_risk_dashboard_views.xml',
         'views/risk_config_views.xml',
         'views/risk_process_cartography_views.xml',
-        #'views/risk_executive_dashboard_views.xml',
+        # 'views/risk_executive_dashboard_views.xml',
+
+        # Gouvernance
+        'views/risk_policy_views.xml',
 
         # ========== 9. MENUS ET ACTIONS (TOUJOURS EN DERNIER) ==========
         'views/grc_actions.xml',
@@ -101,6 +104,7 @@
 
         # 'reports/report.xml',
         'reports/risk_register_report.xml',
+
     ],
     'assets': {
         'web.assets_backend': [

@@ -73,3 +73,4 @@ access_risk_heatmap_snapshot,access_risk_heatmap_snapshot,model_risk_heatmap_sna
 access_risk_executive_dashboard_snapshot,access_risk_executive_dashboard_snapshot,model_risk_executive_dashboard_snapshot,base.group_user,1,1,1,1
 access_risk_metric_engine,access_risk_metric_engine,model_risk_metric_engine,base.group_user,1,1,1,1
 access_risk_recovery_site,access_risk_recovery_site,model_risk_recovery_site,base.group_user,1,1,1,1
+access_risk_policy,access_risk_policy,model_risk_policy,base.group_user,1,1,1,1
