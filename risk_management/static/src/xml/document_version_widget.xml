@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="risk_management.document_version_widget" owl="1">
+        <div class="o_document_version_widget">
+
+            <div t-if="state.loading" style="text-align:center;padding:30px;color:#6c757d;">
+                <i class="fa fa-spinner fa-spin fa-2x" style="color:#1a237e;"></i>
+                <p style="margin-top:10px;">Chargement des versions...</p>
+            </div>
+
+            <div t-else="">
+
+                <!-- ========================================= -->
+                <!-- EN-TÊTE                                  -->
+                <!-- ========================================= -->
+                <div class="version-header">
+                    <div class="version-info">
+                        <span class="document-name"><t t-esc="state.document?.name || 'Document'"/></span>
+                        <span class="document-code text-muted"><t t-esc="state.document?.code || ''"/></span>
+                        <span class="badge badge-primary"><t t-esc="state.versions.length"/> version(s)</span>
+                        <span t-if="state.currentVersion" class="badge badge-success">
+                            ⭐ <t t-esc="state.currentVersion.version_label"/>
+                        </span>
+                    </div>
+                    <button class="btn btn-primary btn-sm" t-on-click="toggleCreateForm">
+                        <i class="fa fa-plus"/> Nouvelle version
+                    </button>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- FORMULAIRE DE CRÉATION                   -->
+                <!-- ========================================= -->
+                <div t-if="state.isCreating" class="version-form">
+                    <div class="form-group">
+                        <label>Fichier <span class="text-danger">*</span></label>
+                        <div class="upload-zone"
+                             t-att-class="{'dragover': state.dragover}"
+                             t-on-dragover="onDragOver"
+                             t-on-dragleave="onDragLeave"
+                             t-on-drop="onDrop">
+                            <t t-if="!state.selectedFile">
+                                <i class="fa fa-cloud-upload fa-2x" style="color:#6c757d;"/>
+                                <p class="text-muted">Glissez votre fichier ici ou <span class="btn-link">parcourez</span></p>
+                                <input type="file" t-on-change="onFileSelected" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.odt,.ods"/>
+                            </t>
+                            <t t-else="">
+                                <div class="selected-file">
+                                    <i class="fa fa-file-text-o" style="font-size:24px;color:#1a237e;"/>
+                                    <span class="file-name"><t t-esc="state.selectedFile.name"/></span>
+                                    <span class="file-size text-muted">(<t t-esc="Math.round(state.selectedFile.size / 1024)"/> Ko)</span>
+                                    <button class="btn btn-link btn-sm" t-on-click="() => { state.selectedFile = null; }">
+                                        <i class="fa fa-times text-danger"/>
+                                    </button>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Type de version</label>
+                        <select class="form-control" t-model="state.versionType">
+                            <option value="initial">🎯 Initiale</option>
+                            <option value="minor">📝 Mineure</option>
+                            <option value="major">📈 Majeure</option>
+                            <option value="correction">🔧 Correction</option>
+                            <option value="review">📋 Révision</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date d'effet</label>
+                        <input type="date" class="form-control" t-model="state.effectiveDate"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Journal des modifications <span class="text-danger">*</span></label>
+                        <textarea class="form-control" t-model="state.changelog" rows="3"
+                                  placeholder="Décrivez les modifications apportées dans cette version..."/>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" t-on-click="toggleCreateForm">Annuler</button>
+                        <button class="btn btn-primary" t-on-click="createVersion"
+                                t-att-disabled="!state.selectedFile || !state.changelog || state.uploading">
+                            <i t-if="!state.uploading" class="fa fa-upload"/>
+                            <i t-else="" class="fa fa-spinner fa-spin"/>
+                            <t t-if="!state.uploading">Créer la version</t>
+                            <t t-else="">Téléchargement... <t t-esc="Math.round(state.progress)"/>%</t>
+                        </button>
+                    </div>
+
+                    <div t-if="state.uploading" class="progress-container">
+                        <div class="progress">
+                            <div class="progress-bar" t-att-style="'width: ' + state.progress + '%;'">
+                                <t t-esc="Math.round(state.progress)"/>%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- LISTE DES VERSIONS                       -->
+                <!-- ========================================= -->
+                <div class="version-list">
+                    <t t-if="state.versions.length === 0">
+                        <div class="empty-state">
+                            <i class="fa fa-file-text-o fa-3x" style="color:#dee2e6;"/>
+                            <p class="text-muted">Aucune version disponible</p>
+                            <button class="btn btn-primary btn-sm" t-on-click="toggleCreateForm">
+                                <i class="fa fa-plus"/> Créer la première version
+                            </button>
+                        </div>
+                    </t>
+
+                    <div class="version-item" t-foreach="state.versions" t-as="version" t-key="version.id"
+                         t-att-class="{'current': version.is_current, 'obsolete': version.is_obsolete}">
+                        <div class="version-header-item">
+                            <div class="version-badge">
+                                <span class="badge" t-attf-class="#{getStatusBadge(version.state)}">
+                                    <t t-esc="getStatusLabel(version.state)"/>
+                                </span>
+                                <span t-if="version.is_current" class="badge badge-success">⭐ Actuelle</span>
+                                <span t-if="version.is_obsolete" class="badge badge-danger">🚫 Obsolète</span>
+                            </div>
+                            <span class="version-label"><t t-esc="version.version_label"/></span>
+                            <span class="version-type text-muted"><t t-esc="getVersionTypeLabel(version.version_type)"/></span>
+                        </div>
+
+                        <div class="version-body">
+                            <div class="version-file" t-on-click="() => downloadVersion(version.id)">
+                                <i class="fa" t-attf-class="#{getFileIcon(version.filename)}" style="font-size:20px;"/>
+                                <span class="filename"><t t-esc="version.filename"/></span>
+                                <span class="file-size text-muted"><t t-esc="version.file_size || 0"/> Ko</span>
+                            </div>
+
+                            <div class="version-meta">
+                                <span class="meta-item">
+                                    <i class="fa fa-user"/> <t t-esc="version.author_id ? version.author_id[1] : 'N/A'"/>
+                                </span>
+                                <span class="meta-item">
+                                    <i class="fa fa-calendar"/> <t t-esc="formatDate(version.creation_date)"/>
+                                </span>
+                                <span t-if="version.effective_date" class="meta-item">
+                                    <i class="fa fa-check-circle"/> Effet: <t t-esc="formatDate(version.effective_date)"/>
+                                </span>
+                            </div>
+
+                            <div class="version-changelog" t-if="version.changelog">
+                                <strong>📝 Modifications :</strong>
+                                <span><t t-esc="version.changelog"/></span>
+                            </div>
+                        </div>
+
+                        <div class="version-actions">
+                            <button class="btn btn-sm btn-outline-primary" t-on-click="() => downloadVersion(version.id)">
+                                <i class="fa fa-download"/> Télécharger
+                            </button>
+                            <button t-if="!version.is_current && version.state != 'archived'"
+                                    class="btn btn-sm btn-outline-success"
+                                    t-on-click="() => setCurrentVersion(version.id)">
+                                <i class="fa fa-star"/> Définir comme actuelle
+                            </button>
+                            <button t-if="version.state == 'draft' || version.state == 'review'"
+                                    class="btn btn-sm btn-outline-danger"
+                                    t-on-click="() => deleteVersion(version.id)">
+                                <i class="fa fa-trash"/> Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+</templates>

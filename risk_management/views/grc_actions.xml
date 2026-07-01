@@ -38,7 +38,7 @@
     <record id="action_process_dashboard" model="ir.actions.client">
         <field name="name">📋 Tableau de bord Processus</field>
         <field name="tag">risk_management.process_dashboard</field>
-        <field name="target">new</field>
+        <field name="target">current</field>
     </record>
 
     <!-- ===================================================== -->
@@ -51,6 +51,21 @@
         <field name="view_mode">kanban,list,form</field>
     </record>
 
+    <record id="action_risk_document" model="ir.actions.act_window">
+        <field name="name">Documents de gouvernance</field>
+        <field name="res_model">risk.document</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_risk_document_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📋 Gérez vos documents de gouvernance
+            </p>
+            <p>
+                Politiques, procédures, standards et guidelines avec suivi des versions,
+                workflow d'approbation et gestion des révisions.
+            </p>
+        </field>
+    </record>
 
 
     <!-- ===================================================== -->
@@ -399,6 +414,78 @@
         <field name="name">Configurer les échelles</field>
         <field name="res_model">risk.config.settings</field>
         <field name="view_mode">form</field>
+    </record>
+
+    <record id="action_risk_document_category" model="ir.actions.act_window">
+        <field name="name">Catégories de documents</field>
+        <field name="res_model">risk.document.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_risk_document_category_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📂 Gérez vos catégories de documents
+            </p>
+            <p>
+                Organisez vos documents par catégories hiérarchiques.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_risk_tag_category" model="ir.actions.act_window">
+        <field name="name">Catégories de tags</field>
+        <field name="res_model">risk.tag.category</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_risk_document_approval" model="ir.actions.act_window">
+        <field name="name">Approbations</field>
+        <field name="res_model">risk.document.approval</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_risk_document_approval_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ✅ Gérez les approbations de documents
+            </p>
+            <p>
+                Suivez le workflow d'approbation de vos documents de gouvernance.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_risk_document_distribution" model="ir.actions.act_window">
+        <field name="name">Distributions</field>
+        <field name="res_model">risk.document.distribution</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_risk_document_distribution_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📤 Gérez la distribution des documents
+            </p>
+            <p>
+                Suivez les confirmations de lecture et les formations des destinataires.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_risk_tag" model="ir.actions.act_window">
+        <field name="name">Tags</field>
+        <field name="res_model">risk.tag</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_risk_tag_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                🏷️ Gérez vos tags
+            </p>
+            <p>
+                Les tags vous permettent d'organiser et de classer vos documents, risques et autres éléments.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_risk_tag_category" model="ir.actions.act_window">
+        <field name="name">Catégories de tags</field>
+        <field name="res_model">risk.tag.category</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

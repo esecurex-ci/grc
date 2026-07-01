@@ -97,6 +97,26 @@
                             </group>
                         </page>
 
+                        <page string="📋 Documents">
+                            <div class="alert alert-info" style="margin-bottom:10px;">
+                                <i class="fa fa-info-circle"/>
+                                <strong><field name="document_count"/></strong> document(s) de gouvernance lié(s) à ce risque
+                            </div>
+                            <field name="document_ids" context="{'default_risk_ids': [(4, id)]}">
+                                <list decoration-success="state == 'published'"
+                                      decoration-info="state == 'approved'"
+                                      decoration-warning="state in ('review', 'preparation')"
+                                      decoration-danger="state in ('obsolete', 'archived')">
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="document_type" widget="badge"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="version_label"/>
+                                    <field name="category_id"/>
+                                    <field name="owner_id"/>
+                                </list>
+                            </field>
+                        </page>
 
                         <page string="🔒 Contrôles" name="controls">
                             <group name="controls_group">

@@ -14,6 +14,7 @@
         'security/ir.model.access.csv',
         'data/sequence.xml',
         'data/risk_scale_data.xml',
+        'data/risk_tag_data.xml',
 
         # ========== 1. VUES DE BASE (Modèles simples) ==========
         'views/risk_category_views.xml',
@@ -96,7 +97,14 @@
         # 'views/risk_executive_dashboard_views.xml',
 
         # Gouvernance
+        'views/risk_tag_views.xml',
         'views/risk_policy_views.xml',
+        'views/risk_document_views.xml',
+        'views/risk_document_version_views.xml',
+        'views/risk_document_category_views.xml',
+        #'views/risk_document_version_wizard_views.xml',
+        'views/risk_document_approval_views.xml',
+        'views/risk_document_distribution_views.xml',
 
         # ========== 9. MENUS ET ACTIONS (TOUJOURS EN DERNIER) ==========
         'views/grc_actions.xml',
@@ -135,6 +143,7 @@
             'risk_management/static/src/js/kri_dashboard.js',
             'risk_management/static/src/xml/kri_dashboard.xml',
             'risk_management/static/src/scss/kri_dashboard.scss',
+            'risk_management/static/src/js/document_version_widget.js'
         ],
         'web.report_assets_common': [  # ⬅️ AJOUTEZ CETTE SECTION
             'risk_management/static/src/css/report_style.css',

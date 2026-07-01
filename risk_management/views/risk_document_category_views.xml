@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================= -->
+    <!-- VUE ARBRE - Catégories                    -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_category_list" model="ir.ui.view">
+        <field name="name">risk.document.category.list</field>
+        <field name="model">risk.document.category</field>
+        <field name="arch" type="xml">
+            <list decoration-success="active == True" decoration-muted="active == False">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="document_count" sum="Total"/>
+                <field name="child_count"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Catégories               -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_category_form" model="ir.ui.view">
+        <field name="name">risk.document.category.form</field>
+        <field name="model">risk.document.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_view_documents" string="📋 Voir les documents" type="object"
+                            class="btn-secondary" invisible="document_count == 0"/>
+                    <button name="action_toggle_active" string="Activer/Désactiver" type="object"
+                            class="btn-secondary"/>
+                    <field name="active" widget="boolean"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nom de la catégorie..."/>
+                        </h1>
+                        <span class="oe_subtitle">
+                            <field name="code" placeholder="Code"/>
+                        </span>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="parent_id"/>
+                            <field name="child_count" readonly="1"/>
+                            <field name="document_count" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="active" widget="boolean"/>
+                            <field name="description" placeholder="Description..."/>
+                        </group>
+                    </group>
+
+                    <group string="Sous-catégories" invisible="child_count == 0">
+                        <field name="child_ids" context="{'default_parent_id': id}">
+                            <list>
+                                <field name="code"/>
+                                <field name="name"/>
+                                <field name="document_count"/>
+                                <field name="active" widget="boolean"/>
+                            </list>
+                        </field>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE RECHERCHE - Catégories                -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_category_search" model="ir.ui.view">
+        <field name="name">risk.document.category.search</field>
+        <field name="model">risk.document.category</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="parent_id"/>
+                <filter name="active" string="Actif" domain="[('active', '=', True)]"/>
+                <filter name="has_children" string="Avec sous-catégories" domain="[('child_count', '>', 0)]"/>
+                <filter name="has_documents" string="Avec documents" domain="[('document_count', '>', 0)]"/>
+            </search>
+        </field>
+    </record>
+
+
+</odoo>

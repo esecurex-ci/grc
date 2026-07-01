@@ -1521,3 +1521,32 @@ class RiskRisk(models.Model):
             'narratives': narratives,
             'all_risks': all_risks,
         }
+
+    document_ids = fields.Many2many(
+        'risk.document',
+        string='Documents de gouvernance',
+        help="Documents de gouvernance liés à ce risque"
+    )
+
+    document_count = fields.Integer(
+        compute='_compute_document_count',
+        store=True,
+        string="Nombre de documents"
+    )
+
+    @api.depends('document_ids')
+    def _compute_document_count(self):
+        for record in self:
+            record.document_count = len(record.document_ids)
+
+    def action_view_documents(self):
+        """Ouvre la liste des documents liés"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Documents - {self.name}',
+            'res_model': 'risk.document',
+            'view_mode': 'list,form,kanban',
+            'domain': [('id', 'in', self.document_ids.ids)],
+            'context': {'default_risk_ids': [(4, self.id)]},
+        }

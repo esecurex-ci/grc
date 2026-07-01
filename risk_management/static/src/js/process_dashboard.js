@@ -406,34 +406,47 @@ export class ProcessDashboard extends Component {
     // ============================================================
     // ACTIONS / NAVIGATION
     // ============================================================
-    openAllProcesses() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'Tous les processus',
-            res_model: 'risk.process',
-            views: [[false, 'list'], [false, 'form']],
-            domain: [],
-        });
+    openAllProcesses = () => {
+        if (this.action) {
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                name: 'Tous les processus',
+                res_model: 'risk.process',
+                views: [[false, 'list'], [false, 'form']],
+                domain: [],
+            });
+        } else {
+            console.warn("📊 Action service non disponible");
+        }
     }
 
-    openCriticalProcesses() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'Processus critiques',
-            res_model: 'risk.process',
-            views: [[false, 'list'], [false, 'form']],
-            domain: [['risk_level', '=', '5']],  // 5 = Critique
-        });
+    openCriticalProcesses = () => {
+        if (this.action) {
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                name: 'Processus critiques',
+                res_model: 'risk.process',
+                views: [[false, 'list'], [false, 'form']],
+                domain: [['risk_level', '=', '5']],
+            });
+        } else {
+            console.warn("📊 Action service non disponible");
+        }
     }
 
-    openProcessById(processId) {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: 'Détail du processus',
-            res_model: 'risk.process',
-            views: [[false, 'form']],
-            res_id: processId,
-        });
+    openProcessById = (processId) => {
+        console.log("📊 openProcessById appelé avec ID:", processId);
+        if (this.action) {
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                name: 'Détail du processus',
+                res_model: 'risk.process',
+                views: [[false, 'form']],
+                res_id: processId,
+            });
+        } else {
+            console.warn("📊 Action service non disponible");
+        }
     }
 }
 

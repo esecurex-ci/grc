@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================= -->
+    <!-- VUE LISTE - Approbations                  -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_approval_list" model="ir.ui.view">
+        <field name="name">risk.document.approval.list</field>
+        <field name="model">risk.document.approval</field>
+        <field name="arch" type="xml">
+            <list decoration-success="status == 'approved'"
+                  decoration-info="status == 'pending'"
+                  decoration-warning="status == 'conditionnal'"
+                  decoration-danger="status == 'rejected'">
+                <field name="document_id"/>
+                <field name="version_id"/>
+                <field name="approver_id"/>
+                <field name="approval_date"/>
+                <field name="status" widget="badge"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Approbations             -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_approval_form" model="ir.ui.view">
+        <field name="name">risk.document.approval.form</field>
+        <field name="model">risk.document.approval</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- ✅ CORRIGÉ : attrs → invisible -->
+                    <button name="action_approve" string="✅ Approuver" type="object"
+                            class="btn-success" invisible="status != 'pending'"/>
+                    <button name="action_conditionnal_approve" string="⚠️ Approbation conditionnelle" type="object"
+                            class="btn-warning" invisible="status != 'pending'"/>
+                    <button name="action_reject" string="❌ Rejeter" type="object"
+                            class="btn-danger" invisible="status not in ['pending', 'conditionnal']"/>
+                    <button name="action_reset_to_pending" string="🔄 Remettre en attente" type="object"
+                            class="btn-secondary" invisible="status == 'pending'"/>
+                    <field name="status" widget="badge"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            Approbation de <field name="document_id"/>
+                        </h1>
+                        <span class="oe_subtitle">
+                            Version: <field name="version_id"/>
+                        </span>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="document_id" required="1"/>
+                            <field name="version_id"/>
+                            <field name="approver_id" required="1"/>
+                            <field name="approval_date"/>
+                            <field name="expiry_date"/>
+                            <field name="active" widget="boolean"/>
+                        </group>
+                        <group>
+                            <field name="status" widget="badge"/>
+                            <field name="comments" placeholder="Commentaires..." widget="html"/>
+                            <field name="conditions" placeholder="Conditions..." widget="html"/>
+                        </group>
+                    </group>
+
+                    <!-- ✅ CORRIGÉ : t-if → invisible -->
+                    <div class="alert alert-info" style="margin-top:10px;" invisible="status != 'conditionnal'" role="status">
+                        <i class="fa fa-info-circle"/> Cette approbation est conditionnelle. Veuillez consulter les conditions ci-dessus.
+                    </div>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE RECHERCHE - Approbations              -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_approval_search" model="ir.ui.view">
+        <field name="name">risk.document.approval.search</field>
+        <field name="model">risk.document.approval</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="document_id"/>
+                <field name="approver_id"/>
+                <filter name="status_pending" string="En attente" domain="[('status', '=', 'pending')]"/>
+                <filter name="status_approved" string="Approuvé" domain="[('status', '=', 'approved')]"/>
+                <filter name="status_rejected" string="Rejeté" domain="[('status', '=', 'rejected')]"/>
+                <filter name="status_conditionnal" string="Conditionnel" domain="[('status', '=', 'conditionnal')]"/>
+                <separator/>
+                <filter name="expired" string="Expiré" domain="[('expiry_date', '&lt;', context_today)]"/>
+            </search>
+        </field>
+    </record>
+
+</odoo>

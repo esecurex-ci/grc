@@ -65,11 +65,18 @@
         sequence="15"
     />
 
-    <menuitem id="menu_grc_document"
+    <!--menuitem id="menu_grc_document"
         name="Documents"
         parent="menu_grc_governance"
         action="action_risk_policy"
         sequence="1"
+    /-->
+
+    <menuitem id="menu_risk_document"
+        name="📋 Documents"
+        parent="menu_grc_governance"
+        action="action_risk_document"
+        sequence="2"
     />
     <!-- ===================================================== -->
     <!-- RISK MANAGEMENT -->
@@ -447,5 +454,25 @@
         parent="menu_grc_master_data"
         action="action_risk_organization"
     />
+
+    <menuitem id="menu_risk_document_category"
+                  name="📂 Catégories de documents"
+                  parent="menu_grc_master_data"
+                  action="action_risk_document_category"
+              sequence="10"/>
+
+    <menuitem id="menu_risk_tag"
+              name="🏷️ Tags"
+              parent="menu_grc_master_data"
+              action="action_risk_tag"
+              sequence="20"/>
+    <menuitem id="menu_risk_tag_category"
+        name="📂 Catégories de tags"
+        parent="menu_grc_master_data"
+        action="action_risk_tag_category"
+        sequence="21"
+    />
+
+
 
 </odoo>

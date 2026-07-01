@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================= -->
+    <!-- VUE LISTE - Distributions                 -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_distribution_list" model="ir.ui.view">
+        <field name="name">risk.document.distribution.list</field>
+        <field name="model">risk.document.distribution</field>
+        <field name="arch" type="xml">
+            <list decoration-success="confirmed == True"
+                  decoration-warning="confirmed == False and read_date == False"
+                  decoration-info="training_completed == True">
+                <field name="document_id"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="read_date"/>
+                <field name="confirmed" widget="boolean" string="✅"/>
+                <field name="training_completed" widget="boolean" string="🎓"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Distributions            -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_distribution_form" model="ir.ui.view">
+        <field name="name">risk.document.distribution.form</field>
+        <field name="model">risk.document.distribution</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- ✅ CORRIGÉ : attrs → invisible -->
+                    <button name="action_confirm_read" string="📖 Confirmer la lecture" type="object"
+                            class="btn-primary" invisible="confirmed == True"/>
+                    <button name="action_confirm_training" string="🎓 Confirmer la formation" type="object"
+                            class="btn-success" invisible="training_completed == True"/>
+                    <button name="action_send_reminder" string="📧 Envoyer un rappel" type="object"
+                            class="btn-warning" invisible="confirmed == True"/>
+                    <field name="confirmed" widget="boolean" string="✅ Confirmé"/>
+                    <field name="training_completed" widget="boolean" string="🎓 Formation"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            Distribution de <field name="document_id"/>
+                        </h1>
+                        <span class="oe_subtitle">
+                            Destinataire: <field name="employee_id"/>
+                        </span>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="document_id" required="1"/>
+                            <field name="employee_id" required="1"/>
+                            <field name="department_id"/>
+                            <field name="active" widget="boolean"/>
+                        </group>
+                        <group>
+                            <field name="read_date"/>
+                            <field name="confirmed" widget="boolean"/>
+                            <field name="confirmation_date"/>
+                            <field name="training_completed" widget="boolean"/>
+                            <field name="training_date"/>
+                            <field name="training_score"/>
+                        </group>
+                    </group>
+
+                    <group string="Commentaires">
+                        <field name="comments" widget="html"/>
+                    </group>
+
+                    <!-- ✅ CORRIGÉ : t-if not confirmed → invisible="confirmed == True" -->
+                    <div class="alert alert-info" style="margin-top:10px;" invisible="confirmed == True" role="status">
+                        <i class="fa fa-info-circle"/> Ce destinataire n'a pas encore confirmé la lecture du document.
+                    </div>
+
+                    <!-- ✅ CORRIGÉ : t-if confirmed → invisible="not confirmed" -->
+                    <div class="alert alert-success" style="margin-top:10px;" invisible="not confirmed" role="status">
+                        <i class="fa fa-check-circle"/> Lecture confirmée le <field name="confirmation_date"/>.
+                    </div>
+
+                    <!-- ✅ CORRIGÉ : t-if training_completed → invisible="not training_completed" -->
+                    <div class="alert alert-success" style="margin-top:10px;" invisible="not training_completed" role="status">
+                        <i class="fa fa-graduation-cap"/> Formation effectuée le <field name="training_date"/>.
+                        <!-- ✅ CORRIGÉ : t-if training_score → invisible="not training_score" -->
+                        <span invisible="not training_score"> Score: <field name="training_score"/>%</span>
+                    </div>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE RECHERCHE - Distributions             -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_distribution_search" model="ir.ui.view">
+        <field name="name">risk.document.distribution.search</field>
+        <field name="model">risk.document.distribution</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="document_id"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <filter name="not_confirmed" string="Non confirmé" domain="[('confirmed', '=', False)]"/>
+                <filter name="confirmed" string="Confirmé" domain="[('confirmed', '=', True)]"/>
+                <filter name="training_not_done" string="Formation non effectuée" domain="[('training_completed', '=', False)]"/>
+                <filter name="training_done" string="Formation effectuée" domain="[('training_completed', '=', True)]"/>
+                <separator/>
+                <filter name="unread" string="Non lu" domain="[('read_date', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE KANBAN - Distributions                -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_distribution_kanban" model="ir.ui.view">
+        <field name="name">risk.document.distribution.kanban</field>
+        <field name="model">risk.document.distribution</field>
+        <field name="arch" type="xml">
+            <kanban class="o_risk_document_distribution_kanban">
+                <field name="document_id"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="confirmed"/>
+                <field name="training_completed"/>
+                <field name="read_date"/>
+
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <span class="o_kanban_image_size" style="font-size:32px;">
+                                    <i class="fa fa-user"/>
+                                </span>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="employee_id"/>
+                                </strong>
+                                <div class="text-muted">
+                                    <field name="document_id"/>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div class="o_risk_distribution_status">
+                                        <!-- ✅ CORRIGÉ : t-attf + t-if → class conditionnelle + invisible -->
+                                        <span class="badge" t-attf-class="badge-#{record.confirmed.raw_value ? 'success' : 'warning'}">
+                                            <span invisible="not confirmed">✅ Confirmé</span>
+                                            <span invisible="confirmed">⏳ En attente</span>
+                                        </span>
+                                        <span class="badge" t-attf-class="badge-#{record.training_completed.raw_value ? 'info' : 'secondary'}">
+                                            <span invisible="not training_completed">🎓 Formé</span>
+                                            <span invisible="training_completed">📚 Non formé</span>
+                                        </span>
+                                    </div>
+                                    <div class="o_risk_distribution_date">
+                                        <i class="fa fa-calendar"/> <field name="read_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+</odoo>

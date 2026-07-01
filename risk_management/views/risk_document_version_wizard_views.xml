@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Assistant de création     -->
+    <!-- de version à partir d'une pièce jointe    -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_version_wizard_form" model="ir.ui.view">
+        <field name="name">risk.document.version.wizard.form</field>
+        <field name="model">risk.document.version.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Créer une nouvelle version">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>📤 Créer une version depuis une pièce jointe</h1>
+                        <p class="text-muted">
+                            Sélectionnez un fichier pour créer une nouvelle version du document.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="document_id" readonly="1"/>
+                            <field name="version_major" readonly="1" invisible="1"/>
+                            <field name="version_minor" readonly="1" invisible="1"/>
+                            <field name="version_type" required="1" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="attachment_id" required="1" widget="many2one_avatar"/>
+                            <field name="effective_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Journal des modifications">
+                        <field name="changelog" required="1" placeholder="Décrivez les modifications apportées dans cette version..."/>
+                    </group>
+
+                    <footer>
+                        <button name="action_create_version" string="✅ Créer la version" type="object"
+                                class="btn-primary" context="{'default_document_id': id}"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Assistant simple         -->
+    <!-- pour créer une version (depuis le        -->
+    <!-- bouton "Nouvelle version")               -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_version_quick_wizard_form" model="ir.ui.view">
+        <field name="name">risk.document.version.quick.wizard.form</field>
+        <field name="model">risk.document.version.quick.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Nouvelle version">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>➕ Nouvelle version</h1>
+                        <p class="text-muted">
+                            Version actuelle : <strong><field name="current_version_label"/></strong>
+                        </p>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="document_id" readonly="1"/>
+                            <field name="version_type" required="1" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="attachment_id" required="1" widget="many2one_avatar"/>
+                            <field name="effective_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Journal des modifications">
+                        <field name="changelog" required="1"
+                               placeholder="Décrivez les modifications apportées dans cette version..."/>
+                    </group>
+
+                    <footer>
+                        <button name="action_create_version" string="✅ Créer" type="object" class="btn-primary"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Assistant pour upload    -->
+    <!-- de fichier direct                         -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_version_upload_wizard_form" model="ir.ui.view">
+        <field name="name">risk.document.version.upload.wizard.form</field>
+        <field name="model">risk.document.version.upload.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Uploader un fichier">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>📎 Uploader un fichier</h1>
+                        <p class="text-muted">
+                            Téléchargez un fichier pour créer une nouvelle version.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="document_id" readonly="1"/>
+                            <field name="version_type" required="1"/>
+                        </group>
+                        <group>
+                            <field name="file_name" required="1"/>
+                            <field name="file_data" required="1" widget="binary"/>
+                            <field name="effective_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Journal des modifications">
+                        <field name="changelog" required="1" placeholder="Décrivez les modifications..."/>
+                    </group>
+
+                    <footer>
+                        <button name="action_create_version" string="✅ Uploader et créer" type="object" class="btn-primary"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- VUE ARBRE - Revues -->
+    <record id="view_risk_document_review_list" model="ir.ui.view">
+        <field name="name">risk.document.review.list</field>
+        <field name="model">risk.document.review</field>
+        <field name="arch" type="xml">
+            <list decoration-success="status == 'completed'"
+                  decoration-warning="status == 'in_progress'"
+                  decoration-danger="status == 'cancelled'"
+                  decoration-info="status == 'planned'">
+                <field name="document_id"/>
+                <field name="review_date"/>
+                <field name="reviewer_id"/>
+                <field name="status" widget="badge"/>
+                <field name="next_review_date"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- VUE FORMULAIRE - Revues -->
+    <record id="view_risk_document_review_form" model="ir.ui.view">
+        <field name="name">risk.document.review.form</field>
+        <field name="model">risk.document.review</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start_review" string="🔄 Démarrer" type="object"
+                            class="btn-primary" attrs="{'invisible': [('status', 'not in', ['planned'])]}"/>
+                    <button name="action_complete_review" string="✅ Terminer" type="object"
+                            class="btn-success" attrs="{'invisible': [('status', '!=', 'in_progress')]}"/>
+                    <button name="action_cancel_review" string="❌ Annuler" type="object"
+                            class="btn-danger" attrs="{'invisible': [('status', '=', 'cancelled')]}"/>
+                    <button name="action_create_next_review" string="📅 Prochaine revue" type="object"
+                            class="btn-secondary" attrs="{'invisible': [('status', '!=', 'completed')]}"/>
+                    <field name="status" widget="badge"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            Revue de <field name="document_id"/>
+                        </h1>
+                        <span class="oe_subtitle">
+                            <field name="review_date"/>
+                        </span>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="reviewer_id" required="1"/>
+                            <field name="review_period"/>
+                            <field name="next_review_date"/>
+                            <field name="active" widget="boolean"/>
+                        </group>
+                        <group>
+                            <field name="status" widget="badge"/>
+                            <field name="comments" placeholder="Commentaires..." widget="html"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="🔍 Constatations">
+                            <field name="findings" widget="html"/>
+                        </page>
+                        <page string="💡 Recommandations">
+                            <field name="recommendations" widget="html"/>
+                        </page>
+                        <page string="📋 Plan d'action">
+                            <field name="action_plan" widget="html"/>
+                        </page>
+                        <page string="📎 Pièces jointes">
+                            <field name="attachment_ids" widget="many2many_kanban"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ========================================= -->
+        <!-- CATÉGORIES DE TAGS                       -->
+        <!-- ========================================= -->
+
+        <record id="tag_category_risk" model="risk.tag.category">
+            <field name="name">Risques</field>
+            <field name="code">RISK</field>
+            <field name="description">Tags liés à la gestion des risques</field>
+        </record>
+
+        <record id="tag_category_compliance" model="risk.tag.category">
+            <field name="name">Conformité</field>
+            <field name="code">COMP</field>
+            <field name="description">Tags liés à la conformité réglementaire</field>
+        </record>
+
+        <record id="tag_category_security" model="risk.tag.category">
+            <field name="name">Sécurité</field>
+            <field name="code">SEC</field>
+            <field name="description">Tags liés à la sécurité de l'information</field>
+        </record>
+
+        <record id="tag_category_quality" model="risk.tag.category">
+            <field name="name">Qualité</field>
+            <field name="code">QLT</field>
+            <field name="description">Tags liés à la gestion de la qualité</field>
+        </record>
+
+        <record id="tag_category_finance" model="risk.tag.category">
+            <field name="name">Finances</field>
+            <field name="code">FIN</field>
+            <field name="description">Tags liés aux finances et à la comptabilité</field>
+        </record>
+
+        <record id="tag_category_it" model="risk.tag.category">
+            <field name="name">Informatique</field>
+            <field name="code">IT</field>
+            <field name="description">Tags liés aux systèmes d'information</field>
+        </record>
+
+        <!-- ========================================= -->
+        <!-- TAGS                                     -->
+        <!-- ========================================= -->
+
+        <record id="tag_critical" model="risk.tag">
+            <field name="name">Critique</field>
+            <field name="code">CRIT</field>
+            <field name="category_id" ref="tag_category_risk"/>
+            <field name="color">1</field>
+            <field name="description">Éléments critiques nécessitant une attention particulière</field>
+        </record>
+
+        <record id="tag_high_priority" model="risk.tag">
+            <field name="name">Haute priorité</field>
+            <field name="code">HP</field>
+            <field name="category_id" ref="tag_category_risk"/>
+            <field name="color">2</field>
+            <field name="description">Éléments de haute priorité</field>
+        </record>
+
+        <record id="tag_regulatory" model="risk.tag">
+            <field name="name">Réglementaire</field>
+            <field name="code">REG</field>
+            <field name="category_id" ref="tag_category_compliance"/>
+            <field name="color">6</field>
+            <field name="description">Documents et risques liés aux réglementations</field>
+        </record>
+
+        <record id="tag_gdpr" model="risk.tag">
+            <field name="name">RGPD</field>
+            <field name="code">GDPR</field>
+            <field name="category_id" ref="tag_category_compliance"/>
+            <field name="color">7</field>
+            <field name="description">Règlement Général sur la Protection des Données</field>
+        </record>
+
+        <record id="tag_cybersecurity" model="risk.tag">
+            <field name="name">Cybersécurité</field>
+            <field name="code">CYB</field>
+            <field name="category_id" ref="tag_category_security"/>
+            <field name="color">1</field>
+            <field name="description">Sécurité informatique et cybersécurité</field>
+        </record>
+
+        <record id="tag_data_protection" model="risk.tag">
+            <field name="name">Protection des données</field>
+            <field name="code">DP</field>
+            <field name="category_id" ref="tag_category_security"/>
+            <field name="color">6</field>
+            <field name="description">Protection des données personnelles</field>
+        </record>
+
+        <record id="tag_iso" model="risk.tag">
+            <field name="name">ISO</field>
+            <field name="code">ISO</field>
+            <field name="category_id" ref="tag_category_quality"/>
+            <field name="color">4</field>
+            <field name="description">Normes ISO</field>
+        </record>
+
+        <record id="tag_audit" model="risk.tag">
+            <field name="name">Audit</field>
+            <field name="code">AUD</field>
+            <field name="category_id" ref="tag_category_quality"/>
+            <field name="color">3</field>
+            <field name="description">Documents et sujets liés à l'audit</field>
+        </record>
+
+        <record id="tag_financial" model="risk.tag">
+            <field name="name">Financier</field>
+            <field name="code">FIN</field>
+            <field name="category_id" ref="tag_category_finance"/>
+            <field name="color">3</field>
+            <field name="description">Risques et sujets financiers</field>
+        </record>
+
+        <record id="tag_operational" model="risk.tag">
+            <field name="name">Opérationnel</field>
+            <field name="code">OP</field>
+            <field name="category_id" ref="tag_category_risk"/>
+            <field name="color">5</field>
+            <field name="description">Risques opérationnels</field>
+        </record>
+
+        <record id="tag_it_security" model="risk.tag">
+            <field name="name">Sécurité IT</field>
+            <field name="code">IT-SEC</field>
+            <field name="category_id" ref="tag_category_it"/>
+            <field name="color">1</field>
+            <field name="description">Sécurité des systèmes d'information</field>
+        </record>
+
+    </data>
+</odoo>

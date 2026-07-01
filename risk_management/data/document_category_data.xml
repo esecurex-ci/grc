@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ========================================= -->
+        <!-- CATÉGORIES DE DOCUMENTS                   -->
+        <!-- ========================================= -->
+
+        <record id="doc_category_policies" model="risk.document.category">
+            <field name="code">POL</field>
+            <field name="name">Politiques</field>
+            <field name="description">Documents de politique générale définissant les orientations et principes</field>
+        </record>
+
+        <record id="doc_category_procedures" model="risk.document.category">
+            <field name="code">PROC</field>
+            <field name="name">Procédures</field>
+            <field name="description">Documents détaillant les processus et modes opératoires</field>
+        </record>
+
+        <record id="doc_category_standards" model="risk.document.category">
+            <field name="code">STD</field>
+            <field name="name">Standards &amp; Normes</field>
+            <field name="description">Standards techniques et normes de référence</field>
+        </record>
+
+        <record id="doc_category_guidelines" model="risk.document.category">
+            <field name="code">GLD</field>
+            <field name="name">Lignes directrices</field>
+            <field name="description">Guides et recommandations de bonnes pratiques</field>
+        </record>
+
+        <record id="doc_category_templates" model="risk.document.category">
+            <field name="code">TPL</field>
+            <field name="name">Templates</field>
+            <field name="description">Modèles de documents réutilisables</field>
+        </record>
+
+        <record id="doc_category_forms" model="risk.document.category">
+            <field name="code">FRM</field>
+            <field name="name">Formulaires</field>
+            <field name="description">Formulaires et questionnaires standards</field>
+        </record>
+
+        <record id="doc_category_regulatory" model="risk.document.category">
+            <field name="code">REG</field>
+            <field name="name">Réglementaires</field>
+            <field name="description">Documents liés à la conformité réglementaire</field>
+        </record>
+
+        <record id="doc_category_bcp" model="risk.document.category">
+            <field name="code">BCP</field>
+            <field name="name">Continuité d'activité</field>
+            <field name="description">Plans de continuité et de reprise d'activité</field>
+        </record>
+
+        <!-- ========================================= -->
+        <!-- SOUS-CATÉGORIES                          -->
+        <!-- ========================================= -->
+
+        <record id="doc_category_policies_security" model="risk.document.category">
+            <field name="code">POL-SEC</field>
+            <field name="name">Sécurité</field>
+            <field name="parent_id" ref="doc_category_policies"/>
+            <field name="description">Politiques de sécurité de l'information</field>
+        </record>
+
+        <record id="doc_category_policies_quality" model="risk.document.category">
+            <field name="code">POL-QLT</field>
+            <field name="name">Qualité</field>
+            <field name="parent_id" ref="doc_category_policies"/>
+            <field name="description">Politiques de gestion de la qualité</field>
+        </record>
+
+        <record id="doc_category_procedures_it" model="risk.document.category">
+            <field name="code">PROC-IT</field>
+            <field name="name">Informatique</field>
+            <field name="parent_id" ref="doc_category_procedures"/>
+            <field name="description">Procédures IT et support</field>
+        </record>
+
+        <record id="doc_category_procedures_hr" model="risk.document.category">
+            <field name="code">PROC-HR</field>
+            <field name="name">Ressources Humaines</field>
+            <field name="parent_id" ref="doc_category_procedures"/>
+            <field name="description">Procédures RH et administratives</field>
+        </record>
+
+    </data>
+</odoo>

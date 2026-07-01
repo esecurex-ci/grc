@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================= -->
+    <!-- VUE LISTE - Versions du document          -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_version_list" model="ir.ui.view">
+        <field name="name">risk.document.version.list</field>
+        <field name="model">risk.document.version</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'published'" 
+                  decoration-info="state == 'approved'"
+                  decoration-warning="state == 'review'"
+                  decoration-danger="state == 'archived'">
+                <field name="version_label"/>
+                <field name="document_id"/>
+                <field name="state" widget="badge"/>
+                <field name="filename"/>
+                <field name="file_size" string="Taille (Ko)"/>
+                <field name="author_id"/>
+                <field name="creation_date"/>
+                <field name="changelog" optional="hide"/>
+                <field name="is_current" widget="boolean" string="⭐"/>
+                <field name="is_obsolete" widget="boolean" string="🚫"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Version du document      -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_version_form" model="ir.ui.view">
+        <field name="name">risk.document.version.form</field>
+        <field name="model">risk.document.version</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_set_current" string="⭐ Définir comme actuelle" type="object" 
+                            class="btn-primary" invisible="is_current == True"/>
+                    <button name="action_approve" string="✅ Approuver" type="object" 
+                            class="btn-success" invisible="state in ['approved', 'published', 'archived']"/>
+                    <button name="action_publish" string="📤 Publier" type="object" 
+                            class="btn-info" invisible="state in ['published', 'archived']"/>
+                    <button name="action_archive" string="📦 Archiver" type="object" 
+                            class="btn-secondary" invisible="state == 'archived'"/>
+                    <button name="action_download" string="📥 Télécharger" type="object" class="btn-secondary"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="version_label" placeholder="Version..."/>
+                            <!-- ✅ CORRIGÉ : t-if → invisible -->
+                            <span class="badge badge-success" invisible="not is_current">⭐ Version actuelle</span>
+                            <span class="badge badge-danger" invisible="not is_obsolete">🚫 Obsolète</span>
+                        </h1>
+                        <span class="oe_subtitle">
+                            <field name="document_id"/>
+                        </span>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="version_type" widget="badge"/>
+                            <field name="author_id"/>
+                            <field name="reviewer_id"/>
+                            <field name="approver_id"/>
+                            <field name="creation_date"/>
+                            <field name="approval_date"/>
+                            <field name="effective_date"/>
+                        </group>
+                        <group>
+                            <field name="attachment_id" required="1"/>
+                            <field name="filename" readonly="1"/>
+                            <field name="file_size" string="Taille (Ko)" readonly="1"/>
+                            <field name="changelog" placeholder="Journal des modifications..." required="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Résumé des modifications">
+                        <field name="summary" widget="html"/>
+                    </group>
+
+                    <notebook>
+                        <page string="📄 Fichier">
+                            <div class="alert alert-info">
+                                <i class="fa fa-file-text-o"/> 
+                                <strong><field name="filename"/></strong>
+                                <span class="text-muted"> - <field name="file_size"/> Ko</span>
+                            </div>
+                            <button name="action_download" string="📥 Télécharger le fichier" type="object" class="btn-primary"/>
+                            <button name="action_view_attachment" string="🔍 Voir le fichier" type="object" class="btn-secondary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE RECHERCHE - Versions                  -->
+    <!-- ========================================= -->
+    <record id="view_risk_document_version_search" model="ir.ui.view">
+        <field name="name">risk.document.version.search</field>
+        <field name="model">risk.document.version</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="version_label"/>
+                <field name="filename"/>
+                <field name="document_id"/>
+                <field name="author_id"/>
+                <filter name="state_draft" string="Brouillon" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_review" string="En relecture" domain="[('state', '=', 'review')]"/>
+                <filter name="state_approved" string="Approuvé" domain="[('state', '=', 'approved')]"/>
+                <filter name="state_published" string="Publié" domain="[('state', '=', 'published')]"/>
+                <filter name="state_archived" string="Archivé" domain="[('state', '=', 'archived')]"/>
+                <separator/>
+                <filter name="is_current" string="Version actuelle" domain="[('is_current', '=', True)]"/>
+                <filter name="is_obsolete" string="Obsolète" domain="[('is_obsolete', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+    
+</odoo>
