@@ -127,6 +127,7 @@
             'risk_management/static/src/xml/executive_dashboard_widget.xml',
             'risk_management/static/src/scss/executive_dashboard_widget.scss',
             'risk_management/static/src/scss/risk_process_cartography_views.scss',
+            'risk_management/static/src/scss/risk_process_views.scss',
             # 'risk_management/static/src/js/risk_dashboard_heatmap.js',
             # 'risk_management/static/src/xml/risk_dashboard_heatmap.xml',
             # 'risk_management/static/src/scss/risk_dashboard_heatmap.scss',
@@ -143,7 +144,8 @@
             'risk_management/static/src/js/kri_dashboard.js',
             'risk_management/static/src/xml/kri_dashboard.xml',
             'risk_management/static/src/scss/kri_dashboard.scss',
-            'risk_management/static/src/js/document_version_widget.js'
+            'risk_management/static/src/js/document_version_widget.js',
+
         ],
         'web.report_assets_common': [  # ⬅️ AJOUTEZ CETTE SECTION
             'risk_management/static/src/css/report_style.css',

@@ -32,6 +32,18 @@ class RiskActivity(models.Model):
         string='Description'
     )
 
+    summary = fields.Char(
+        string='Résumé'
+    )
+
+    icon = fields.Char(string='Icône', default='fa-tasks')
+
+    user_id = fields.Many2one(
+        'res.users',
+        string='Utilisateur responsable',
+        tracking=True
+    )
+
     # =====================================================
     # RELATIONS HIÉRARCHIQUES
     # =====================================================
@@ -64,6 +76,23 @@ class RiskActivity(models.Model):
         'risk.risk',
         'activity_id',
         string='Risques'
+    )
+
+    date_deadline = fields.Date(
+        string='Date limite',
+        help='Date limite de réalisation de l\'activité'
+    )
+
+    # Date de début
+    date_start = fields.Date(
+        string='Date de début',
+        help='Date de début de l\'activité'
+    )
+
+    # Date de fin
+    date_end = fields.Date(
+        string='Date de fin',
+        help='Date de fin de l\'activité'
     )
 
     # =====================================================

@@ -1,66 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_risk_process_list" model="ir.ui.view">
-        <field name="name">risk.process.list</field>
-        <field name="model">risk.process</field>
-        <field name="arch" type="xml">
-            <list>
-                <field name="code"/>
-                <field name="name"/>
-                <field name="owner_id"/>
-                <field name="active"/>
-            </list>
-        </field>
-    </record>
-
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Processus                -->
+    <!-- ========================================= -->
     <record id="view_risk_process_form" model="ir.ui.view">
         <field name="name">risk.process.form</field>
         <field name="model">risk.process</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <!-- Boutons d'action -->
+                    <button name="action_view_activities" string="📋 Voir les activités" type="object"
+                            class="btn-secondary" invisible="activity_count == 0"/>
+                    <button name="action_add_activity" string="➕ Ajouter une activité" type="object" class="btn-secondary"/>
+                    <button name="action_view_risks" string="🚨 Voir les risques" type="object"
+                            class="btn-secondary" invisible="count_risk == 0"/>
+                    <button name="action_add_risk" string="➕ Ajouter un risque" type="object" class="btn-primary"/>
+                    <field name="active" widget="boolean"/>
+                </header>
+
                 <sheet>
+                    <!-- Titre -->
                     <div class="oe_title">
                         <h1>
-                            <field name="name"/>
+                            <field name="name" placeholder="Nom du processus..."/>
                         </h1>
+                        <span class="oe_subtitle">
+                            <field name="code" placeholder="Code"/>
+                            <span class="badge badge-secondary"><field name="category"/></span>
+                            <span class="badge badge-info" invisible="count_risk == 0">
+                                <field name="count_risk"/> risques
+                            </span>
+                            <span class="badge badge-primary" invisible="activity_count == 0">
+                                <field name="activity_count"/> activités
+                            </span>
+                        </span>
                     </div>
 
+                    <!-- Informations principales -->
                     <group>
                         <group>
-                            <field name="code"/>
+                            <field name="category" widget="badge"/>
+                            <field name="macro_process_id"/>
                             <field name="owner_id"/>
+                            <field name="count_risk" readonly="1" string="Nombre de risques"/>
+                            <field name="activity_count" readonly="1" string="Nombre d'activités"/>
                         </group>
-
                         <group>
-                            <field name="active"/>
+                            <field name="risk_level" widget="badge" string="Niveau de risque"/>
+                            <field name="description"/>
+                            <field name="active" widget="boolean"/>
                         </group>
                     </group>
 
+                    <!-- Onglets -->
                     <notebook>
-                        <page string="Description">
+                        <!-- 📝 ONGLET : Description -->
+                        <page string="📝 Description">
                             <field name="description"/>
                         </page>
+
+                        <!-- 📋 ONGLET : Activités -->
+                        <page string="📋 Activités">
+                            <div class="alert alert-info" style="margin-bottom:10px;" role="status">
+                                <i class="fa fa-info-circle" title="Information"/>
+                                <strong><field name="activity_count"/></strong> activité(s) dans ce processus
+                            </div>
+
+                            <div class="row" style="margin-bottom:10px;">
+                                <div class="col-12">
+                                    <button name="action_add_activity" string="➕ Ajouter une activité" type="object" class="btn-primary btn-sm"/>
+                                    <button name="action_view_activities" string="📋 Voir toutes les activités" type="object"
+                                            class="btn-secondary btn-sm" invisible="activity_count == 0"/>
+                                </div>
+                            </div>
+
+                            <field name="activity_ids" context="{'default_process_id': id}">
+                                <list decoration-success="state == 'active'"
+                                      decoration-warning="state == 'draft'"
+                                      decoration-danger="state == 'archived'">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="owner_id"/>
+                                    <field name="risk_count" widget="statinfo" string="Risques"/>
+                                    <field name="risk_level" widget="badge" string="Niveau"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- 🚨 ONGLET : Risques associés -->
+                        <page string="🚨 Risques associés">
+                            <div class="alert alert-info" style="margin-bottom:10px;" role="status">
+                                <i class="fa fa-info-circle" title="Information"/>
+                                <strong><field name="count_risk"/></strong> risque(s) associé(s) à ce processus (via les activités)
+                            </div>
+
+                            <div class="row" style="margin-bottom:10px;">
+                                <div class="col-12">
+                                    <button name="action_add_risk" string="➕ Ajouter un risque" type="object" class="btn-primary btn-sm"/>
+                                    <button name="action_view_risks" string="📋 Voir tous les risques" type="object"
+                                            class="btn-secondary btn-sm" invisible="count_risk == 0"/>
+                                </div>
+                            </div>
+
+                            <field name="risk_ids" context="{'default_process_id': id}">
+                                <list decoration-success="risk_level in ('1', '2')"
+                                      decoration-warning="risk_level == '3'"
+                                      decoration-danger="risk_level in ('4', '5')">
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                    <field name="risk_level" widget="badge" string="Niveau"/>
+                                    <field name="owner_id"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="active" widget="boolean"/>
+                                    <field name="activity_id" optional="show" string="Activité"/>
+                                </list>
+                            </field>
+
+                            <!-- ✅ STATISTIQUES - Version avec field nolabel -->
+                            <group string="📊 Statistiques" invisible="count_risk == 0">
+                                <div style="display:flex;flex-direction:row;gap:15px;min-width:max-content;margin-top:10px;padding:12px 15px;background:#f8f9fa;border-radius:8px;align-items:center;">
+                                    <span style="background:#dc3545;color:white;padding:6px 14px;border-radius:20px;font-size:14px;font-weight:bold;display:inline-flex">
+                                        🔴 Critiques: <strong><field name="critical_risk_count" nolabel="1"/></strong>
+                                    </span>
+                                    <span style="background:#fd7e14;color:white;padding:6px 14px;border-radius:20px;font-size:14px;display:inline-block;display:inline-flex;font-weight:bold;">
+                                        🟠 Élevés: <strong><field name="high_risk_count" nolabel="1"/></strong>
+                                    </span>
+                                    <span style="background:#ffc107;color:#212529;padding:6px 14px;border-radius:20px;font-size:14px;display:inline-flex;font-weight:bold;">
+                                        🟡 Moyens: <strong><field name="medium_risk_count" nolabel="1"/></strong>
+                                    </span>
+                                    <span style="background:#28a745;color:white;padding:6px 14px;border-radius:20px;font-size:14px;display:inline-flex;font-weight:bold;">
+                                        🟢 Faibles: <strong><field name="low_risk_count" nolabel="1"/></strong>
+                                    </span>
+                                </div>
+                            </group>
+                        </page>
                     </notebook>
-
                 </sheet>
+                <chatter/>
             </form>
-        </field>
-    </record>
-
-    <record id="view_risk_process_search" model="ir.ui.view">
-        <field name="name">risk.process.search</field>
-        <field name="model">risk.process</field>
-        <field name="arch" type="xml">
-            <search>
-                <field name="code"/>
-                <field name="name"/>
-                <field name="owner_id"/>
-
-                <filter name="active"
-                        string="Actif"
-                        domain="[('active','=',True)]"/>
-            </search>
         </field>
     </record>
 
