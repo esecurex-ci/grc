@@ -16,6 +16,8 @@
         'data/risk_scale_data.xml',
         'data/risk_tag_data.xml',
         'data/kri_data.xml',
+        'data/cron_data.xml',
+        'data/email_template_data.xml',
 
         # ========== 1. VUES DE BASE (Modèles simples) ==========
         'views/risk_category_views.xml',

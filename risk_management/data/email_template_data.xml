@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ✅ Template d'email de notification -->
+        <record id="email_template_action_notification" model="mail.template">
+            <field name="name">Notification d'action corrective</field>
+            <field name="model_id" ref="risk_management.model_risk_corrective_action"/>
+            <field name="email_from">${object.create_uid.email_formatted or ''}</field>
+            <field name="email_to">${object.owner_id.user_id.email_formatted or ''}</field>
+            <field name="subject">📋 Action corrective : ${object.name}</field>
+            <field name="body_html"><![CDATA[
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                    <h2 style="color: #1a237e;">📋 Notification d'action corrective</h2>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <p><strong>Action :</strong> ${object.name}</p>
+                        <p><strong>Code :</strong> ${object.code}</p>
+                        <p><strong>Type :</strong> ${object.get_action_type_display()}</p>
+                        <p><strong>Responsable :</strong> ${object.owner_id.name}</p>
+                        <p><strong>Date limite :</strong> ${object.deadline}</p>
+                        <p><strong>Progression :</strong> ${object.progress}%</p>
+                    </div>
+
+                    <div style="margin: 20px 0;">
+                        <a href="${object.env['ir.config_parameter'].sudo().get_param('web.base.url')}/web#id=${object.id}&model=risk.corrective.action&view_type=form"
+                           style="background: #1a237e; color: white; padding: 12px 24px; border-radius: 5px; text-decoration: none; display: inline-block;">
+                            🔗 Voir l'action
+                        </a>
+                    </div>
+
+                    <hr style="border: 1px solid #e0e0e0; margin: 20px 0;"/>
+
+                    <p style="color: #6c757d; font-size: 12px;">
+                        Cet email a été envoyé automatiquement depuis le système GRC.
+                    </p>
+                </div>
+            ]]></field>
+        </record>
+
+    </data>
+</odoo>
