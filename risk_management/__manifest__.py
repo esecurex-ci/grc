@@ -15,6 +15,7 @@
         'data/sequence.xml',
         'data/risk_scale_data.xml',
         'data/risk_tag_data.xml',
+        'data/kri_data.xml',
 
         # ========== 1. VUES DE BASE (Modèles simples) ==========
         'views/risk_category_views.xml',
@@ -105,6 +106,7 @@
         #'views/risk_document_version_wizard_views.xml',
         'views/risk_document_approval_views.xml',
         'views/risk_document_distribution_views.xml',
+        'views/risk_kri_compute_wizard_views.xml',
 
         # ========== 9. MENUS ET ACTIONS (TOUJOURS EN DERNIER) ==========
         'views/grc_actions.xml',

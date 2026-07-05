@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_kri_compute_wizard_form" model="ir.ui.view">
+        <field name="name">risk.kri.compute.wizard.form</field>
+        <field name="model">risk.kri.compute.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Calculer la mesure KRI">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>🧮 Calcul du KRI</h1>
+                        <p class="text-muted">
+                            Saisissez les paramètres pour calculer automatiquement la valeur du KRI.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="kri_id" readonly="1"/>
+                            <field name="kri_code" readonly="1"/>
+                            <field name="measure_date"/>
+                        </group>
+                        <group>
+                            <field name="formula_expression" readonly="1" nolabel="1" string="Formule"/>
+                            <!-- ✅ CORRIGÉ : utilisation de kri_id.measure_unit directement -->
+                            <field name="measure_unit" readonly="1"/>
+                            <field name="unit" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <field name="parameter_ids" nolabel="1">
+                        <list editable="bottom">
+                            <field name="name" readonly="1"/>
+                            <field name="value" required="1"/>
+                            <field name="description"/>
+                        </list>
+                    </field>
+
+                    <group string="Résultat" invisible="computed_value == 0">
+                        <div style="display:flex;gap:20px;align-items:center;padding:10px;background:#f8f9fa;border-radius:8px;">
+                            <span style="font-weight:bold;">Valeur calculée :</span>
+                            <span style="font-size:24px;font-weight:bold;color:#1a237e;">
+                                <field name="computed_value"/>
+                            </span>
+                            <span style="font-size:14px;color:#6c757d;">
+                                <field name="unit"/>
+                            </span>
+                            <button name="action_compute" string="🔄 Calculer" type="object" class="btn-primary"/>
+                        </div>
+                    </group>
+
+                    <group string="Commentaire">
+                        <field name="comment"/>
+                    </group>
+
+                    <footer>
+                        <button name="action_save_measure" string="💾 Enregistrer la mesure" type="object"
+                                class="btn-primary" invisible="computed_value == 0"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

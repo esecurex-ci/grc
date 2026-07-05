@@ -118,6 +118,22 @@
                             <field name="action_plan"/>
                             <field name="notes"/>
                         </page>
+                        <page string="🧮 Formule de calcul">
+                            <group string="Méthode de calcul">
+                                <field name="formula" placeholder="Description de la méthode de calcul..."/>
+                            </group>
+                            <group string="Expression de calcul">
+                                <field name="formula_expression" placeholder="Ex: (errors / total) * 100"/>
+                                <field name="formula_fields" placeholder="champs_necessaires, séparés, par, des, virgules"/>
+                                <div class="alert alert-info" role="status" style="margin-top:10px;">
+                                    <i class="fa fa-info-circle" title="Information"/>
+                                    <strong>📌 Exemple :</strong><br/>
+                                    - <strong>Formule :</strong> (Nombre d'erreurs / Nombre total) × 100<br/>
+                                    - <strong>Expression :</strong> (errors / total) * 100<br/>
+                                    - <strong>Champs :</strong> errors, total
+                                </div>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
