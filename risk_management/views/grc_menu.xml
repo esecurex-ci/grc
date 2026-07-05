@@ -127,6 +127,13 @@
         sequence="25"
     />
 
+    <!--menuitem id="menu_grc_dmr"
+        name="📋 Dossiers de Management des Risques"
+        parent="menu_grc_risk"
+        action="action_risk_dmr"
+        sequence="5"
+    /-->
+
     <!-- ===================================================== -->
     <!-- CONTROLS -->
     <!-- ===================================================== -->

@@ -52,96 +52,83 @@
         </field>
     </record>
 
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Contrôle                 -->
+    <!-- ========================================= -->
     <record id="view_risk_control_form" model="ir.ui.view">
         <field name="name">risk.control.form</field>
         <field name="model">risk.control</field>
         <field name="arch" type="xml">
-
             <form>
-
+                <header>
+                    <button name="action_activate" string="✅ Activer" type="object"
+                            class="btn-success" invisible="state != 'draft'"/>
+                    <button name="action_review" string="🔍 Mettre en revue" type="object"
+                            class="btn-warning" invisible="state not in ['active', 'draft']"/>
+                    <button name="action_obsolete" string="📦 Rendre obsolète" type="object"
+                            class="btn-danger" invisible="state in ['obsolete']"/>
+                    <button name="action_add_test" string="➕ Ajouter un test" type="object" class="btn-primary"/>
+                    <button name="action_view_tests" string="📊 Voir les tests" type="object"
+                            class="btn-secondary" invisible="test_count == 0"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
                 <sheet>
-
                     <div class="oe_title">
                         <h1>
-                            <field name="name"/>
+                            <field name="name" placeholder="Nom du contrôle..."/>
                         </h1>
+                        <span class="oe_subtitle">
+                            <field name="code" placeholder="Code"/>
+                            <span class="badge badge-secondary"><field name="control_type"/></span>
+                            <span class="badge badge-info"><field name="control_nature"/></span>
+                            <span class="badge badge-primary"><field name="control_frequency"/></span>
+                        </span>
                     </div>
 
                     <group>
-
                         <group>
-                            <field name="code"/>
-                            <field name="owner_id"/>
-                            <field name="control_type"/>
+                            <field name="control_type" widget="badge"/>
+                            <field name="control_nature" widget="badge"/>
+                            <field name="control_frequency" widget="badge"/>
+                            <field name="process_id"/>
+                            <field name="activity_id"/>
+                            <field name="risk_ids" widget="many2many_tags"/>
                         </group>
-
                         <group>
-                            <field name="frequency"/>
-                            <field name="automation_level"/>
-                            <field name="active"/>
+                            <field name="owner_id" required="1"/>
+                            <field name="reviewer_id"/>
+                            <field name="tester_id"/>
+                            <field name="effectiveness" widget="badge"/>
+                            <field name="effectiveness_score" readonly="1" widget="progressbar"/>
+                            <field name="test_success_rate" readonly="1" widget="progressbar"/>
+                            <field name="last_test_date" readonly="1"/>
+                            <field name="active" widget="boolean"/>
                         </group>
-
-                    </group>
-
-                    <group>
-                        <field name="effectiveness_level"
-                                       widget="radio"
-                                       help="Niveau d'efficacité du contrôle"/>
-                        <field name="effectiveness"
-                               widget="progressbar"
-                               readonly="1"/>
                     </group>
 
                     <notebook>
-
-                        <page string="Description">
+                        <page string="📝 Description">
                             <field name="description"/>
+                            <field name="procedure_id"/>
                         </page>
-
-                        <page string="Objectif">
-                            <field name="objective"/>
-                        </page>
-
-                        <page string="Risques">
-
-                            <field name="risk_ids"
-                                   widget="many2many_tags"/>
-
-                        </page>
-
-                        <page string="Conformité">
-
-                            <field name="compliance_requirement_ids"
-                                   widget="many2many_tags"/>
-
-                        </page>
-
-                        <page string="Tests">
-
-                            <field name="test_ids">
-
-                                <list editable="bottom">
-
-                                    <field name="name"/>
+                        <page string="📊 Tests" invisible="test_count == 0">
+                            <field name="test_ids" context="{'default_control_id': id}">
+                                <list decoration-success="result == 'pass'"
+                                      decoration-warning="result == 'partial'"
+                                      decoration-danger="result == 'fail'">
                                     <field name="test_date"/>
                                     <field name="tester_id"/>
-                                    <field name="result_score"/>
-                                    <field name="result"/>
-
+                                    <field name="result" widget="badge"/>
+                                    <field name="sample_size"/>
                                 </list>
-
                             </field>
-
                         </page>
-
+                        <page string="📎 Documents joints">
+                            <field name="attachment_ids" widget="many2many_kanban"/>
+                        </page>
                     </notebook>
-
                 </sheet>
-
-                <chatter/>
-
             </form>
-
         </field>
     </record>
 

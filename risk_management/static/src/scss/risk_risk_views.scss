@@ -1,0 +1,90 @@
+// ============================================================
+// RISK RISK VIEWS - STYLES POUR LE DMR
+// ============================================================
+
+.dmr-synthesis {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 15px !important;
+    flex-wrap: nowrap !important;  /* ✅ CHANGÉ : nowrap au lieu de wrap */
+    margin-bottom: 15px !important;
+    padding: 15px !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+
+    .dmr-card {
+        flex: 1 !important;           /* ✅ Tous les cartes prennent le même espace */
+        min-width: 0 !important;       /* ✅ Permet de réduire la taille si nécessaire */
+        background: white !important;
+        padding: 12px 10px !important;
+        border-radius: 8px !important;
+        text-align: center !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+
+        &:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .dmr-label {
+            font-size: 9px !important;   /* ✅ Réduit pour tenir sur une ligne */
+            color: #6c757d !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.3px !important;
+            font-weight: 600 !important;
+            margin-bottom: 2px !important;
+            white-space: nowrap !important;  /* ✅ Empêche le texte de passer à la ligne */
+        }
+
+        .dmr-value {
+            font-size: 20px !important;   /* ✅ Légèrement réduit */
+            font-weight: 700 !important;
+            margin-top: 2px !important;
+            line-height: 1.2 !important;
+        }
+
+        .dmr-value.score {
+            color: #1a237e !important;
+        }
+
+        .dmr-value.controls {
+            color: #28a745 !important;
+        }
+
+        .dmr-value.actions {
+            color: #fd7e14 !important;
+        }
+
+        .dmr-value.status {
+            font-size: 16px !important;
+        }
+    }
+}
+
+// ============================================================
+// RESPONSIVE - MOBILE
+// ============================================================
+
+@media (max-width: 992px) {
+    .dmr-synthesis {
+        flex-wrap: wrap !important;  /* ✅ Sur tablette, on repasse en wrap */
+
+        .dmr-card {
+            flex: 1 1 calc(50% - 15px) !important;  /* ✅ 2 cartes par ligne */
+            min-width: 150px !important;
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    .dmr-synthesis {
+        flex-direction: column !important;  /* ✅ Sur mobile, une colonne */
+
+        .dmr-card {
+            flex: 1 1 100% !important;
+            min-width: auto !important;
+        }
+    }
+}

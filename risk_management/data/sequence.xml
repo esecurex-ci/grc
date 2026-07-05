@@ -71,4 +71,12 @@
         <field name="company_id" eval="False"/>
     </record>
 
+    <record id="seq_risk_dmr" model="ir.sequence">
+        <field name="name">DMR Sequence</field>
+        <field name="code">risk.dmr</field>
+        <field name="prefix">DMR-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
 </odoo>

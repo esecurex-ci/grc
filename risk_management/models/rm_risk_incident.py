@@ -130,6 +130,31 @@ class RiskIncident(models.Model):
         compute='_compute_statistics'
     )
 
+    action_ids = fields.Many2many(
+        'risk.corrective.action',
+        'risk_incident_action_rel',
+        'incident_id',
+        'action_id',
+        string='Actions correctives'
+    )
+
+    # Statistiques
+    action_count = fields.Integer(
+        compute='_compute_action_stats',
+        string="Nombre d'actions"
+    )
+
+    action_done_count = fields.Integer(
+        compute='_compute_action_stats',
+        string="Actions terminées"
+    )
+
+    @api.depends('action_ids', 'action_ids.state')
+    def _compute_action_stats(self):
+        for record in self:
+            record.action_count = len(record.action_ids)
+            record.action_done_count = len(record.action_ids.filtered(lambda a: a.state == 'done'))
+
     @api.depends('root_cause_ids','loss_ids','corrective_action_ids')
     def _compute_statistics(self):
         for rec in self:

@@ -143,6 +143,7 @@
             'risk_management/static/src/js/process_dashboard.js',
             'risk_management/static/src/xml/process_dashboard.xml',
             'risk_management/static/src/scss/process_dashboard.scss',
+            'risk_management/static/src/scss/risk_risk_views.scss',
             'risk_management/static/src/js/kri_dashboard.js',
             'risk_management/static/src/xml/kri_dashboard.xml',
             'risk_management/static/src/scss/kri_dashboard.scss',

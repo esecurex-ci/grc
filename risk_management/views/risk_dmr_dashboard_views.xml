@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================= -->
+    <!-- TABLEAU DE BORD DMR                       -->
+    <!-- ========================================= -->
+    <record id="view_risk_dmr_dashboard_form" model="ir.ui.view">
+        <field name="name">risk.dmr.dashboard.form</field>
+        <field name="model">risk.dmr.dashboard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <!-- Synthèse globale -->
+                    <group string="📊 Synthèse du DMR">
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="kpi-card">
+                                    <div class="kpi-label">🔴 Risques critiques</div>
+                                    <div class="kpi-value"><field name="critical_risk_count"/></div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="kpi-card">
+                                    <div class="kpi-label">🔴 KRI rouges</div>
+                                    <div class="kpi-value"><field name="kri_red_count"/></div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="kpi-card">
+                                    <div class="kpi-label">✅ Actions terminées</div>
+                                    <div class="kpi-value"><field name="action_completed_count"/></div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="kpi-card">
+                                    <div class="kpi-label">📋 Procédures formalisées</div>
+                                    <div class="kpi-value"><field name="procedure_count"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </group>
+
+                    <!-- Matrice des contrôles -->
+                    <group string="✅ Matrice des contrôles">
+                        <div class="control-matrix">
+                            <!-- Contrôles par processus -->
+                            <field name="control_matrix" widget="html"/>
+                        </div>
+                    </group>
+
+                    <!-- Plan d'action -->
+                    <group string="📋 Suivi des plans d'action">
+                        <field name="action_ids" context="{'default_dmr_id': active_id}">
+                            <list>
+                                <field name="code"/>
+                                <field name="name"/>
+                                <field name="state" widget="badge"/>
+                                <field name="deadline"/>
+                                <field name="owner_id"/>
+                                <field name="progress" widget="progressbar"/>
+                            </list>
+                        </field>
+                    </group>
+
+                    <!-- État des contrôles -->
+                    <group string="🔄 État des contrôles">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="chart-card">
+                                    <h5 class="chart-title">Par type</h5>
+                                    <field name="control_type_chart" widget="graph"/>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="chart-card">
+                                    <h5 class="chart-title">Par efficacité</h5>
+                                    <field name="control_effectiveness_chart" widget="graph"/>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="chart-card">
+                                    <h5 class="chart-title">Taux de conformité</h5>
+                                    <div style="text-align:center;padding:20px;">
+                                        <span style="font-size:48px;font-weight:bold;color:#1a237e;">
+                                            <field name="overall_compliance_rate"/>%
+                                        </span>
+                                        <p class="text-muted">Taux global de conformité</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

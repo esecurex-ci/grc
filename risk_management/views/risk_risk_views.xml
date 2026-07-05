@@ -98,10 +98,12 @@
                         </page>
 
                         <page string="📋 Documents">
-                            <div class="alert alert-info" style="margin-bottom:10px;">
-                                <i class="fa fa-info-circle"/>
+                            <!-- ✅ CORRIGÉ : title ajouté -->
+                            <div class="alert alert-info" style="margin-bottom:10px;" role="status">
+                                <i class="fa fa-info-circle" title="Information"/>
                                 <strong><field name="document_count"/></strong> document(s) de gouvernance lié(s) à ce risque
                             </div>
+                            <!-- ✅ CORRIGÉ : active_id → id -->
                             <field name="document_ids" context="{'default_risk_ids': [(4, id)]}">
                                 <list decoration-success="state == 'published'"
                                       decoration-info="state == 'approved'"
@@ -176,6 +178,130 @@
                            </chatter>
                         </page>
 
+                        <!-- ✅ ONGLET DMR CORRIGÉ -->
+                        <page string="🛡️ Dispositif de Maîtrise">
+                            <!-- Synthèse DMR -->
+                            <group string="📊 Synthèse du Dispositif de Maîtrise">
+                                <div class="dmr-synthesis">
+                                    <div class="dmr-card">
+                                        <div class="dmr-label">Score de conformité</div>
+                                        <div class="dmr-value score">
+                                            <field name="dmr_compliance_score"/>%
+                                        </div>
+                                    </div>
+                                    <div class="dmr-card">
+                                        <div class="dmr-label">Niveau de maîtrise</div>
+                                        <div class="dmr-value score">
+                                            <field name="dmr_status" widget="badge"/>
+                                        </div>
+                                    </div>
+                                    <div class="dmr-card">
+                                        <div class="dmr-label">Contrôles efficaces</div>
+                                        <div class="dmr-value controls">
+                                            <field name="dmr_effective_control_count"/> / <field name="dmr_control_count"/>
+                                        </div>
+                                    </div>
+                                    <div class="dmr-card">
+                                        <div class="dmr-label">Actions en cours</div>
+                                        <div class="dmr-value actions">
+                                            <field name="dmr_action_count"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </group>
+
+                            <!-- Détails des composants -->
+                            <notebook>
+                                <!-- 🔒 Contrôles -->
+                                <!--page string="🔒 Contrôles">
+                                    <div class="alert alert-info" role="status">
+                                        <i class="fa fa-info-circle" title="Information"/>
+                                        <strong><field name="dmr_control_count"/></strong> contrôle(s) associé(s)
+                                        <span class="text-muted">- Efficacité: <field name="dmr_control_effectiveness_rate"/>%</span>
+                                    </div>
+                                    <field name="control_ids" context="{'default_risk_ids': [(4, id)]}">
+                                        <list>
+                                            <field name="code"/>
+                                            <field name="name"/>
+                                            <field name="control_type" widget="badge"/>
+                                            <field name="effectiveness" widget="badge"/>
+                                            <field name="test_success_rate" widget="progressbar"/>
+                                            <field name="last_test_date"/>
+                                        </list>
+                                    </field>
+                                </page-->
+
+                                <page string="🔒 Contrôles" name="controls">
+                                    <group name="controls_group">
+                                        <field name="existing_control" nolabel="1" placeholder="Contrôles existants..."/>
+                                        <field name="control_ids" nolabel="1"/>
+                                    </group>
+                                </page>
+
+                                <!-- 📝 Tests -->
+                                <page string="📝 Tests">
+                                    <div class="alert alert-info" role="status">
+                                        <i class="fa fa-info-circle" title="Information"/>
+                                        <strong><field name="dmr_test_count"/></strong> test(s) effectué(s)
+                                        <span class="text-muted">- Réussite: <field name="dmr_test_pass_rate"/>%</span>
+                                    </div>
+                                    <field name="test_ids" context="{'default_risk_ids': [(4, id)]}">
+                                        <list decoration-success="result == 'pass'"
+                                              decoration-warning="result == 'partial'"
+                                              decoration-danger="result == 'fail'">
+                                            <field name="code"/>
+                                            <field name="name"/>
+                                            <field name="test_date"/>
+                                            <field name="tester_id"/>
+                                            <field name="result" widget="badge"/>
+                                            <field name="compliance_rate" widget="progressbar"/>
+                                        </list>
+                                    </field>
+                                </page>
+
+                                <!-- 🔧 Actions -->
+                                <page string="🔧 Actions correctives">
+                                    <div class="alert alert-info" role="status">
+                                        <i class="fa fa-info-circle" title="Information"/>
+                                        <strong><field name="dmr_action_count"/></strong> action(s)
+                                        <span class="text-muted">- Progression: <field name="dmr_action_progress"/>%</span>
+                                    </div>
+                                    <field name="action_ids" context="{'default_risk_ids': [(4, id)]}">
+                                        <list decoration-success="state == 'done'"
+                                              decoration-warning="state == 'in_progress'"
+                                              decoration-danger="state in ['overdue', 'cancelled']">
+                                            <field name="code"/>
+                                            <field name="name"/>
+                                            <field name="state" widget="badge"/>
+                                            <field name="deadline"/>
+                                            <field name="owner_id"/>
+                                            <field name="progress" widget="progressbar"/>
+                                        </list>
+                                    </field>
+                                </page>
+
+                                <!-- 📊 KRI -->
+                                <page string="📊 KRI associés">
+                                    <div class="alert alert-info" role="status">
+                                        <i class="fa fa-info-circle" title="Information"/>
+                                        <strong><field name="kri_ids"/></strong> KRI associé(s)
+                                    </div>
+                                    <field name="kri_ids" context="{'default_risk_ids': [(4, id)]}">
+                                        <list decoration-success="status == 'green'"
+                                              decoration-warning="status == 'amber'"
+                                              decoration-danger="status == 'red'">
+                                            <field name="code"/>
+                                            <field name="name"/>
+                                            <field name="current_value"/>
+                                            <field name="unit"/>
+                                            <field name="status" widget="badge"/>
+                                            <field name="trend" widget="badge"/>
+                                        </list>
+                                    </field>
+                                </page>
+                            </notebook>
+                        </page>
+
                     </notebook>
                 </sheet>
             </form>
@@ -183,7 +309,7 @@
         </field>
     </record>
 
-        <record id="view_risk_list" model="ir.ui.view">
+    <record id="view_risk_list" model="ir.ui.view">
         <field name="name">risk.list</field>
         <field name="model">risk.risk</field>
         <field name="arch" type="xml">
@@ -211,23 +337,5 @@
             </list>
         </field>
     </record>
-
-    <!--record id="view_risk_dashboard_kanban" model="ir.ui.view">
-        <field name="name">risk.dashboard.kanban</field>
-        <field name="model">risk.risk</field>
-        <field name="arch" type="xml">
-            <kanban>
-                <field name="heatmap_html"/>
-
-                <templates>
-                    <t t-name="card">
-                        <div class="oe_kanban_global_click">
-                            <field name="heatmap_html" nolabel="1"/>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record-->
 
 </odoo>

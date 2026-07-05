@@ -173,6 +173,240 @@ class RiskRisk(models.Model):
     probability_value = fields.Integer(compute='_compute_impact_values', store=True, string='Valeur de la probabilité')
     matrix_html = fields.Html(compute='_compute_matrix_html', string='Position du risque', sanitize=False, store=False)
 
+    # Relations DMR
+    dmr_control_ids = fields.Many2many(
+        'risk.control',
+        'risk_risk_dmr_control_rel',
+        'risk_id',
+        'control_id',
+        string='Contrôles du DMR',
+        help="Contrôles internes mis en place pour maîtriser ce risque"
+    )
+
+    dmr_test_ids = fields.Many2many(
+        'risk.control.test',
+        'risk_risk_dmr_test_rel',
+        'risk_id',
+        'test_id',
+        string='Tests du DMR',
+        help="Tests de contrôle effectués pour ce risque"
+    )
+
+    dmr_action_ids = fields.Many2many(
+        'risk.corrective.action',
+        'risk_risk_dmr_action_rel',
+        'risk_id',
+        'action_id',
+        string='Actions du DMR',
+        help="Actions correctives liées à ce risque"
+    )
+
+    dmr_kri_ids = fields.Many2many(
+        'risk.kri',
+        'risk_risk_dmr_kri_rel',
+        'risk_id',
+        'kri_id',
+        string='KRI du DMR',
+        help="KRI associés à ce risque"
+    )
+
+    # ============================================================
+    # STATISTIQUES DMR
+    # ============================================================
+
+    dmr_control_count = fields.Integer(
+        compute='_compute_dmr_stats',
+        string="Nombre de contrôles"
+    )
+
+    dmr_effective_control_count = fields.Integer(
+        compute='_compute_dmr_stats',
+        string="Contrôles efficaces"
+    )
+
+    dmr_control_effectiveness_rate = fields.Float(
+        compute='_compute_dmr_stats',
+        string="Taux d'efficacité des contrôles (%)"
+    )
+
+    dmr_test_count = fields.Integer(
+        compute='_compute_dmr_stats',
+        string="Nombre de tests"
+    )
+
+    dmr_test_pass_rate = fields.Float(
+        compute='_compute_dmr_stats',
+        string="Taux de réussite des tests (%)"
+    )
+
+    dmr_action_count = fields.Integer(
+        compute='_compute_dmr_stats',
+        string="Nombre d'actions"
+    )
+
+    dmr_action_progress = fields.Float(
+        compute='_compute_dmr_stats',
+        string="Progression des actions (%)"
+    )
+
+    dmr_compliance_score = fields.Float(
+        compute='_compute_dmr_stats',
+        string="Score de conformité DMR (%)",
+        help="Score global du dispositif de maîtrise"
+    )
+
+    dmr_status = fields.Selection([
+        ('strong', '🟢 Fort'),
+        ('adequate', '🟡 Adéquat'),
+        ('weak', '🟠 Faible'),
+        ('critical', '🔴 Critique'),
+    ], compute='_compute_dmr_stats', string="Niveau de maîtrise")
+
+    test_ids = fields.Many2many(
+        'risk.control.test',
+        'risk_risk_test_rel',
+        'risk_id',
+        'test_id',
+        string='Tests de contrôle',
+        help="Tests de contrôle associés à ce risque"
+    )
+
+    action_ids = fields.Many2many(
+        'risk.corrective.action',
+        'risk_risk_action_rel',
+        'risk_id',
+        'action_id',
+        string='Actions correctives',
+        help="Actions correctives associées à ce risque"
+    )
+
+    # ✅ Champs DMR complets
+    dmr_control_ids = fields.Many2many(
+        'risk.control',
+        'risk_risk_dmr_control_rel',
+        'risk_id',
+        'control_id',
+        string='Contrôles du DMR'
+    )
+
+    # ============================================================
+    # COMPUTE DMR
+    # ============================================================
+
+    @api.depends(
+        'dmr_control_ids', 'dmr_control_ids.effectiveness',
+        'dmr_test_ids', 'dmr_test_ids.result',
+        'dmr_action_ids', 'dmr_action_ids.progress'
+    )
+    def _compute_dmr_stats(self):
+        for record in self:
+            # 1. CONTRÔLES
+            controls = record.dmr_control_ids
+            record.dmr_control_count = len(controls)
+
+            effective = len(controls.filtered(
+                lambda c: c.effectiveness in ['high', 'medium']
+            ))
+            record.dmr_effective_control_count = effective
+
+            if record.dmr_control_count > 0:
+                record.dmr_control_effectiveness_rate = (
+                        (effective / record.dmr_control_count) * 100
+                )
+            else:
+                record.dmr_control_effectiveness_rate = 0
+
+            # 2. TESTS
+            tests = record.dmr_test_ids
+            record.dmr_test_count = len(tests)
+
+            passed = len(tests.filtered(lambda t: t.result == 'pass'))
+            if record.dmr_test_count > 0:
+                record.dmr_test_pass_rate = (passed / record.dmr_test_count) * 100
+            else:
+                record.dmr_test_pass_rate = 0
+
+            # 3. ACTIONS
+            actions = record.dmr_action_ids
+            record.dmr_action_count = len(actions)
+
+            if record.dmr_action_count > 0:
+                progress_sum = sum(actions.mapped('progress'))
+                record.dmr_action_progress = progress_sum / record.dmr_action_count
+            else:
+                record.dmr_action_progress = 0
+
+            # 4. SCORE GLOBAL
+            # Pondération : Contrôles (40%), Tests (30%), Actions (30%)
+            weight_controls = 0.4
+            weight_tests = 0.3
+            weight_actions = 0.3
+
+            score = (
+                    record.dmr_control_effectiveness_rate * weight_controls +
+                    record.dmr_test_pass_rate * weight_tests +
+                    record.dmr_action_progress * weight_actions
+            )
+            record.dmr_compliance_score = round(score, 1)
+
+            # 5. NIVEAU DE MAÎTRISE
+            if record.dmr_compliance_score >= 80:
+                record.dmr_status = 'strong'
+            elif record.dmr_compliance_score >= 60:
+                record.dmr_status = 'adequate'
+            elif record.dmr_compliance_score >= 40:
+                record.dmr_status = 'weak'
+            else:
+                record.dmr_status = 'critical'
+
+    # ============================================================
+    # MÉTHODES D'ACTION DMR
+    # ============================================================
+
+    def action_view_dmr_controls(self):
+        """Voir les contrôles du DMR"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Contrôles DMR - {self.name}',
+            'res_model': 'risk.control',
+            'view_mode': 'list,form,kanban',
+            'domain': [('id', 'in', self.dmr_control_ids.ids)],
+        }
+
+    def action_view_dmr_tests(self):
+        """Voir les tests du DMR"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Tests DMR - {self.name}',
+            'res_model': 'risk.control.test',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', self.dmr_test_ids.ids)],
+        }
+
+    def action_view_dmr_actions(self):
+        """Voir les actions du DMR"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Actions DMR - {self.name}',
+            'res_model': 'risk.corrective.action',
+            'view_mode': 'list,form,kanban',
+            'domain': [('id', 'in', self.dmr_action_ids.ids)],
+        }
+
+    def action_view_dmr_kris(self):
+        """Voir les KRI du DMR"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'KRI DMR - {self.name}',
+            'res_model': 'risk.kri',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', self.dmr_kri_ids.ids)],
+        }
+
     # ============================================================
     # MÉTHODES POUR LES ÉCHELLES CONFIGURÉES
     # ============================================================
