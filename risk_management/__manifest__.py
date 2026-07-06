@@ -38,7 +38,7 @@
         # ============================================================
         # 2. VUES PRINCIPALES
         # ============================================================
-        'views/risk_risk_views.xml',
+        #'views/risk_risk_views.xml',
         'views/risk_control_views.xml',
         'views/risk_control_test_views.xml',
         'views/risk_kri_views.xml',
@@ -120,19 +120,20 @@
         # ============================================================
         'views/risk_tag_views.xml',
         'views/risk_policy_views.xml',
-        'views/risk_document_category_views.xml',    # ✅ 9a. Catégories
-        'views/risk_document_views.xml',             # ✅ 9b. Documents (view_risk_document_search)
-        'views/risk_document_version_views.xml',     # ✅ 9c. Versions
-        'views/risk_document_approval_views.xml',    # ✅ 9d. Approbations
-        'views/risk_document_distribution_views.xml', # ✅ 9e. Distribution
-        'views/risk_action_plan_views.xml',          # ✅ 9f. Plans d'action
-        'views/risk_action_task_views.xml',          # ✅ 9g. Tâches
+        'views/risk_document_category_views.xml',
+        'views/risk_document_views.xml',
+        'views/risk_document_version_views.xml',
+        'views/risk_document_approval_views.xml',
+        'views/risk_document_distribution_views.xml',
+        'views/risk_action_plan_views.xml',
+        'views/risk_action_task_views.xml',
         'views/risk_kri_compute_wizard_views.xml',
 
         # ============================================================
         # 10. ACTIONS (RÉFÉRENCENT LES VUES)
         # ============================================================
-        'views/grc_actions.xml',    # ✅ Maintenant view_risk_document_search existe
+        'views/grc_actions.xml',
+        'views/risk_risk_views.xml',
 
         # ============================================================
         # 11. MENUS (TOUJOURS EN DERNIER)
