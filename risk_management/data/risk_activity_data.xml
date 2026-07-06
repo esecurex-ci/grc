@@ -1,0 +1,1043 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- 1. ACTIVITÉS - GESTION DE PORTEFEUILLE                       -->
+    <!-- ============================================================ -->
+
+    <!-- Processus: Proposition d'investissement (OPE-01) -->
+    <record id="activity_ope_01_01" model="risk.activity">
+        <field name="name">Mettre en œuvre la stratégie d'investissement</field>
+        <field name="code">ACT-OPE-01-01</field>
+        <field name="process_id" ref="process_operational_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Mise en œuvre de la stratégie d'investissement et respect de la réglementation</field>
+    </record>
+
+    <record id="activity_ope_01_02" model="risk.activity">
+        <field name="name">Rechercher des acheteurs pour la cession de titre</field>
+        <field name="code">ACT-OPE-01-02</field>
+        <field name="process_id" ref="process_operational_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Recherche d'acheteurs pour la cession de titres et gestion du risque de liquidité</field>
+    </record>
+
+    <record id="activity_ope_01_03" model="risk.activity">
+        <field name="name">Propositions d'opportunités d'investissement (obligataires)</field>
+        <field name="code">ACT-OPE-01-03</field>
+        <field name="process_id" ref="process_operational_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Analyse et proposition d'opportunités d'investissement en titres obligataires</field>
+    </record>
+
+    <record id="activity_ope_01_04" model="risk.activity">
+        <field name="name">Propositions non validées à temps</field>
+        <field name="code">ACT-OPE-01-04</field>
+        <field name="process_id" ref="process_operational_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Gestion des délais de validation des propositions d'investissement</field>
+    </record>
+
+    <record id="activity_ope_01_05" model="risk.activity">
+        <field name="name">Proposition d'opportunités d'investissement (actions)</field>
+        <field name="code">ACT-OPE-01-05</field>
+        <field name="process_id" ref="process_operational_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">50</field>
+        <field name="summary">Analyse et proposition d'opportunités d'investissement en actions</field>
+    </record>
+
+    <record id="activity_ope_01_06" model="risk.activity">
+        <field name="name">Négociation de volume et de prix avec les contreparties</field>
+        <field name="code">ACT-OPE-01-06</field>
+        <field name="process_id" ref="process_operational_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">60</field>
+        <field name="summary">Négociation des conditions de transaction avec les contreparties</field>
+    </record>
+
+    <!-- Processus: Création de nouveaux OPCVM (OPE-02) -->
+    <record id="activity_ope_02_01" model="risk.activity">
+        <field name="name">Définir le profil du Fonds</field>
+        <field name="code">ACT-OPE-02-01</field>
+        <field name="process_id" ref="process_operational_02"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Définition du profil du Fonds et respect de la réglementation</field>
+    </record>
+
+    <record id="activity_ope_02_02" model="risk.activity">
+        <field name="name">Établissement des projections financières du Fonds</field>
+        <field name="code">ACT-OPE-02-02</field>
+        <field name="process_id" ref="process_operational_02"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Établissement des projections financières du Fonds</field>
+    </record>
+
+    <record id="activity_ope_02_03" model="risk.activity">
+        <field name="name">Support à l'élaboration de documents commerciaux</field>
+        <field name="code">ACT-OPE-02-03</field>
+        <field name="process_id" ref="process_operational_02"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Support à l'élaboration des documents commerciaux et partage de données</field>
+    </record>
+
+    <record id="activity_ope_02_04" model="risk.activity">
+        <field name="name">Support à l'élaboration des documents de présentation</field>
+        <field name="code">ACT-OPE-02-04</field>
+        <field name="process_id" ref="process_operational_02"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Support à l'élaboration des documents de présentation des Fonds</field>
+    </record>
+
+    <record id="activity_ope_02_05" model="risk.activity">
+        <field name="name">Créer et paramétrer les caractéristiques du Fonds</field>
+        <field name="code">ACT-OPE-02-05</field>
+        <field name="process_id" ref="process_operational_02"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">50</field>
+        <field name="summary">Paramétrage des caractéristiques du Fonds dans ATLANTIS SGO</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 2. ACTIVITÉS - GESTION DE PORTEFEUILLE (suite)               -->
+    <!-- ============================================================ -->
+
+    <!-- Processus: Rédaction de la Politique d'investissement (OPE-04) -->
+    <record id="activity_ope_04_01" model="risk.activity">
+        <field name="name">Rédiger et actualiser la politique d'investissement</field>
+        <field name="code">ACT-OPE-04-01</field>
+        <field name="process_id" ref="process_operational_04"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Rédaction et mise à jour de la politique d'investissement</field>
+    </record>
+
+    <record id="activity_ope_04_02" model="risk.activity">
+        <field name="name">Définir les objectifs de performance des Fonds</field>
+        <field name="code">ACT-OPE-04-02</field>
+        <field name="process_id" ref="process_operational_04"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Définition des objectifs de performance des Fonds</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 3. ACTIVITÉS - BACK OFFICE                                    -->
+    <!-- ============================================================ -->
+
+    <!-- Processus: Calcul et validation de la VL (OPE-03) -->
+    <record id="activity_ope_03_01" model="risk.activity">
+        <field name="name">Saisir des informations dans le logiciel de gestion</field>
+        <field name="code">ACT-OPE-03-01</field>
+        <field name="process_id" ref="process_operational_03"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Saisie des informations pour le calcul de la VL</field>
+    </record>
+
+    <record id="activity_ope_03_02" model="risk.activity">
+        <field name="name">Lancer le calcul de la VL</field>
+        <field name="code">ACT-OPE-03-02</field>
+        <field name="process_id" ref="process_operational_03"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Lancement du calcul de la valeur liquidative</field>
+    </record>
+
+    <record id="activity_ope_03_03" model="risk.activity">
+        <field name="name">Transmission de la matrice de la VL pour validation</field>
+        <field name="code">ACT-OPE-03-03</field>
+        <field name="process_id" ref="process_operational_03"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Transmission de la matrice de la VL pour validation</field>
+    </record>
+
+    <record id="activity_ope_03_04" model="risk.activity">
+        <field name="name">Transmission de la matrice de la VL à la BRVM</field>
+        <field name="code">ACT-OPE-03-04</field>
+        <field name="process_id" ref="process_operational_03"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Transmission de la matrice de la VL à la BRVM après validation</field>
+    </record>
+
+    <!-- Processus: Réconciliation des comptes (OPE-05) -->
+    <record id="activity_ope_05_01" model="risk.activity">
+        <field name="name">Réceptionner les relevés de comptes</field>
+        <field name="code">ACT-OPE-05-01</field>
+        <field name="process_id" ref="process_operational_05"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Réception des relevés de comptes titres, espèces et courant</field>
+    </record>
+
+    <record id="activity_ope_05_02" model="risk.activity">
+        <field name="name">Vérifier la concordance des comptes</field>
+        <field name="code">ACT-OPE-05-02</field>
+        <field name="process_id" ref="process_operational_05"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Vérification de la concordance entre les comptes</field>
+    </record>
+
+    <record id="activity_ope_05_03" model="risk.activity">
+        <field name="name">Enregistrer les régularisations</field>
+        <field name="code">ACT-OPE-05-03</field>
+        <field name="process_id" ref="process_operational_05"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Enregistrement des opérations de régularisation</field>
+    </record>
+
+    <record id="activity_ope_05_04" model="risk.activity">
+        <field name="name">Vérifier les régularisations du dépositaire</field>
+        <field name="code">ACT-OPE-05-04</field>
+        <field name="process_id" ref="process_operational_05"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Vérification des régularisations effectuées par le dépositaire</field>
+    </record>
+
+    <!-- Processus: Traitement des opérations DAT (OPE-06) -->
+    <record id="activity_ope_06_01" model="risk.activity">
+        <field name="name">Établir et transmettre les ordres de virement DAT</field>
+        <field name="code">ACT-OPE-06-01</field>
+        <field name="process_id" ref="process_operational_06"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Établissement et transmission des ordres de virement DAT</field>
+    </record>
+
+    <record id="activity_ope_06_02" model="risk.activity">
+        <field name="name">Gérer l'insuffisance de liquidité DAT</field>
+        <field name="code">ACT-OPE-06-02</field>
+        <field name="process_id" ref="process_operational_06"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Gestion des ordres de virement en cas d'insuffisance de liquidité</field>
+    </record>
+
+    <record id="activity_ope_06_03" model="risk.activity">
+        <field name="name">Réceptionner l'attestation de virement DAT</field>
+        <field name="code">ACT-OPE-06-03</field>
+        <field name="process_id" ref="process_operational_06"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Réception de l'attestation de virement DAT</field>
+    </record>
+
+    <record id="activity_ope_06_04" model="risk.activity">
+        <field name="name">Comptabiliser les opérations DAT</field>
+        <field name="code">ACT-OPE-06-04</field>
+        <field name="process_id" ref="process_operational_06"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Comptabilisation des opérations DAT</field>
+    </record>
+
+    <!-- Processus: Traitement des opérations sur titres (OPE-07) -->
+    <record id="activity_ope_07_01" model="risk.activity">
+        <field name="name">Établir et transmettre les ordres d'achat/vente</field>
+        <field name="code">ACT-OPE-07-01</field>
+        <field name="process_id" ref="process_operational_07"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Établissement et transmission des ordres d'achat/vente</field>
+    </record>
+
+    <record id="activity_ope_07_02" model="risk.activity">
+        <field name="name">Établir et transmettre les ordres de virement titres</field>
+        <field name="code">ACT-OPE-07-02</field>
+        <field name="process_id" ref="process_operational_07"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Établissement et transmission des ordres de virement sur titres</field>
+    </record>
+
+    <record id="activity_ope_07_03" model="risk.activity">
+        <field name="name">Vérifier les avis d'opéré</field>
+        <field name="code">ACT-OPE-07-03</field>
+        <field name="process_id" ref="process_operational_07"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Vérification des avis d'opéré d'achat/vente</field>
+    </record>
+
+    <record id="activity_ope_07_04" model="risk.activity">
+        <field name="name">Comptabiliser les opérations d'achat/vente</field>
+        <field name="code">ACT-OPE-07-04</field>
+        <field name="process_id" ref="process_operational_07"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Comptabilisation des opérations d'achat/vente</field>
+    </record>
+
+    <record id="activity_ope_07_05" model="risk.activity">
+        <field name="name">Enregistrer les opérations sur titres</field>
+        <field name="code">ACT-OPE-07-05</field>
+        <field name="process_id" ref="process_operational_07"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">50</field>
+        <field name="summary">Enregistrement des opérations sur titres dans le réseau</field>
+    </record>
+
+    <!-- Processus: Traitement des opérations de souscription/rachat (OPE-08) -->
+    <record id="activity_ope_08_01" model="risk.activity">
+        <field name="name">Vérifier le cash disponible</field>
+        <field name="code">ACT-OPE-08-01</field>
+        <field name="process_id" ref="process_operational_08"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Vérification du cash disponible pour répondre aux rachats</field>
+    </record>
+
+    <record id="activity_ope_08_02" model="risk.activity">
+        <field name="name">Établir les ordres de paiement (rachat)</field>
+        <field name="code">ACT-OPE-08-02</field>
+        <field name="process_id" ref="process_operational_08"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Établissement et transmission des ordres de paiement rachat</field>
+    </record>
+
+    <record id="activity_ope_08_03" model="risk.activity">
+        <field name="name">Gérer l'insuffisance de liquidité rachat</field>
+        <field name="code">ACT-OPE-08-03</field>
+        <field name="process_id" ref="process_operational_08"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Gestion des ordres de virement en cas d'insuffisance de liquidité</field>
+    </record>
+
+    <record id="activity_ope_08_04" model="risk.activity">
+        <field name="name">Réceptionner l'avis de crédit souscription</field>
+        <field name="code">ACT-OPE-08-04</field>
+        <field name="process_id" ref="process_operational_08"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Réception de l'avis de crédit attestant le virement du client</field>
+    </record>
+
+    <record id="activity_ope_08_05" model="risk.activity">
+        <field name="name">Comptabiliser les souscriptions/rachats</field>
+        <field name="code">ACT-OPE-08-05</field>
+        <field name="process_id" ref="process_operational_08"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">50</field>
+        <field name="summary">Comptabilisation des opérations de souscription/rachat</field>
+    </record>
+
+    <!-- Processus: Valorisation des actifs (OPE-09) -->
+    <record id="activity_ope_09_01" model="risk.activity">
+        <field name="name">Mettre à jour les cours des titres cotés</field>
+        <field name="code">ACT-OPE-09-01</field>
+        <field name="process_id" ref="process_operational_09"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Mise à jour des cours des titres cotés</field>
+    </record>
+
+    <record id="activity_ope_09_02" model="risk.activity">
+        <field name="name">Évaluation des titres non cotés</field>
+        <field name="code">ACT-OPE-09-02</field>
+        <field name="process_id" ref="process_operational_09"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Évaluation des titres non cotés selon la méthode validée</field>
+    </record>
+
+    <!-- Processus: Traitement des frais de gestion (OPE-10) -->
+    <record id="activity_ope_10_01" model="risk.activity">
+        <field name="name">Traiter les frais de gestion (DDG, DC/BR)</field>
+        <field name="code">ACT-OPE-10-01</field>
+        <field name="process_id" ref="process_operational_10"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Traitement des frais de gestion DDG et commission DC/BR</field>
+    </record>
+
+    <record id="activity_ope_10_02" model="risk.activity">
+        <field name="name">Traiter les commissions et redevances</field>
+        <field name="code">ACT-OPE-10-02</field>
+        <field name="process_id" ref="process_operational_10"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Traitement des commissions actif sous gestion et redevances annuelles</field>
+    </record>
+
+    <record id="activity_ope_10_03" model="risk.activity">
+        <field name="name">Traiter les frais de gestion (droit d'entrée/sortie)</field>
+        <field name="code">ACT-OPE-10-03</field>
+        <field name="process_id" ref="process_operational_10"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Traitement des frais de gestion, droit d'entrée et de sortie</field>
+    </record>
+
+    <!-- Processus: Suivi des coupons à recevoir (OPE-11) -->
+    <record id="activity_ope_11_01" model="risk.activity">
+        <field name="name">Suivre le paiement des coupons</field>
+        <field name="code">ACT-OPE-11-01</field>
+        <field name="process_id" ref="process_operational_11"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Suivi du paiement des coupons et amortissements par l'émetteur</field>
+    </record>
+
+    <record id="activity_ope_11_02" model="risk.activity">
+        <field name="name">Réceptionner l'avis de crédit coupons</field>
+        <field name="code">ACT-OPE-11-02</field>
+        <field name="process_id" ref="process_operational_11"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Réception de l'avis de crédit et comptabilisation des coupons</field>
+    </record>
+
+    <!-- Processus: Établissement des rapports réglementaires (OPE-12) -->
+    <record id="activity_ope_12_01" model="risk.activity">
+        <field name="name">Établir les états financiers des Fonds</field>
+        <field name="code">ACT-OPE-12-01</field>
+        <field name="process_id" ref="process_operational_12"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Établissement des états financiers et rapports réglementaires</field>
+    </record>
+
+    <record id="activity_ope_12_02" model="risk.activity">
+        <field name="name">Constituer les fonds de dossier</field>
+        <field name="code">ACT-OPE-12-02</field>
+        <field name="process_id" ref="process_operational_12"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Constitution et archivage des fonds de dossier</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 4. ACTIVITÉS - GESTION CLIENTÈLE                              -->
+    <!-- ============================================================ -->
+
+    <!-- Processus: Entrées en relation (OPE-13) -->
+    <record id="activity_ope_13_01" model="risk.activity">
+        <field name="name">Collecter les informations KYC</field>
+        <field name="code">ACT-OPE-13-01</field>
+        <field name="process_id" ref="process_operational_13"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Collecte des informations et documents KYC des clients</field>
+    </record>
+
+    <record id="activity_ope_13_02" model="risk.activity">
+        <field name="name">Évaluer les clients</field>
+        <field name="code">ACT-OPE-13-02</field>
+        <field name="process_id" ref="process_operational_13"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Évaluation du profil de risque des clients</field>
+    </record>
+
+    <record id="activity_ope_13_03" model="risk.activity">
+        <field name="name">Créer le compte client</field>
+        <field name="code">ACT-OPE-13-03</field>
+        <field name="process_id" ref="process_operational_13"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Création du compte client dans le logiciel de gestion</field>
+    </record>
+
+    <record id="activity_ope_13_04" model="risk.activity">
+        <field name="name">Enregistrer et archiver le dossier client</field>
+        <field name="code">ACT-OPE-13-04</field>
+        <field name="process_id" ref="process_operational_13"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Enregistrement et archivage du dossier de souscription</field>
+    </record>
+
+    <!-- Processus: Processus de vente (OPE-14) -->
+    <record id="activity_ope_14_01" model="risk.activity">
+        <field name="name">Prospection commerciale</field>
+        <field name="code">ACT-OPE-14-01</field>
+        <field name="process_id" ref="process_operational_14"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Activités de prospection et développement commercial</field>
+    </record>
+
+    <record id="activity_ope_14_02" model="risk.activity">
+        <field name="name">Suivi clientèle</field>
+        <field name="code">ACT-OPE-14-02</field>
+        <field name="process_id" ref="process_operational_14"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Suivi et fidélisation de la clientèle</field>
+    </record>
+
+    <record id="activity_ope_14_03" model="risk.activity">
+        <field name="name">Fidélisation des clients</field>
+        <field name="code">ACT-OPE-14-03</field>
+        <field name="process_id" ref="process_operational_14"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Actions de fidélisation et rétention des clients</field>
+    </record>
+
+    <!-- Processus: Traitement des souscriptions/rachats clientèle (OPE-15) -->
+    <record id="activity_ope_15_01" model="risk.activity">
+        <field name="name">Réceptionner les documents clients</field>
+        <field name="code">ACT-OPE-15-01</field>
+        <field name="process_id" ref="process_operational_15"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Réception et vérification des documents clients pour souscription/rachat</field>
+    </record>
+
+    <record id="activity_ope_15_02" model="risk.activity">
+        <field name="name">Enregistrer les opérations clientèle</field>
+        <field name="code">ACT-OPE-15-02</field>
+        <field name="process_id" ref="process_operational_15"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Enregistrement des opérations de souscription/rachat</field>
+    </record>
+
+    <record id="activity_ope_15_03" model="risk.activity">
+        <field name="name">Transmettre les bulletins au contrôle interne</field>
+        <field name="code">ACT-OPE-15-03</field>
+        <field name="process_id" ref="process_operational_15"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Transmission des bulletins de souscription/rachat au contrôle interne</field>
+    </record>
+
+    <record id="activity_ope_15_04" model="risk.activity">
+        <field name="name">Transmettre l'information au comptable</field>
+        <field name="code">ACT-OPE-15-04</field>
+        <field name="process_id" ref="process_operational_15"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Transmission de l'information de souscription/rachat au comptable du Fonds</field>
+    </record>
+
+    <record id="activity_ope_15_05" model="risk.activity">
+        <field name="name">Archiver les bulletins</field>
+        <field name="code">ACT-OPE-15-05</field>
+        <field name="process_id" ref="process_operational_15"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">50</field>
+        <field name="summary">Archivage des bulletins dans les dossiers clients</field>
+    </record>
+
+    <!-- Processus: Gestion des réclamations clients (OPE-16) -->
+    <record id="activity_ope_16_01" model="risk.activity">
+        <field name="name">Traiter les réclamations clients</field>
+        <field name="code">ACT-OPE-16-01</field>
+        <field name="process_id" ref="process_operational_16"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Réception et traitement des réclamations des clients</field>
+    </record>
+
+    <record id="activity_ope_16_02" model="risk.activity">
+        <field name="name">Enregistrer et archiver les réclamations</field>
+        <field name="code">ACT-OPE-16-02</field>
+        <field name="process_id" ref="process_operational_16"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Enregistrement et archivage des fiches de réclamation</field>
+    </record>
+
+    <!-- Processus: Reporting client (OPE-17) -->
+    <record id="activity_ope_17_01" model="risk.activity">
+        <field name="name">Transmettre les rapports de gestion</field>
+        <field name="code">ACT-OPE-17-01</field>
+        <field name="process_id" ref="process_operational_17"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Transmission des rapports de gestion des Fonds aux clients</field>
+    </record>
+
+    <!-- Processus: Rédaction des rapports semestriels (OPE-18) -->
+    <record id="activity_ope_18_01" model="risk.activity">
+        <field name="name">Rédiger les rapports semestriels</field>
+        <field name="code">ACT-OPE-18-01</field>
+        <field name="process_id" ref="process_operational_18"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Rédaction des rapports semestriels d'activité</field>
+    </record>
+
+    <!-- Processus: Support marketing (OPE-19) -->
+    <record id="activity_ope_19_01" model="risk.activity">
+        <field name="name">Rédiger des documents de présentation</field>
+        <field name="code">ACT-OPE-19-01</field>
+        <field name="process_id" ref="process_operational_19"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Rédaction des documents de présentation des Fonds</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 5. ACTIVITÉS - CONTRÔLE INTERNE & CONFORMITÉ                 -->
+    <!-- ============================================================ -->
+
+    <!-- Processus: Contrôle des dossiers clients (OPE-20) -->
+    <record id="activity_ope_20_01" model="risk.activity">
+        <field name="name">Contrôler les dossiers clients</field>
+        <field name="code">ACT-OPE-20-01</field>
+        <field name="process_id" ref="process_operational_20"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Vérification de l'exhaustivité et de la conformité des dossiers clients</field>
+    </record>
+
+    <record id="activity_ope_20_02" model="risk.activity">
+        <field name="name">Valider l'ouverture de compte</field>
+        <field name="code">ACT-OPE-20-02</field>
+        <field name="process_id" ref="process_operational_20"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Validation de l'ouverture de compte client</field>
+    </record>
+
+    <record id="activity_ope_20_03" model="risk.activity">
+        <field name="name">Contrôler la note d'évaluation des investisseurs</field>
+        <field name="code">ACT-OPE-20-03</field>
+        <field name="process_id" ref="process_operational_20"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Contrôle de la note d'évaluation des investisseurs</field>
+    </record>
+
+    <!-- Processus: Surveillance particulière (OPE-21) -->
+    <record id="activity_ope_21_01" model="risk.activity">
+        <field name="name">Surveiller les opérations ≥ 50M FCFA</field>
+        <field name="code">ACT-OPE-21-01</field>
+        <field name="process_id" ref="process_operational_21"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Surveillance particulière des opérations ≥ 50M FCFA</field>
+    </record>
+
+    <record id="activity_ope_21_02" model="risk.activity">
+        <field name="name">Surveiller les opérations ≥ 10M FCFA inhabituelles</field>
+        <field name="code">ACT-OPE-21-02</field>
+        <field name="process_id" ref="process_operational_21"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Surveillance des opérations ≥ 10M FCFA dans des conditions inhabituelles</field>
+    </record>
+
+    <record id="activity_ope_21_03" model="risk.activity">
+        <field name="name">Archiver les opérations confidentielles</field>
+        <field name="code">ACT-OPE-21-03</field>
+        <field name="process_id" ref="process_operational_21"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Archivage des opérations dans un registre confidentiel</field>
+    </record>
+
+    <record id="activity_ope_21_04" model="risk.activity">
+        <field name="name">Mettre à jour les listes GAFI</field>
+        <field name="code">ACT-OPE-21-04</field>
+        <field name="process_id" ref="process_operational_21"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Mise à jour des listes des pays et personnes visées par des mesures de gel</field>
+    </record>
+
+    <record id="activity_ope_21_05" model="risk.activity">
+        <field name="name">Suivre les opérations électroniques</field>
+        <field name="code">ACT-OPE-21-05</field>
+        <field name="process_id" ref="process_operational_21"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">50</field>
+        <field name="summary">Suivi des opérations financières électroniques</field>
+    </record>
+
+    <!-- Processus: Audit interne (OPE-22) -->
+    <record id="activity_ope_22_01" model="risk.activity">
+        <field name="name">Élaborer le plan d'audit interne</field>
+        <field name="code">ACT-OPE-22-01</field>
+        <field name="process_id" ref="process_operational_22"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Élaboration du plan d'audit interne</field>
+    </record>
+
+    <record id="activity_ope_22_02" model="risk.activity">
+        <field name="name">Mettre en œuvre le plan d'audit</field>
+        <field name="code">ACT-OPE-22-02</field>
+        <field name="process_id" ref="process_operational_22"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Mise en œuvre des activités du plan d'audit</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 6. ACTIVITÉS - SYSTÈME D'INFORMATION (SUPPORT)               -->
+    <!-- ============================================================ -->
+
+    <!-- Processus: Sécurité informatique (SUP-14) -->
+    <record id="activity_sup_14_01" model="risk.activity">
+        <field name="name">Suivi des sauvegardes</field>
+        <field name="code">ACT-SUP-14-01</field>
+        <field name="process_id" ref="process_support_14"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Suivi du système de sauvegarde des données</field>
+    </record>
+
+    <record id="activity_sup_14_02" model="risk.activity">
+        <field name="name">Établir le plan de reprise et de continuité</field>
+        <field name="code">ACT-SUP-14-02</field>
+        <field name="process_id" ref="process_support_14"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Établissement du plan de reprise et de continuité des activités</field>
+    </record>
+
+    <record id="activity_sup_14_03" model="risk.activity">
+        <field name="name">Rédiger la politique de sécurité informatique</field>
+        <field name="code">ACT-SUP-14-03</field>
+        <field name="process_id" ref="process_support_14"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Rédaction et actualisation de la politique de sécurité informatique</field>
+    </record>
+
+    <record id="activity_sup_14_04" model="risk.activity">
+        <field name="name">Rédiger la procédure de gestion des incidents</field>
+        <field name="code">ACT-SUP-14-04</field>
+        <field name="process_id" ref="process_support_14"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Rédaction et actualisation de la procédure de gestion des incidents</field>
+    </record>
+
+    <!-- Processus: Gestion des prestataires informatiques (SUP-16) -->
+    <record id="activity_sup_16_01" model="risk.activity">
+        <field name="name">Rédiger le contrat du prestataire</field>
+        <field name="code">ACT-SUP-16-01</field>
+        <field name="process_id" ref="process_support_16"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Rédaction du contrat du prestataire informatique</field>
+    </record>
+
+    <record id="activity_sup_16_02" model="risk.activity">
+        <field name="name">Rédiger la procédure de gestion des prestataires</field>
+        <field name="code">ACT-SUP-16-02</field>
+        <field name="process_id" ref="process_support_16"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Rédaction et actualisation de la procédure de gestion des prestataires</field>
+    </record>
+
+    <record id="activity_sup_16_03" model="risk.activity">
+        <field name="name">Évaluer les prestataires</field>
+        <field name="code">ACT-SUP-16-03</field>
+        <field name="process_id" ref="process_support_16"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Évaluation de l'adéquation et de la conformité des prestataires</field>
+    </record>
+
+    <!-- Processus: Sécurité des logiciels métier (SUP-17) -->
+    <record id="activity_sup_17_01" model="risk.activity">
+        <field name="name">Vérifier les caractéristiques de sécurité</field>
+        <field name="code">ACT-SUP-17-01</field>
+        <field name="process_id" ref="process_support_17"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Vérification des caractéristiques de sécurité du logiciel métier</field>
+    </record>
+
+    <record id="activity_sup_17_02" model="risk.activity">
+        <field name="name">Assurer la conformité réglementaire</field>
+        <field name="code">ACT-SUP-17-02</field>
+        <field name="process_id" ref="process_support_17"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Vérification de la conformité aux exigences réglementaires</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 7. ACTIVITÉS - COMPTABILITÉ & FINANCES (SUPPORT)             -->
+    <!-- ============================================================ -->
+
+    <!-- Processus: Gestion de la trésorerie encaissement (SUP-18) -->
+    <record id="activity_sup_18_01" model="risk.activity">
+        <field name="name">Encaisser les frais de gestion des Fonds</field>
+        <field name="code">ACT-SUP-18-01</field>
+        <field name="process_id" ref="process_support_18"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Établissement et transmission de la note de débit, réception de l'attestation</field>
+    </record>
+
+    <record id="activity_sup_18_02" model="risk.activity">
+        <field name="name">Encaisser les autres commissions</field>
+        <field name="code">ACT-SUP-18-02</field>
+        <field name="process_id" ref="process_support_18"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Réception et encaissement des autres commissions</field>
+    </record>
+
+    <record id="activity_sup_18_03" model="risk.activity">
+        <field name="name">Comptabiliser et archiver les encaissements</field>
+        <field name="code">ACT-SUP-18-03</field>
+        <field name="process_id" ref="process_support_18"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Comptabilisation et archivage des opérations d'encaissement</field>
+    </record>
+
+    <!-- Processus: Gestion du compte caisse (SUP-19) -->
+    <record id="activity_sup_19_01" model="risk.activity">
+        <field name="name">Gérer le compte caisse</field>
+        <field name="code">ACT-SUP-19-01</field>
+        <field name="process_id" ref="process_support_19"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Réapprovisionnement et gestion du compte caisse</field>
+    </record>
+
+    <record id="activity_sup_19_02" model="risk.activity">
+        <field name="name">Enregistrer les paiements en espèces</field>
+        <field name="code">ACT-SUP-19-02</field>
+        <field name="process_id" ref="process_support_19"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Enregistrement et archivage des paiements en espèces</field>
+    </record>
+
+    <!-- Processus: Gestion des achats de biens (SUP-20) -->
+    <record id="activity_sup_20_01" model="risk.activity">
+        <field name="name">Établir les bons de commande</field>
+        <field name="code">ACT-SUP-20-01</field>
+        <field name="process_id" ref="process_support_20"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Établissement et transmission des bons de commande</field>
+    </record>
+
+    <record id="activity_sup_20_02" model="risk.activity">
+        <field name="name">Vérifier les factures</field>
+        <field name="code">ACT-SUP-20-02</field>
+        <field name="process_id" ref="process_support_20"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Réception et vérification des factures fournisseurs</field>
+    </record>
+
+    <record id="activity_sup_20_03" model="risk.activity">
+        <field name="name">Payer les fournisseurs</field>
+        <field name="code">ACT-SUP-20-03</field>
+        <field name="process_id" ref="process_support_20"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Paiement des fournisseurs et comptabilisation</field>
+    </record>
+
+    <!-- Processus: Rapprochement bancaire (SUP-22) -->
+    <record id="activity_sup_22_01" model="risk.activity">
+        <field name="name">Réceptionner les relevés bancaires</field>
+        <field name="code">ACT-SUP-22-01</field>
+        <field name="process_id" ref="process_support_22"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Réception des relevés bancaires</field>
+    </record>
+
+    <record id="activity_sup_22_02" model="risk.activity">
+        <field name="name">Vérifier la concordance bancaire</field>
+        <field name="code">ACT-SUP-22-02</field>
+        <field name="process_id" ref="process_support_22"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Vérification de la concordance entre relevés et enregistrements comptables</field>
+    </record>
+
+    <record id="activity_sup_22_03" model="risk.activity">
+        <field name="name">Enregistrer les régularisations bancaires</field>
+        <field name="code">ACT-SUP-22-03</field>
+        <field name="process_id" ref="process_support_22"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Enregistrement des régularisations bancaires</field>
+    </record>
+
+    <!-- Processus: Gestion des immobilisations (SUP-23) -->
+    <record id="activity_sup_23_01" model="risk.activity">
+        <field name="name">Faire l'inventaire des immobilisations</field>
+        <field name="code">ACT-SUP-23-01</field>
+        <field name="process_id" ref="process_support_23"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Inventaire physique des immobilisations</field>
+    </record>
+
+    <record id="activity_sup_23_02" model="risk.activity">
+        <field name="name">Gérer la sortie des immobilisations</field>
+        <field name="code">ACT-SUP-23-02</field>
+        <field name="process_id" ref="process_support_23"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Sortie des biens immobilisés ou désinvestissement</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 8. ACTIVITÉS - RESSOURCES HUMAINES (SUPPORT)                 -->
+    <!-- ============================================================ -->
+
+    <!-- Processus: Recrutement (SUP-01) -->
+    <record id="activity_sup_01_01" model="risk.activity">
+        <field name="name">Analyser les besoins en personnel</field>
+        <field name="code">ACT-SUP-01-01</field>
+        <field name="process_id" ref="process_support_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Expression et analyse des besoins en personnel</field>
+    </record>
+
+    <record id="activity_sup_01_02" model="risk.activity">
+        <field name="name">Organiser les entretiens d'embauche</field>
+        <field name="code">ACT-SUP-01-02</field>
+        <field name="process_id" ref="process_support_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Organisation des entretiens d'embauche</field>
+    </record>
+
+    <record id="activity_sup_01_03" model="risk.activity">
+        <field name="name">Transmettre le contrat d'embauche</field>
+        <field name="code">ACT-SUP-01-03</field>
+        <field name="process_id" ref="process_support_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Transmission du contrat d'embauche à la DGA et au candidat</field>
+    </record>
+
+    <record id="activity_sup_01_04" model="risk.activity">
+        <field name="name">Enregistrer le dossier agent</field>
+        <field name="code">ACT-SUP-01-04</field>
+        <field name="process_id" ref="process_support_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">40</field>
+        <field name="summary">Enregistrement du dossier agent et déclaration CNPS</field>
+    </record>
+
+    <!-- Processus: Traitement de la paie (SUP-02) -->
+    <record id="activity_sup_02_01" model="risk.activity">
+        <field name="name">Transmettre les informations paie</field>
+        <field name="code">ACT-SUP-02-01</field>
+        <field name="process_id" ref="process_support_02"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Transmission des informations au cabinet comptable</field>
+    </record>
+
+    <record id="activity_sup_02_02" model="risk.activity">
+        <field name="name">Vérifier les bulletins de salaire</field>
+        <field name="code">ACT-SUP-02-02</field>
+        <field name="process_id" ref="process_support_02"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Vérification des bulletins de salaire</field>
+    </record>
+
+    <record id="activity_sup_02_03" model="risk.activity">
+        <field name="name">Procéder au paiement des salaires</field>
+        <field name="code">ACT-SUP-02-03</field>
+        <field name="process_id" ref="process_support_02"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Paiement des salaires et signature des bulletins</field>
+    </record>
+
+    <!-- Processus: Déclaration sociale (SUP-03) -->
+    <record id="activity_sup_03_01" model="risk.activity">
+        <field name="name">Effectuer la déclaration CNPS</field>
+        <field name="code">ACT-SUP-03-01</field>
+        <field name="process_id" ref="process_support_03"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Déclaration CNPS et CMU</field>
+    </record>
+
+    <record id="activity_sup_03_02" model="risk.activity">
+        <field name="name">Vérifier la conformité des déclarations</field>
+        <field name="code">ACT-SUP-03-02</field>
+        <field name="process_id" ref="process_support_03"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Vérification de la conformité des montants déclarés</field>
+    </record>
+
+    <!-- Processus: Rupture de contrat (SUP-06) -->
+    <record id="activity_sup_06_01" model="risk.activity">
+        <field name="name">Gérer la démission</field>
+        <field name="code">ACT-SUP-06-01</field>
+        <field name="process_id" ref="process_support_06"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Réception et traitement de la lettre de démission</field>
+    </record>
+
+    <record id="activity_sup_06_02" model="risk.activity">
+        <field name="name">Rédiger le certificat de travail</field>
+        <field name="code">ACT-SUP-06-02</field>
+        <field name="process_id" ref="process_support_06"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Rédaction du certificat de travail et solde de tout compte</field>
+    </record>
+
+    <record id="activity_sup_06_03" model="risk.activity">
+        <field name="name">Déclarer la démission à la CNPS</field>
+        <field name="code">ACT-SUP-06-03</field>
+        <field name="process_id" ref="process_support_06"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">Déclaration de la démission à la CNPS</field>
+    </record>
+
+    <!-- Processus: Gouvernance et stratégie (PIL-01) -->
+    <record id="activity_pil_01_01" model="risk.activity">
+        <field name="name">Élaboration de la stratégie de gestion</field>
+        <field name="code">ACT-PIL-01-01</field>
+        <field name="process_id" ref="process_pilotage_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">10</field>
+        <field name="summary">Élaboration de la stratégie de gestion des Fonds (allocation d'actifs, diversification, rendement/risque)</field>
+    </record>
+
+    <record id="activity_pil_01_02" model="risk.activity">
+        <field name="name">Mise en place des organes de gouvernance</field>
+        <field name="code">ACT-PIL-01-02</field>
+        <field name="process_id" ref="process_pilotage_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">20</field>
+        <field name="summary">Mise en place des organes de gouvernance (Conseil d'Administration, Comité d'Investissement, Comité des Risques)</field>
+    </record>
+
+    <record id="activity_pil_01_03" model="risk.activity">
+        <field name="name">Dispositif de contrôle</field>
+        <field name="code">ACT-PIL-01-03</field>
+        <field name="process_id" ref="process_pilotage_01"/>
+        <field name="risk_count">1</field>
+        <field name="sequence">30</field>
+        <field name="summary">S'assurer du bon fonctionnement du dispositif de contrôle (audit interne, surveillance, reporting)</field>
+    </record>
+
+</odoo>

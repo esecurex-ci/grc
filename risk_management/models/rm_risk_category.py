@@ -12,6 +12,8 @@ class RiskCategory(models.Model):
 
     active = fields.Boolean(default=True)
 
+    color = fields.Char(String='Couleur')
+
     _sql_constraints = [
         ('risk_category_code_unique',
          'unique(code)',

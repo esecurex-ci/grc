@@ -1,342 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
 
-        <!-- ========================================= -->
-        <!-- KRI - Gestion Comptable des fonds         -->
-        <!-- ========================================= -->
+    <!-- ============================================================ -->
+    <!-- KRI - GESTION DE PORTEFEUILLE                                 -->
+    <!-- ============================================================ -->
 
-        <!-- KRI: Mauvais paramétrage -->
-        <record id="kri_mauvais_parametrage" model="risk.kri">
-            <field name="code">KRI-COMP-001</field>
-            <field name="name">Mauvais paramétrage des caractéristiques des Fonds</field>
-            <field name="description">Nombre d'anomalies détectées lors des contrôles internes</field>
-            <field name="indicator_text">Nombre d'anomalies détectées lors des contrôles internes</field>
-            <field name="measure_unit">number</field>
-            <field name="formula">Nombre d'anomalies détectées lors des contrôles internes</field>
-            <field name="formula_expression">anomalies</field>
-            <field name="formula_fields">anomalies</field>
-            <field name="measure_frequency">quarterly</field>
-            <field name="tolerance">&lt;3</field>
-            <field name="threshold_warning">3</field>
-            <field name="threshold_critical">4</field>
-        </record>
+    <record id="kri_01" model="risk.kri">
+        <field name="name">Ratios règlementaires</field>
+        <field name="code">KRI-01</field>
+        <field name="risk_id" ref="risk_ope_01_01_01"/>
+        <field name="description">Suivi des ratios règlementaires et des limites de diversification</field>
+        <field name="threshold">Seuil d'alerte à déterminer</field>
+        <field name="unit">%</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Erreur de saisie VL -->
-        <record id="kri_erreur_saisie_vl" model="risk.kri">
-            <field name="code">KRI-COMP-002</field>
-            <field name="name">Risque d'erreur de saisie - Calcul VL</field>
-            <field name="description">Nombre de recalculs de VL avant validation</field>
-            <field name="indicator_text">Nombre de recalculs de VL avant validation</field>
-            <field name="measure_unit">number</field>
-            <field name="formula">Nombre de recalculs de VL avant validation</field>
-            <field name="formula_expression">recalculs</field>
-            <field name="formula_fields">recalculs</field>
-            <field name="measure_frequency">monthly</field>
-            <field name="tolerance">&lt;3</field>
-            <field name="threshold_warning">3</field>
-            <field name="threshold_critical">4</field>
-        </record>
+    <record id="kri_02" model="risk.kri">
+        <field name="name">Indicateurs de Liquidité du Marché</field>
+        <field name="code">KRI-02</field>
+        <field name="risk_id" ref="risk_ope_01_02_01"/>
+        <field name="description">Fréquence des transactions journalières sur une période donnée (ex. 30 jours). Plus le volume est faible, plus le risque de blocage est élevé.</field>
+        <field name="threshold">Baisse de 30% du volume</field>
+        <field name="unit">Volume/jour</field>
+        <field name="frequency">daily</field>
+    </record>
 
-        <!-- KRI: Retard transmission VL -->
-        <record id="kri_retard_transmission_vl" model="risk.kri">
-            <field name="code">KRI-COMP-003</field>
-            <field name="name">Risque de retard dans le calcul de la VL</field>
-            <field name="description">Fréquence des retards dans le calcul de la VL</field>
-            <field name="indicator_text">(Nombre de VL calculées en retard / Nombre total de VL prévues) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(Nombre de VL calculées en retard / Nombre total de VL prévues) × 100</field>
-            <field name="formula_expression">(vl_retard / vl_total) * 100</field>
-            <field name="formula_fields">vl_retard, vl_total</field>
-            <field name="measure_frequency">quarterly</field>
-            <field name="tolerance">[0 -5 %]</field>
-            <field name="threshold_warning">5</field>
-            <field name="threshold_critical">10</field>
-        </record>
+    <record id="kri_03" model="risk.kri">
+        <field name="name">Notation de crédit des émetteurs</field>
+        <field name="code">KRI-03</field>
+        <field name="risk_id" ref="risk_ope_01_03_01"/>
+        <field name="description">Suivi des notations des agences (Moody's, S&amp;P, Fitch)</field>
+        <field name="threshold">Dégradation de la note</field>
+        <field name="unit">Note</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Écarts espèces/titres -->
-        <record id="kri_ecarts_especes_titres" model="risk.kri">
-            <field name="code">KRI-COMP-004</field>
-            <field name="name">Écarts entre comptes espèces et titres</field>
-            <field name="description">Montant total des écarts en % de l'AUM</field>
-            <field name="indicator_text">(Valeur totale des écarts espèces ou titres / AUM) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(Valeur totale des écarts espèces ou titres / AUM) × 100</field>
-            <field name="formula_expression">(ecarts / aum) * 100</field>
-            <field name="formula_fields">ecarts, aum</field>
-            <field name="measure_frequency">monthly</field>
-            <field name="tolerance">&lt; 0,02% de l'AUM</field>
-            <field name="threshold_warning">0.02</field>
-            <field name="threshold_critical">0.03</field>
-        </record>
+    <record id="kri_04" model="risk.kri">
+        <field name="name">Taux de refus des propositions d'investissement</field>
+        <field name="code">KRI-04</field>
+        <field name="risk_id" ref="risk_ope_01_05_01"/>
+        <field name="description">Pourcentage des propositions d'investissement refusées par le comité</field>
+        <field name="threshold">A définir</field>
+        <field name="unit">%</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Erreur de saisie - ordre de virement -->
-        <record id="kri_erreur_saisie_virement" model="risk.kri">
-            <field name="code">KRI-COMP-005</field>
-            <field name="name">Risque d'erreur de saisie - Ordre de virement</field>
-            <field name="description">Nombre d'incidents liés à des erreurs de saisie ayant entraîné une perte financière</field>
-            <field name="indicator_text">Nombre d'incidents liés à des erreurs de saisie ayant entraîné une perte financière</field>
-            <field name="measure_unit">number</field>
-            <field name="formula">Nombre d'incidents liés à des erreurs de saisie ayant entraîné une perte financière</field>
-            <field name="formula_expression">incidents</field>
-            <field name="formula_fields">incidents</field>
-            <field name="measure_frequency">monthly</field>
-            <field name="tolerance">0</field>
-            <field name="threshold_warning">1</field>
-            <field name="threshold_critical">2</field>
-        </record>
+    <record id="kri_05" model="risk.kri">
+        <field name="name">Pourcentage de négociations non conformes</field>
+        <field name="code">KRI-05</field>
+        <field name="risk_id" ref="risk_ope_01_06_01"/>
+        <field name="description">Pourcentage des négociations ne respectant pas les règles internes (seuil de prix)</field>
+        <field name="threshold">A définir</field>
+        <field name="unit">%</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Taux d'erreurs de saisie DAT -->
-        <record id="kri_erreur_saisie_dat" model="risk.kri">
-            <field name="code">KRI-COMP-006</field>
-            <field name="name">Taux d'erreurs de saisie - Opérations DAT</field>
-            <field name="description">Taux d'erreurs de saisie lors de la comptabilisation des opérations DAT</field>
-            <field name="indicator_text">((Nombre d'erreurs détectées / Nombre total d'opérations DAT saisies) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">((Nombre d'erreurs détectées / Nombre total d'opérations DAT saisies) × 100</field>
-            <field name="formula_expression">(erreurs / total_operations) * 100</field>
-            <field name="formula_fields">erreurs, total_operations</field>
-            <field name="measure_frequency">monthly</field>
-            <field name="tolerance">&lt; 5%</field>
-            <field name="threshold_warning">5</field>
-            <field name="threshold_critical">6</field>
-        </record>
+    <!-- ============================================================ -->
+    <!-- KRI - BACK OFFICE                                             -->
+    <!-- ============================================================ -->
 
-        <!-- KRI: Retour pour corrections -->
-        <record id="kri_retour_corrections" model="risk.kri">
-            <field name="code">KRI-COMP-007</field>
-            <field name="name">Taux de retour pour corrections</field>
-            <field name="description">Pourcentage des bulletins retournés par le contrôleur interne pour modification</field>
-            <field name="indicator_text">(Nombre de bulletins retournés pour correction / Nombre total de bulletins contrôlés) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(Nombre de bulletins retournés pour correction / Nombre total de bulletins contrôlés) × 100</field>
-            <field name="formula_expression">(retours / total_bulletins) * 100</field>
-            <field name="formula_fields">retours, total_bulletins</field>
-            <field name="measure_frequency">monthly</field>
-            <field name="tolerance">&lt; 0,02% de l'AUM</field>
-            <field name="threshold_warning">0.02</field>
-            <field name="threshold_critical">0.03</field>
-        </record>
+    <record id="kri_06" model="risk.kri">
+        <field name="name">Nombre de recalculs de VL</field>
+        <field name="code">KRI-06</field>
+        <field name="risk_id" ref="risk_ope_03_01_01"/>
+        <field name="description">Nombre de recalculs de VL avant validation (Identifier les recalculs répétés qui signalent des problèmes de saisie ou de méthodologie)</field>
+        <field name="threshold">Seuil d'alerte à mettre en place</field>
+        <field name="unit">Nombre</field>
+        <field name="frequency">daily</field>
+    </record>
 
-        <!-- KRI: Pénalités de retard -->
-        <record id="kri_penalites_retard" model="risk.kri">
-            <field name="code">KRI-COMP-008</field>
-            <field name="name">Montant des pénalités de retard</field>
-            <field name="description">Montant total des pénalités de retards</field>
-            <field name="indicator_text">Montant total des pénalités de retards</field>
-            <field name="measure_unit">amount</field>
-            <field name="formula">Montant total des pénalités de retards</field>
-            <field name="formula_expression">penalites</field>
-            <field name="formula_fields">penalites</field>
-            <field name="measure_frequency">quarterly</field>
-            <field name="tolerance">&lt; 0,02% de l'AUM</field>
-            <field name="threshold_warning">0.02</field>
-            <field name="threshold_critical">0.03</field>
-        </record>
+    <record id="kri_07" model="risk.kri">
+        <field name="name">Fréquence des retards dans le calcul de la VL</field>
+        <field name="code">KRI-07</field>
+        <field name="risk_id" ref="risk_ope_03_01_01"/>
+        <field name="description">La fréquence des retards (mensuel) dans le calcul de la VL</field>
+        <field name="threshold">Seuil critique à mettre en place</field>
+        <field name="unit">Nombre/mois</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Écart frais de gestion -->
-        <record id="kri_ecart_frais_gestion" model="risk.kri">
-            <field name="code">KRI-COMP-009</field>
-            <field name="name">Écart entre montant facturé et attendu - Frais de gestion</field>
-            <field name="description">Taux d'écart entre le montant facturé et le montant attendu</field>
-            <field name="indicator_text">(somme (montants facturés - Montant attendu) / somme des montants attendus) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(somme (montants facturés - Montant attendu) / somme des montants attendus) × 100</field>
-            <field name="formula_expression">(sum(factures - attente) / sum(attente)) * 100</field>
-            <field name="formula_fields">factures, attente</field>
-            <field name="measure_frequency">quarterly</field>
-            <field name="tolerance">&lt; 2%</field>
-            <field name="threshold_warning">2</field>
-            <field name="threshold_critical">3</field>
-        </record>
+    <record id="kri_08" model="risk.kri">
+        <field name="name">Occurrence de défaillance du système</field>
+        <field name="code">KRI-08</field>
+        <field name="risk_id" ref="risk_ope_03_02_01"/>
+        <field name="description">Nombre d'occurrence de la défaillance du système (bugs bloquants, indisponibilité de la VL)</field>
+        <field name="threshold">Maximum une fois par mois</field>
+        <field name="unit">Nombre/mois</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- ========================================= -->
-        <!-- KRI - Gestion Comptable et financière    -->
-        <!-- ========================================= -->
+    <!-- ============================================================ -->
+    <!-- KRI - RÉCONCILIATION DES COMPTES                              -->
+    <!-- ============================================================ -->
 
-        <!-- KRI: Taux d'erreur d'encaissement -->
-        <record id="kri_erreur_encaissement" model="risk.kri">
-            <field name="code">KRI-FIN-001</field>
-            <field name="name">Taux d'erreur de saisie des montants d'encaissement</field>
-            <field name="description">Pourcentage d'opérations d'encaissement enregistrées avec un montant incorrect</field>
-            <field name="indicator_text">(Nombre d'encaissements saisis avec erreur / Nombre total d'encaissements) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(Nombre d'encaissements saisis avec erreur / Nombre total d'encaissements) × 100</field>
-            <field name="formula_expression">(erreurs_encaissement / total_encaissements) * 100</field>
-            <field name="formula_fields">erreurs_encaissement, total_encaissements</field>
-            <field name="measure_frequency">quarterly</field>
-            <field name="tolerance">&lt;2</field>
-            <field name="threshold_warning">2</field>
-            <field name="threshold_critical">3</field>
-        </record>
+    <record id="kri_09" model="risk.kri">
+        <field name="name">Montant total des écarts en % de l'AUM</field>
+        <field name="code">KRI-09</field>
+        <field name="risk_id" ref="risk_ope_05_01_01"/>
+        <field name="description">Valeur totale des écarts espèces ou titres / AUM × 100</field>
+        <field name="threshold">Seuil de tolérance à définir</field>
+        <field name="unit">%</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Montant de la fraude -->
-        <record id="kri_montant_fraude" model="risk.kri">
-            <field name="code">KRI-FIN-002</field>
-            <field name="name">Montant total de la fraude</field>
-            <field name="description">Montant total de la fraude constatée</field>
-            <field name="indicator_text">Montant total de la fraude</field>
-            <field name="measure_unit">amount</field>
-            <field name="formula">Montant total de la fraude</field>
-            <field name="formula_expression">fraude</field>
-            <field name="formula_fields">fraude</field>
-            <field name="measure_frequency">quarterly</field>
-            <field name="tolerance">0</field>
-            <field name="threshold_warning">1</field>
-            <field name="threshold_critical">2</field>
-        </record>
+    <!-- ============================================================ -->
+    <!-- KRI - SOUSCRIPTION/RACHAT                                     -->
+    <!-- ============================================================ -->
 
-        <!-- KRI: Écart entre commandes et réceptions -->
-        <record id="kri_ecart_commandes" model="risk.kri">
-            <field name="code">KRI-FIN-003</field>
-            <field name="name">Écarts entre les commandes et les réceptions</field>
-            <field name="description">Différence entre ce qui a été commandé et ce qui a été effectivement reçu</field>
-            <field name="indicator_text">(Nombre de commandes avec écarts / Nombre total de commandes) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(Nombre de commandes avec écarts / Nombre total de commandes) × 100</field>
-            <field name="formula_expression">(commandes_ecart / total_commandes) * 100</field>
-            <field name="formula_fields">commandes_ecart, total_commandes</field>
-            <field name="measure_frequency">monthly</field>
-            <field name="tolerance">&lt; 5%</field>
-            <field name="threshold_warning">5</field>
-            <field name="threshold_critical">10</field>
-        </record>
+    <record id="kri_10" model="risk.kri">
+        <field name="name">Seuil de liquidité des Fonds</field>
+        <field name="code">KRI-10</field>
+        <field name="risk_id" ref="risk_ope_08_01_01"/>
+        <field name="description">Seuil de liquidité minimum requis pour chaque Fonds</field>
+        <field name="threshold">ECG : 10%, ECO : 10%, PAT : 10%, ECL : 20%, GOORGOORLU : 20%</field>
+        <field name="unit">%</field>
+        <field name="frequency">daily</field>
+    </record>
 
-        <!-- KRI: Taux de décaissements sans justificatif -->
-        <record id="kri_decaissements_sans_justificatif" model="risk.kri">
-            <field name="code">KRI-FIN-004</field>
-            <field name="name">Taux de décaissements sans justificatif</field>
-            <field name="description">Proportion des paiements effectués sans facture, bon de commande ou autorisation</field>
-            <field name="indicator_text">(Montant des décaissements sans justificatif / Montant total des décaissements) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(Montant des décaissements sans justificatif / Montant total des décaissements) × 100</field>
-            <field name="formula_expression">(decaissements_sans_justificatif / total_decaissements) * 100</field>
-            <field name="formula_fields">decaissements_sans_justificatif, total_decaissements</field>
-            <field name="measure_frequency">monthly</field>
-            <field name="tolerance">≤ 2 %</field>
-            <field name="threshold_warning">2</field>
-            <field name="threshold_critical">5</field>
-        </record>
+    <!-- ============================================================ -->
+    <!-- KRI - GESTION CLIENTÈLE                                       -->
+    <!-- ============================================================ -->
 
-        <!-- ========================================= -->
-        <!-- KRI - Gestion Administrative              -->
-        <!-- ========================================= -->
+    <record id="kri_11" model="risk.kri">
+        <field name="name">Dossiers clients incomplets</field>
+        <field name="code">KRI-11</field>
+        <field name="risk_id" ref="risk_ope_13_01_01"/>
+        <field name="description">Dossiers clients incomplets ou erronés</field>
+        <field name="threshold">Seuil d'alerte à déterminer</field>
+        <field name="unit">Nombre</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Taux d'erreur d'adressage -->
-        <record id="kri_erreur_adressage" model="risk.kri">
-            <field name="code">KRI-ADM-001</field>
-            <field name="name">Taux d'erreur d'adressage</field>
-            <field name="description">Nombre de courriers envoyés à une mauvaise adresse</field>
-            <field name="indicator_text">(Nombre de courriers envoyés à une mauvaise adresse / Total des courriers envoyés) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(Nombre de courriers envoyés à une mauvaise adresse / Total des courriers envoyés) × 100</field>
-            <field name="formula_expression">(mauvaise_adresse / total_courriers) * 100</field>
-            <field name="formula_fields">mauvaise_adresse, total_courriers</field>
-            <field name="measure_frequency">monthly</field>
-            <field name="tolerance">&lt;2%</field>
-            <field name="threshold_warning">2</field>
-            <field name="threshold_critical">3</field>
-        </record>
+    <record id="kri_12" model="risk.kri">
+        <field name="name">Taux de transformation des opportunités</field>
+        <field name="code">KRI-12</field>
+        <field name="risk_id" ref="risk_ope_14_01_01"/>
+        <field name="description">Nombre de souscriptions conclues / Nombre d'opportunités créées</field>
+        <field name="threshold">Seuil d'alerte à déterminer</field>
+        <field name="unit">%</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Réclamations communication -->
-        <record id="kri_reclamations_communication" model="risk.kri">
-            <field name="code">KRI-ADM-002</field>
-            <field name="name">Réclamations liées à une mauvaise communication</field>
-            <field name="description">Nombre de réclamations ou plaintes liées à une mauvaise communication</field>
-            <field name="indicator_text">Nombre de réclamations ou plaintes liées à une mauvaise communication</field>
-            <field name="measure_unit">number</field>
-            <field name="formula">Nombre de réclamations ou plaintes liées à une mauvaise communication</field>
-            <field name="formula_expression">reclamations</field>
-            <field name="formula_fields">reclamations</field>
-            <field name="measure_frequency">quarterly</field>
-            <field name="tolerance">&lt;2</field>
-            <field name="threshold_warning">2</field>
-            <field name="threshold_critical">3</field>
-        </record>
+    <!-- ============================================================ -->
+    <!-- KRI - CONTRÔLE INTERNE                                        -->
+    <!-- ============================================================ -->
 
-        <!-- ========================================= -->
-        <!-- KRI - Gestion des Ressources Humaines    -->
-        <!-- ========================================= -->
+    <record id="kri_13" model="risk.kri">
+        <field name="name">Taux d'erreurs détectées lors des audits</field>
+        <field name="code">KRI-13</field>
+        <field name="risk_id" ref="risk_ope_20_01_01"/>
+        <field name="description">Nombre de dossiers avec anomalies après un contrôle de deuxième niveau</field>
+        <field name="threshold">Seuil à déterminer</field>
+        <field name="unit">%</field>
+        <field name="frequency">quarterly</field>
+    </record>
 
-        <!-- KRI: Taux de turnover -->
-        <record id="kri_turnover" model="risk.kri">
-            <field name="code">KRI-HR-001</field>
-            <field name="name">Taux de turnover</field>
-            <field name="description">Taux de rotation du personnel</field>
-            <field name="indicator_text">(Nombre de départs sur la période / Effectif sur la période) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(Nombre de départs sur la période / Effectif sur la période) × 100</field>
-            <field name="formula_expression">(departs / effectif) * 100</field>
-            <field name="formula_fields">departs, effectif</field>
-            <field name="measure_frequency">annual</field>
-            <field name="tolerance">&lt;17%</field>
-            <field name="threshold_warning">17</field>
-            <field name="threshold_critical">20</field>
-        </record>
+    <!-- ============================================================ -->
+    <!-- KRI - SYSTÈME D'INFORMATION                                   -->
+    <!-- ============================================================ -->
 
-        <!-- KRI: Erreurs sur bulletins de paie -->
-        <record id="kri_erreurs_bulletins_paie" model="risk.kri">
-            <field name="code">KRI-HR-002</field>
-            <field name="name">Taux d'erreurs sur les bulletins de paie</field>
-            <field name="description">Nombre de bulletins contenant des erreurs par rapport au total émis</field>
-            <field name="indicator_text">Nombre de bulletins contenant des erreurs</field>
-            <field name="measure_unit">number</field>
-            <field name="formula">Nombre de bulletins contenant des erreurs</field>
-            <field name="formula_expression">bulletins_erreurs</field>
-            <field name="formula_fields">bulletins_erreurs</field>
-            <field name="measure_frequency">quarterly</field>
-            <field name="tolerance">&lt;2</field>
-            <field name="threshold_warning">2</field>
-            <field name="threshold_critical">3</field>
-        </record>
+    <record id="kri_14" model="risk.kri">
+        <field name="name">Taux d'échec des sauvegardes</field>
+        <field name="code">KRI-14</field>
+        <field name="risk_id" ref="risk_sup_14_01_01"/>
+        <field name="description">Vérifie si les sauvegardes sont bien exécutées et exploitables</field>
+        <field name="threshold">Seuil d'alerte à déterminer</field>
+        <field name="unit">%</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Anomalies déclarations sociales -->
-        <record id="kri_anomalies_declarations_sociales" model="risk.kri">
-            <field name="code">KRI-HR-003</field>
-            <field name="name">Taux d'anomalies dans les déclarations sociales</field>
-            <field name="description">Nombre de déclarations rejetées ou nécessitant des corrections</field>
-            <field name="indicator_text">(Nombre de déclarations rejetées ou nécessitant des corrections / Nombre total de déclarations sociales envoyées) × 100</field>
-            <field name="measure_unit">percentage</field>
-            <field name="formula">(Nombre de déclarations rejetées ou nécessitant des corrections / Nombre total de déclarations sociales envoyées) × 100</field>
-            <field name="formula_expression">(declarations_rejetees / total_declarations) * 100</field>
-            <field name="formula_fields">declarations_rejetees, total_declarations</field>
-            <field name="measure_frequency">annual</field>
-            <field name="tolerance">&lt;2</field>
-            <field name="threshold_warning">2</field>
-            <field name="threshold_critical">3</field>
-        </record>
+    <record id="kri_15" model="risk.kri">
+        <field name="name">Temps moyen de récupération des données</field>
+        <field name="code">KRI-15</field>
+        <field name="risk_id" ref="risk_sup_14_01_01"/>
+        <field name="description">Temps moyen de récupération des données après un incident (en heures/jours)</field>
+        <field name="threshold">Seuil d'alerte à déterminer</field>
+        <field name="unit">Heures</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-        <!-- KRI: Réclamations salariés -->
-        <record id="kri_reclamations_salaries" model="risk.kri">
-            <field name="code">KRI-HR-004</field>
-            <field name="name">Réclamations des salariés sur les montants perçus</field>
-            <field name="description">Nombre de réclamations des salariés sur les montants perçus</field>
-            <field name="indicator_text">Nombre de réclamations des salariés sur les montants perçus</field>
-            <field name="measure_unit">number</field>
-            <field name="formula">Nombre de réclamations des salariés sur les montants perçus</field>
-            <field name="formula_expression">reclamations_salaries</field>
-            <field name="formula_fields">reclamations_salaries</field>
-            <field name="measure_frequency">annual</field>
-            <field name="tolerance">&lt;2</field>
-            <field name="threshold_warning">2</field>
-            <field name="threshold_critical">3</field>
-        </record>
+    <!-- ============================================================ -->
+    <!-- KRI - GOUVERNANCE                                             -->
+    <!-- ============================================================ -->
 
-        <!-- KRI: Absences non justifiées -->
-        <record id="kri_absences_non_justifiees" model="risk.kri">
-            <field name="code">KRI-HR-005</field>
-            <field name="name">Absences non justifiées</field>
-            <field name="description">Nombre d'absences sans justificatif médical ou personnel</field>
-            <field name="indicator_text">Nombre d'absences non justifiées</field>
-            <field name="measure_unit">number</field>
-            <field name="formula">Nombre d'absences non justifiées</field>
-            <field name="formula_expression">absences_non_justifiees</field>
-            <field name="formula_fields">absences_non_justifiees</field>
-            <field name="measure_frequency">quarterly</field>
-            <field name="tolerance">&lt;2</field>
-            <field name="threshold_warning">2</field>
-            <field name="threshold_critical">3</field>
-        </record>
+    <record id="kri_16" model="risk.kri">
+        <field name="name">Taux de conformité profil-client / allocation</field>
+        <field name="code">KRI-16</field>
+        <field name="risk_id" ref="risk_pil_01_01_01"/>
+        <field name="description">Taux de conformité entre le profil de risque du client et l'allocation réelle des fonds</field>
+        <field name="threshold">Seuil à déterminer</field>
+        <field name="unit">%</field>
+        <field name="frequency">monthly</field>
+    </record>
 
-    </data>
+    <record id="kri_17" model="risk.kri">
+        <field name="name">Existence du Comité des Risques</field>
+        <field name="code">KRI-17</field>
+        <field name="risk_id" ref="risk_pil_01_02_01"/>
+        <field name="description">Vérification de l'existence du Comité des Risques</field>
+        <field name="threshold">Oui/Non</field>
+        <field name="unit">Booléen</field>
+        <field name="frequency">quarterly</field>
+    </record>
+
 </odoo>

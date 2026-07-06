@@ -111,7 +111,8 @@ class RiskRisk(models.Model):
         ('cyber', 'Cybersécurité'),
         ('reputation', 'Réputation'),
         ('liquidity', 'Liquidité'),
-        ('market', 'Marché')
+        ('market', 'Marché'),
+        ('contreparty', 'Contrepartie')
     ], string='Type de risque', tracking=True)
     risk_source = fields.Selection([
         ('internal', 'Interne'),

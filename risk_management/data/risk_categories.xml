@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- CATÉGORIES DE RISQUES                                         -->
+    <!-- ============================================================ -->
+
+    <record id="cat_compliance" model="risk.category">
+        <field name="name">Risques de Conformité</field>
+        <field name="code">COMP</field>
+        <field name="description">Risques liés au non-respect des réglementations et obligations légales</field>
+        <field name="color">#dc3545</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="cat_operational" model="risk.category">
+        <field name="name">Risques Opérationnels</field>
+        <field name="code">OPS</field>
+        <field name="description">Risques liés aux opérations quotidiennes et aux processus internes</field>
+        <field name="color">#17a2b8</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="cat_financial" model="risk.category">
+        <field name="name">Risques Financiers</field>
+        <field name="code">FIN</field>
+        <field name="description">Risques affectant la situation financière de l'organisation</field>
+        <field name="color">#28a745</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="cat_strategic" model="risk.category">
+        <field name="name">Risques Stratégiques</field>
+        <field name="code">STRAT</field>
+        <field name="description">Risques affectant la stratégie et les objectifs à long terme</field>
+        <field name="color">#6f42c1</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="cat_cybersecurity" model="risk.category">
+        <field name="name">Risques Cybersécurité</field>
+        <field name="code">CYBER</field>
+        <field name="description">Risques liés à la sécurité informatique et aux cyberattaques</field>
+        <field name="color">#fd7e14</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="cat_liquidite" model="risk.category">
+        <field name="name">Risques de Liquidité</field>
+        <field name="code">LIQ</field>
+        <field name="description">Risques liés à l'insuffisance de liquidités</field>
+        <field name="color">#ffc107</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="cat_contrepartie" model="risk.category">
+        <field name="name">Risques de Contrepartie</field>
+        <field name="code">CONTREP</field>
+        <field name="description">Risques liés aux contreparties et aux tiers</field>
+        <field name="color">#e83e8c</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="cat_reputation" model="risk.category">
+        <field name="name">Risques de Réputation</field>
+        <field name="code">REP</field>
+        <field name="description">Risques affectant la réputation et l'image de l'organisation</field>
+        <field name="color">#dc3545</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="cat_legal" model="risk.category">
+        <field name="name">Risques Juridiques</field>
+        <field name="code">LEGAL</field>
+        <field name="description">Risques liés aux litiges et aux sanctions juridiques</field>
+        <field name="color">#20c997</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>
