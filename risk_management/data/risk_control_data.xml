@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- 1. CONTRÔLES - GOUVERNANCE & STRATÉGIE                       -->
+    <!-- ============================================================ -->
+
+    <record id="control_pil_01" model="risk.control">
+        <field name="name">Validation de la stratégie par le Conseil d'Administration</field>
+        <field name="code">CTRL-PIL-01</field>
+        <field name="description">La stratégie de gestion des Fonds est validée par le Conseil d'Administration</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">annual</field>
+        <field name="owner_id" ref="employee_dg"/>
+    </record>
+
+    <record id="control_pil_02" model="risk.control">
+        <field name="name">Suivi budgétaire trimestriel</field>
+        <field name="code">CTRL-PIL-02</field>
+        <field name="description">Suivi trimestriel de l'exécution du budget par la DGA</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">quarterly</field>
+        <field name="owner_id" ref="employee_dga"/>
+    </record>
+
+    <record id="control_pil_03" model="risk.control">
+        <field name="name">Revue annuelle de la politique d'éthique</field>
+        <field name="code">CTRL-PIL-03</field>
+        <field name="description">Revue annuelle de la politique d'éthique et de déontologie</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">annual</field>
+        <field name="owner_id" ref="employee_dga"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 2. CONTRÔLES - GESTION DES RISQUES                           -->
+    <!-- ============================================================ -->
+
+    <record id="control_gr_01" model="risk.control">
+        <field name="name">Inventaire hebdomadaire des Fonds</field>
+        <field name="code">CTRL-GR-01</field>
+        <field name="description">Contrôle hebdomadaire des ratios réglementaires et de la trésorerie des Fonds</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">weekly</field>
+        <field name="owner_id" ref="employee_risk_manager"/>
+    </record>
+
+    <record id="control_gr_02" model="risk.control">
+        <field name="name">Réunions mensuelles du Comité d'Investissement</field>
+        <field name="code">CTRL-GR-02</field>
+        <field name="description">Réunions mensuelles pour s'assurer du respect des orientations stratégiques</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_dga"/>
+    </record>
+
+    <record id="control_gr_03" model="risk.control">
+        <field name="name">Mise à jour annuelle de la cartographie des risques</field>
+        <field name="code">CTRL-GR-03</field>
+        <field name="description">Mise à jour annuelle de la cartographie des risques validée par le CA</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">annual</field>
+        <field name="owner_id" ref="employee_risk_manager"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 3. CONTRÔLES - PROPOSITION D'INVESTISSEMENT                  -->
+    <!-- ============================================================ -->
+
+    <record id="control_pi_01" model="risk.control">
+        <field name="name">Examen de la conformité des décisions d'investissement</field>
+        <field name="code">CTRL-PI-01</field>
+        <field name="description">Le gestionnaire des risques examine la conformité des décisions prises par rapport aux dispositions réglementaires et aux règles internes</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_risk_manager"/>
+    </record>
+
+    <record id="control_pi_02" model="risk.control">
+        <field name="name">Inventaire des Fonds pour vérification des ratios</field>
+        <field name="code">CTRL-PI-02</field>
+        <field name="description">Inventaire des Fonds pour s'assurer du respect des ratios règlementaires et des règles de diversification</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">weekly</field>
+        <field name="owner_id" ref="employee_risk_manager"/>
+    </record>
+
+    <record id="control_pi_03" model="risk.control">
+        <field name="name">Validation des propositions d'investissement par le Comité d'investissement</field>
+        <field name="code">CTRL-PI-03</field>
+        <field name="description">Examen de la note technique sur l'analyse des marchés et validation des propositions d'investissement</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_dga"/>
+    </record>
+
+    <record id="control_pi_04" model="risk.control">
+        <field name="name">Étude approfondie des émetteurs</field>
+        <field name="code">CTRL-PI-04</field>
+        <field name="description">Étude approfondie de la solidité financière, du volume et de la marge pour tout nouvel émetteur</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">on_demand</field>
+        <field name="owner_id" ref="employee_portfolio_manager"/>
+    </record>
+
+    <record id="control_pi_05" model="risk.control">
+        <field name="name">Suivi des échanges avec les contreparties</field>
+        <field name="code">CTRL-PI-05</field>
+        <field name="description">Suivi des échanges entre le gestionnaire et la contrepartie par la DGA et le contrôleur interne</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 4. CONTRÔLES - BACK OFFICE                                   -->
+    <!-- ============================================================ -->
+
+    <record id="control_bo_01" model="risk.control">
+        <field name="name">Vérification du paramétrage des Fonds dans ATLANTIS SGO</field>
+        <field name="code">CTRL-BO-01</field>
+        <field name="description">Le contrôle interne vérifie l'existence du nouvel OPCVM et le bon paramétrage des caractéristiques du Fonds</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">on_demand</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_bo_02" model="risk.control">
+        <field name="name">Contrôle de la saisie des informations pour la VL</field>
+        <field name="code">CTRL-BO-02</field>
+        <field name="description">Vérification de l'exactitude des informations saisies pour le calcul de la VL</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_backoffice"/>
+    </record>
+
+    <record id="control_bo_03" model="risk.control">
+        <field name="name">Validation de la VL par le contrôle interne</field>
+        <field name="code">CTRL-BO-03</field>
+        <field name="description">Le contrôle interne valide la VL ainsi que la matrice avant transmission à la BRVM</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_bo_04" model="risk.control">
+        <field name="name">Réconciliation des comptes titres et espèces</field>
+        <field name="code">CTRL-BO-04</field>
+        <field name="description">Le contrôle interne contrôle les états de rapprochement en s'assurant de la concordance des soldes</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_bo_05" model="risk.control">
+        <field name="name">Vérification des ordres d'achat/vente</field>
+        <field name="code">CTRL-BO-05</field>
+        <field name="description">Le contrôle interne vérifie les ordres d'achat/vente (Montant Net, Commissions, Taux, Quantités) avant validation</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_bo_06" model="risk.control">
+        <field name="name">Contrôle de la comptabilisation des opérations</field>
+        <field name="code">CTRL-BO-06</field>
+        <field name="description">Le contrôle interne vérifie la comptabilisation des opérations dans le logiciel</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_bo_07" model="risk.control">
+        <field name="name">Vérification du cash disponible pour les rachats</field>
+        <field name="code">CTRL-BO-07</field>
+        <field name="description">Le comptable des Fonds vérifie si le cash disponible peut permettre aux Fonds d'honorer les demandes de rachats</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_accounting"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 5. CONTRÔLES - GESTION CLIENTÈLE                             -->
+    <!-- ============================================================ -->
+
+    <record id="control_cl_01" model="risk.control">
+        <field name="name">Vérification des documents KYC</field>
+        <field name="code">CTRL-CL-01</field>
+        <field name="description">Le responsable clientèle vérifie que tous les documents requis sont fournis et conformes</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">on_demand</field>
+        <field name="owner_id" ref="employee_commercial"/>
+    </record>
+
+    <record id="control_cl_02" model="risk.control">
+        <field name="name">Second contrôle KYC par le contrôle interne</field>
+        <field name="code">CTRL-CL-02</field>
+        <field name="description">Le contrôle interne fait un second contrôle pour s'assurer du respect des procédures KYC</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">on_demand</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_cl_03" model="risk.control">
+        <field name="name">Profilage basé sur l'approche risque</field>
+        <field name="code">CTRL-CL-03</field>
+        <field name="description">Le responsable commercial vérifie le formulaire KYC et procède au profilage basé sur l'approche risque</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">on_demand</field>
+        <field name="owner_id" ref="employee_commercial"/>
+    </record>
+
+    <record id="control_cl_04" model="risk.control">
+        <field name="name">Mise à jour périodique des données clients</field>
+        <field name="code">CTRL-CL-04</field>
+        <field name="description">Vérification périodique des données personnelles et financières des clients tous les 2 à 3 ans</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">annual</field>
+        <field name="owner_id" ref="employee_commercial"/>
+    </record>
+
+    <record id="control_cl_05" model="risk.control">
+        <field name="name">Vérification des bulletins de souscription/rachat</field>
+        <field name="code">CTRL-CL-05</field>
+        <field name="description">Le contrôle interne vérifie la conformité des bulletins de souscription/rachat avant validation</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 6. CONTRÔLES - CONTRÔLE INTERNE & CONFORMITÉ                 -->
+    <!-- ============================================================ -->
+
+    <record id="control_ci_01" model="risk.control">
+        <field name="name">Contrôle des dossiers clients</field>
+        <field name="code">CTRL-CI-01</field>
+        <field name="description">Le contrôle interne s'assure de la complétude, la conformité et la mise à jour des dossiers clients</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_ci_02" model="risk.control">
+        <field name="name">Vérification des opérations ≥ 50M FCFA</field>
+        <field name="code">CTRL-CI-02</field>
+        <field name="description">Le contrôle interne vérifie toutes les informations liées aux opérations ≥ 50M FCFA</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_ci_03" model="risk.control">
+        <field name="name">Mise à jour des listes GAFI</field>
+        <field name="code">CTRL-CI-03</field>
+        <field name="description">Mise à jour régulière des listes des pays et territoires non coopératifs et des personnes visées par des mesures de gel</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_compliance"/>
+    </record>
+
+    <record id="control_ci_04" model="risk.control">
+        <field name="name">Élaboration du plan d'audit interne</field>
+        <field name="code">CTRL-CI-04</field>
+        <field name="description">Élaboration du plan d'audit interne validé par le CA avant sa mise en œuvre</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">annual</field>
+        <field name="owner_id" ref="employee_audit"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 7. CONTRÔLES - SYSTÈME D'INFORMATION                         -->
+    <!-- ============================================================ -->
+
+    <record id="control_si_01" model="risk.control">
+        <field name="name">Sauvegarde des données</field>
+        <field name="code">CTRL-SI-01</field>
+        <field name="description">Sauvegarde régulière des données du système d'information</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_it"/>
+    </record>
+
+    <record id="control_si_02" model="risk.control">
+        <field name="name">Politique de sécurité informatique</field>
+        <field name="code">CTRL-SI-02</field>
+        <field name="description">Rédaction et actualisation de la politique de sécurité informatique</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">annual</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_si_03" model="risk.control">
+        <field name="name">Procédure de gestion des incidents informatiques</field>
+        <field name="code">CTRL-SI-03</field>
+        <field name="description">Rédaction et actualisation de la procédure de gestion des incidents informatiques</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">annual</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 8. CONTRÔLES - RESSOURCES HUMAINES                           -->
+    <!-- ============================================================ -->
+
+    <record id="control_rh_01" model="risk.control">
+        <field name="name">Vérification des bulletins de salaire</field>
+        <field name="code">CTRL-RH-01</field>
+        <field name="description">Vérification des bulletins de salaire par la DGA avant validation et paiement</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_dga"/>
+    </record>
+
+    <record id="control_rh_02" model="risk.control">
+        <field name="name">Déclaration CNPS des employés</field>
+        <field name="code">CTRL-RH-02</field>
+        <field name="description">La DGA s'assure que les employés ont été déclarés à la CNPS</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_dga"/>
+    </record>
+
+    <record id="control_rh_03" model="risk.control">
+        <field name="name">Validation des demandes de congés</field>
+        <field name="code">CTRL-RH-03</field>
+        <field name="description">La DGA valide toutes les demandes de congés via mail avec attestation de départ signée</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">on_demand</field>
+        <field name="owner_id" ref="employee_dga"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 9. CONTRÔLES - COMPTABILITÉ & FINANCES                       -->
+    <!-- ============================================================ -->
+
+    <record id="control_cf_01" model="risk.control">
+        <field name="name">Contrôle des notes de débit</field>
+        <field name="code">CTRL-CF-01</field>
+        <field name="description">Le comptable fait un contrôle de 1er niveau, le contrôle interne fait un deuxième contrôle de la note de débit</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_cf_02" model="risk.control">
+        <field name="name">Vérification des factures fournisseurs</field>
+        <field name="code">CTRL-CF-02</field>
+        <field name="description">Le contrôle interne vérifie le respect de la procédure d'achat et appose son visa avant l'archivage des factures</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_cf_03" model="risk.control">
+        <field name="name">Rapprochement bancaire</field>
+        <field name="code">CTRL-CF-03</field>
+        <field name="description">La DGA vérifie l'état de rapprochement bancaire avant validation</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">high</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_dga"/>
+    </record>
+
+    <record id="control_cf_04" model="risk.control">
+        <field name="name">Inventaire des immobilisations</field>
+        <field name="code">CTRL-CF-04</field>
+        <field name="description">Le contrôle interne analyse les écarts entre les comptages physiques et les données des fichiers d'immobilisations</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">annual</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <record id="control_cf_05" model="risk.control">
+        <field name="name">Contrôle de la caisse</field>
+        <field name="code">CTRL-CF-05</field>
+        <field name="description">Le contrôle interne s'assure de la bonne gestion de la caisse et du respect de la procédure interne</field>
+        <field name="control_type">detective</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- 10. CONTRÔLES - ADMINISTRATION                               -->
+    <!-- ============================================================ -->
+
+    <record id="control_adm_01" model="risk.control">
+        <field name="name">Contrôle des courriers départ</field>
+        <field name="code">CTRL-ADM-01</field>
+        <field name="description">La DGA contrôle l'exactitude des informations des Courriers "Départs" avant validation</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">daily</field>
+        <field name="owner_id" ref="employee_dga"/>
+    </record>
+
+    <record id="control_adm_02" model="risk.control">
+        <field name="name">Vérification des moyens de communication</field>
+        <field name="code">CTRL-ADM-02</field>
+        <field name="description">Le Contrôle interne et l'assistante comptable et administrative s'assurent du bon état des moyens de communication</field>
+        <field name="control_type">preventive</field>
+        <field name="effectiveness">medium</field>
+        <field name="frequency">monthly</field>
+        <field name="owner_id" ref="employee_controller"/>
+    </record>
+
+</odoo>

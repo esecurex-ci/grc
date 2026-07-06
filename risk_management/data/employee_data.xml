@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- EMPLOYÉS - ENKO CAPITAL WEST AFRICA                           -->
+    <!-- ============================================================ -->
+
+    <record id="employee_dga" model="hr.employee">
+        <field name="name">Directeur Général Adjoint</field>
+        <field name="job_title">DGA</field>
+        <field name="work_email">dga@enkocapital.com</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+
+    <record id="employee_risk_manager" model="hr.employee">
+        <field name="name">Gestionnaire des risques</field>
+        <field name="job_title">Risk Manager</field>
+        <field name="work_email">risk.manager@enkocapital.com</field>
+    </record>
+
+    <record id="employee_controller" model="hr.employee">
+        <field name="name">Contrôleur interne</field>
+        <field name="job_title">Contrôleur Interne</field>
+        <field name="work_email">controle.interne@enkocapital.com</field>
+    </record>
+
+    <record id="employee_portfolio_manager" model="hr.employee">
+        <field name="name">Gestionnaire de portefeuille</field>
+        <field name="job_title">Portfolio Manager</field>
+        <field name="work_email">portfolio.manager@enkocapital.com</field>
+    </record>
+
+    <record id="employee_backoffice" model="hr.employee">
+        <field name="name">Back Office</field>
+        <field name="job_title">Back Office</field>
+        <field name="work_email">backoffice@enkocapital.com</field>
+    </record>
+
+    <record id="employee_commercial" model="hr.employee">
+        <field name="name">Responsable commercial</field>
+        <field name="job_title">Responsable Commercial</field>
+        <field name="work_email">commercial@enkocapital.com</field>
+    </record>
+
+    <record id="employee_it" model="hr.employee">
+        <field name="name">Responsable IT</field>
+        <field name="job_title">Responsable Informatique</field>
+        <field name="work_email">it@enkocapital.com</field>
+    </record>
+
+    <record id="employee_dg" model="hr.employee">
+        <field name="name">Directeur Général</field>
+        <field name="job_title">DG</field>
+        <field name="work_email">dg@enkocapital.com</field>
+    </record>
+
+    <record id="employee_compliance" model="hr.employee">
+        <field name="name">Responsable Conformité</field>
+        <field name="job_title">Responsable Conformité</field>
+        <field name="work_email">conformite@enkocapital.com</field>
+    </record>
+
+    <record id="employee_audit" model="hr.employee">
+        <field name="name">Auditeur Interne</field>
+        <field name="job_title">Auditeur Interne</field>
+        <field name="work_email">audit@enkocapital.com</field>
+    </record>
+
+    <record id="employee_accounting" model="hr.employee">
+        <field name="name">Comptable des Fonds</field>
+        <field name="job_title">Comptable des Fonds</field>
+        <field name="work_email">comptable.fonds@enkocapital.com</field>
+    </record>
+
+</odoo>
