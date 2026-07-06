@@ -137,6 +137,14 @@ class RiskActivity(models.Model):
         tracking=True
     )
 
+    calendar_event_id = fields.Many2one(
+        'calendar.event',
+        string="Événement calendrier",
+        help="Événement calendrier lié à cette activité",
+        tracking=True,
+        copy=False
+    )
+
     def action_activate(self):
         for record in self:
             record.state = 'active'

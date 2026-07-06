@@ -8,7 +8,8 @@
     'depends': [
         'base',
         'mail',
-        'hr'
+        'hr',
+        'calendar',
     ],
     'data': [
         'security/ir.model.access.csv',
