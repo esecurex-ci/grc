@@ -19,6 +19,7 @@
         'data/kri_data.xml',
         'data/cron_data.xml',
         'data/email_template_data.xml',
+        'views/grc_actions.xml',
 
         # ========== 1. VUES DE BASE (Modèles simples) ==========
         'views/risk_category_views.xml',
@@ -114,7 +115,7 @@
         'views/risk_action_task_views.xml',
 
         # ========== 9. MENUS ET ACTIONS (TOUJOURS EN DERNIER) ==========
-        'views/grc_actions.xml',
+        #'views/grc_actions.xml',
         'views/grc_menu.xml',
 
         # 'reports/report.xml',
