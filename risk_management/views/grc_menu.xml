@@ -23,7 +23,7 @@
     />
 
     <menuitem id="menu_grc_dashboard_snapshot"
-        name="Tableaux de Bord"
+        name="Tableaux de Bord Risques"
         parent="menu_grc_dashboard_root"
         action="action_risk_executive_dashboard_snapshot"
         sequence="1"
@@ -43,11 +43,11 @@
         sequence="3"
     />
 
-    <menuitem id="menu_grc_executive_dashboard"
+    <!--menuitem id="menu_grc_executive_dashboard"
           name="🏛️ Tableau de bord Risk"
           parent="menu_grc_risk"
           action="action_risk_executive_dashboard"
-          sequence="3"/>
+          sequence="3"/-->
 
     <menuitem id="menu_process_dashboard"
         name="📋 Tableau de bord Processus"
