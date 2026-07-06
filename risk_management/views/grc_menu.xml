@@ -4,7 +4,6 @@
     <!-- ===================================================== -->
     <!-- APPLICATION -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_root"
         name="GRC"
         sequence="1"
@@ -15,7 +14,6 @@
     <!-- ===================================================== -->
     <!-- DASHBOARD -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_dashboard_root"
         name="Cockpit Exécutif"
         parent="menu_grc_root"
@@ -43,19 +41,6 @@
         sequence="3"
     />
 
-    <!--menuitem id="menu_grc_executive_dashboard"
-          name="🏛️ Tableau de bord Risk"
-          parent="menu_grc_risk"
-          action="action_risk_executive_dashboard"
-          sequence="3"/-->
-
-    <menuitem id="menu_process_dashboard"
-        name="📋 Tableau de bord Processus"
-        parent="menu_grc_risk"
-        action="action_process_dashboard"
-        sequence="5"
-    />
-
     <!-- ===================================================== -->
     <!-- Gouvernance -->
     <!-- ===================================================== -->
@@ -65,23 +50,18 @@
         sequence="15"
     />
 
-    <!--menuitem id="menu_grc_document"
-        name="Documents"
-        parent="menu_grc_governance"
-        action="action_risk_policy"
-        sequence="1"
-    /-->
-
     <menuitem id="menu_risk_document"
         name="📋 Documents"
         parent="menu_grc_governance"
         action="action_risk_document"
         sequence="2"
     />
+
     <!-- ===================================================== -->
     <!-- RISK MANAGEMENT -->
     <!-- ===================================================== -->
 
+    <!-- ✅ DÉPLACÉ ICI : Avant les éléments qui l'utilisent -->
     <menuitem id="menu_grc_risk"
         name="📊 Gestion des Risques"
         parent="menu_grc_root"
@@ -95,23 +75,20 @@
         sequence="1"
     />
 
-    <!--menuitem id="menu_grc_cartography"
-              name="📋 Cartographie"
-              parent="menu_grc_risk"
-              action="action_risk_cartography"
-              sequence="10"/-->
-
-    <!--menuitem id="menu_grc_heatmap"
-        name="🔥 Heatmap"
-        parent="menu_grc_risk"
-        action="action_risk_heatmap"
-        sequence="15"
-    /-->
     <menuitem id="menu_risk_dashboard"
-          name="📋 Tableau de Bord"
-          parent="menu_grc_risk"
-          action="action_risk_heatmap_dashboard"
-          sequence="1"/>
+        name="📋 Tableau de Bord"
+        parent="menu_grc_risk"
+        action="action_risk_heatmap_dashboard"
+        sequence="2"
+    />
+
+    <!-- ✅ Maintenant menu_process_dashboard peut utiliser menu_grc_risk -->
+    <menuitem id="menu_process_dashboard"
+        name="📋 Tableau de bord Processus"
+        parent="menu_grc_risk"
+        action="action_process_dashboard"
+        sequence="5"
+    />
 
     <menuitem id="menu_grc_assessment_period"
         name="Campagnes d'Évaluation"
@@ -127,17 +104,9 @@
         sequence="25"
     />
 
-    <!--menuitem id="menu_grc_dmr"
-        name="📋 Dossiers de Management des Risques"
-        parent="menu_grc_risk"
-        action="action_risk_dmr"
-        sequence="5"
-    /-->
-
     <!-- ===================================================== -->
     <!-- CONTROLS -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_controls"
         name="Contrôles &amp; KRI"
         parent="menu_grc_root"
@@ -178,7 +147,6 @@
     <!-- ===================================================== -->
     <!-- INCIDENTS -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_incidents"
         name="Incidents &amp; Pertes"
         parent="menu_grc_root"
@@ -197,12 +165,6 @@
         action="action_risk_loss"
     />
 
-    <!--menuitem id="menu_grc_corrective_action"
-        name="Actions Correctives"
-        parent="menu_grc_incidents"
-        action="action_risk_corrective_action"
-    /-->
-
     <menuitem id="menu_grc_action_plan"
         name="📋 Plans d'action"
         parent="menu_grc_incidents"
@@ -213,7 +175,6 @@
     <!-- ===================================================== -->
     <!-- AUDIT -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_audit"
         name="Audit"
         parent="menu_grc_root"
@@ -247,7 +208,6 @@
     <!-- ===================================================== -->
     <!-- COMPLIANCE -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_compliance"
         name="Conformité"
         parent="menu_grc_root"
@@ -281,14 +241,12 @@
     <!-- ===================================================== -->
     <!-- BCM (Résilience) -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_bcm"
         name="Résilience"
         parent="menu_grc_root"
         sequence="70"
     />
 
-    <!-- ✅ CORRIGÉ : parent différent et id unique -->
     <menuitem id="menu_grc_continuity_dashboard"
         name="Tableau de bord Continuité"
         parent="menu_grc_bcm"
@@ -322,7 +280,6 @@
     <!-- ===================================================== -->
     <!-- CRISIS -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_crisis"
         name="Gestion de Crise"
         parent="menu_grc_root"
@@ -336,7 +293,6 @@
         sequence="1"
     />
 
-    <!-- ✅ CORRIGÉ : id unique -->
     <menuitem id="menu_grc_crisis_dashboard"
         name="Tableau de bord Crise"
         parent="menu_grc_crisis"
@@ -364,7 +320,6 @@
     <!-- ===================================================== -->
     <!-- REPORTING -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_reporting"
         name="Reporting"
         parent="menu_grc_root"
@@ -399,7 +354,6 @@
     <!-- ===================================================== -->
     <!-- ADMINISTRATION -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_admin"
         name="Administration"
         parent="menu_grc_root"
@@ -411,33 +365,37 @@
         parent="menu_grc_admin"
         action="action_risk_metric_engine"
     />
+
     <menuitem id="menu_risk_config"
-          name="⚙️ Configuration des échelles"
-          parent="menu_grc_admin"
-          action="action_risk_config_settings"
-          sequence="5"/>
+        name="⚙️ Configuration des échelles"
+        parent="menu_grc_admin"
+        action="action_risk_config_settings"
+        sequence="5"
+    />
 
     <menuitem id="menu_risk_scale_value"
-          name="Valeurs d'échelle"
-          parent="menu_grc_admin"
-          action="action_risk_scale_value"
-          sequence="6"/>
+        name="Valeurs d'échelle"
+        parent="menu_grc_admin"
+        action="action_risk_scale_value"
+        sequence="6"
+    />
 
     <!-- ===================================================== -->
     <!-- REFERENTIELS -->
     <!-- ===================================================== -->
-
     <menuitem id="menu_grc_master_data"
         name="Référentiels"
         parent="menu_grc_root"
         sequence="110"
     />
+
     <menuitem id="menu_risk_macro_process"
         name="Macro-Processus"
         parent="menu_grc_master_data"
         action="action_risk_macro_process"
         sequence="5"
     />
+
     <menuitem id="menu_grc_categories"
         name="Catégories de Risques"
         parent="menu_grc_master_data"
@@ -451,10 +409,10 @@
     />
 
     <menuitem id="menu_risk_activity"
-              name="Activités"
-              parent="menu_grc_master_data"
-              action="action_risk_activity"
-              sequence="15"
+        name="Activités"
+        parent="menu_grc_master_data"
+        action="action_risk_activity"
+        sequence="15"
     />
 
     <menuitem id="menu_grc_assets"
@@ -470,23 +428,24 @@
     />
 
     <menuitem id="menu_risk_document_category"
-                  name="📂 Catégories de documents"
-                  parent="menu_grc_master_data"
-                  action="action_risk_document_category"
-              sequence="10"/>
+        name="📂 Catégories de documents"
+        parent="menu_grc_master_data"
+        action="action_risk_document_category"
+        sequence="10"
+    />
 
     <menuitem id="menu_risk_tag"
-              name="🏷️ Tags"
-              parent="menu_grc_master_data"
-              action="action_risk_tag"
-              sequence="20"/>
+        name="🏷️ Tags"
+        parent="menu_grc_master_data"
+        action="action_risk_tag"
+        sequence="20"
+    />
+
     <menuitem id="menu_risk_tag_category"
         name="📂 Catégories de tags"
         parent="menu_grc_master_data"
         action="action_risk_tag_category"
         sequence="21"
     />
-
-
 
 </odoo>
