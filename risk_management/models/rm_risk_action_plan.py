@@ -132,6 +132,14 @@ class RiskActionPlan(models.Model):
         ('cancelled', '❌ Annulé'),
     ], string='Statut', default='draft', tracking=True, index=True)
 
+    risk_ids = fields.Many2many(
+        'risk.risk',
+        'risk_risk_action_plan_rel',
+        'action_plan_id',
+        'risk_id',
+        string='Risques associés'
+    )
+
     # ============================================================
     # COMPUTES
     # ============================================================

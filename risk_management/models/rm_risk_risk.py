@@ -239,16 +239,6 @@ class RiskRisk(models.Model):
         string="Taux de réussite des tests (%)"
     )
 
-    dmr_action_count = fields.Integer(
-        compute='_compute_dmr_stats',
-        string="Nombre d'actions"
-    )
-
-    dmr_action_progress = fields.Float(
-        compute='_compute_dmr_stats',
-        string="Progression des actions (%)"
-    )
-
     dmr_compliance_score = fields.Float(
         compute='_compute_dmr_stats',
         string="Score de conformité DMR (%)",
@@ -289,14 +279,33 @@ class RiskRisk(models.Model):
         string='Contrôles du DMR'
     )
 
+    dmr_action_count = fields.Integer(
+        compute='_compute_dmr_stats',
+        string="Nombre de plans d'action"
+    )
+
+    dmr_action_progress = fields.Float(
+        compute='_compute_dmr_stats',
+        string="Progression des plans d'action (%)"
+    )
+
+    action_plan_ids = fields.Many2many(
+        'risk.action.plan',
+        'risk_risk_action_plan_rel',
+        'risk_id',
+        'action_plan_id',
+        string='Plans d\'action',
+        help="Plans d'action associés à ce risque"
+    )
+
     # ============================================================
     # COMPUTE DMR
     # ============================================================
 
     @api.depends(
-        'dmr_control_ids', 'dmr_control_ids.effectiveness',
-        'dmr_test_ids', 'dmr_test_ids.result',
-        'dmr_action_ids', 'dmr_action_ids.progress'
+        'control_ids', 'control_ids.effectiveness',
+        'test_ids', 'test_ids.result',
+        'action_plan_ids', 'action_plan_ids.task_progress'
     )
     def _compute_dmr_stats(self):
         for record in self:
@@ -327,11 +336,11 @@ class RiskRisk(models.Model):
                 record.dmr_test_pass_rate = 0
 
             # 3. ACTIONS
-            actions = record.dmr_action_ids
-            record.dmr_action_count = len(actions)
+            action_plans = record.action_plan_ids
+            record.dmr_action_count = len(action_plans)
 
             if record.dmr_action_count > 0:
-                progress_sum = sum(actions.mapped('progress'))
+                progress_sum = sum(action_plans.mapped('task_progress'))
                 record.dmr_action_progress = progress_sum / record.dmr_action_count
             else:
                 record.dmr_action_progress = 0
@@ -1783,4 +1792,15 @@ class RiskRisk(models.Model):
             'view_mode': 'list,form,kanban',
             'domain': [('id', 'in', self.document_ids.ids)],
             'context': {'default_risk_ids': [(4, self.id)]},
+        }
+
+    def action_view_action_plans(self):
+        """Voir tous les plans d'action associés"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Plans d\'action - {self.name}',
+            'res_model': 'risk.action.plan',
+            'view_mode': 'list,form,kanban',
+            'domain': [('id', 'in', self.action_plan_ids.ids)],
         }

@@ -260,22 +260,38 @@
                                 </page>
 
                                 <!-- 🔧 Actions -->
-                                <page string="🔧 Actions correctives">
+                                <page string="📋 Plans d'action">
                                     <div class="alert alert-info" role="status">
                                         <i class="fa fa-info-circle" title="Information"/>
-                                        <strong><field name="dmr_action_count"/></strong> action(s)
-                                        <span class="text-muted">- Progression: <field name="dmr_action_progress"/>%</span>
+                                        <strong><field name="dmr_action_count"/></strong> plan(s) d'action
+                                        <span class="text-muted">- Progression moyenne : <field name="dmr_action_progress"/>%</span>
                                     </div>
-                                    <field name="action_ids" context="{'default_risk_ids': [(4, id)]}">
-                                        <list decoration-success="state == 'done'"
-                                              decoration-warning="state == 'in_progress'"
-                                              decoration-danger="state in ['overdue', 'cancelled']">
+                                    <!-- ✅ Lien vers le plan d'action -->
+                                    <div class="row" style="margin-bottom:10px;">
+                                        <div class="col-12">
+                                            <button name="%(risk_management.action_risk_action_plan)d"
+                                                    string="➕ Ajouter un plan d'action"
+                                                    type="action"
+                                                    class="btn-primary btn-sm"
+                                                    context="{'default_risk_ids': [(4, id)]}"/>
+                                            <button name="action_view_action_plans"
+                                                    string="📋 Voir tous les plans"
+                                                    type="object"
+                                                    class="btn-secondary btn-sm"
+                                                    invisible="dmr_action_count == 0"/>
+                                        </div>
+                                    </div>
+                                    <field name="action_plan_ids" context="{'default_risk_ids': [(4, id)]}">
+                                        <list decoration-success="state == 'completed'"
+                                              decoration-info="state == 'in_progress'"
+                                              decoration-warning="state == 'approved'"
+                                              decoration-danger="state in ('cancelled')">
                                             <field name="code"/>
                                             <field name="name"/>
                                             <field name="state" widget="badge"/>
+                                            <field name="task_progress" widget="progressbar" string="Progression"/>
                                             <field name="deadline"/>
                                             <field name="owner_id"/>
-                                            <field name="progress" widget="progressbar"/>
                                         </list>
                                     </field>
                                 </page>
