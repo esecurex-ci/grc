@@ -75,3 +75,17 @@ access_risk_metric_engine,access_risk_metric_engine,model_risk_metric_engine,bas
 access_risk_recovery_site,access_risk_recovery_site,model_risk_recovery_site,base.group_user,1,1,1,1
 access_risk_policy,access_risk_policy,model_risk_policy,base.group_user,1,1,1,1
 access_risk_policy,access_risk_policy,model_risk_policy,base.group_user,1,1,1,1
+access_risk_macro_process,access_risk_macro_process,model_risk_macro_process,base.group_user,1,1,1,1
+access_risk_document_category,access_risk_document_category,model_risk_document_category,base.group_user,1,1,1,1
+access_risk_activity,access_risk_activity,model_risk_activity,base.group_user,1,1,1,1
+access_risk_tag,access_risk_tag,model_risk_tag,base.group_user,1,1,1,1
+access_risk_tag_category,access_risk_tag_category,model_risk_tag_category,base.group_user,1,1,1,1
+access_risk_config_settings,access_risk_config_settings,model_risk_config_settings,base.group_user,1,1,1,1
+access_risk_scale_value,access_risk_scale_value,model_risk_scale_value,base.group_user,1,1,1,1
+access_risk_document,access_risk_document,model_risk_document,base.group_user,1,1,1,1
+access_risk_action_plan,access_risk_action_plan,model_risk_action_plan,base.group_user,1,1,1,1
+access_risk_action_task,access_risk_action_task,model_risk_action_task,base.group_user,1,1,1,1
+access_risk_document_approval,access_risk_document_approval,model_risk_document_approval,base.group_user,1,1,1,1
+access_risk_document_distribution,access_risk_document_distribution,model_risk_document_distribution,base.group_user,1,1,1,1
+access_risk_document_version,access_risk_document_version,model_risk_document_version,base.group_user,1,1,1,1
+access_risk_policy,access_risk_policy,model_risk_policy,base.group_user,1,1,1,1
