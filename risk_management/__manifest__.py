@@ -38,7 +38,7 @@
         # ============================================================
         # 2. VUES PRINCIPALES
         # ============================================================
-        #'views/risk_risk_views.xml',
+        'views/risk_risk_views.xml',
         'views/risk_control_views.xml',
         'views/risk_control_test_views.xml',
         'views/risk_kri_views.xml',
@@ -133,7 +133,6 @@
         # 10. ACTIONS (RÉFÉRENCENT LES VUES)
         # ============================================================
         'views/grc_actions.xml',
-        'views/risk_risk_views.xml',
 
         # ============================================================
         # 11. MENUS (TOUJOURS EN DERNIER)
