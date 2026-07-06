@@ -2,6 +2,58 @@
 <odoo>
 
     <!-- ============================================================ -->
+    <!-- RISQUES - PROPOSITION D'INVESTISSEMENT                       -->
+    <!-- ============================================================ -->
+
+    <record id="risk_ope_01_01_01" model="risk.risk">
+        <field name="name">Non respect de la réglementation</field>
+        <field name="code">RISK-OPE-01-01-01</field>
+        <field name="activity_id" ref="activity_ope_01_01"/>
+        <field name="category_id" ref="risk_management.cat_compliance"/>
+        <field name="risk_type">compliance</field>
+        <field name="risk_source">internal</field>
+        <field name="inherent_probability">1</field>
+        <field name="inherent_impact">3</field>
+        <field name="inherent_level">low</field>
+        <field name="state">validated</field>
+        <field name="description">Mauvaise interprétation des textes règlementaires</field>
+        <field name="consequence">Sanction du régulateur</field>
+        <field name="cause">Mauvaise interprétation des textes règlementaires</field>
+    </record>
+
+    <record id="risk_ope_01_02_01" model="risk.risk">
+        <field name="name">Impossibilité de vendre le titre</field>
+        <field name="code">RISK-OPE-01-02-01</field>
+        <field name="activity_id" ref="activity_ope_01_02"/>
+        <field name="category_id" ref="risk_management.cat_financial"/>
+        <field name="risk_type">financial</field>
+        <field name="risk_source">external</field>
+        <field name="inherent_probability">4</field>
+        <field name="inherent_impact">4</field>
+        <field name="inherent_level">high</field>
+        <field name="state">validated</field>
+        <field name="description">Risque de liquidité lié à l'impossibilité de vendre des titres</field>
+        <field name="consequence">Difficulté à honorer les rachats, pertes d'opportunités</field>
+        <field name="cause">Manque de confiance des investisseurs, incertitude économique</field>
+    </record>
+
+    <record id="risk_ope_02_01_01" model="risk.risk">
+        <field name="name">Non respect de la réglementation</field>
+        <field name="code">RISK-OPE-02-01-01</field>
+        <field name="activity_id" ref="activity_ope_02_01"/>
+        <field name="category_id" ref="risk_management.cat_compliance"/>
+        <field name="risk_type">compliance</field>
+        <field name="risk_source">internal</field>
+        <field name="inherent_probability">1</field>
+        <field name="inherent_impact">5</field>
+        <field name="inherent_level">low</field>
+        <field name="state">validated</field>
+        <field name="description">Non-respect de la réglementation lors de la définition du profil</field>
+        <field name="consequence">Non validation du dossier pour agrément</field>
+        <field name="cause">Mauvaise compréhension de l'instruction N°66 de l'AMF UMOA</field>
+    </record>
+
+    <!-- ============================================================ -->
     <!-- 1. PROCESSUS DE PILOTAGE                                     -->
     <!-- ============================================================ -->
 
