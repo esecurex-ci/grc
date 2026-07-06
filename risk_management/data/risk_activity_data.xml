@@ -1144,4 +1144,140 @@
         <field name="summary">S'assurer du bon fonctionnement du dispositif de contrôle</field>
     </record>
 
+        <!-- ============================================================ -->
+    <!-- ACTIVITÉS - GESTION DES RISQUES (PIL-02)                      -->
+    <!-- ============================================================ -->
+
+    <record id="activity_pil_02_01" model="risk.activity">
+        <field name="name">Surveillance des ratios réglementaires et internes</field>
+        <field name="code">ACT-PIL-02-01</field>
+        <field name="process_id" ref="process_pilotage_02"/>
+        <field name="sequence">10</field>
+        <field name="summary">Suivi des ratios prudentiels et internes</field>
+    </record>
+
+    <record id="activity_pil_02_02" model="risk.activity">
+        <field name="name">Suivi de la mise en œuvre de la stratégie d'investissement</field>
+        <field name="code">ACT-PIL-02-02</field>
+        <field name="process_id" ref="process_pilotage_02"/>
+        <field name="sequence">20</field>
+        <field name="summary">Comparaison de la gestion avec les orientations stratégiques</field>
+    </record>
+
+    <record id="activity_pil_02_03" model="risk.activity">
+        <field name="name">Mise en place d'un système fiable de management des risques</field>
+        <field name="code">ACT-PIL-02-03</field>
+        <field name="process_id" ref="process_pilotage_02"/>
+        <field name="sequence">30</field>
+        <field name="summary">Établissement et mise à jour de la cartographie des risques</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- ACTIVITÉS - CONTRÔLE INTERNE, CONFORMITÉ & AUDIT (PIL-03)    -->
+    <!-- ============================================================ -->
+
+    <record id="activity_pil_03_01" model="risk.activity">
+        <field name="name">Contrôle des dossiers clients</field>
+        <field name="code">ACT-PIL-03-01</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">10</field>
+        <field name="summary">Vérification de l'exhaustivité et de la conformité des dossiers clients</field>
+    </record>
+
+    <record id="activity_pil_03_02" model="risk.activity">
+        <field name="name">Validation de l'ouverture de compte</field>
+        <field name="code">ACT-PIL-03-02</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">20</field>
+        <field name="summary">Validation de l'ouverture de compte client</field>
+    </record>
+
+    <record id="activity_pil_03_03" model="risk.activity">
+        <field name="name">Contrôle de la note d'évaluation des investisseurs</field>
+        <field name="code">ACT-PIL-03-03</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">30</field>
+        <field name="summary">Contrôle de la note d'évaluation des investisseurs</field>
+    </record>
+
+    <record id="activity_pil_03_04" model="risk.activity">
+        <field name="name">Vérification de la conformité des bulletins de souscription/rachat</field>
+        <field name="code">ACT-PIL-03-04</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">40</field>
+        <field name="summary">Vérification de la conformité des informations des bulletins</field>
+    </record>
+
+    <record id="activity_pil_03_05" model="risk.activity">
+        <field name="name">Vérification de la comptabilisation des opérations</field>
+        <field name="code">ACT-PIL-03-05</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">50</field>
+        <field name="summary">Vérification que les opérations sont bien comptabilisées</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- ACTIVITÉS - SURVEILLANCE PARTICULIÈRE (OPE-21)                -->
+    <!-- ============================================================ -->
+
+    <record id="activity_pil_03_06" model="risk.activity">
+        <field name="name">Surveillance des opérations ≥ 50M FCFA</field>
+        <field name="code">ACT-PIL-03-06</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">60</field>
+        <field name="summary">Surveillance particulière des opérations ≥ 50M FCFA</field>
+    </record>
+
+    <record id="activity_pil_03_07" model="risk.activity">
+        <field name="name">Surveillance des opérations ≥ 10M FCFA inhabituelles</field>
+        <field name="code">ACT-PIL-03-07</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">70</field>
+        <field name="summary">Surveillance des opérations ≥ 10M FCFA dans des conditions inhabituelles</field>
+    </record>
+
+    <record id="activity_pil_03_08" model="risk.activity">
+        <field name="name">Archivage des opérations confidentielles</field>
+        <field name="code">ACT-PIL-03-08</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">80</field>
+        <field name="summary">Archivage des opérations dans un registre confidentiel</field>
+    </record>
+
+    <record id="activity_pil_03_09" model="risk.activity">
+        <field name="name">Mise à jour des listes GAFI</field>
+        <field name="code">ACT-PIL-03-09</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">90</field>
+        <field name="summary">Mise à jour des listes des pays et personnes visées par des mesures de gel</field>
+    </record>
+
+    <record id="activity_pil_03_10" model="risk.activity">
+        <field name="name">Suivi des opérations électroniques</field>
+        <field name="code">ACT-PIL-03-10</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">100</field>
+        <field name="summary">Suivi des opérations financières électroniques</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- ACTIVITÉS - AUDIT INTERNE (OPE-22)                            -->
+    <!-- ============================================================ -->
+
+    <record id="activity_pil_03_11" model="risk.activity">
+        <field name="name">Élaboration du plan d'audit interne</field>
+        <field name="code">ACT-PIL-03-11</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">110</field>
+        <field name="summary">Élaboration du plan d'audit interne</field>
+    </record>
+
+    <record id="activity_pil_03_12" model="risk.activity">
+        <field name="name">Mise en œuvre du plan d'audit</field>
+        <field name="code">ACT-PIL-03-12</field>
+        <field name="process_id" ref="process_pilotage_03"/>
+        <field name="sequence">120</field>
+        <field name="summary">Mise en œuvre des activités du plan d'audit</field>
+    </record>
+
 </odoo>
