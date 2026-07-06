@@ -269,11 +269,7 @@
                                     <!-- ✅ Lien vers le plan d'action -->
                                     <div class="row" style="margin-bottom:10px;">
                                         <div class="col-12">
-                                            <!--button name="%(risk_management.action_risk_action_plan)d"
-                                                    string="➕ Ajouter un plan d'action"
-                                                    type="action"
-                                                    class="btn-primary btn-sm"
-                                                    context="{'default_risk_ids': [(4, id)]}"/-->
+
                                             <button name="action_view_action_plans"
                                                     string="📋 Voir tous les plans"
                                                     type="object"
