@@ -1,26 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- ========================================= -->
+    <!-- VUE LISTE - Actions correctives           -->
+    <!-- ========================================= -->
     <record id="view_risk_corrective_action_list" model="ir.ui.view">
         <field name="name">risk.corrective.action.list</field>
         <field name="model">risk.corrective.action</field>
         <field name="arch" type="xml">
-
-            <list
-                  decoration-info="state == 'draft'"
-                  decoration-warning="state == 'in_progress'"
-                  decoration-success="state == 'completed'"
-                  decoration-danger="state == 'cancelled'">
-
+            <list decoration-success="state == 'done'"
+                  decoration-info="state == 'in_progress'"
+                  decoration-warning="state == 'review'"
+                  decoration-danger="state in ('overdue', 'cancelled')"
+                  decoration-muted="state == 'draft'">
+                <field name="code"/>
                 <field name="name"/>
-                <field name="incident_id"/>
+                <field name="action_type" widget="badge"/>
                 <field name="owner_id"/>
-                <field name="due_date"/>
-                <field name="progress" widget="progressbar"/>
                 <field name="state" widget="badge"/>
-
+                <field name="deadline"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="is_overdue" widget="boolean" string="⏰"/>
+                <field name="risk_id"/>
+                <field name="incident_id"/>
             </list>
+        </field>
+    </record>
 
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Action corrective        -->
+    <!-- ========================================= -->
+    <record id="view_risk_corrective_action_form" model="ir.ui.view">
+        <field name="name">risk.corrective.action.form</field>
+        <field name="model">risk.corrective.action</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start" string="🔄 Démarrer" type="object"
+                            class="btn-primary" invisible="state not in ['draft']"/>
+                    <button name="action_review" string="🔍 Soumettre à relecture" type="object"
+                            class="btn-warning" invisible="state not in ['in_progress']"/>
+                    <button name="action_done" string="✅ Terminer" type="object"
+                            class="btn-success" invisible="state not in ['review', 'in_progress']"/>
+                    <button name="action_cancel" string="❌ Annuler" type="object"
+                            class="btn-danger" invisible="state in ['done', 'cancelled']"/>
+                    <button name="action_reset_to_draft" string="📝 Remettre en brouillon" type="object"
+                            class="btn-secondary" invisible="state in ['draft', 'cancelled']"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nom de l'action..."/>
+                        </h1>
+                        <span class="oe_subtitle">
+                            <field name="code" placeholder="Code"/>
+                            <span class="badge badge-secondary"><field name="action_type" widget="badge"/></span>
+                            <span class="badge badge-info" invisible="not risk_id">🎯 <field name="risk_id"/></span>
+                            <span class="badge badge-danger" invisible="not incident_id">🚨 <field name="incident_id"/></span>
+                        </span>
+                    </div>
+
+                    <!-- Informations principales -->
+                    <group>
+                        <group>
+                            <field name="action_type" widget="badge" required="1"/>
+                            <field name="owner_id" required="1"/>
+                            <field name="reviewer_id"/>
+                            <field name="approver_id"/>
+                            <field name="deadline" required="1"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group>
+                            <field name="state" widget="badge"/>
+                            <field name="progress" widget="progressbar"/>
+                            <field name="completion_rate" readonly="1" widget="progressbar"/>
+                            <field name="is_overdue" widget="boolean_toggle" readonly="1"/>
+                            <field name="days_remaining" readonly="1"/>
+                            <field name="estimated_cost"/>
+                            <field name="actual_cost"/>
+                        </group>
+                    </group>
+
+                    <!-- Contexte -->
+                    <group string="🔗 Liens">
+                        <group>
+                            <field name="risk_id" placeholder="Risque associé..."/>
+                            <field name="incident_id" placeholder="Incident associé..."/>
+                        </group>
+                        <group>
+                            <field name="control_id" placeholder="Contrôle associé..."/>
+                            <field name="control_test_id" placeholder="Test associé..."/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- 📝 Description -->
+                        <page string="📝 Description">
+                            <field name="description" placeholder="Description détaillée de l'action..."/>
+                            <field name="result" placeholder="Résultat de l'action..."/>
+                        </page>
+
+                        <!-- 📋 Plan d'action -->
+                        <page string="📋 Plan d'action">
+                            <field name="estimated_duration"/>
+                            <field name="actual_duration"/>
+                            <field name="attachment_ids" widget="many2many_kanban"/>
+                        </page>
+
+                        <!-- 📊 Suivi -->
+                        <page string="📊 Suivi">
+                            <group string="Progression">
+                                <field name="progress"/>
+                                <field name="completion_rate" readonly="1"/>
+                            </group>
+                            <group string="Coûts">
+                                <field name="estimated_cost"/>
+                                <field name="actual_cost"/>
+                            </group>
+                            <group string="Dates">
+                                <field name="follow_up_date"/>
+                                <field name="follow_up_comment"/>
+                                <field name="closure_date" readonly="1"/>
+                            </group>
+                        </page>
+
+                        <!-- 📎 Documents -->
+                        <page string="📎 Documents joints">
+                            <field name="attachment_ids" widget="many2many_kanban"/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <chatter>
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </chatter>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE RECHERCHE - Actions correctives       -->
+    <!-- ========================================= -->
+    <record id="view_risk_corrective_action_search" model="ir.ui.view">
+        <field name="name">risk.corrective.action.search</field>
+        <field name="model">risk.corrective.action</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="owner_id"/>
+                <field name="risk_id"/>
+                <field name="incident_id"/>
+
+                <filter name="state_draft" string="Brouillon" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_in_progress" string="En cours" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="state_review" string="En relecture" domain="[('state', '=', 'review')]"/>
+                <filter name="state_done" string="Terminé" domain="[('state', '=', 'done')]"/>
+                <filter name="state_overdue" string="En retard" domain="[('state', '=', 'overdue')]"/>
+
+                <separator/>
+
+                <filter name="type_corrective" string="Corrective" domain="[('action_type', '=', 'corrective')]"/>
+                <filter name="type_preventive" string="Préventive" domain="[('action_type', '=', 'preventive')]"/>
+                <filter name="type_improvement" string="Amélioration" domain="[('action_type', '=', 'improvement')]"/>
+
+                <separator/>
+
+                <filter name="overdue" string="En retard" domain="[('is_overdue', '=', True)]"/>
+                <filter name="has_risk" string="Avec risque" domain="[('risk_id', '!=', False)]"/>
+                <filter name="has_incident" string="Avec incident" domain="[('incident_id', '!=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- ACTION - Actions correctives              -->
+    <!-- ========================================= -->
+    <record id="action_risk_corrective_action" model="ir.actions.act_window">
+        <field name="name">🔧 Actions correctives</field>
+        <field name="res_model">risk.corrective.action</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_risk_corrective_action_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                🔧 Gérez vos actions correctives
+            </p>
+            <p>
+                Les actions correctives permettent de corriger les non-conformités,
+                les incidents et d'améliorer les processus.
+            </p>
         </field>
     </record>
 

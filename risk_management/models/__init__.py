@@ -25,4 +25,4 @@ from . import (rm_risk_kri, rm_risk_control, rm_risk_treatment_plan, rm_risk_exe
                rm_risk_document_version, rm_risk_document, rm_risk_document_category, rm_risk_document_version_wizard,
                rm_risk_tag, rm_risk_document_review, rm_risk_document_approval, rm_risk_document_distribution, rm_risk_document_audit,
                rm_risk_kri_cron, rm_risk_kri_compute_wizard, rm_risk_function, rm_risk_subprocess, rm_risk_generic,
-               rm_risk_kri, rm_risk_kri_measure, rm_risk_dmr)
+               rm_risk_kri, rm_risk_kri_measure, rm_risk_dmr, rm_risk_action_plan, rm_risk_action_task)

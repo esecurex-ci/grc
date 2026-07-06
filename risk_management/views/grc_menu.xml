@@ -197,10 +197,17 @@
         action="action_risk_loss"
     />
 
-    <menuitem id="menu_grc_corrective_action"
+    <!--menuitem id="menu_grc_corrective_action"
         name="Actions Correctives"
         parent="menu_grc_incidents"
         action="action_risk_corrective_action"
+    /-->
+
+    <menuitem id="menu_grc_action_plan"
+        name="📋 Plans d'action"
+        parent="menu_grc_incidents"
+        action="action_risk_action_plan"
+        sequence="4"
     />
 
     <!-- ===================================================== -->

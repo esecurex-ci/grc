@@ -109,6 +109,8 @@
         'views/risk_document_approval_views.xml',
         'views/risk_document_distribution_views.xml',
         'views/risk_kri_compute_wizard_views.xml',
+        'views/risk_action_plan_views.xml',
+        'views/risk_action_task_views.xml',
 
         # ========== 9. MENUS ET ACTIONS (TOUJOURS EN DERNIER) ==========
         'views/grc_actions.xml',
