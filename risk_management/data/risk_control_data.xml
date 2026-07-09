@@ -22,7 +22,6 @@
         <field name="control_type">detective</field>
         <field name="effectiveness">medium</field>
         <field name="frequency">quarterly</field>
-        <field name="owner_id" ref="employee_dga"/>
     </record>
 
     <record id="control_pil_03" model="risk.control">
