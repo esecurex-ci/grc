@@ -182,7 +182,7 @@
                                 </t>
                             </t>
                             <t t-else="">
-                                <div class="text-muted text-center py-3">Aucune donnée</div>
+                                <div class="text-muted text-center py-3">Aucune donnée !</div>
                             </t>
                         </div>
                     </div>

@@ -139,7 +139,7 @@
     <!-- PROCESSUS                                             -->
     <!-- ===================================================== -->
 
-    <!-- ✅ ACTION - Processus (CORRIGÉ : suppression du doublon) -->
+    <!-- ✅ ACTION - Processus -->
     <record id="action_risk_process" model="ir.actions.act_window">
         <field name="name">Cartographie des Processus</field>
         <field name="res_model">risk.process</field>
