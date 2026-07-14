@@ -28,24 +28,36 @@
                         </group>
                     </group>
 
-                    <!-- Statistiques d'aperçu -->
+                    <!-- Statistiques d'aperçu avec style -->
                     <group string="Aperçu des données" colspan="2">
                         <group>
-                            <field name="total_risks" nolabel="1" class="oe_inline"/>
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="total_risks" nolabel="1"/></span>
+                                <span class="o_stat_text">Total risques</span>
+                            </div>
                         </group>
                         <group>
-                            <field name="total_controls" nolabel="1" class="oe_inline"/>
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="total_controls" nolabel="1"/></span>
+                                <span class="o_stat_text">Total contrôles</span>
+                            </div>
                         </group>
                         <group>
-                            <field name="total_incidents" nolabel="1" class="oe_inline"/>
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="total_incidents" nolabel="1"/></span>
+                                <span class="o_stat_text">Total incidents</span>
+                            </div>
                         </group>
                         <group>
-                            <field name="total_kris" nolabel="1" class="oe_inline"/>
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="total_kris" nolabel="1"/></span>
+                                <span class="o_stat_text">Total KRI</span>
+                            </div>
                         </group>
                     </group>
 
                     <!-- Fichier généré -->
-                    <group string="Fichier généré" colspan="2" invisible="state != 'done'">
+                    <group string="Fichier généré" colspan="2" invisible="not file_data">
                         <div class="alert alert-success" role="status" style="margin-top: 5px;">
                             <i class="fa fa-check-circle" title="Succès"/>
                             <strong>✅ Export terminé !</strong>
@@ -58,8 +70,7 @@
                     </group>
 
                     <footer>
-                        <button name="action_export" string="📤 Exporter" type="object" class="btn-primary"
-                                invisible="state == 'done'"/>
+                        <button name="action_export" string="📤 Exporter" type="object" class="btn-primary"/>
                         <button string="Fermer" special="cancel" class="btn-secondary"/>
                     </footer>
                 </sheet>

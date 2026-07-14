@@ -34,13 +34,12 @@ class RiskExportWizard(models.TransientModel):
     file_name = fields.Char(string='Nom du fichier')
     file_data = fields.Binary(string='Fichier', attachment=True)
 
-    # ✅ AJOUT DU CHAMP STATE MANQUANT
     state = fields.Selection([
         ('draft', 'Brouillon'),
         ('done', 'Terminé'),
     ], string='Statut', default='draft')
 
-    # Statistiques pour l'aperçu
+    # Statistiques
     total_risks = fields.Integer(compute='_compute_stats', string='Total risques')
     total_controls = fields.Integer(compute='_compute_stats', string='Total contrôles')
     total_incidents = fields.Integer(compute='_compute_stats', string='Total incidents')
@@ -75,12 +74,32 @@ class RiskExportWizard(models.TransientModel):
         """Récupère les risques à exporter"""
         return self.env['risk.risk'].search([('active', '=', True)])
 
+    def _get_level_color(self, level):
+        """Retourne la couleur selon le niveau de risque"""
+        colors = {
+            'critical': '#dc3545',  # Rouge
+            'high': '#fd7e14',  # Orange
+            'medium': '#ffc107',  # Jaune
+            'low': '#28a745',  # Vert
+        }
+        return colors.get(level, '#6c757d')  # Gris par défaut
+
+    def _get_level_bg_color(self, level):
+        """Retourne la couleur de fond selon le niveau de risque"""
+        colors = {
+            'critical': '#f8d7da',  # Rouge clair
+            'high': '#ffe5cc',  # Orange clair
+            'medium': '#fff3cd',  # Jaune clair
+            'low': '#d4edda',  # Vert clair
+        }
+        return colors.get(level, '#f8f9fa')
+
     def _export_xlsx(self):
-        """Export Excel complet"""
+        """Export Excel complet avec couleurs et dates formatées"""
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
 
-        # Formats
+        # Formats de base
         header_format = workbook.add_format({
             'bold': True, 'bg_color': '#1a237e', 'font_color': 'white',
             'align': 'center', 'valign': 'vcenter', 'border': 1
@@ -91,29 +110,32 @@ class RiskExportWizard(models.TransientModel):
         number_format = workbook.add_format({
             'align': 'center', 'valign': 'vcenter', 'border': 1
         })
+        date_format = workbook.add_format({
+            'align': 'center', 'valign': 'vcenter', 'border': 1,
+            'num_format': 'dd/mm/yyyy'
+        })
 
         risks = self._get_risks()
 
         # Feuille principale : Risques
         worksheet = workbook.add_worksheet('Risques')
-        self._write_risks_sheet(worksheet, risks, header_format, cell_format, number_format)
+        self._write_risks_sheet(worksheet, workbook, risks, header_format, cell_format, number_format, date_format)
 
         # Feuilles supplémentaires
         if self.export_type in ['risks_with_relations', 'full']:
             self._write_controls_sheet(workbook, risks, header_format, cell_format, number_format)
-            self._write_incidents_sheet(workbook, risks, header_format, cell_format, number_format)
+            self._write_incidents_sheet(workbook, risks, header_format, cell_format, number_format, date_format)
             self._write_kris_sheet(workbook, risks, header_format, cell_format, number_format)
 
         if self.export_type == 'full':
-            self._write_actions_sheet(workbook, risks, header_format, cell_format, number_format)
+            self._write_actions_sheet(workbook, risks, header_format, cell_format, number_format, date_format)
 
         if self.export_type == 'matrix':
-            # Remplacer la première feuille par la matrice
             workbook.remove_sheet(worksheet)
             worksheet = workbook.add_worksheet('Matrice')
-            self._write_matrix_sheet(worksheet, risks, header_format, cell_format, number_format)
+            self._write_matrix_sheet(worksheet, workbook, risks, header_format, cell_format, number_format)
 
-        # Synthèse
+        # Synthèse avec couleurs
         self._write_summary_sheet(workbook, risks, header_format, cell_format, number_format)
 
         workbook.close()
@@ -126,13 +148,13 @@ class RiskExportWizard(models.TransientModel):
         self.write({
             'file_name': filename,
             'file_data': file_data,
-            'state': 'done'  # ✅ Mise à jour du statut
+            'state': 'done'
         })
 
         return self._open_result()
 
-    def _write_risks_sheet(self, worksheet, risks, header_format, cell_format, number_format):
-        """Écrit la feuille des risques"""
+    def _write_risks_sheet(self, worksheet, workbook, risks, header_format, cell_format, number_format, date_format):
+        """Écrit la feuille des risques avec couleurs selon le niveau"""
         headers = [
             'Code', 'Nom', 'Catégorie', 'Sous-catégorie',
             'Type', 'Source', 'Statut', 'Propriétaire',
@@ -144,56 +166,146 @@ class RiskExportWizard(models.TransientModel):
             'Société', 'Actif'
         ]
 
+        # Largeur des colonnes
+        col_widths = [15, 25, 18, 18, 15, 15, 15, 18, 18, 15, 12, 15, 18, 15, 12, 15, 18, 18, 18, 10]
+        for col, width in enumerate(col_widths):
+            worksheet.set_column(col, col, width)
+
+        # En-têtes
         for col, header in enumerate(headers):
             worksheet.write(0, col, header, header_format)
-            worksheet.set_column(col, col, 18)
 
         row = 1
         for risk in risks:
             col = 0
+
+            # Code
             worksheet.write(row, col, risk.code or '', cell_format)
             col += 1
+
+            # Nom
             worksheet.write(row, col, risk.name or '', cell_format)
             col += 1
+
+            # Catégorie
             worksheet.write(row, col, risk.category_id.name or '', cell_format)
             col += 1
+
+            # Sous-catégorie
             worksheet.write(row, col, risk.subcategory_id.name or '', cell_format)
             col += 1
+
+            # Type
             worksheet.write(row, col, self._get_selection_label('risk_type', risk.risk_type), cell_format)
             col += 1
+
+            # Source
             worksheet.write(row, col, self._get_selection_label('risk_source', risk.risk_source), cell_format)
             col += 1
+
+            # Statut
             worksheet.write(row, col, self._get_selection_label('state', risk.state), cell_format)
             col += 1
+
+            # Propriétaire
             worksheet.write(row, col, risk.owner_id.name or '', cell_format)
             col += 1
+
+            # Probabilité inhérente
             worksheet.write(row, col, risk.inherent_probability or '', number_format)
             col += 1
+
+            # Impact inhérent
             worksheet.write(row, col, risk.inherent_impact or '', number_format)
             col += 1
-            worksheet.write(row, col, risk.inherent_score or 0, number_format)
+
+            # Score inhérent avec couleur
+            score = risk.inherent_score or 0
+            level = risk.inherent_level or 'low'
+            score_format = workbook.add_format({
+                'align': 'center', 'valign': 'vcenter', 'border': 1,
+                'bold': True,
+                'bg_color': self._get_level_bg_color(level),
+                'font_color': self._get_level_color(level)
+            })
+            worksheet.write(row, col, score, score_format)
             col += 1
-            worksheet.write(row, col, risk.inherent_level or '', cell_format)
+
+            # Niveau inhérent avec couleur
+            level_format = workbook.add_format({
+                'align': 'center', 'valign': 'vcenter', 'border': 1,
+                'bold': True,
+                'bg_color': self._get_level_bg_color(level),
+                'font_color': self._get_level_color(level)
+            })
+            worksheet.write(row, col, level or '', level_format)
             col += 1
+
+            # Probabilité résiduelle
             worksheet.write(row, col, risk.residual_probability or '', number_format)
             col += 1
+
+            # Impact résiduel
             worksheet.write(row, col, risk.residual_impact or '', number_format)
             col += 1
-            worksheet.write(row, col, risk.residual_score or 0, number_format)
+
+            # Score résiduel avec couleur
+            residual_score = risk.residual_score or 0
+            residual_level = risk.residual_level or 'low'
+            residual_score_format = workbook.add_format({
+                'align': 'center', 'valign': 'vcenter', 'border': 1,
+                'bold': True,
+                'bg_color': self._get_level_bg_color(residual_level),
+                'font_color': self._get_level_color(residual_level)
+            })
+            worksheet.write(row, col, residual_score, residual_score_format)
             col += 1
-            worksheet.write(row, col, risk.residual_level or '', cell_format)
+
+            # Niveau résiduel avec couleur
+            residual_level_format = workbook.add_format({
+                'align': 'center', 'valign': 'vcenter', 'border': 1,
+                'bold': True,
+                'bg_color': self._get_level_bg_color(residual_level),
+                'font_color': self._get_level_color(residual_level)
+            })
+            worksheet.write(row, col, residual_level or '', residual_level_format)
             col += 1
-            worksheet.write(row, col, risk.last_review_date or '', cell_format)
+
+            # Dates formatées
+            if risk.last_review_date:
+                # Convertir en datetime si nécessaire
+                if isinstance(risk.last_review_date, datetime):
+                    worksheet.write_datetime(row, col, risk.last_review_date, date_format)
+                else:
+                    worksheet.write(row, col,
+                                    risk.last_review_date.strftime('%d/%m/%Y') if risk.last_review_date else '',
+                                    cell_format)
+            else:
+                worksheet.write(row, col, '', cell_format)
             col += 1
-            worksheet.write(row, col, risk.next_review_date or '', cell_format)
+
+            if risk.next_review_date:
+                if isinstance(risk.next_review_date, datetime):
+                    worksheet.write_datetime(row, col, risk.next_review_date, date_format)
+                else:
+                    worksheet.write(row, col,
+                                    risk.next_review_date.strftime('%d/%m/%Y') if risk.next_review_date else '',
+                                    cell_format)
+            else:
+                worksheet.write(row, col, '', cell_format)
             col += 1
+
+            # Société
             worksheet.write(row, col, risk.company_id.name or '', cell_format)
             col += 1
+
+            # Actif
             worksheet.write(row, col, 'Oui' if risk.active else 'Non', cell_format)
+
             row += 1
 
-    def _write_matrix_sheet(self, worksheet, risks, header_format, cell_format, number_format):
-        """Écrit la feuille de la matrice 5x5"""
+    def _write_matrix_sheet(self, worksheet, workbook, risks, header_format, cell_format, number_format):
+        """Écrit la feuille de la matrice 5x5 avec couleurs"""
         # En-têtes
         worksheet.write(0, 0, 'Probabilité ↓ / Impact →', header_format)
         for i in range(1, 6):
@@ -223,7 +335,6 @@ class RiskExportWizard(models.TransientModel):
                 total_row += count
                 score = prob * impact
                 color = self._get_matrix_color(score)
-                # ✅ Utilisation de workbook.add_format
                 cell_format_color = workbook.add_format({
                     'align': 'center', 'valign': 'vcenter', 'border': 1,
                     'bg_color': color, 'font_color': 'white' if score > 12 else 'black',
@@ -240,7 +351,7 @@ class RiskExportWizard(models.TransientModel):
             worksheet.write(row, impact, total_col, number_format)
         worksheet.write(row, 6, len(risks), number_format)
 
-        # Légende
+        # Légende avec couleurs
         worksheet.write(row + 2, 0, 'Légende :', header_format)
         legend_colors = [
             ('Faible (1-4)', '#28a745'),
@@ -251,7 +362,8 @@ class RiskExportWizard(models.TransientModel):
         for i, (label, color) in enumerate(legend_colors):
             cell_format_color = workbook.add_format({
                 'align': 'center', 'valign': 'vcenter', 'border': 1,
-                'bg_color': color, 'font_color': 'white' if i > 1 else 'black'
+                'bg_color': color, 'font_color': 'white' if i > 1 else 'black',
+                'bold': True
             })
             worksheet.write(row + 2 + i, 1, label, cell_format_color)
 
@@ -267,6 +379,19 @@ class RiskExportWizard(models.TransientModel):
             worksheet.write(0, col, header, header_format)
             worksheet.set_column(col, col, 18)
 
+        # Format pour l'efficacité
+        effectiveness_formats = {
+            'high': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#d4edda', 'font_color': '#155724',
+                 'bold': True}),
+            'medium': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#fff3cd', 'font_color': '#856404',
+                 'bold': True}),
+            'low': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#f8d7da', 'font_color': '#721c24',
+                 'bold': True}),
+        }
+
         row = 1
         for risk in risks:
             for control in risk.control_ids:
@@ -274,17 +399,36 @@ class RiskExportWizard(models.TransientModel):
                 worksheet.write(row, 1, risk.name or '', cell_format)
                 worksheet.write(row, 2, control.name or '', cell_format)
                 worksheet.write(row, 3, control.control_type or '', cell_format)
-                worksheet.write(row, 4, control.effectiveness or '', cell_format)
+                # Efficacité avec couleur
+                eff = control.effectiveness or ''
+                eff_format = effectiveness_formats.get(eff, cell_format)
+                worksheet.write(row, 4, eff, eff_format)
                 worksheet.write(row, 5, control.state or '', cell_format)
                 row += 1
 
-    def _write_incidents_sheet(self, workbook, risks, header_format, cell_format, number_format):
-        """Écrit la feuille des incidents"""
+    def _write_incidents_sheet(self, workbook, risks, header_format, cell_format, number_format, date_format):
+        """Écrit la feuille des incidents avec dates formatées"""
         worksheet = workbook.add_worksheet('Incidents')
         headers = ['Code risque', 'Risque', 'Incident', 'Date', 'Gravité', 'Perte']
         for col, header in enumerate(headers):
             worksheet.write(0, col, header, header_format)
             worksheet.set_column(col, col, 18)
+
+        # Format pour la gravité
+        severity_formats = {
+            'critical': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#f8d7da', 'font_color': '#721c24',
+                 'bold': True}),
+            'high': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#ffe5cc', 'font_color': '#853d04',
+                 'bold': True}),
+            'medium': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#fff3cd', 'font_color': '#856404',
+                 'bold': True}),
+            'low': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#d4edda', 'font_color': '#155724',
+                 'bold': True}),
+        }
 
         row = 1
         for risk in risks:
@@ -292,18 +436,43 @@ class RiskExportWizard(models.TransientModel):
                 worksheet.write(row, 0, risk.code or '', cell_format)
                 worksheet.write(row, 1, risk.name or '', cell_format)
                 worksheet.write(row, 2, incident.name or '', cell_format)
-                worksheet.write(row, 3, incident.incident_date or '', cell_format)
-                worksheet.write(row, 4, incident.severity or '', cell_format)
+                # Date formatée
+                if incident.incident_date:
+                    if isinstance(incident.incident_date, datetime):
+                        worksheet.write_datetime(row, 3, incident.incident_date, date_format)
+                    else:
+                        worksheet.write(row, 3,
+                                        incident.incident_date.strftime('%d/%m/%Y') if incident.incident_date else '',
+                                        cell_format)
+                else:
+                    worksheet.write(row, 3, '', cell_format)
+                # Gravité avec couleur
+                severity = incident.severity or ''
+                severity_format = severity_formats.get(severity, cell_format)
+                worksheet.write(row, 4, severity, severity_format)
                 worksheet.write(row, 5, incident.total_loss or 0, number_format)
                 row += 1
 
     def _write_kris_sheet(self, workbook, risks, header_format, cell_format, number_format):
         """Écrit la feuille des KRI"""
         worksheet = workbook.add_worksheet('KRI')
-        headers = ['Code risque', 'Risque', 'KRI', 'Valeur', 'Seuil', 'Statut']
+        headers = ['Code risque', 'Risque', 'KRI', 'Valeur', 'Seuil Rouge', 'Statut']
         for col, header in enumerate(headers):
             worksheet.write(0, col, header, header_format)
             worksheet.set_column(col, col, 18)
+
+        # Format pour le statut KRI
+        status_formats = {
+            'red': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#f8d7da', 'font_color': '#721c24',
+                 'bold': True}),
+            'yellow': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#fff3cd', 'font_color': '#856404',
+                 'bold': True}),
+            'green': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#d4edda', 'font_color': '#155724',
+                 'bold': True}),
+        }
 
         row = 1
         for risk in risks:
@@ -312,17 +481,34 @@ class RiskExportWizard(models.TransientModel):
                 worksheet.write(row, 1, risk.name or '', cell_format)
                 worksheet.write(row, 2, kri.name or '', cell_format)
                 worksheet.write(row, 3, kri.current_value or 0, number_format)
-                worksheet.write(row, 4, kri.threshold or 0, number_format)
-                worksheet.write(row, 5, kri.status or '', cell_format)
+                # ✅ Utilisation de threshold_red uniquement
+                worksheet.write(row, 4, kri.threshold_red or 0, number_format)
+                # Statut avec couleur
+                status = kri.status or ''
+                status_format = status_formats.get(status, cell_format)
+                worksheet.write(row, 5, status, status_format)
                 row += 1
 
-    def _write_actions_sheet(self, workbook, risks, header_format, cell_format, number_format):
-        """Écrit la feuille des actions"""
+    def _write_actions_sheet(self, workbook, risks, header_format, cell_format, number_format, date_format):
+        """Écrit la feuille des actions avec dates formatées"""
         worksheet = workbook.add_worksheet('Actions')
         headers = ['Code risque', 'Risque', 'Action', 'Responsable', 'Date échéance', 'Statut']
         for col, header in enumerate(headers):
             worksheet.write(0, col, header, header_format)
             worksheet.set_column(col, col, 18)
+
+        # Format pour le statut
+        action_status_formats = {
+            'done': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#d4edda', 'font_color': '#155724',
+                 'bold': True}),
+            'in_progress': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#fff3cd', 'font_color': '#856404',
+                 'bold': True}),
+            'pending': workbook.add_format(
+                {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#f8d7da', 'font_color': '#721c24',
+                 'bold': True}),
+        }
 
         row = 1
         for risk in risks:
@@ -331,12 +517,23 @@ class RiskExportWizard(models.TransientModel):
                 worksheet.write(row, 1, risk.name or '', cell_format)
                 worksheet.write(row, 2, action.name or '', cell_format)
                 worksheet.write(row, 3, action.responsible_id.name or '', cell_format)
-                worksheet.write(row, 4, action.deadline or '', cell_format)
-                worksheet.write(row, 5, action.state or '', cell_format)
+                # Date formatée
+                if action.deadline:
+                    if isinstance(action.deadline, datetime):
+                        worksheet.write_datetime(row, 4, action.deadline, date_format)
+                    else:
+                        worksheet.write(row, 4, action.deadline.strftime('%d/%m/%Y') if action.deadline else '',
+                                        cell_format)
+                else:
+                    worksheet.write(row, 4, '', cell_format)
+                # Statut avec couleur
+                status = action.state or ''
+                status_format = action_status_formats.get(status, cell_format)
+                worksheet.write(row, 5, status, status_format)
                 row += 1
 
     def _write_summary_sheet(self, workbook, risks, header_format, cell_format, number_format):
-        """Écrit la feuille de synthèse"""
+        """Écrit la feuille de synthèse avec couleurs"""
         worksheet = workbook.add_worksheet('Synthèse')
 
         worksheet.write(0, 0, 'Indicateur', header_format)
@@ -345,27 +542,49 @@ class RiskExportWizard(models.TransientModel):
         worksheet.set_column(1, 1, 20)
 
         row = 1
+
+        # Total risques
+        worksheet.write(row, 0, 'Total risques', cell_format)
+        worksheet.write(row, 1, len(risks), number_format)
+        row += 1
+
+        # Niveaux de risque avec couleurs
+        levels = ['critical', 'high', 'medium', 'low']
+        level_labels = {'critical': 'Risques critiques', 'high': 'Risques élevés',
+                        'medium': 'Risques moyens', 'low': 'Risques faibles'}
+        level_colors = {'critical': '#dc3545', 'high': '#fd7e14',
+                        'medium': '#ffc107', 'low': '#28a745'}
+
+        for level in levels:
+            count = len(risks.filtered(lambda r: r.inherent_level == level))
+            color_format = workbook.add_format({
+                'align': 'center', 'valign': 'vcenter', 'border': 1,
+                'bg_color': level_colors[level],
+                'font_color': 'white' if level in ['critical', 'high'] else 'black',
+                'bold': True
+            })
+            worksheet.write(row, 0, level_labels[level], cell_format)
+            worksheet.write(row, 1, count, color_format)
+            row += 1
+
+        # Score moyen
+        total_score = sum(risks.mapped('inherent_score') or [0])
+        avg_score = total_score / len(risks) if risks else 0
+        worksheet.write(row, 0, 'Score moyen', cell_format)
+        worksheet.write(row, 1, round(avg_score, 2), number_format)
+        row += 1
+
+        # Autres statistiques
         stats = [
-            ('Total risques', len(risks)),
-            ('Risques critiques', len(risks.filtered(lambda r: r.inherent_level == 'critical'))),
-            ('Risques élevés', len(risks.filtered(lambda r: r.inherent_level == 'high'))),
-            ('Risques moyens', len(risks.filtered(lambda r: r.inherent_level == 'medium'))),
-            ('Risques faibles', len(risks.filtered(lambda r: r.inherent_level == 'low'))),
             ('Contrôles', len(risks.mapped('control_ids'))),
             ('Incidents', len(risks.mapped('incident_ids'))),
             ('KRI', len(risks.mapped('kri_ids'))),
             ('Actions', len(risks.mapped('action_ids'))),
         ]
-
         for label, value in stats:
             worksheet.write(row, 0, label, cell_format)
             worksheet.write(row, 1, value, number_format)
             row += 1
-
-        total_score = sum(risks.mapped('inherent_score') or [0])
-        avg_score = total_score / len(risks) if risks else 0
-        worksheet.write(row, 0, 'Score moyen', cell_format)
-        worksheet.write(row, 1, round(avg_score, 2), number_format)
 
     def _get_matrix_color(self, score):
         """Retourne la couleur pour la matrice"""
@@ -416,7 +635,7 @@ class RiskExportWizard(models.TransientModel):
         self.write({
             'file_name': filename,
             'file_data': file_data,
-            'state': 'done'  # ✅ Mise à jour du statut
+            'state': 'done'
         })
 
         return self._open_result()
@@ -441,9 +660,19 @@ class RiskExportWizard(models.TransientModel):
                 'residual_score': risk.residual_score or 0,
                 'residual_level': risk.residual_level or '',
                 'active': risk.active,
+                'last_review_date': risk.last_review_date.strftime('%d/%m/%Y') if risk.last_review_date else '',
+                'next_review_date': risk.next_review_date.strftime('%d/%m/%Y') if risk.next_review_date else '',
                 'controls': [c.name for c in risk.control_ids],
                 'incidents_count': len(risk.incident_ids),
-                'kris': [k.name for k in risk.kri_ids],
+                'kris': [
+                    {
+                        'name': k.name,
+                        'value': k.current_value,
+                        'threshold_red': k.threshold_red,
+                        'status': k.status
+                    }
+                    for k in risk.kri_ids
+                ],
             }
             data.append(risk_data)
 
@@ -455,7 +684,7 @@ class RiskExportWizard(models.TransientModel):
         self.write({
             'file_name': filename,
             'file_data': file_data,
-            'state': 'done'  # ✅ Mise à jour du statut
+            'state': 'done'
         })
 
         return self._open_result()
@@ -471,9 +700,34 @@ class RiskExportWizard(models.TransientModel):
             xml.append(f'  <risk code="{risk.code or ""}">')
             xml.append(f'    <name>{risk.name or ""}</name>')
             xml.append(f'    <category>{risk.category_id.name or ""}</category>')
+            xml.append(f'    <subcategory>{risk.subcategory_id.name or ""}</subcategory>')
+            xml.append(f'    <type>{risk.risk_type or ""}</type>')
+            xml.append(f'    <source>{risk.risk_source or ""}</source>')
             xml.append(f'    <state>{risk.state or ""}</state>')
+            xml.append(f'    <owner>{risk.owner_id.name or ""}</owner>')
             xml.append(f'    <inherent_score>{risk.inherent_score or 0}</inherent_score>')
             xml.append(f'    <inherent_level>{risk.inherent_level or ""}</inherent_level>')
+            xml.append(f'    <residual_score>{risk.residual_score or 0}</residual_score>')
+            xml.append(f'    <residual_level>{risk.residual_level or ""}</residual_level>')
+            xml.append(f'    <active>{str(risk.active).lower()}</active>')
+            xml.append(
+                f'    <last_review_date>{risk.last_review_date.strftime("%d/%m/%Y") if risk.last_review_date else ""}</last_review_date>')
+            xml.append(
+                f'    <next_review_date>{risk.next_review_date.strftime("%d/%m/%Y") if risk.next_review_date else ""}</next_review_date>')
+
+            if risk.control_ids:
+                xml.append('    <controls>')
+                for control in risk.control_ids:
+                    xml.append(f'      <control>{control.name}</control>')
+                xml.append('    </controls>')
+
+            if risk.kri_ids:
+                xml.append('    <kris>')
+                for kri in risk.kri_ids:
+                    xml.append(
+                        f'      <kri name="{kri.name}" value="{kri.current_value}" threshold_red="{kri.threshold_red}" status="{kri.status}"/>')
+                xml.append('    </kris>')
+
             xml.append('  </risk>')
 
         xml.append('</risks>')
@@ -486,7 +740,7 @@ class RiskExportWizard(models.TransientModel):
         self.write({
             'file_name': filename,
             'file_data': file_data,
-            'state': 'done'  # ✅ Mise à jour du statut
+            'state': 'done'
         })
 
         return self._open_result()
