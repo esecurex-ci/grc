@@ -17,7 +17,7 @@
                 <!-- TITRE                                    -->
                 <!-- ========================================= -->
                 <div class="dashboard-header">
-                    <h2>📊 Risk Management KPI Dashboard</h2>
+                    <h2>📊 Tableau de Bord des Risques</h2>
                     <div class="dashboard-date">
                         <i class="fa fa-calendar" title="Date de mise à jour"/>
                         Généré le <t t-esc="new Date().toLocaleDateString('fr-FR')"/>
@@ -130,7 +130,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">📈 Inherent Risk By Period</h5>
+                            <h5 class="chart-title">📈 Risque Inherent par Période</h5>
                             <t t-if="state.inherentData and state.inherentData.length">
                                 <t t-call="rm_risk.BarChart">
                                     <t t-set="data" t-value="state.inherentData"/>
@@ -150,7 +150,7 @@
 
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">📉 Residual Risk By Period</h5>
+                            <h5 class="chart-title">📉 Risque Residuel par Période</h5>
                             <t t-if="state.residualData and state.residualData.length">
                                 <t t-call="rm_risk.BarChart">
                                     <t t-set="data" t-value="state.residualData"/>
@@ -170,12 +170,12 @@
                 </div>
 
                 <!-- ========================================= -->
-                <!-- DEUXIÈME LIGNE DE GRAPHIQUES             -->
+                <!-- DEUXIÈME LIGNE DE GRAPHIQUES  Catégorie de risque selon le niveau de risque total           -->
                 <!-- ========================================= -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">📊 Risk Category By Total Risk Rating</h5>
+                            <h5 class="chart-title">📊 Niveau de Risque par Categorie</h5>
                             <t t-if="state.categoryData and state.categoryData.length">
                                 <t t-call="rm_risk.CategoryChart">
                                     <t t-set="data" t-value="state.categoryData"/>
@@ -221,7 +221,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <div class="heatmap-card">
-                            <h5 class="chart-title">🔥 Heat Map</h5>
+                            <h5 class="chart-title">🔥 Matrice des Riques </h5>
                             <div style="display:flex;justify-content:center;">
                                 <div style="display:flex;flex-direction:column;align-items:center;">
                                     <div style="display:flex;">
@@ -263,7 +263,7 @@
 
                     <div class="col-md-6">
                         <div class="heatmap-card">
-                            <h5 class="chart-title">🔥 Residual Risk Heat Map</h5>
+                            <h5 class="chart-title">🔥 Matrice des Risques Residuels</h5>
                             <div style="display:flex;justify-content:center;">
                                 <div style="display:flex;flex-direction:column;align-items:center;">
                                     <div style="display:flex;">

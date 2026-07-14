@@ -409,3 +409,120 @@ class RiskCorrectiveAction(models.Model):
             if not vals.get('code'):
                 vals['code'] = self.env['ir.sequence'].next_by_code('risk.corrective.action') or 'New'
         return super().create(vals_list)
+
+    @api.model
+    def _cron_send_reminders(self):
+        """
+        Cron pour envoyer des rappels automatiques :
+        - Actions en retard
+        - Actions proches de l'échéance (7 jours)
+        """
+        _logger.info("Démarrage du cron _cron_send_reminders")
+
+        today = fields.Date.today()
+        from datetime import timedelta
+
+        # 1. Actions en retard
+        overdue_actions = self.search([
+            ('deadline', '<', today),
+            ('state', 'not in', ['done', 'cancelled']),
+        ])
+
+        for action in overdue_actions:
+            if action.owner_id and action.owner_id.user_id:
+                self._send_reminder(action, 'overdue')
+                _logger.info(f"Rappel envoyé pour l'action en retard {action.code} - {action.name}")
+
+        # 2. Actions proches de l'échéance (7 jours)
+        soon_actions = self.search([
+            ('deadline', '=', today + timedelta(days=7)),
+            ('state', 'not in', ['done', 'cancelled']),
+            ('progress', '<', 80),
+        ])
+
+        for action in soon_actions:
+            if action.owner_id and action.owner_id.user_id:
+                self._send_reminder(action, 'soon')
+                _logger.info(f"Rappel envoyé pour l'action proche échéance {action.code} - {action.name}")
+
+        _logger.info("Fin du cron _cron_send_reminders")
+        return True
+
+    @api.model
+    def _send_reminder(self, action, reminder_type):
+        """
+        Envoie un rappel pour une action
+        """
+        if not action.owner_id or not action.owner_id.user_id:
+            return
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        action_url = f"{base_url}/web#id={action.id}&model=risk.corrective.action&view_type=form"
+
+        if reminder_type == 'overdue':
+            subject = f"⏰ RAPPEL : Action en retard - {action.name}"
+            body = f"""
+                <div style="font-family: Arial, sans-serif; padding: 15px; border: 1px solid #dc3545; border-radius: 8px; background: #fff5f5;">
+                    <h3 style="color: #dc3545;">⏰ ACTION EN RETARD</h3>
+                    <hr/>
+                    <p><strong>Action :</strong> {action.name}</p>
+                    <p><strong>Code :</strong> {action.code}</p>
+                    <p><strong>Type :</strong> {action.get_action_type_display()}</p>
+                    <p><strong>Responsable :</strong> {action.owner_id.name}</p>
+                    <p><strong>Date limite :</strong> {action.deadline}</p>
+                    <p><strong>Progression :</strong> {action.progress}%</p>
+                    <p style="color: #dc3545;">⚠️ Cette action est en retard ! Veuillez prendre des mesures immédiates.</p>
+                    <br/>
+                    <a href="{action_url}" style="background:#dc3545;color:white;padding:10px 20px;border-radius:5px;text-decoration:none;">
+                        🔗 Voir l'action
+                    </a>
+                </div>
+                """
+        else:  # 'soon'
+            subject = f"⏰ Échéance dans 7 jours - {action.name}"
+            body = f"""
+                <div style="font-family: Arial, sans-serif; padding: 15px; border: 1px solid #fd7e14; border-radius: 8px; background: #fff8f0;">
+                    <h3 style="color: #fd7e14;">⏰ ÉCHÉANCE DANS 7 JOURS</h3>
+                    <hr/>
+                    <p><strong>Action :</strong> {action.name}</p>
+                    <p><strong>Code :</strong> {action.code}</p>
+                    <p><strong>Type :</strong> {action.get_action_type_display()}</p>
+                    <p><strong>Responsable :</strong> {action.owner_id.name}</p>
+                    <p><strong>Date limite :</strong> {action.deadline}</p>
+                    <p><strong>Progression :</strong> {action.progress}%</p>
+                    <p style="color: #fd7e14;">⚠️ Cette action arrive bientôt à échéance. Veuillez accélérer la progression.</p>
+                    <br/>
+                    <a href="{action_url}" style="background:#fd7e14;color:white;padding:10px 20px;border-radius:5px;text-decoration:none;">
+                        🔗 Voir l'action
+                    </a>
+                </div>
+                """
+
+        # Envoyer la notification
+        action.message_post(
+            body=body,
+            subject=subject,
+            partner_ids=[(4, action.owner_id.user_id.partner_id.id)],
+            message_type='notification',
+            subtype_xmlid='mail.mt_comment'
+        )
+
+    # ============================================================
+    # MÉTHODE D'ACTION POUR ENVOYER UN RAPPEL MANUEL
+    # ============================================================
+
+    def action_send_reminder(self):
+        """Envoie un rappel pour l'action (manuel)"""
+        self.ensure_one()
+        if self.owner_id and self.owner_id.user_id:
+            self._send_reminder(self, 'overdue')
+            self.reminder_sent = True
+            self.last_reminder_date = fields.Date.today()
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Rappel envoyé',
+                'res_model': 'risk.corrective.action',
+                'view_mode': 'form',
+                'res_id': self.id,
+                'target': 'current',
+            }

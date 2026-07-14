@@ -67,26 +67,39 @@
         sequence="20"
     />
 
-    <menuitem id="menu_grc_risk_register"
-        name="Registre des Risques"
-        parent="menu_grc_risk"
-        action="action_risk_risk"
-        sequence="1"
-    />
-
-    <menuitem id="menu_risk_dashboard"
-        name="📋 Tableau de Bord"
-        parent="menu_grc_risk"
-        action="action_risk_heatmap_dashboard"
-        sequence="2"
-    />
-
     <!-- ✅ Maintenant menu_process_dashboard peut utiliser menu_grc_risk -->
     <menuitem id="menu_process_dashboard"
         name="📋 Tableau de bord Processus"
         parent="menu_grc_risk"
         action="action_process_dashboard"
-        sequence="5"
+        sequence="1"
+    />
+
+    <menuitem id="menu_grc_processes"
+        name="Processus"
+        parent="menu_grc_risk"
+        action="action_risk_process"
+        sequence="2"
+    />
+    <menuitem id="menu_risk_dashboard"
+        name="📋 Tableau de Bord Risques"
+        parent="menu_grc_risk"
+        action="action_risk_heatmap_dashboard"
+        sequence="3"
+    />
+
+    <menuitem id="menu_grc_risk_register"
+            name="Registre des Risques"
+            parent="menu_grc_risk"
+            action="action_risk_risk"
+            sequence="4"
+        />
+
+    <menuitem id="menu_risk_activity"
+        name="Activités"
+        parent="menu_grc_risk"
+        action="action_risk_activity"
+        sequence="15"
     />
 
     <menuitem id="menu_grc_assessment_period"
@@ -399,19 +412,6 @@
         name="Catégories de Risques"
         parent="menu_grc_master_data"
         action="action_risk_category"
-    />
-
-    <menuitem id="menu_grc_processes"
-        name="Processus"
-        parent="menu_grc_master_data"
-        action="action_risk_process"
-    />
-
-    <menuitem id="menu_risk_activity"
-        name="Activités"
-        parent="menu_grc_master_data"
-        action="action_risk_activity"
-        sequence="15"
     />
 
     <menuitem id="menu_grc_assets"

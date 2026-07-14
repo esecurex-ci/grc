@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- ACTION -->
-    <record id="action_risk_activity" model="ir.actions.act_window">
-        <field name="name">Activités</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">risk.activity</field>
-        <field name="view_mode">list,kanban,form</field>
-    </record>
-
     <!-- LIST VIEW -->
     <record id="view_risk_activity_list" model="ir.ui.view">
         <field name="name">risk.activity.list</field>
@@ -37,7 +28,7 @@
                 <field name="process_id"/>
                 <field name="risk_count"/>
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="oe_kanban_global_click">
                             <div class="oe_kanban_details">
                                 <strong class="o_kanban_record_title">

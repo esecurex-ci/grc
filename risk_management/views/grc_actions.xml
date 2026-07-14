@@ -530,4 +530,11 @@
         <field name="view_mode">list,form</field>
     </record>
 
+    <record id="action_risk_activity" model="ir.actions.act_window">
+        <field name="name">Activités</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">risk.activity</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
 </odoo>
