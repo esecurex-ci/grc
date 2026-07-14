@@ -117,25 +117,26 @@ class RiskExportWizard(models.TransientModel):
 
         risks = self._get_risks()
 
-        # Feuille principale : Risques
-        worksheet = workbook.add_worksheet('Risques')
-        self._write_risks_sheet(worksheet, workbook, risks, header_format, cell_format, number_format, date_format)
-
-        # Feuilles supplémentaires
-        if self.export_type in ['risks_with_relations', 'full']:
-            self._write_controls_sheet(workbook, risks, header_format, cell_format, number_format)
-            self._write_incidents_sheet(workbook, risks, header_format, cell_format, number_format, date_format)
-            self._write_kris_sheet(workbook, risks, header_format, cell_format, number_format)
-
-        if self.export_type == 'full':
-            self._write_actions_sheet(workbook, risks, header_format, cell_format, number_format, date_format)
-
+        # ✅ Correction : Ne pas utiliser remove_sheet
         if self.export_type == 'matrix':
-            workbook.remove_sheet(worksheet)
+            # Matrice uniquement
             worksheet = workbook.add_worksheet('Matrice')
             self._write_matrix_sheet(worksheet, workbook, risks, header_format, cell_format, number_format)
+        else:
+            # Feuille principale : Risques
+            worksheet = workbook.add_worksheet('Risques')
+            self._write_risks_sheet(worksheet, workbook, risks, header_format, cell_format, number_format, date_format)
 
-        # Synthèse avec couleurs
+            # Feuilles supplémentaires
+            if self.export_type in ['risks_with_relations', 'full']:
+                self._write_controls_sheet(workbook, risks, header_format, cell_format, number_format)
+                self._write_incidents_sheet(workbook, risks, header_format, cell_format, number_format, date_format)
+                self._write_kris_sheet(workbook, risks, header_format, cell_format, number_format)
+
+            if self.export_type == 'full':
+                self._write_actions_sheet(workbook, risks, header_format, cell_format, number_format, date_format)
+
+        # Synthèse avec couleurs (toujours ajoutée)
         self._write_summary_sheet(workbook, risks, header_format, cell_format, number_format)
 
         workbook.close()
