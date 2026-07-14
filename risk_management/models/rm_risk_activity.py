@@ -145,6 +145,8 @@ class RiskActivity(models.Model):
         copy=False
     )
 
+    active = fields.Boolean(default=True)
+
     def action_activate(self):
         for record in self:
             record.state = 'active'

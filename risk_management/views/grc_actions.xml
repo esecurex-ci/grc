@@ -537,4 +537,37 @@
         <field name="view_mode">kanban,list,form</field>
     </record>
 
+    <!-- ========================================= -->
+    <!-- ACTIONS                                  -->
+    <!-- ========================================= -->
+    <record id="action_risk_export_wizard" model="ir.actions.act_window">
+        <field name="name">📦 Exporter les données GRC</field>
+        <field name="res_model">risk.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📦 Exportez toutes vos données GRC
+            </p>
+            <p>
+                Exportez vos risques, processus, activités, contrôles, KRI, incidents,
+                actions correctives, documents de gouvernance et DMR.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_risk_import_wizard" model="ir.actions.act_window">
+        <field name="name">📥 Importer des données GRC</field>
+        <field name="res_model">risk.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📥 Importez des données GRC
+            </p>
+            <p>
+                Importez des données depuis un fichier JSON, XML, CSV ou Excel.
+            </p>
+        </field>
+    </record>
 </odoo>

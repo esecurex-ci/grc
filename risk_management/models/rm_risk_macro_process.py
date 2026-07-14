@@ -73,6 +73,12 @@ class RiskMacroProcess(models.Model):
         string='Nombre de processus'
     )
 
+    active = fields.Boolean(
+        default=True,
+        string='Actif',
+        help="Décochez pour désactiver ce macro-processus"
+    )
+
     activity_count = fields.Integer(
         compute='_compute_counts',
         compute_sudo=True,  # ← AJOUTÉ
@@ -92,6 +98,18 @@ class RiskMacroProcess(models.Model):
         compute_sudo=True,  # ← AJOUTÉ
         store=True,  # ← store=True (cohérent)
         string='Risques critiques'
+    )
+
+    category = fields.Selection([
+        ('pilotage', '🏛️ Processus de Pilotage'),
+        ('operational', '⚙️ Processus Opérationnels'),
+        ('support', '🛠️ Processus Supports'),
+    ], string='Catégorie', required=True, default='operational', tracking=True, index=True)
+
+    control_count = fields.Integer(
+        compute='_compute_control_stats',
+        store=True,
+        string="Nombre de contrôles"
     )
 
     @api.depends('process_ids', 'process_ids.risk_ids')
@@ -167,3 +185,10 @@ class RiskMacroProcess(models.Model):
     def action_draft(self):
         for record in self:
             record.state = 'draft'
+
+    @api.depends('process_ids.risk_ids.control_ids')
+    def _compute_control_stats(self):
+        for record in self:
+            # ✅ Récupérer les contrôles via les risques (la relation correcte)
+            controls = record.process_ids.mapped('risk_ids.control_ids').filtered(lambda c: c.active)
+            record.control_count = len(controls)

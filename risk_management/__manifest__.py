@@ -134,6 +134,7 @@
         'views/risk_action_plan_views.xml',
         'views/risk_action_task_views.xml',
         'views/risk_kri_compute_wizard_views.xml',
+        'views/risk_export_views.xml',
 
         # ============================================================
         # 10. ACTIONS (RÉFÉRENCENT LES VUES)

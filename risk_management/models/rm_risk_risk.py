@@ -1805,3 +1805,14 @@ class RiskRisk(models.Model):
             'view_mode': 'list,form,kanban',
             'domain': [('id', 'in', self.action_plan_ids.ids)],
         }
+
+    def _get_heatmap_color(self, score):
+        """Retourne la couleur pour la heatmap en fonction du score"""
+        if score <= 4:
+            return '#28a745'  # Vert - Faible
+        elif score <= 9:
+            return '#ffc107'  # Jaune - Moyen
+        elif score <= 16:
+            return '#fd7e14'  # Orange - Élevé
+        else:
+            return '#dc3545'  # Rouge - Critique

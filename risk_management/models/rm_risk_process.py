@@ -86,7 +86,63 @@ class RiskProcess(models.Model):
         store=False
     )
 
+    state = fields.Selection([
+        ('draft', '📝 Brouillon'),
+        ('mapped', '🗺️ Cartographié'),
+        ('analyzed', '📊 Analysé'),
+        ('validated', '✅ Validé'),
+        ('active', '🔄 Actif'),
+        ('review', '🔍 En révision'),
+        ('obsolete', '📦 Obsolète'),
+    ], string='Statut', default='draft', tracking=True, index=True)
+
+    maturity_level = fields.Selection([
+        ('1', '🌟 Initial'),
+        ('2', '📐 Répétable'),
+        ('3', '📋 Défini'),
+        ('4', '📊 Géré'),
+        ('5', '🏆 Optimisé'),
+    ], string='Niveau de maturité', default='1', tracking=True)
+
+    maturity_score = fields.Float(
+        compute='_compute_maturity_score',
+        string='Score de maturité (%)'
+    )
+
     activity_summary = fields.Char(related='activity_ids.summary', string='Résumé')
+
+    validation_date = fields.Date(
+        string='Date de validation',
+        tracking=True,
+        help="Date à laquelle le processus a été validé"
+    )
+
+    validation_user_id = fields.Many2one(
+        'res.users',
+        string='Validé par',
+        tracking=True,
+        help="Utilisateur qui a validé le processus"
+    )
+
+    review_date = fields.Date(
+        string='Date de révision',
+        tracking=True,
+        help="Date de la dernière révision du processus"
+    )
+
+    next_review_date = fields.Date(
+        string='Prochaine révision',
+        tracking=True,
+        help="Date prévue pour la prochaine révision"
+    )
+
+    review_frequency = fields.Selection([
+        ('monthly', 'Mensuelle'),
+        ('quarterly', 'Trimestrielle'),
+        ('semiannual', 'Semestrielle'),
+        ('annual', 'Annuelle'),
+        ('biennial', 'Bisanuelle'),
+    ], string='Fréquence de révision', default='annual', tracking=True)
 
     @api.depends('activity_ids')
     def _compute_activity_count(self):
@@ -130,6 +186,30 @@ class RiskProcess(models.Model):
             'domain': [('activity_id.process_id', '=', self.id)],
             'context': {'default_process_id': self.id},
         }
+
+    @api.depends('state', 'count_risk', 'critical_risk_count', 'activity_count')
+    def _compute_maturity_score(self):
+        for record in self:
+            score = 0
+
+            # Niveau de cartographie (20%)
+            if record.state not in ['draft', 'obsolete']:
+                score += 20
+
+            # Risques analysés (30%)
+            if record.count_risk > 0:
+                ratio = record.critical_risk_count / record.count_risk
+                score += (1 - ratio) * 30
+
+            # Activités définies (25%)
+            if record.activity_count > 0:
+                score += 25
+
+            # Statut actif (25%)
+            if record.state == 'active':
+                score += 25
+
+            record.maturity_score = round(score, 1)
 
     def action_add_risk(self):
         """Ouvre la vue de création d'un risque lié au processus"""
@@ -201,3 +281,87 @@ class RiskProcess(models.Model):
         }
         for record in self:
             record.activity_type_icon = icons.get(record.category, 'fa-tasks')
+
+    def action_map(self):
+        """Cartographier le processus"""
+        self.ensure_one()
+        self.state = 'mapped'
+        return True
+
+    def action_analyze(self):
+        """Analyser le processus"""
+        self.ensure_one()
+        self.state = 'analyzed'
+        return True
+
+    def action_validate(self):
+        """Valider le processus"""
+        self.ensure_one()
+        self.state = 'validated'
+        return True
+
+    def action_activate(self):
+        """Activer le processus"""
+        self.ensure_one()
+        self.state = 'active'
+        return True
+
+    def action_review(self):
+        """Mettre en révision"""
+        self.ensure_one()
+        self.state = 'review'
+        return True
+
+    def action_obsolete(self):
+        """Rendre obsolète"""
+        self.ensure_one()
+        self.state = 'obsolete'
+        self.active = False
+        return True
+
+    def action_reset_to_draft(self):
+        """Remettre en brouillon"""
+        self.ensure_one()
+        self.state = 'draft'
+        return True
+
+    @api.constrains('state')
+    def _check_state_transition(self):
+        """Vérifie les transitions d'état valides"""
+        valid_transitions = {
+            'draft': ['mapped'],
+            'mapped': ['analyzed', 'obsolete'],
+            'analyzed': ['validated', 'obsolete'],
+            'validated': ['active', 'obsolete'],
+            'active': ['review', 'obsolete'],
+            'review': ['active', 'validated', 'obsolete'],
+            'obsolete': [],
+        }
+        for record in self:
+            if hasattr(record, '_origin_state'):
+                if record.state not in valid_transitions.get(record._origin_state, []):
+                    raise ValidationError(
+                        _("Transition d'état invalide: %s → %s") %
+                        (record._origin_state, record.state)
+                    )
+
+    def action_validate(self):
+        """Valider le processus"""
+        self.ensure_one()
+        self.state = 'validated'
+        self.validation_date = fields.Date.today()
+        self.validation_user_id = self.env.user
+        return True
+
+    def action_review(self):
+        """Mettre en révision"""
+        self.ensure_one()
+        self.state = 'review'
+        self.review_date = fields.Date.today()
+        return True
+
+    def action_activate(self):
+        """Activer le processus"""
+        self.ensure_one()
+        self.state = 'active'
+        return True

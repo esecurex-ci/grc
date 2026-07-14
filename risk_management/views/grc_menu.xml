@@ -363,6 +363,18 @@
         sequence="5"
     />
 
+    <menuitem id="menu_risk_export"
+              name="📦 Exporter les données GRC"
+              parent="menu_grc_reporting"
+              action="action_risk_export_wizard"
+              sequence="2"/>
+
+    <menuitem id="menu_risk_import"
+              name="📥 Importer des données GRC"
+              parent="menu_grc_reporting"
+              action="action_risk_import_wizard"
+              sequence="3"/>
+
     <!-- ===================================================== -->
     <!-- ADMINISTRATION -->
     <!-- ===================================================== -->
