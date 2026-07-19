@@ -69,7 +69,7 @@
 
     <!-- ✅ Maintenant menu_process_dashboard peut utiliser menu_grc_risk -->
     <menuitem id="menu_process_dashboard"
-        name="📋 Tableau de bord Processus"
+        name="📋 Tableau de bord Sous Processus"
         parent="menu_grc_risk"
         action="action_process_dashboard"
         sequence="1"

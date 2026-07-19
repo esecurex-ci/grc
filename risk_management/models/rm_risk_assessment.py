@@ -3,25 +3,29 @@ from odoo import models, fields, api
 
 class RiskAssessment(models.Model):
     _name = 'risk.assessment'
-    _description = 'Risk Assessment'
+    _description = 'Evaluation des risques'
+    _order = 'assessment_date'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'assessment_date desc'
 
     name = fields.Char(
         readonly=True,
-        default='New'
+        default='New',
+        string='Nom',
     )
 
     assessment_date = fields.Date(
         default=fields.Date.today,
-        required=True
+        required=True,
+        string='Date Clôture'
     )
 
     risk_id = fields.Many2one(
         'risk.risk',
         required=True,
         ondelete='cascade',
-        tracking=True
+        tracking=True,
+        string='Risque'
     )
 
     period_id = fields.Many2one(
@@ -45,18 +49,19 @@ class RiskAssessment(models.Model):
     ##################################################################
 
     inherent_probability = fields.Integer(
-        string='Inherent Probability',
+        string=' Probabilité Inhérente',
         default=1
     )
 
     inherent_impact = fields.Integer(
-        string='Inherent Impact',
+        string='Impact Inhérent ',
         default=1
     )
 
     inherent_score = fields.Integer(
         compute='_compute_scores',
-        store=True
+        store=True,
+        string='Score Inhérent',
     )
 
     ##################################################################
@@ -80,7 +85,8 @@ class RiskAssessment(models.Model):
 
     residual_score = fields.Integer(
         compute='_compute_scores',
-        store=True
+        store=True,
+        string='Score Résiduel',
     )
 
     ##################################################################
@@ -131,10 +137,10 @@ class RiskAssessment(models.Model):
     state = fields.Selection(
         [
             ('draft', 'Draft'),
-            ('submitted', 'Submitted'),
-            ('reviewed', 'Reviewed'),
-            ('approved', 'Approved'),
-            ('closed', 'Closed')
+            ('submitted', 'Soummis'),
+            ('reviewed', 'Révu'),
+            ('approved', 'Aprrouvé'),
+            ('closed', 'Archivé')
         ],
         default='draft',
         tracking=True

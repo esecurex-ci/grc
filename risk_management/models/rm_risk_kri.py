@@ -36,25 +36,11 @@ class RiskKri(models.Model):
     # HIÉRARCHIE
     # ============================================================
 
-    function_id = fields.Many2one(
-        'risk.function',
-        string='Fonction',
-        tracking=True,
-        help="Fonction concernée"
-    )
-
     subprocess_id = fields.Many2one(
         'risk.subprocess',
         string='Sous-processus',
         tracking=True,
         help="Sous-processus concerné"
-    )
-
-    activity_id = fields.Many2one(
-        'risk.activity',
-        string='Activité/Tâche',
-        tracking=True,
-        help="Activité concernée"
     )
 
     risk_generic_id = fields.Many2one(
@@ -267,6 +253,69 @@ class RiskKri(models.Model):
         string='Notes',
         help="Notes et commentaires supplémentaires"
     )
+
+    # Dans risk.kri (modèle existant), ajoutez :
+    process_id = fields.Many2one(
+        'risk.process',
+        string='Processus',
+        tracking=True,
+        help='Processus associé à ce KRI'
+    )
+
+    function_id = fields.Many2one(
+        'risk.function',
+        string='Fonction',
+        tracking=True,
+        help='Fonction associée à ce KRI'
+    )
+
+    # Si vous avez une relation Many2many avec les risques
+    risk_count = fields.Integer(
+        compute='_compute_risk_count',
+        string='Nombre de risques liés',
+        store=True
+    )
+
+    # Champ related pour afficher le nom du processus
+    process_name = fields.Char(
+        related='process_id.name',
+        string='Nom du processus',
+        store=True,
+        readonly=True
+    )
+
+    activity_id = fields.Many2one(
+        'risk.activity',
+        string='Activité/Tâche',
+        tracking=True,
+        ondelete='set null',
+        help='Activité associée à ce KRI'
+    )
+
+    # Champ related pour afficher le nom de l'activité
+    activity_name = fields.Char(
+        related='activity_id.name',
+        string='Nom de l\'activité',
+        store=True,
+        readonly=True
+    )
+
+    # Champ related pour afficher le nom de la fonction
+    function_name = fields.Char(
+        related='function_id.name',
+        string='Nom de la fonction',
+        store=True,
+        readonly=True
+    )
+
+    # =====================================================
+    # RISQUES ASSOCIÉS
+    # =====================================================
+
+    @api.depends('risk_ids')
+    def _compute_risk_count(self):
+        for record in self:
+            record.risk_count = len(record.risk_ids)
 
     # ============================================================
     # COMPUTES

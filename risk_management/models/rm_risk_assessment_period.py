@@ -4,11 +4,12 @@ from odoo.exceptions import ValidationError
 
 class RiskAssessmentPeriod(models.Model):
     _name = 'risk.assessment.period'
-    _description = 'Risk Assessment Period'
+    _description = 'Evaluation périodique des risques'
     _order = 'date_start desc'
 
     name = fields.Char(
-        required=True
+        required=True,
+        string='Nom',
     )
 
     code = fields.Char()
@@ -18,14 +19,15 @@ class RiskAssessmentPeriod(models.Model):
     )
 
     date_end = fields.Date(
-        required=True
+        required=True,
+        string='Date clôture'
     )
 
     state = fields.Selection(
         [
             ('draft', 'Draft'),
-            ('open', 'Open'),
-            ('closed', 'Closed')
+            ('open', 'Ouvert'),
+            ('closed', 'Clôturé')
         ],
         default='draft',
         tracking=True
@@ -37,11 +39,13 @@ class RiskAssessmentPeriod(models.Model):
 
     assessment_ids = fields.One2many(
         'risk.assessment',
-        'period_id'
+        'period_id',
+        string='Assessments',
     )
 
     assessment_count = fields.Integer(
-        compute='_compute_assessment_count'
+        compute='_compute_assessment_count',
+        string='Assessments',
     )
 
     @api.depends('assessment_ids')
@@ -54,5 +58,5 @@ class RiskAssessmentPeriod(models.Model):
         for rec in self:
             if rec.date_end < rec.date_start:
                 raise ValidationError(
-                    "End date must be greater than start date."
+                    "La date de clôture doit être supérieure à la date de début."
                 )
