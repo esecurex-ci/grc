@@ -92,6 +92,12 @@
                             class="btn-secondary"
                             invisible="state in ('completed','cancelled')"/>
                     <field name="state" widget="statusbar"/>
+
+                    <button name="notify_treatment_plan_created"
+                        string="📢 Notifier"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="state not in ('draft', 'in_progress')"/>
                 </header>
 
                 <sheet>
@@ -126,6 +132,17 @@
                             <group>
                                 <field name="budget" widget="monetary"/>
                                 <field name="currency_id" invisible="1"/>
+                            </group>
+                        </page>
+                        <page string="Notifications">
+                            <group string="Utilisateurs à notifier">
+                                <field name="notification_user_ids" widget="many2many_tags"
+                                       placeholder="Sélectionnez les utilisateurs..."/>
+                                <div class="alert alert-info" style="margin-top: 10px;">
+                                    <i class="fa fa-info-circle"/>
+                                    Les utilisateurs sélectionnés recevront les notifications
+                                    lors de la création et des mises à jour du plan.
+                                </div>
                             </group>
                         </page>
                     </notebook>
