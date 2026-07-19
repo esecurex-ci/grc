@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Rangs de priorité -->
+        <record id="priority_0" model="risk.priority">
+            <field name="level">0</field>
+            <field name="sequence">0</field>
+            <field name="name">Non concerné</field>
+            <field name="description">Quand la réponse indique que les risques sont bien gérés, par des contrôles nécessitant une amélioration mineure</field>
+            <field name="color">#6c757d</field>
+            <field name="badge_color">secondary</field>
+            <field name="is_non_concerned">True</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="priority_1" model="risk.priority">
+            <field name="level">1</field>
+            <field name="sequence">10</field>
+            <field name="name">Fait / formalisé / systématique / très satisfaisant</field>
+            <field name="description">Les actions déjà existantes permettent de maîtriser les risques identifiés. Les contrôles nécessitent une amélioration modérée et sont planifiés selon les ressources disponibles et la stratégie de l'organisation.</field>
+            <field name="color">#28a745</field>
+            <field name="badge_color">success</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="priority_2" model="risk.priority">
+            <field name="level">2</field>
+            <field name="sequence">20</field>
+            <field name="name">Fait / non formalisé / non systématique / satisfaisant</field>
+            <field name="description">Quand la réponse indique que l'on a conscience du risque et que des protections suffisantes existent déjà. Les actions à mettre en œuvre ne sont pas prioritaires. Elles peuvent être envisagées à plus long terme.</field>
+            <field name="color">#ffc107</field>
+            <field name="badge_color">warning</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="priority_3" model="risk.priority">
+            <field name="level">3</field>
+            <field name="sequence">30</field>
+            <field name="name">À faire / Insuffisant</field>
+            <field name="description">Quand la réponse indique que l'on a conscience du risque et que celui-ci est grave, des actions correctives sont à mettre en place à moyen terme.</field>
+            <field name="color">#fd7e14</field>
+            <field name="badge_color">warning</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="priority_4" model="risk.priority">
+            <field name="level">4</field>
+            <field name="sequence">40</field>
+            <field name="name">À faire d'urgence</field>
+            <field name="description">Quand la réponse indique que l'on a conscience du risque, et que celui-ci est inadmissible ou inacceptable (éventuellement pour une question de principe). Y remédier est vraiment une action prioritaire.</field>
+            <field name="color">#dc3545</field>
+            <field name="badge_color">danger</field>
+            <field name="is_urgent">True</field>
+            <field name="is_critical">True</field>
+            <field name="active">True</field>
+        </record>
+
+    </data>
+</odoo>

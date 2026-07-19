@@ -93,3 +93,5 @@ access_risk_kri_alert,access_risk_kri_alert,model_risk_kri_alert,base.group_user
 access_risk_kri_alert_manager,access_risk_kri_alert_manager,model_risk_kri_alert,base.group_system,1,1,1,1
 access_risk_import_wizard_user,access_risk_import_wizard_user,model_risk_import_wizard,base.group_user,1,1,1,1
 access_risk_export_wizard_user,access_risk_export_wizard_user,model_risk_export_wizard,base.group_user,1,1,1,1
+access_risk_function_user, access_risk_function_user,model_risk_function,base.group_system,1,1,1,1
+access_risk_priority_user, access_risk_priority_user,model_risk_priority,base.group_system,1,1,1,1

@@ -299,6 +299,28 @@ class RiskRisk(models.Model):
         help="Plans d'action associés à ce risque"
     )
 
+    function_id = fields.Many2one('risk.function', string='Fonction', tracking=True,
+                                  help='Fonction organisationnelle concernée')
+
+    priority_id = fields.Many2one(
+        'risk.priority',
+        string='Rang de priorité',
+        tracking=True,
+        help='Niveau de priorité du risque'
+    )
+
+    priority_level = fields.Integer(
+        related='priority_id.level',
+        string='Niveau de priorité',
+        store=True
+    )
+
+    priority_name = fields.Char(
+        related='priority_id.name',
+        string='Nom de la priorité',
+        store=True
+    )
+
     # ============================================================
     # COMPUTE DMR
     # ============================================================

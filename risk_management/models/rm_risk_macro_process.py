@@ -3,19 +3,19 @@ from odoo import models, fields, api
 
 class RiskMacroProcess(models.Model):
     _name = 'risk.macro.process'
-    _description = 'Risk Macro Process'
+    _description = 'Risk Process'
     _order = 'sequence, name'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(
-        string='Macro Processus',
+        string='Processus',
         required=True,
         tracking=True
     )
 
     code = fields.Char(
         string='Code',
-        help='Code unique du macro-processus',
+        help='Code unique du processus',
         tracking=True
     )
 
@@ -38,7 +38,7 @@ class RiskMacroProcess(models.Model):
         string='Icône',
         max_width=128,
         max_height=128,
-        help='Image représentant le macro-processus'
+        help='Image représentant le processus'
     )
 
     owner_id = fields.Many2one(
@@ -70,7 +70,7 @@ class RiskMacroProcess(models.Model):
         compute='_compute_counts',
         compute_sudo=True,  # ← AJOUTÉ
         store=True,  # ← store=True pour tous
-        string='Nombre de processus'
+        string='Nombre de sous processus'
     )
 
     active = fields.Boolean(

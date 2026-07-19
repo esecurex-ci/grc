@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================= -->
+    <!-- VUE LISTE - Rangs de priorité            -->
+    <!-- ========================================= -->
+    <record id="view_risk_priority_list" model="ir.ui.view">
+        <field name="name">risk.priority.list</field>
+        <field name="model">risk.priority</field>
+        <field name="arch" type="xml">
+            <list decoration-success="badge_color == 'success'"
+                  decoration-info="badge_color == 'info'"
+                  decoration-warning="badge_color == 'warning'"
+                  decoration-danger="badge_color == 'danger'"
+                  decoration-muted="badge_color == 'secondary'">
+                <field name="level"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="badge_color" widget="badge"/>
+                <field name="risk_count"/>
+                <field name="is_urgent" widget="boolean"/>
+                <field name="is_critical" widget="boolean"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE FORMULAIRE - Rang de priorité        -->
+    <!-- ========================================= -->
+    <record id="view_risk_priority_form" model="ir.ui.view">
+        <field name="name">risk.priority.form</field>
+        <field name="model">risk.priority</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                        <span class="oe_subtitle">
+                            Niveau <field name="level"/>
+                            <field name="badge_color" widget="badge"/>
+                        </span>
+                    </div>
+
+                    <group>
+                        <group string="Informations">
+                            <field name="level" required="1"/>
+                            <field name="sequence"/>
+                            <field name="color" widget="color"/>
+                            <field name="badge_color" widget="selection"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Indicateurs">
+                            <field name="is_urgent"/>
+                            <field name="is_critical"/>
+                            <field name="is_non_concerned"/>
+                            <field name="risk_count" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Risques associés" invisible="risk_count == 0">
+                            <field name="risk_ids" nolabel="1">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="inherent_level"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- VUE RECHERCHE                            -->
+    <!-- ========================================= -->
+    <record id="view_risk_priority_search" model="ir.ui.view">
+        <field name="name">risk.priority.search</field>
+        <field name="model">risk.priority</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="level"/>
+                <separator/>
+                <filter name="group_by_level" string="Par niveau" context="{'group_by':'level'}"/>
+            </search>
+        </field>
+    </record>
+
+
+</odoo>

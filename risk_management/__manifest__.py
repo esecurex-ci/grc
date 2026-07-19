@@ -25,6 +25,7 @@
         'data/kri_data.xml',
         #'data/employee_data.xml',
         'data/risk_control_data.xml',
+        'data/risk_priority_data.xml',
 
         # ============================================================
         # 1. VUES DE BASE (Modèles simples)
@@ -135,6 +136,8 @@
         'views/risk_action_task_views.xml',
         'views/risk_kri_compute_wizard_views.xml',
         'views/risk_export_views.xml',
+        'views/risk_function_views.xml',
+        'views/risk_priority_views.xml',
 
         # ============================================================
         # 10. ACTIONS (RÉFÉRENCENT LES VUES)

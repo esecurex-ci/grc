@@ -125,6 +125,11 @@
                                 <field name="existing_control" nolabel="1" placeholder="Contrôles existants..."/>
                                 <field name="control_ids" nolabel="1"/>
                             </group>
+                            <group name="controls_group2">
+                                <field name="priority_id" widget="many2one_avatar"
+                                       placeholder="Rang de priorité"
+                                       options="{'no_create': True}"/>
+                            </group>
                         </page>
 
 
@@ -335,6 +340,8 @@
                 <field name="category_id"/>
                 <field name="inherent_score"/>
                 <field name="residual_score"/>
+                <field name="priority_id" optional="show"/>
+                <field name="priority_level" optional="hide"/>
                 <field name="inherent_level" widget="badge"
                    class="badge"
                    decoration-success="inherent_level == 'low'"

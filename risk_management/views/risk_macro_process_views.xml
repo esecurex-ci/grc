@@ -6,7 +6,7 @@
     <!-- ===================================================== -->
 
     <record id="action_risk_macro_process" model="ir.actions.act_window">
-        <field name="name">Macro-Processus</field>
+        <field name="name">Processus</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">risk.macro.process</field>
         <field name="view_mode">list,kanban,form</field>
@@ -15,7 +15,7 @@
                 Créez votre premier macro-processus
             </p>
             <p>
-                Les macro-processus représentent les grands domaines d'activité de l'organisation.
+                Les processus représentent les grands domaines d'activité de l'organisation.
                 Ils regroupent les processus et sous-processus associés.
             </p>
         </field>

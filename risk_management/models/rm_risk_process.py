@@ -5,11 +5,11 @@ from odoo import models, fields, api
 
 class RiskProcess(models.Model):
     _name = 'risk.process'
-    _description = 'Processus'
+    _description = 'Sous Processus'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'category, name'
 
-    name = fields.Char(string='Nom du processus', required=True, tracking=True)
+    name = fields.Char(string='Nom du sous processus', required=True, tracking=True)
     code = fields.Char(string='Code', tracking=True)
 
     category = fields.Selection([
@@ -121,13 +121,13 @@ class RiskProcess(models.Model):
         'res.users',
         string='Validé par',
         tracking=True,
-        help="Utilisateur qui a validé le processus"
+        help="Utilisateur qui a validé le sous processus"
     )
 
     review_date = fields.Date(
         string='Date de révision',
         tracking=True,
-        help="Date de la dernière révision du processus"
+        help="Date de la dernière révision du sous processus"
     )
 
     next_review_date = fields.Date(

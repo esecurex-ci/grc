@@ -20,7 +20,8 @@
                 <field name="state" widget="badge"/>
                 <field name="version_label"/>
                 <field name="version_count" widget="badge" string="📋"/>
-                <field name="owner_id"/>
+                <!-- ✅ REMPLACÉ : owner_id pointe maintenant vers risk.function -->
+                <field name="owner_id" string="Propriétaire"/>
                 <field name="review_status" widget="badge"/>
                 <field name="review_due" widget="boolean" string="⚠️"/>
                 <field name="active" widget="boolean"/>
@@ -65,47 +66,65 @@
                         <span class="oe_subtitle">
                             <field name="code" placeholder="Code"/>
                             <span class="badge badge-secondary"><field name="version_label"/></span>
-                            <!-- ✅ CORRIGÉ : t-if → invisible -->
                             <span class="badge badge-success" invisible="not is_current">⭐ Actif</span>
                         </span>
                     </div>
 
                     <!-- Informations principales -->
                     <group>
-                        <group>
+                        <group string="Informations générales">
                             <field name="document_type" widget="badge"/>
                             <field name="category_id" required="1"/>
                             <field name="process_id"/>
-                            <field name="owner_id"/>
-                            <field name="author_id"/>
-                            <field name="reviewer_id"/>
-                            <field name="approver_id"/>
-                        </group>
-                        <group>
                             <field name="confidentiality" widget="badge"/>
                             <field name="language"/>
                             <field name="keywords"/>
                             <field name="tags" widget="many2many_tags"/>
-                            <field name="creation_date" readonly="1"/>
-                            <field name="effective_date"/>
-                            <field name="next_review_date"/>
-                            <field name="expiry_date"/>
+                        </group>
+                        <group string="Responsables (Fonctions)">
+                            <!-- ✅ REMPLACÉ : risk.function au lieu de hr.employee -->
+                            <field name="owner_id" widget="many2one_avatar"
+                                   placeholder="Fonction propriétaire"
+                                   options="{'no_create': True}"/>
+                            <field name="author_id" widget="many2one_avatar"
+                                   placeholder="Fonction auteur"
+                                   options="{'no_create': True}"/>
+                            <field name="reviewer_id" widget="many2one_avatar"
+                                   placeholder="Fonction relecteur"
+                                   options="{'no_create': True}"/>
+                            <field name="approver_id" widget="many2one_avatar"
+                                   placeholder="Fonction approbateur"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+
+                    <!-- Employés (information supplémentaire) -->
+                    <group string="Employés (Information)" colspan="2">
+                        <group>
+                            <field name="owner_employee_id" widget="many2one_avatar"
+                                   placeholder="Employé propriétaire"/>
+                            <field name="author_employee_id" widget="many2one_avatar"
+                                   placeholder="Employé auteur"/>
                         </group>
                     </group>
 
                     <!-- Version info -->
-                    <group string="Informations de version">
+                    <group string="Informations de version" colspan="2">
                         <group>
                             <field name="version_major"/>
                             <field name="version_minor"/>
                             <field name="version_label" readonly="1"/>
                             <field name="current_version_id" readonly="1"/>
+                            <field name="creation_date" readonly="1"/>
                         </group>
                         <group>
                             <field name="version_count" readonly="1"/>
                             <field name="review_frequency"/>
                             <field name="last_review_date" readonly="1"/>
+                            <field name="next_review_date"/>
                             <field name="review_status" widget="badge"/>
+                            <field name="expiry_date"/>
+                            <field name="effective_date"/>
                         </group>
                     </group>
 
@@ -122,9 +141,7 @@
                             <field name="content" widget="html" placeholder="Contenu complet du document..."/>
                         </page>
 
-                        <!-- ========================================= -->
-                        <!-- PAGE : VERSIONS                         -->
-                        <!-- ========================================= -->
+                        <!-- PAGE : VERSIONS -->
                         <page string="📋 Versions" invisible="version_count == 0">
                             <div class="alert alert-info" style="margin-bottom:10px;">
                                 <i class="fa fa-info-circle"/>
@@ -156,9 +173,7 @@
                             </div>
                         </page>
 
-                        <!-- ========================================= -->
-                        <!-- PAGE : DOCUMENTS JOINTS                 -->
-                        <!-- ========================================= -->
+                        <!-- PAGE : DOCUMENTS JOINTS -->
                         <page string="📎 Documents joints">
                             <div class="alert alert-info" style="margin-bottom:10px;">
                                 <i class="fa fa-info-circle"/>
@@ -168,9 +183,7 @@
                                    options="{'reload_on_write': True}"/>
                         </page>
 
-                        <!-- ========================================= -->
-                        <!-- PAGE : RISQUES & CONTROLES              -->
-                        <!-- ========================================= -->
+                        <!-- PAGE : RISQUES & CONTROLES -->
                         <page string="🔗 Risques &amp; Contrôles">
                             <group string="Risques couverts">
                                 <field name="risk_ids"/>
@@ -183,11 +196,8 @@
                             </group>
                         </page>
 
-                        <!-- ========================================= -->
-                        <!-- PAGE : REVUES                           -->
-                        <!-- ========================================= -->
+                        <!-- PAGE : REVUES -->
                         <page string="📝 Revues" invisible="review_count == 0">
-                            <!-- ✅ CORRIGÉ : active_id → id -->
                             <field name="review_ids" context="{'default_document_id': id}">
                                 <list>
                                     <field name="review_date"/>
@@ -198,11 +208,8 @@
                             </field>
                         </page>
 
-                        <!-- ========================================= -->
-                        <!-- PAGE : APPROBATIONS                     -->
-                        <!-- ========================================= -->
+                        <!-- PAGE : APPROBATIONS -->
                         <page string="✅ Approbations" invisible="approval_count == 0">
-                            <!-- ✅ CORRIGÉ : active_id → id -->
                             <field name="approval_ids" context="{'default_document_id': id}">
                                 <list decoration-success="status == 'approved'"
                                       decoration-warning="status == 'pending'"
@@ -215,11 +222,8 @@
                             </field>
                         </page>
 
-                        <!-- ========================================= -->
-                        <!-- PAGE : DISTRIBUTION                     -->
-                        <!-- ========================================= -->
+                        <!-- PAGE : DISTRIBUTION -->
                         <page string="📤 Distribution" invisible="distribution_count == 0">
-                            <!-- ✅ CORRIGÉ : active_id → id -->
                             <field name="distribution_ids" context="{'default_document_id': id}">
                                 <list>
                                     <field name="employee_id"/>
@@ -230,9 +234,7 @@
                             </field>
                         </page>
 
-                        <!-- ========================================= -->
-                        <!-- PAGE : HISTORIQUE                       -->
-                        <!-- ========================================= -->
+                        <!-- PAGE : HISTORIQUE -->
                         <page string="📜 Historique">
                             <field name="message_ids" widget="mail_thread"/>
                         </page>
@@ -251,11 +253,14 @@
     <!-- ========================================= -->
     <!-- VUE KANBAN - Documents                    -->
     <!-- ========================================= -->
+    <!-- ========================================= -->
+    <!-- VUE KANBAN - Documents (version stable)   -->
+    <!-- ========================================= -->
     <record id="view_risk_document_kanban" model="ir.ui.view">
         <field name="name">risk.document.kanban</field>
         <field name="model">risk.document</field>
         <field name="arch" type="xml">
-            <kanban class="o_risk_document_kanban">
+            <kanban class="o_kanban_mobile">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="document_type"/>
@@ -272,42 +277,43 @@
                     <t t-name="card">
                         <div class="oe_kanban_global_click">
                             <div class="o_kanban_image">
-                                <span class="o_kanban_image_size" style="font-size:32px;">
-                                    <i class="fa fa-file-text-o"/>
-                                </span>
+                                <i class="fa fa-file-text-o" style="font-size: 32px;"/>
                             </div>
                             <div class="oe_kanban_details">
                                 <strong class="o_kanban_record_title">
                                     <field name="name"/>
                                 </strong>
-                                <div class="text-muted">
+                                <div class="text-muted o_kanban_record_subtitle">
                                     <field name="code"/> - <field name="version_label"/>
                                 </div>
-                                <div class="o_kanban_record_body">
-                                    <div class="o_risk_document_meta">
-                                        <span class="badge" t-attf-class="badge-#{record.state.raw_value == 'published' ? 'success' : record.state.raw_value == 'approved' ? 'info' : record.state.raw_value == 'review' ? 'warning' : 'secondary'}">
-                                            <field name="state"/>
-                                        </span>
-                                        <span class="badge badge-secondary">
-                                            <field name="document_type"/>
-                                        </span>
-                                        <span class="badge badge-info">
-                                            📋 <field name="version_count"/>
-                                        </span>
-                                        <span class="badge badge-primary">
-                                            📎 <field name="attachment_count"/>
-                                        </span>
+                                <div class="o_kanban_primary_dashboard">
+                                    <div class="o_kanban_dashboard">
+                                        <div class="o_kanban_dashboard_item">
+                                            <span class="o_kanban_dashboard_value"><field name="version_count"/></span>
+                                            <span class="o_kanban_dashboard_title">Versions</span>
+                                        </div>
+                                        <div class="o_kanban_dashboard_item">
+                                            <span class="o_kanban_dashboard_value"><field name="attachment_count"/></span>
+                                            <span class="o_kanban_dashboard_title">Documents</span>
+                                        </div>
                                     </div>
-                                    <div class="o_risk_document_category">
+                                </div>
+                                <div class="o_kanban_secondary_dashboard">
+                                    <span class="badge" t-attf-class="badge-#{record.state.value == 'published' ? 'success' : record.state.value == 'approved' ? 'info' : record.state.value == 'review' ? 'warning' : 'secondary'}">
+                                        <field name="state"/>
+                                    </span>
+                                    <span class="badge badge-secondary">
+                                        <field name="document_type"/>
+                                    </span>
+                                    <span class="badge badge-light">
                                         <i class="fa fa-folder"/> <field name="category_id"/>
-                                    </div>
-                                    <div class="o_risk_document_owner">
-                                        <i class="fa fa-user"/> <field name="owner_id"/>
-                                    </div>
-                                    <!-- ✅ CORRIGÉ : t-if → invisible -->
-                                    <div class="o_risk_document_overdue text-danger" invisible="review_status != 'overdue'">
-                                        <i class="fa fa-exclamation-triangle"/> Révision en retard
-                                    </div>
+                                    </span>
+                                </div>
+                                <div>
+                                    <i class="fa fa-building"/> <field name="owner_id"/>
+                                </div>
+                                <div class="text-danger" invisible="review_status.value != 'overdue'">
+                                    <i class="fa fa-exclamation-triangle"/> Révision en retard
                                 </div>
                             </div>
                         </div>
@@ -325,15 +331,21 @@
         <field name="model">risk.document</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name"/>
-                <field name="code"/>
+                <field name="name" string="Titre"/>
+                <field name="code" string="Code"/>
                 <field name="keywords"/>
                 <field name="summary"/>
-                <field name="owner_id"/>
-                <field name="category_id"/>
+                <!-- ✅ REMPLACÉ : owner_id pointe vers risk.function -->
+                <field name="owner_id" string="Propriétaire"/>
+                <field name="author_id" string="Auteur"/>
+                <field name="reviewer_id" string="Relecteur"/>
+                <field name="approver_id" string="Approbateur"/>
+                <field name="category_id" string="Catégorie"/>
 
                 <filter name="state_draft" string="Brouillon" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_preparation" string="En préparation" domain="[('state', '=', 'preparation')]"/>
                 <filter name="state_review" string="En relecture" domain="[('state', '=', 'review')]"/>
+                <filter name="state_approval" string="En approbation" domain="[('state', '=', 'approval')]"/>
                 <filter name="state_approved" string="Approuvé" domain="[('state', '=', 'approved')]"/>
                 <filter name="state_published" string="Publié" domain="[('state', '=', 'published')]"/>
                 <filter name="state_obsolete" string="Obsolète" domain="[('state', '=', 'obsolete')]"/>
@@ -360,6 +372,7 @@
                 <filter name="group_type" string="Par type" context="{'group_by': 'document_type'}"/>
                 <filter name="group_state" string="Par statut" context="{'group_by': 'state'}"/>
                 <filter name="group_owner" string="Par propriétaire" context="{'group_by': 'owner_id'}"/>
+                <filter name="group_author" string="Par auteur" context="{'group_by': 'author_id'}"/>
             </search>
         </field>
     </record>

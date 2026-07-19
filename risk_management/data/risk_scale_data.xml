@@ -7,7 +7,7 @@
         <!-- ========================================================== -->
 
         <record id="scale_prob_1" model="risk.scale.value">
-            <field name="name">Très faible</field>
+            <field name="name">1-rare</field>
             <field name="value">1</field>
             <field name="numeric_value">1</field>
             <field name="scale_type">probability</field>
@@ -15,7 +15,7 @@
             <field name="sequence">10</field>
         </record>
         <record id="scale_prob_2" model="risk.scale.value">
-            <field name="name">Faible</field>
+            <field name="name">2- Peu probable</field>
             <field name="value">2</field>
             <field name="numeric_value">2</field>
             <field name="scale_type">probability</field>
@@ -23,7 +23,7 @@
             <field name="sequence">20</field>
         </record>
         <record id="scale_prob_3" model="risk.scale.value">
-            <field name="name">Moyen</field>
+            <field name="name">3- Possible</field>
             <field name="value">3</field>
             <field name="numeric_value">3</field>
             <field name="scale_type">probability</field>
@@ -31,7 +31,7 @@
             <field name="sequence">30</field>
         </record>
         <record id="scale_prob_4" model="risk.scale.value">
-            <field name="name">Élevé</field>
+            <field name="name">4-Probable</field>
             <field name="value">4</field>
             <field name="numeric_value">4</field>
             <field name="scale_type">probability</field>
@@ -39,7 +39,7 @@
             <field name="sequence">40</field>
         </record>
         <record id="scale_prob_5" model="risk.scale.value">
-            <field name="name">Très élevé</field>
+            <field name="name">T5-Quasiment Certain</field>
             <field name="value">5</field>
             <field name="numeric_value">5</field>
             <field name="scale_type">probability</field>
@@ -52,7 +52,7 @@
         <!-- ========================================================== -->
 
         <record id="scale_impact_1" model="risk.scale.value">
-            <field name="name">Insignifiant</field>
+            <field name="name">1-Non significatif</field>
             <field name="value">1</field>
             <field name="numeric_value">1</field>
             <field name="scale_type">impact</field>
@@ -60,7 +60,7 @@
             <field name="sequence">10</field>
         </record>
         <record id="scale_impact_2" model="risk.scale.value">
-            <field name="name">Mineur</field>
+            <field name="name">2-Mineur</field>
             <field name="value">2</field>
             <field name="numeric_value">2</field>
             <field name="scale_type">impact</field>
@@ -68,7 +68,7 @@
             <field name="sequence">20</field>
         </record>
         <record id="scale_impact_3" model="risk.scale.value">
-            <field name="name">Modéré</field>
+            <field name="name">3-Modéré</field>
             <field name="value">3</field>
             <field name="numeric_value">3</field>
             <field name="scale_type">impact</field>
@@ -76,7 +76,7 @@
             <field name="sequence">30</field>
         </record>
         <record id="scale_impact_4" model="risk.scale.value">
-            <field name="name">Majeur</field>
+            <field name="name">4-Majeur</field>
             <field name="value">4</field>
             <field name="numeric_value">4</field>
             <field name="scale_type">impact</field>
@@ -84,7 +84,7 @@
             <field name="sequence">40</field>
         </record>
         <record id="scale_impact_5" model="risk.scale.value">
-            <field name="name">Catastrophique</field>
+            <field name="name">5-Critique</field>
             <field name="value">5</field>
             <field name="numeric_value">5</field>
             <field name="scale_type">impact</field>
@@ -101,17 +101,17 @@
             <field name="value">low</field>
             <field name="scale_type">level</field>
             <field name="color">#28a745</field>
-            <field name="score_min">0</field>
-            <field name="score_max">4</field>
+            <field name="score_min">1</field>
+            <field name="score_max">5</field>
             <field name="sequence">10</field>
         </record>
         <record id="scale_level_medium" model="risk.scale.value">
-            <field name="name">Moyen</field>
+            <field name="name">Modéré</field>
             <field name="value">medium</field>
             <field name="scale_type">level</field>
             <field name="color">#ffc107</field>
-            <field name="score_min">5</field>
-            <field name="score_max">9</field>
+            <field name="score_min">6</field>
+            <field name="score_max">15</field>
             <field name="sequence">20</field>
         </record>
         <record id="scale_level_high" model="risk.scale.value">
@@ -119,10 +119,11 @@
             <field name="value">high</field>
             <field name="scale_type">level</field>
             <field name="color">#fd7e14</field>
-            <field name="score_min">10</field>
-            <field name="score_max">15</field>
+            <field name="score_min">16</field>
+            <field name="score_max">25</field>
             <field name="sequence">30</field>
         </record>
+        <!--
         <record id="scale_level_critical" model="risk.scale.value">
             <field name="name">Critique</field>
             <field name="value">critical</field>
@@ -132,6 +133,6 @@
             <field name="score_max">25</field>
             <field name="sequence">40</field>
         </record>
-
+        -->
     </data>
 </odoo>

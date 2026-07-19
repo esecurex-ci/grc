@@ -87,4 +87,12 @@
         <field name="company_id" eval="False"/>
     </record>
 
+    <record id="seq_risk_function" model="ir.sequence">
+        <field name="name">Fonction</field>
+        <field name="code">risk.function</field>
+        <field name="prefix">FCT/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
 </odoo>

@@ -45,10 +45,83 @@ class RiskDocument(models.Model):
 
     process_id = fields.Many2one("risk.process", string="Business Process", tracking=True, index=True,
                                  ondelete="restrict")
-    owner_id = fields.Many2one("hr.employee", string="Document Owner", tracking=True, index=True)
-    author_id = fields.Many2one("hr.employee", string="Author", tracking=True, index=True)
-    reviewer_id = fields.Many2one("hr.employee", string="Reviewer", tracking=True, index=True)
-    approver_id = fields.Many2one("hr.employee", string="Approver", tracking=True, index=True)
+
+    # ✅ REMPLACEMENT des champs employés par des champs fonction
+    owner_id = fields.Many2one(
+        "risk.function",
+        string="Document Owner (Function)",
+        tracking=True,
+        index=True,
+        ondelete="restrict",
+        help="Fonction responsable de ce document"
+    )
+
+    author_id = fields.Many2one(
+        "risk.function",
+        string="Author (Function)",
+        tracking=True,
+        index=True,
+        ondelete="restrict",
+        help="Fonction auteur de ce document"
+    )
+
+    reviewer_id = fields.Many2one(
+        "risk.function",
+        string="Reviewer (Function)",
+        tracking=True,
+        index=True,
+        ondelete="restrict",
+        help="Fonction chargée de la revue de ce document"
+    )
+
+    approver_id = fields.Many2one(
+        "risk.function",
+        string="Approver (Function)",
+        tracking=True,
+        index=True,
+        ondelete="restrict",
+        help="Fonction chargée de l'approbation de ce document"
+    )
+
+    # ✅ CHAMPS EMPLOYÉS (pour information - optionnels)
+    # Ces champs peuvent être utilisés pour des informations supplémentaires
+    owner_employee_id = fields.Many2one(
+        "hr.employee",
+        string="Owner (Employee)",
+        tracking=True,
+        index=True,
+        help="Employé responsable (information supplémentaire)"
+    )
+
+    author_employee_id = fields.Many2one(
+        "hr.employee",
+        string="Author (Employee)",
+        tracking=True,
+        index=True,
+        help="Employé auteur (information supplémentaire)"
+    )
+
+    # Noms des fonctions (pour l'affichage)
+    owner_function_name = fields.Char(
+        related='owner_id.complete_name',
+        string="Owner Function Name",
+        store=True
+    )
+    author_function_name = fields.Char(
+        related='author_id.complete_name',
+        string="Author Function Name",
+        store=True
+    )
+    reviewer_function_name = fields.Char(
+        related='reviewer_id.complete_name',
+        string="Reviewer Function Name",
+        store=True
+    )
+    approver_function_name = fields.Char(
+        related='approver_id.complete_name',
+        string="Approver Function Name",
+        store=True
+    )
 
     summary = fields.Char(string="Summary", translate=True)
     description = fields.Html(string="Description", translate=True)
@@ -73,7 +146,7 @@ class RiskDocument(models.Model):
     tags = fields.Many2many("risk.tag", string="Tags")
 
     # =====================================================
-    # RELATIONS GRC (AJOUT - pour la vue)
+    # RELATIONS GRC
     # =====================================================
 
     risk_ids = fields.Many2many(
@@ -311,6 +384,9 @@ class RiskDocument(models.Model):
 
     obsolete_reason = fields.Text()
     archive_reason = fields.Text()
+
+    image_128 = fields.Binary(string='Image', attachment=True, help='Image du document')
+    color = fields.Integer(string='Color', help='Couleur pour l\'affichage en kanban')
 
     # =====================================================
     # NAME_GET

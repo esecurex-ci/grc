@@ -24,7 +24,7 @@
                     <!-- Titre -->
                     <div class="oe_title">
                         <h1>
-                            <field name="name" placeholder="Nom du processus..."/>
+                            <field name="name" placeholder="Nom du sous processus..."/>
                         </h1>
                         <span class="oe_subtitle">
                             <field name="code" placeholder="Code"/>

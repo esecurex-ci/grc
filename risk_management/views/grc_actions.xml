@@ -54,7 +54,7 @@
     <record id="action_risk_document" model="ir.actions.act_window">
         <field name="name">Documents de gouvernance</field>
         <field name="res_model">risk.document</field>
-        <field name="view_mode">kanban,list,form</field>
+        <field name="view_mode">list,kanban,form</field>
         <field name="search_view_id" ref="view_risk_document_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -567,6 +567,42 @@
             </p>
             <p>
                 Importez des données depuis un fichier JSON, XML, CSV ou Excel.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_risk_function" model="ir.actions.act_window">
+        <field name="name">Fonctions</field>
+        <field name="res_model">risk.function</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_risk_function_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre première fonction organisationnelle
+            </p>
+            <p>
+                Les fonctions représentent les unités organisationnelles de votre entreprise.
+                Elles peuvent être hiérarchisées et associées à des risques, contrôles et KRI.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_risk_priority" model="ir.actions.act_window">
+        <field name="name">Rangs de priorité</field>
+        <field name="res_model">risk.priority</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_risk_priority_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier rang de priorité
+            </p>
+            <p>
+                Les rangs de priorité permettent de classer les risques selon leur niveau d'urgence.
+                Niveau 0 : Non concerné<br/>
+                Niveau 1 : Très satisfaisant<br/>
+                Niveau 2 : Satisfaisant<br/>
+                Niveau 3 : Insuffisant<br/>
+                Niveau 4 : Urgent
             </p>
         </field>
     </record>
