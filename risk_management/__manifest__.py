@@ -54,6 +54,7 @@
         'views/risk_loss_views.xml',
         'views/risk_corrective_action_views.xml',
         'views/risk_cartography_views.xml',
+        'views/risk_treatment_plan_views.xml',
 
         # ============================================================
         # 3. VUES AUDIT

@@ -74,91 +74,69 @@
         <field name="name">risk.treatment.plan.form</field>
         <field name="model">risk.treatment.plan</field>
         <field name="arch" type="xml">
-
-            <form>
-
+            <form string="Plan de traitement">
                 <header>
-
                     <button name="action_start"
                             string="Démarrer"
                             type="object"
                             class="btn-primary"
                             invisible="state != 'draft'"/>
-
                     <button name="action_complete"
                             string="Terminer"
                             type="object"
                             class="btn-success"
                             invisible="state != 'in_progress'"/>
-
                     <button name="action_cancel"
                             string="Annuler"
                             type="object"
                             class="btn-secondary"
                             invisible="state in ('completed','cancelled')"/>
-
-                    <field name="state"
-                           widget="statusbar"/>
-
+                    <field name="state" widget="statusbar"/>
                 </header>
 
                 <sheet>
-
                     <div class="oe_title">
                         <h1>
-                            <field name="name"/>
+                            <field name="name" placeholder="Nom du plan de traitement..."/>
                         </h1>
                     </div>
 
                     <group>
-
-                        <group>
-                            <field name="assessment_id"/>
+                        <group string="Informations générales">
+                            <field name="assessment_id" required="1"/>
                             <field name="risk_id" readonly="1"/>
-                            <field name="owner_id"/>
+                            <field name="owner_id" placeholder="Fonction propriétaire"/>
                         </group>
-
-                        <group>
-                            <field name="target_date"/>
+                        <group string="Dates">
+                            <field name="target_date" required="1"/>
                             <field name="completion_date" readonly="1"/>
-                            <field name="active"/>
+                            <field name="active" invisible="1"/>
                         </group>
+                    </group>
 
+                    <group string="Progression" colspan="2">
+                        <field name="progress" widget="progressbar" nolabel="1"/>
                     </group>
 
                     <notebook>
-
                         <page string="Description">
-
-                            <field name="description"/>
-
+                            <field name="description" placeholder="Description du plan..." nolabel="1"/>
                         </page>
-
-                        <page string="Suivi">
-
+                        <page string="Budget">
                             <group>
-
-                                <field name="progress"
-                                       widget="progressbar"/>
-
-                                <field name="budget"
-                                       widget="monetary"/>
-
-                                <field name="currency_id"
-                                       invisible="1"/>
-
+                                <field name="budget" widget="monetary"/>
+                                <field name="currency_id" invisible="1"/>
                             </group>
-
                         </page>
-
                     </notebook>
-
                 </sheet>
 
-                <chatter/>
-
+                <chatter>
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </chatter>
             </form>
-
         </field>
     </record>
 

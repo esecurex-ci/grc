@@ -99,7 +99,12 @@
                         </page>
                     </notebook>
                 </sheet>
-                <chatter/>
+               <chatter>
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </chatter>
+
             </form>
         </field>
     </record>
