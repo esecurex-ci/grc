@@ -1,330 +1,404 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_risk_form" model="ir.ui.view">
-        <field name="name">risk.risk.form</field>
-        <field name="model">risk.risk</field>
-        <field name="priority">1</field>
-        <field name="arch" type="xml">
-            <form>
-                <header>
+    <field name="name">risk.risk.form</field>
+    <field name="model">risk.risk</field>
+    <field name="priority">1</field>
+    <field name="arch" type="xml">
+        <form>
+            <header>
+                <button name="action_assess"
+                        string="Évaluer"
+                        type="object"
+                        class="btn-primary"
+                        invisible="state != 'draft'"/>
+                <button name="action_close"
+                        string="Fermer"
+                        type="object"
+                        class="btn-danger"
+                        invisible="state != 'validated'"/>
+                <field name="state"
+                       widget="statusbar"
+                       statusbar_visible="draft,validated,obsolete"/>
+            </header>
 
-                    <button name="action_assess"
-                            string="Évaluer"
-                            type="object"
-                            class="btn-primary"
-                            invisible="state != 'draft'"/>
+            <sheet>
+                <div class="oe_title">
+                    <h1>
+                        <field name="code" readonly="1"/>
+                        <field name="name" placeholder="Nom du risque..."/>
+                    </h1>
+                </div>
 
-                    <button name="action_close"
-                            string="Fermer"
-                            type="object"
-                            class="btn-danger"
-                            invisible="state != 'validated'"/>
-
-                    <field name="state"
-                           widget="statusbar"
-                           statusbar_visible="draft,validated,obsolete"/>
-                </header>
-
-                <sheet>
-
-                    <div class="oe_title">
-                        <h1>
-                            <field name="code" readonly="1"/>
-                            <field name="name" placeholder="Nom du risque..."/>
-                        </h1>
-                    </div>
-
-
-                    <group name="header_group">
-                        <group name="left_group">
-                            <field name="category_id" required="1"/>
-                            <field name="subcategory_id"/>
-                            <field name="risk_type"/>
-                            <field name="risk_source"/>
-                            <field name="owner_id" placeholder="Propriétaire du risque"/>
-                        </group>
-
-                        <group name="right_group">
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="activity_id"/>
-                            <field name="process_id"/>
-                            <field name="macro_process_id"/>
-                            <field name="active"/>
-                            <field name="state"/>
-                        </group>
+                <group name="header_group">
+                    <group name="left_group">
+                        <field name="category_id" required="1"/>
+                        <field name="subcategory_id"/>
+                        <field name="risk_type"/>
+                        <field name="risk_source"/>
+                        <field name="owner_id" placeholder="Propriétaire du risque"/>
                     </group>
+                    <group name="right_group">
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="activity_id"/>
+                        <field name="process_id"/>
+                        <field name="macro_process_id"/>
+                        <field name="active"/>
+                        <field name="state"/>
+                    </group>
+                </group>
 
-                    <notebook>
+                <notebook>
+                    <!-- Page Description -->
+                    <page string="Description" name="description">
+                        <group style="min-width:40% !important;">
+                            <field name="description" placeholder="Description du risque..."/>
+                        </group>
+                        <group style="min-width:40% !important;">
+                            <field name="cause" placeholder="Cause..."/>
+                        </group>
+                        <group style="min-width:40% !important;">
+                            <field name="consequence" placeholder="Conséquence..."/>
+                            <field name="risk_event" placeholder="Événement redouté..."/>
+                        </group>
+                    </page>
 
+                    <!-- Page Matrice -->
+                    <page string="📊 Matrice" name="matrix">
+                        <group style="width:100% !important;overflow:auto;padding:10px;">
+                            <field name="matrix_html" nolabel="1"/>
+                        </group>
+                    </page>
 
-                        <page string="Description" name="description">
-                            <group style="min-width:40% !important;">
-                                <field name="description" placeholder="Description du risque..."/>
+                    <!-- Page Évaluation scindée -->
+                    <page string="📝 Évaluation" name="evaluation">
 
-                            </group>
-                            <group style="min-width:40% !important;">
-                                <field name="cause" placeholder="Cause..."/>
-                            </group>
-                            <group style="min-width:40% !important;">
-                                <field name="consequence" placeholder="Conséquence..."/>
-                                <field name="risk_event" placeholder="Événement redouté..."/>
-                            </group>
-                        </page>
-
-
-                        <page string="📊 Matrice" name="matrix">
-                            <group style="width:100% !important;overflow:auto;padding:10px;">
-
-                                    <field name="matrix_html" nolabel="1"/>
-
-                            </group>
-                        </page>
-
-
-                        <page string="Évaluation" name="evaluation">
-                            <group name="evaluation_group" string="Évaluation du risque">
-                                <group>
-                                    <field name="inherent_probability"/>
-                                    <field name="inherent_impact"/>
-                                    <field name="inherent_score" readonly="1"/>
-                                </group>
-                                <group>
-                                    <field name="residual_probability"/>
-                                    <field name="residual_impact"/>
-                                    <field name="residual_score" readonly="1"/>
-                                    <field name="inherent_level" widget="badge"/>
-                                </group>
-                            </group>
-                        </page>
-
-                        <page string="📋 Documents">
-                            <!-- ✅ CORRIGÉ : title ajouté -->
-                            <div class="alert alert-info" style="margin-bottom:10px;" role="status">
-                                <i class="fa fa-info-circle" title="Information"/>
-                                <strong><field name="document_count"/></strong> document(s) de gouvernance lié(s) à ce risque
+                        <!-- 1. ÉVALUATION INHÉRENTE -->
+                        <group string="🔴 Évaluation inhérente (Avant contrôles)"
+                               style="background: #f8f9fa; border: 2px solid #dc3545; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                            <div class="alert alert-danger" role="alert" style="margin-bottom: 10px;">
+                                <i class="fa fa-exclamation-triangle" title="Attention"/>
+                                <strong>Évaluation avant la mise en place des contrôles</strong>
+                                <span class="text-muted"> - Score maximum possible</span>
                             </div>
-                            <!-- ✅ CORRIGÉ : active_id → id -->
-                            <field name="document_ids" context="{'default_risk_ids': [(4, id)]}">
-                                <list decoration-success="state == 'published'"
-                                      decoration-info="state == 'approved'"
-                                      decoration-warning="state in ('review', 'preparation')"
-                                      decoration-danger="state in ('obsolete', 'archived')">
-                                    <field name="code"/>
-                                    <field name="name"/>
-                                    <field name="document_type" widget="badge"/>
-                                    <field name="state" widget="badge"/>
-                                    <field name="version_label"/>
-                                    <field name="category_id"/>
-                                    <field name="owner_id"/>
-                                </list>
-                            </field>
-                        </page>
-
-                        <page string="🔒 Contrôles" name="controls">
-                            <group name="controls_group">
-                                <field name="existing_control" nolabel="1" placeholder="Contrôles existants..."/>
-                                <field name="control_ids" nolabel="1"/>
-                            </group>
-                            <group name="controls_group2">
-                                <field name="priority_id" widget="many2one_avatar"
-                                       placeholder="Rang de priorité"
-                                       options="{'no_create': True}"/>
-                            </group>
-                        </page>
-
-
-                        <page string="📈 KRI &amp; Compliance" name="kri">
-                            <group name="kri_group">
-                                <field name="kri_ids"/>
-                                <field name="regulation_ids"/>
-                                <field name="compliance_requirement_ids"/>
-                            </group>
-                        </page>
-
-
-                        <page string="🏢 Actifs &amp; Organisation" name="assets">
-                            <group name="assets_group">
-                                <field name="asset_ids"/>
-                                <field name="organization_ids"/>
-                                <field name="cause_ids"/>
-                                <field name="impact_ids"/>
-                            </group>
-                        </page>
-
-
-                        <page string="⚠️ Incidents &amp; Audits" name="incidents">
-                            <group name="incidents_group">
-                                <field name="incident_count"/>
-                                <field name="total_loss_amount"/>
-                                <field name="incident_ids"/>
-                                <field name="audit_finding_count"/>
-                                <field name="audit_finding_ids"/>
-                            </group>
-                        </page>
-
-
-                        <page string="📅 Révisions" name="review">
-                            <group name="review_group">
-                                <group name="dates_group" string="Calendrier">
-                                    <field name="review_frequency"/>
-                                    <field name="last_review_date"/>
-                                    <field name="next_review_date" readonly="1"/>
-                                    <field name="review_overdue" widget="boolean_toggle"/>
+                            <group>
+                                <group>
+                                    <field name="inherent_probability"
+                                           widget="selection"
+                                           options="{'no_create': True}"
+                                           style="font-weight: bold;"/>
+                                    <field name="inherent_impact"
+                                           widget="selection"
+                                           options="{'no_create': True}"
+                                           style="font-weight: bold;"/>
+                                </group>
+                                <group>
+                                    <div style="background: #dc3545; border-radius: 8px; padding: 15px; color: white; text-align: center;">
+                                        <strong>Score inhérent</strong>
+                                        <div style="font-size: 32px; font-weight: 800;">
+                                            <field name="inherent_score" readonly="1" style="color: white; font-size: 32px;"/>
+                                        </div>
+                                        <div>
+                                            <field name="inherent_level" widget="badge"
+                                                   style="background: rgba(255,255,255,0.3); font-size: 14px; padding: 5px 15px;"/>
+                                        </div>
+                                    </div>
                                 </group>
                             </group>
-                        </page>
+                        </group>
 
+                        <!-- Séparateur visuel -->
+                        <div style="text-align: center; margin: 15px 0;">
+                            <span style="background: #6c757d; color: white; padding: 5px 20px; border-radius: 20px; font-size: 14px;">
+                                ⬇️ Après mise en place des contrôles ⬇️
+                            </span>
+                        </div>
 
-                        <page string="💬 Historique" name="history">
-                            <chatter>
-                                <field name="message_follower_ids"/>
-                                <field name="activity_ids"/>
-                                <field name="message_ids"/>
-                           </chatter>
-                        </page>
+                        <!-- 2. CONTRÔLES -->
+                        <group string="🔒 Contrôles existants"
+                               style="background: #e8f4fd; border: 2px solid #17a2b8; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                            <div class="alert alert-info" role="alert" style="margin-bottom: 10px;">
+                                <i class="fa fa-shield" title="Protection"/>
+                                <strong>Contrôles mis en place pour réduire le risque</strong>
+                                <span class="text-muted"> - Évaluation résiduelle ci-dessous</span>
+                            </div>
+                            <field name="existing_control" placeholder="Décrivez les contrôles existants..." nolabel="1"/>
+                            <field name="control_ids" nolabel="1"
+                                   context="{'default_risk_ids': [(4, id)]}"
+                                   options="{'no_create': True}"/>
+                        </group>
 
-                        <!-- ✅ ONGLET DMR CORRIGÉ -->
-                        <page string="🛡️ Dispositif de Maîtrise">
-                            <!-- Synthèse DMR -->
-                            <group string="📊 Synthèse du Dispositif de Maîtrise">
-                                <div class="dmr-synthesis">
-                                    <div class="dmr-card">
-                                        <div class="dmr-label">Score de conformité</div>
-                                        <div class="dmr-value score">
-                                            <field name="dmr_compliance_score"/>%
+                        <!-- 3. ÉVALUATION RÉSIDUELLE -->
+                        <group string="🟢 Évaluation résiduelle (Après contrôles)"
+                               style="background: #f8f9fa; border: 2px solid #28a745; border-radius: 8px; padding: 15px;">
+                            <div class="alert alert-success" role="alert" style="margin-bottom: 10px;">
+                                <i class="fa fa-check-circle" title="Succès"/>
+                                <strong>Évaluation après la mise en place des contrôles</strong>
+                                <span class="text-muted"> - Score résiduel</span>
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="residual_probability"
+                                           widget="selection"
+                                           options="{'no_create': True}"
+                                           style="font-weight: bold;"/>
+                                    <field name="residual_impact"
+                                           widget="selection"
+                                           options="{'no_create': True}"
+                                           style="font-weight: bold;"/>
+                                </group>
+                                <group>
+                                    <div style="background: #28a745; border-radius: 8px; padding: 15px; color: white; text-align: center;">
+                                        <strong>Score résiduel</strong>
+                                        <div style="font-size: 32px; font-weight: 800;">
+                                            <field name="residual_score" readonly="1" style="color: white; font-size: 32px;"/>
+                                        </div>
+                                        <div>
+                                            <field name="residual_level" widget="badge"
+                                                   style="background: rgba(255,255,255,0.3); font-size: 14px; padding: 5px 15px;"/>
                                         </div>
                                     </div>
-                                    <div class="dmr-card">
-                                        <div class="dmr-label">Niveau de maîtrise</div>
-                                        <div class="dmr-value score">
-                                            <field name="dmr_status" widget="badge"/>
-                                        </div>
+                                </group>
+                            </group>
+                            <!-- Comparaison visuelle - Sans t-if ni t-esc -->
+                            <div style="margin-top: 15px; padding: 10px; background: #fff; border-radius: 8px; text-align: center; border: 1px solid #dee2e6;">
+                                <span style="font-size: 14px;">
+                                    <span style="color: #dc3545;">🔴 Score inhérent: <strong><field name="inherent_score" readonly="1"/></strong></span>
+                                    <span style="margin: 0 15px;">➡️</span>
+                                    <span style="color: #28a745;">🟢 Score résiduel: <strong><field name="residual_score" readonly="1"/></strong></span>
+                                </span>
+                            </div>
+                        </group>
+
+                        <!-- 4. RANG DE PRIORITÉ -->
+                        <group string="🎯 Rang de priorité"
+                               style="background: #f5f0ff; border: 2px solid #6f42c1; border-radius: 8px; padding: 15px; margin-top: 20px;">
+                            <div class="alert alert-secondary" role="alert" style="margin-bottom: 10px;">
+                                <i class="fa fa-flag" title="Priorité"/>
+                                <strong>Rang de priorité du risque</strong>
+                                <span class="text-muted"> - Basé sur l'évaluation résiduelle</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 20px; padding: 15px; background: white; border-radius: 8px; border: 1px solid #dee2e6;">
+                                <div style="flex: 1;">
+                                    <field name="priority_id"
+                                           widget="many2one_avatar"
+                                           options="{'no_create': True, 'no_open': True}"
+                                           placeholder="Sélectionner le rang de priorité..."
+                                           style="font-size: 16px; font-weight: bold;"/>
+                                </div>
+                                <div style="text-align: center; min-width: 120px; border-radius: 8px; padding: 10px 20px; color: white; background-color: #6f42c1;">
+                                    <div style="font-size: 28px; font-weight: 800;">
+                                        <field name="priority_level" readonly="1"/>
                                     </div>
-                                    <div class="dmr-card">
-                                        <div class="dmr-label">Contrôles efficaces</div>
-                                        <div class="dmr-value controls">
-                                            <field name="dmr_effective_control_count"/> / <field name="dmr_control_count"/>
-                                        </div>
-                                    </div>
-                                    <div class="dmr-card">
-                                        <div class="dmr-label">Actions en cours</div>
-                                        <div class="dmr-value actions">
-                                            <field name="dmr_action_count"/>
-                                        </div>
+                                    <div style="font-size: 11px; opacity: 0.8;">
+                                        Niveau
                                     </div>
                                 </div>
+                            </div>
+                            <!-- Description du rang de priorité -->
+                            <div style="margin-top: 10px; padding: 10px; background: #fff; border-radius: 8px; border-left: 4px solid #6f42c1;">
+                                <div style="font-size: 13px; color: #6c757d;">
+                                    <field name="priority_id" readonly="1"/>
+                                </div>
+                            </div>
+                        </group>
+                    </page>
+
+                    <!-- Page Documents -->
+                    <page string="📋 Documents">
+                        <div class="alert alert-info" role="alert" style="margin-bottom:10px;">
+                            <i class="fa fa-info-circle" title="Information"/>
+                            <strong><field name="document_count"/></strong> document(s) de gouvernance lié(s) à ce risque
+                        </div>
+                        <field name="document_ids" context="{'default_risk_ids': [(4, id)]}">
+                            <list decoration-success="state == 'published'"
+                                  decoration-info="state == 'approved'"
+                                  decoration-warning="state in ('review', 'preparation')"
+                                  decoration-danger="state in ('obsolete', 'archived')">
+                                <field name="code"/>
+                                <field name="name"/>
+                                <field name="document_type" widget="badge"/>
+                                <field name="state" widget="badge"/>
+                                <field name="version_label"/>
+                                <field name="category_id"/>
+                                <field name="owner_id"/>
+                            </list>
+                        </field>
+                    </page>
+
+                    <!-- Page KRI & Compliance -->
+                    <page string="📈 KRI &amp; Compliance" name="kri">
+                        <group name="kri_group">
+                            <field name="kri_ids"/>
+                            <field name="regulation_ids"/>
+                            <field name="compliance_requirement_ids"/>
+                        </group>
+                    </page>
+
+                    <!-- Page Actifs & Organisation -->
+                    <page string="🏢 Actifs &amp; Organisation" name="assets">
+                        <group name="assets_group">
+                            <field name="asset_ids"/>
+                            <field name="organization_ids"/>
+                            <field name="cause_ids"/>
+                            <field name="impact_ids"/>
+                        </group>
+                    </page>
+
+                    <!-- Page Incidents & Audits -->
+                    <page string="⚠️ Incidents &amp; Audits" name="incidents">
+                        <group name="incidents_group">
+                            <field name="incident_count"/>
+                            <field name="total_loss_amount"/>
+                            <field name="incident_ids"/>
+                            <field name="audit_finding_count"/>
+                            <field name="audit_finding_ids"/>
+                        </group>
+                    </page>
+
+                    <!-- Page Révisions -->
+                    <page string="📅 Révisions" name="review">
+                        <group name="review_group">
+                            <group name="dates_group" string="Calendrier">
+                                <field name="review_frequency"/>
+                                <field name="last_review_date"/>
+                                <field name="next_review_date" readonly="1"/>
+                                <field name="review_overdue" widget="boolean_toggle"/>
                             </group>
+                        </group>
+                    </page>
 
-                            <!-- Détails des composants -->
-                            <notebook>
-                                <!-- 🔒 Contrôles -->
-                                <!--page string="🔒 Contrôles">
-                                    <div class="alert alert-info" role="status">
-                                        <i class="fa fa-info-circle" title="Information"/>
-                                        <strong><field name="dmr_control_count"/></strong> contrôle(s) associé(s)
-                                        <span class="text-muted">- Efficacité: <field name="dmr_control_effectiveness_rate"/>%</span>
+                    <!-- Page Historique -->
+                    <page string="💬 Historique" name="history">
+                        <div class="oe_chatter">
+                            <field name="message_follower_ids"/>
+                            <field name="activity_ids"/>
+                            <field name="message_ids"/>
+                        </div>
+                    </page>
+
+                    <!-- Page DMR -->
+                    <page string="🛡️ Dispositif de Maîtrise">
+                        <group string="📊 Synthèse du Dispositif de Maîtrise">
+                            <div class="dmr-synthesis">
+                                <div class="dmr-card">
+                                    <div class="dmr-label">Score de conformité</div>
+                                    <div class="dmr-value score">
+                                        <field name="dmr_compliance_score"/>%
                                     </div>
-                                    <field name="control_ids" context="{'default_risk_ids': [(4, id)]}">
-                                        <list>
-                                            <field name="code"/>
-                                            <field name="name"/>
-                                            <field name="control_type" widget="badge"/>
-                                            <field name="effectiveness" widget="badge"/>
-                                            <field name="test_success_rate" widget="progressbar"/>
-                                            <field name="last_test_date"/>
-                                        </list>
-                                    </field>
-                                </page-->
-
-                                <page string="🔒 Contrôles" name="controls">
-                                    <group name="controls_group">
-                                        <field name="existing_control" nolabel="1" placeholder="Contrôles existants..."/>
-                                        <field name="control_ids" nolabel="1"/>
-                                    </group>
-                                </page>
-
-                                <!-- 📝 Tests -->
-                                <page string="📝 Tests">
-                                    <div class="alert alert-info" role="status">
-                                        <i class="fa fa-info-circle" title="Information"/>
-                                        <strong><field name="dmr_test_count"/></strong> test(s) effectué(s)
-                                        <span class="text-muted">- Réussite: <field name="dmr_test_pass_rate"/>%</span>
+                                </div>
+                                <div class="dmr-card">
+                                    <div class="dmr-label">Niveau de maîtrise</div>
+                                    <div class="dmr-value score">
+                                        <field name="dmr_status" widget="badge"/>
                                     </div>
-                                    <field name="test_ids" context="{'default_risk_ids': [(4, id)]}">
-                                        <list decoration-success="result == 'pass'"
-                                              decoration-warning="result == 'partial'"
-                                              decoration-danger="result == 'fail'">
-                                            <field name="code"/>
-                                            <field name="name"/>
-                                            <field name="test_date"/>
-                                            <field name="tester_id"/>
-                                            <field name="result" widget="badge"/>
-                                            <field name="compliance_rate" widget="progressbar"/>
-                                        </list>
-                                    </field>
-                                </page>
-
-                                <!-- 🔧 Actions -->
-                                <page string="📋 Plans d'action">
-                                    <div class="alert alert-info" role="status">
-                                        <i class="fa fa-info-circle" title="Information"/>
-                                        <strong><field name="dmr_action_count"/></strong> plan(s) d'action
-                                        <span class="text-muted">- Progression moyenne : <field name="dmr_action_progress"/>%</span>
+                                </div>
+                                <div class="dmr-card">
+                                    <div class="dmr-label">Contrôles efficaces</div>
+                                    <div class="dmr-value controls">
+                                        <field name="dmr_effective_control_count"/> / <field name="dmr_control_count"/>
                                     </div>
-                                    <!-- ✅ Lien vers le plan d'action -->
-                                    <div class="row" style="margin-bottom:10px;">
-                                        <div class="col-12">
-
-                                            <button name="action_view_action_plans"
-                                                    string="📋 Voir tous les plans"
-                                                    type="object"
-                                                    class="btn-secondary btn-sm"
-                                                    invisible="dmr_action_count == 0"/>
-                                        </div>
+                                </div>
+                                <div class="dmr-card">
+                                    <div class="dmr-label">Actions en cours</div>
+                                    <div class="dmr-value actions">
+                                        <field name="dmr_action_count"/>
                                     </div>
-                                    <field name="action_plan_ids" context="{'default_risk_ids': [(4, id)]}">
-                                        <list decoration-success="state == 'completed'"
-                                              decoration-info="state == 'in_progress'"
-                                              decoration-warning="state == 'approved'"
-                                              decoration-danger="state in ('cancelled')">
-                                            <field name="code"/>
-                                            <field name="name"/>
-                                            <field name="state" widget="badge"/>
-                                            <field name="task_progress" widget="progressbar" string="Progression"/>
-                                            <field name="deadline"/>
-                                            <field name="owner_id"/>
-                                        </list>
-                                    </field>
-                                </page>
+                                </div>
+                            </div>
+                        </group>
 
-                                <!-- 📊 KRI -->
-                                <page string="📊 KRI associés">
-                                    <div class="alert alert-info" role="status">
-                                        <i class="fa fa-info-circle" title="Information"/>
-                                        <strong><field name="kri_ids"/></strong> KRI associé(s)
-                                    </div>
-                                    <field name="kri_ids" context="{'default_risk_ids': [(4, id)]}">
-                                        <list decoration-success="status == 'green'"
-                                              decoration-warning="status == 'amber'"
-                                              decoration-danger="status == 'red'">
-                                            <field name="code"/>
-                                            <field name="name"/>
-                                            <field name="current_value"/>
-                                            <field name="unit"/>
-                                            <field name="status" widget="badge"/>
-                                            <field name="trend" widget="badge"/>
-                                        </list>
-                                    </field>
-                                </page>
-                            </notebook>
-                        </page>
+                        <notebook>
+                            <page string="🔒 Contrôles">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fa fa-info-circle" title="Information"/>
+                                    <strong><field name="dmr_control_count"/></strong> contrôle(s) associé(s)
+                                    <span class="text-muted">- Efficacité: <field name="dmr_control_effectiveness_rate"/>%</span>
+                                </div>
+                                <field name="control_ids" context="{'default_risk_ids': [(4, id)]}">
+                                    <list>
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                        <field name="control_type" widget="badge"/>
+                                        <field name="effectiveness" widget="badge"/>
+                                        <field name="test_success_rate" widget="progressbar"/>
+                                        <field name="last_test_date"/>
+                                    </list>
+                                </field>
+                            </page>
 
-                    </notebook>
-                </sheet>
-            </form>
+                            <page string="📝 Tests">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fa fa-info-circle" title="Information"/>
+                                    <strong><field name="dmr_test_count"/></strong> test(s) effectué(s)
+                                    <span class="text-muted">- Réussite: <field name="dmr_test_pass_rate"/>%</span>
+                                </div>
+                                <field name="test_ids" context="{'default_risk_ids': [(4, id)]}">
+                                    <list decoration-success="result == 'pass'"
+                                          decoration-warning="result == 'partial'"
+                                          decoration-danger="result == 'fail'">
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                        <field name="test_date"/>
+                                        <field name="tester_id"/>
+                                        <field name="result" widget="badge"/>
+                                        <field name="compliance_rate" widget="progressbar"/>
+                                    </list>
+                                </field>
+                            </page>
 
-        </field>
-    </record>
+                            <page string="📋 Plans d'action">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fa fa-info-circle" title="Information"/>
+                                    <strong><field name="dmr_action_count"/></strong> plan(s) d'action
+                                    <span class="text-muted">- Progression moyenne : <field name="dmr_action_progress"/>%</span>
+                                </div>
+                                <button name="action_view_action_plans"
+                                        string="📋 Voir tous les plans"
+                                        type="object"
+                                        class="btn-secondary btn-sm"
+                                        invisible="dmr_action_count == 0"/>
+                                <field name="action_plan_ids" context="{'default_risk_ids': [(4, id)]}">
+                                    <list decoration-success="state == 'completed'"
+                                          decoration-info="state == 'in_progress'"
+                                          decoration-warning="state == 'approved'"
+                                          decoration-danger="state in ('cancelled')">
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                        <field name="state" widget="badge"/>
+                                        <field name="task_progress" widget="progressbar" string="Progression"/>
+                                        <field name="deadline"/>
+                                        <field name="owner_id"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="📊 KRI associés">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fa fa-info-circle" title="Information"/>
+                                    <strong><field name="kri_ids"/></strong> KRI associé(s)
+                                </div>
+                                <field name="kri_ids" context="{'default_risk_ids': [(4, id)]}">
+                                    <list decoration-success="status == 'green'"
+                                          decoration-warning="status == 'amber'"
+                                          decoration-danger="status == 'red'">
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                        <field name="current_value"/>
+                                        <field name="unit"/>
+                                        <field name="status" widget="badge"/>
+                                        <field name="trend" widget="badge"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </page>
+
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
 
     <record id="view_risk_list" model="ir.ui.view">
         <field name="name">risk.list</field>
