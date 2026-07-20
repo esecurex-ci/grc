@@ -5,49 +5,56 @@
     <!-- VUE LISTE - KRI                           -->
     <!-- ========================================= -->
    <record id="view_risk_kri_list" model="ir.ui.view">
-    <field name="name">risk.kri.list</field>
-    <field name="model">risk.kri</field>
-    <field name="arch" type="xml">
-        <list decoration-success="status == 'green'"
-              decoration-warning="status == 'amber'"
-              decoration-danger="status == 'red'">
+        <field name="name">risk.kri.list</field>
+        <field name="model">risk.kri</field>
+        <field name="arch" type="xml">
+            <list decoration-success="status == 'green'"
+                  decoration-warning="status == 'amber'"
+                  decoration-danger="status == 'red'">
 
-            <!-- Informations principales -->
-            <field name="code" string="Code"/>
-            <field name="name" string="Nom du KRI"/>
-            <field name="category" string="Catégorie"/>
+                <!-- Informations principales -->
+                <field name="code" string="Code"/>
+                <field name="name" widget="text" string="Nom du KRI" optional="show" class="text-wrap"
+                style="white-space: normal; word-wrap: break-word; min-width: 200px; max-width: 200px;"/>
+                <field name="category" string="Catégorie"/>
 
-            <!-- ⭐ Processus via les risques (Related) -->
-            <field name="risk_ids" string="Risques" optional="show"/>
-            <field name="process_id" string="Processus" optional="show"/>
-            <field name="activity_ids" string="Activités" optional="show"/>
+                <!-- Risques associés -->
+                <field name="risk_ids" string="Risques" optional="show"/>
 
-            <!-- Propriétaire -->
-            <field name="owner_id" string="Propriétaire" optional="show"/>
+                <!-- Processus et activités (via les risques) -->
+                <field name="process_list" string="Processus" optional="show"/>
+                <field name="activity_list" string="Activités" optional="show"/>
 
-            <!-- Valeurs -->
-            <field name="current_value" string="Valeur actuelle" sum="Total"/>
-            <field name="unit" string="Unité" optional="hide"/>
+                <!-- Propriétaire -->
+                <field name="owner_id" string="Propriétaire" optional="show"/>
 
-            <!-- Statuts -->
-            <field name="status" string="Statut" widget="badge"/>
-            <field name="trend" string="Tendance" widget="badge"/>
-            <field name="variation" string="Variation (%)" optional="hide"/>
+                <!-- Valeurs -->
+                <field name="current_value" string="Valeur actuelle" sum="Total"/>
+                <field name="unit" string="Unité" optional="hide"/>
 
-            <!-- Dates -->
-            <field name="last_measure_date" string="Dernière mesure" optional="show"/>
-            <field name="next_measure_date" string="Prochaine mesure" optional="show"/>
-            <field name="overdue" string="En retard" widget="boolean" optional="hide"/>
+                <!-- Statuts -->
+                <field name="status" string="Statut" widget="badge"/>
+                <field name="trend" string="Tendance" widget="badge"/>
+                <field name="variation" string="Variation (%)" optional="hide"/>
 
-            <!-- Alertes -->
-            <field name="alert_count" string="Alertes" widget="badge" optional="hide"/>
+                <!-- Dates -->
+                <field name="last_measure_date" string="Dernière mesure" optional="show"/>
+                <field name="next_measure_date" string="Prochaine mesure" optional="show"/>
+                <field name="overdue" string="En retard" widget="boolean" optional="hide"/>
 
-            <!-- Actif -->
-            <field name="active" string="Actif" widget="boolean" optional="hide"/>
+                <!-- Alertes -->
+                <field name="alert_count" string="Alertes" widget="badge" optional="hide"/>
 
-        </list>
-    </field>
-</record>
+                <!-- ✅ Seuils corrigés (uniquement ceux qui existent) -->
+                <field name="threshold_warning" string="Seuil alerte" optional="hide"/>
+                <field name="threshold_critical" string="Seuil critique" optional="hide"/>
+
+                <!-- Actif -->
+                <field name="active" string="Actif" widget="boolean" optional="hide"/>
+
+            </list>
+        </field>
+    </record>
 
     <!-- ========================================= -->
     <!-- VUE FORMULAIRE - KRI                      -->

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
@@ -113,11 +114,13 @@ class RiskKri(models.Model):
 
     threshold_warning = fields.Float(
         string='Seuil d\'alerte',
+        default=50,
         help="Seuil déclenchant une alerte"
     )
 
     threshold_critical = fields.Float(
         string='Seuil critique',
+        default=80,
         help="Seuil déclenchant une alerte critique"
     )
 
@@ -209,23 +212,7 @@ class RiskKri(models.Model):
         string='Dernière alerte'
     )
 
-    # ============================================================
-    # RELATIONS GRC
-    # ============================================================
-
-    risk_ids = fields.Many2many(
-        'risk.risk',
-        string='Risques associés'
-    )
-
-    owner_id = fields.Many2one(
-        'hr.employee',
-        string='Propriétaire',
-        tracking=True
-    )
-
-    active = fields.Boolean(default=True)
-
+    # Dans votre modèle risk.kri
     threshold_green = fields.Float(
         string='Seuil Vert (OK)',
         default=0,
@@ -254,68 +241,47 @@ class RiskKri(models.Model):
         help="Notes et commentaires supplémentaires"
     )
 
-    # Dans risk.kri (modèle existant), ajoutez :
-    process_id = fields.Many2one(
-        'risk.process',
+    # ============================================================
+    # RELATIONS GRC
+    # ============================================================
+
+    risk_ids = fields.Many2many(
+        'risk.risk',
+        string='Risques associés'
+    )
+
+    owner_id = fields.Many2one(
+        'hr.employee',
+        string='Propriétaire',
+        tracking=True
+    )
+
+    active = fields.Boolean(default=True)
+
+    # ============================================================
+    # PROCESSUS ET ACTIVITÉS (via les risques) - VERSION SIMPLIFIÉE
+    # ============================================================
+
+    # ✅ Uniquement des champs Text calculés, PAS de Many2many !
+    process_list = fields.Text(
+        compute='_compute_process_list',
         string='Processus',
-        tracking=True,
-        help='Processus associé à ce KRI'
+        store=False,
+        help='Liste des processus des risques associés'
     )
 
-    function_id = fields.Many2one(
-        'risk.function',
-        string='Fonction',
-        tracking=True,
-        help='Fonction associée à ce KRI'
+    activity_list = fields.Text(
+        compute='_compute_process_list',
+        string='Activités',
+        store=False,
+        help='Liste des activités des risques associés'
     )
 
-    # Si vous avez une relation Many2many avec les risques
     risk_count = fields.Integer(
         compute='_compute_risk_count',
         string='Nombre de risques liés',
         store=True
     )
-
-    # Champ related pour afficher le nom du processus
-    process_name = fields.Char(
-        related='process_id.name',
-        string='Nom du processus',
-        store=True,
-        readonly=True
-    )
-
-    activity_id = fields.Many2one(
-        'risk.activity',
-        string='Activité/Tâche',
-        tracking=True,
-        ondelete='set null',
-        help='Activité associée à ce KRI'
-    )
-
-    # Champ related pour afficher le nom de l'activité
-    activity_name = fields.Char(
-        related='activity_id.name',
-        string='Nom de l\'activité',
-        store=True,
-        readonly=True
-    )
-
-    # Champ related pour afficher le nom de la fonction
-    function_name = fields.Char(
-        related='function_id.name',
-        string='Nom de la fonction',
-        store=True,
-        readonly=True
-    )
-
-    # =====================================================
-    # RISQUES ASSOCIÉS
-    # =====================================================
-
-    @api.depends('risk_ids')
-    def _compute_risk_count(self):
-        for record in self:
-            record.risk_count = len(record.risk_ids)
 
     # ============================================================
     # COMPUTES
@@ -329,10 +295,11 @@ class RiskKri(models.Model):
 
     @api.depends('measure_ids.value', 'measure_ids.measure_date')
     def _compute_previous_value(self):
-        for record in self:  # ✅ Suppression de la parenthèse en trop
+        for record in self:
             measures = record.measure_ids.sorted('measure_date', reverse=True)
-            record.previous_value = measures[1].value if len(measures) >= 2 else 0.0  # ✅ Bonne indentation
+            record.previous_value = measures[1].value if len(measures) >= 2 else 0.0
 
+    @api.depends('current_value', 'previous_value')
     def _compute_variation(self):
         for record in self:
             if record.previous_value and record.previous_value != 0:
@@ -403,6 +370,33 @@ class RiskKri(models.Model):
                 record.trend = 'down'
             else:
                 record.trend = 'stable'
+
+    @api.depends('risk_ids', 'risk_ids.activity_id', 'risk_ids.activity_id.process_id', 'risk_ids.process_id')
+    def _compute_process_list(self):
+        """Calcule la liste des processus et activités à partir des risques associés"""
+        for record in self:
+            processes = set()
+            activities = set()
+
+            for risk in record.risk_ids:
+                # Via l'activité du risque
+                if risk.activity_id:
+                    if risk.activity_id.name:
+                        activities.add(risk.activity_id.name)
+                    if risk.activity_id.process_id and risk.activity_id.process_id.name:
+                        processes.add(risk.activity_id.process_id.name)
+
+                # Via le process_id direct du risque
+                if risk.process_id and risk.process_id.name:
+                    processes.add(risk.process_id.name)
+
+            record.process_list = ', '.join(sorted(processes)) if processes else ''
+            record.activity_list = ', '.join(sorted(activities)) if activities else ''
+
+    @api.depends('risk_ids')
+    def _compute_risk_count(self):
+        for record in self:
+            record.risk_count = len(record.risk_ids)
 
     # ============================================================
     # CALCUL AUTOMATIQUE
@@ -531,20 +525,15 @@ class RiskKri(models.Model):
 
         for kri in kris:
             try:
-                # Récupérer les valeurs des paramètres
                 params = {}
                 fields_list = kri.formula_fields.split(',') if kri.formula_fields else []
 
                 for field_name in fields_list:
                     field_name = field_name.strip()
-                    # Ici vous pouvez ajouter la logique pour récupérer les valeurs
-                    # depuis d'autres modèles (risk.incident, risk.risk, etc.)
-                    params[field_name] = 0  # Valeur par défaut
+                    params[field_name] = 0
 
-                # Calculer la valeur
                 value = kri.compute_value_from_formula(**params)
 
-                # Créer la mesure
                 self.env['risk.kri.measure'].create({
                     'kri_id': kri.id,
                     'value': value,
