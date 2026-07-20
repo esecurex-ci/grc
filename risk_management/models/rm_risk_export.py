@@ -158,7 +158,7 @@ class RiskExportWizard(models.TransientModel):
             'Code', 'Nom', 'Catégorie', 'Sous-catégorie',
             'Type', 'Source', 'Statut', 'Propriétaire',
             # ⭐ PROCESSUS AJOUTÉS
-            'Macro-processus', 'Processus', 'Activité',
+            'Processus', 'Sous Processus', 'Activité',
             'Probabilité inhérente', 'Impact inhérent',
             'Score inhérent', 'Niveau inhérent',
             'Probabilité résiduelle', 'Impact résiduel',
