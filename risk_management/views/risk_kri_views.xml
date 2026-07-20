@@ -14,8 +14,7 @@
 
                 <!-- Informations principales -->
                 <field name="code" string="Code"/>
-                <field name="name" widget="text" string="Nom du KRI" optional="show" class="text-wrap"
-                style="white-space: normal; word-wrap: break-word; min-width: 200px; max-width: 200px;"/>
+                <field name="name" widget="text" string="Nom du KRI" optional="show" class="text-wrap"/>
                 <field name="category" string="Catégorie"/>
 
                 <!-- Risques associés -->
