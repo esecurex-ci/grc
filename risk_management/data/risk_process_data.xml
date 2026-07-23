@@ -1,504 +1,588 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ============================================================ -->
-    <!-- 1. PROCESSUS DE PILOTAGE (Pilotage)                          -->
-    <!-- ============================================================ -->
+    <!-- ============================================ -->
+    <!-- Gestion Portefeuille                         -->
+    <!-- ============================================ -->
 
-    <record id="process_pilotage_01" model="risk.process">
-        <field name="name">Gouvernance et stratégie</field>
-        <field name="code">PIL-01</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">3</field>
-        <field name="description">Élaboration de la stratégie de gestion des Fonds, mise en place des organes de gouvernance (Conseil d'Administration, Comité d'Investissement, Comité des Risques) et dispositif de contrôle.</field>
-    </record>
-
-    <record id="process_pilotage_02" model="risk.process">
-        <field name="name">Élaboration budgétaire</field>
-        <field name="code">PIL-02</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">2</field>
-        <field name="description">Établissement du budget, planification des ressources, transmission et validation par la DGA et le Conseil d'Administration.</field>
-    </record>
-
-    <record id="process_pilotage_03" model="risk.process">
-        <field name="name">Gestion du budget</field>
-        <field name="code">PIL-03</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">2</field>
-        <field name="description">Validation, arbitrage budgétaire, exécution et suivi budgétaire trimestriel.</field>
-    </record>
-
-    <record id="process_pilotage_04" model="risk.process">
-        <field name="name">Rédaction de la Politique d'investissement</field>
-        <field name="code">PIL-04</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">2</field>
-        <field name="description">Rédaction et actualisation de la politique d'investissement, définition des objectifs de performance des Fonds.</field>
-    </record>
-
-    <record id="process_pilotage_05" model="risk.process">
-        <field name="name">Éthique et déontologie</field>
-        <field name="code">PIL-05</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">2</field>
-        <field name="description">Gestion de l'éthique et de la déontologie, prévention des conflits d'intérêts, protection du secret professionnel.</field>
-    </record>
-
-    <record id="process_pilotage_06" model="risk.process">
-        <field name="name">Gestion des conflits d'intérêts</field>
-        <field name="code">PIL-06</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">2</field>
-        <field name="description">Établissement et actualisation de la politique et du registre des conflits d'intérêts.</field>
-    </record>
-
-    <record id="process_pilotage_07" model="risk.process">
-        <field name="name">Système de management des risques</field>
-        <field name="code">PIL-07</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">5</field>
-        <field name="description">Établissement et mise à jour de la cartographie des risques, politiques de gestion des risques, tests de résistance, manuels de procédure et rapports de risques.</field>
-    </record>
-
-    <record id="process_pilotage_08" model="risk.process">
-        <field name="name">Surveillance des ratios prudentiels</field>
-        <field name="code">PIL-08</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">1</field>
-        <field name="description">Suivi des ratios réglementaires et internes (concentration, allocation, liquidité).</field>
-    </record>
-
-    <record id="process_pilotage_09" model="risk.process">
-        <field name="name">Suivi de la stratégie d'investissement</field>
-        <field name="code">PIL-09</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">3</field>
-        <field name="description">Comparaison de la gestion des Fonds avec les orientations stratégiques, suivi des objectifs annuels, rédaction des PV du comité d'investissement.</field>
-    </record>
-
-    <record id="process_pilotage_10" model="risk.process">
-        <field name="name">Établissement des rapports de contrôle interne</field>
-        <field name="code">PIL-10</field>
-        <field name="category">pilotage</field>
-        <field name="count_risk">3</field>
-        <field name="description">Établissement des rapports annuels d'activité, rapports de contrôle interne, mise à jour des DICI et prospectus, transmission à l'AMF-UMOA.</field>
-    </record>
-
-    <!-- ============================================================ -->
-    <!-- 2. PROCESSUS OPÉRATIONNELS (Opérationnel)                    -->
-    <!-- ============================================================ -->
-
-    <!-- Gestion de portefeuille -->
-    <record id="process_operational_01" model="risk.process">
+    <record id="process_proposition_investissement" model="risk.process">
         <field name="name">Proposition d'investissement</field>
-        <field name="code">OPE-01</field>
+        <field name="code">PROC-PROP-INV</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_portefeuille"/>
         <field name="category">operational</field>
-        <field name="count_risk">6</field>
-        <field name="description">Mise en œuvre de la stratégie d'investissement, recherche d'acheteurs, propositions d'opportunités d'investissement (obligataires et actions), négociation avec les contreparties.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_02" model="risk.process">
-        <field name="name">Création de nouveaux OPCVM</field>
-        <field name="code">OPE-02</field>
+    <record id="process_creation_opcvm" model="risk.process">
+        <field name="name">Création de nouveaux OPCVM et leur modification</field>
+        <field name="code">PROC-CREA-OPCVM</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_portefeuille"/>
         <field name="category">operational</field>
-        <field name="count_risk">5</field>
-        <field name="description">Définition du profil du Fonds, établissement des projections financières, paramétrage dans ATLANTIS SGO, support à l'élaboration des documents commerciaux.</field>
+        <field name="active">True</field>
     </record>
 
-    <!-- Back Office -->
-    <record id="process_operational_03" model="risk.process">
-        <field name="name">Calcul et validation de la VL</field>
-        <field name="code">OPE-03</field>
-        <field name="category">operational</field>
-        <field name="count_risk">4</field>
-        <field name="description">Saisie des informations, lancement du calcul de la VL, transmission et validation de la matrice, transmission à la BRVM.</field>
+    <record id="process_politique_investissement" model="risk.process">
+        <field name="name">Rédaction de la Politique d'investissement</field>
+        <field name="code">PROC-POL-INV</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_portefeuille"/>
+        <field name="category">pilotage</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_04" model="risk.process">
-        <field name="name">Réconciliation des comptes</field>
-        <field name="code">OPE-04</field>
+    <!-- ============================================ -->
+    <!-- Gestion Comptable des Fonds                  -->
+    <!-- ============================================ -->
+
+    <record id="process_calcul_vl" model="risk.process">
+        <field name="name">Calcul et validation de la valeur liquidative</field>
+        <field name="code">PROC-VL</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_fonds"/>
         <field name="category">operational</field>
-        <field name="count_risk">4</field>
-        <field name="description">Réception des relevés de comptes titres, espèces et courant, vérification de la concordance, enregistrement des régularisations.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_05" model="risk.process">
+    <record id="process_reconciliation" model="risk.process">
+        <field name="name">Réconciliation des comptes titres et espèces</field>
+        <field name="code">PROC-RECONC</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_fonds"/>
+        <field name="category">operational</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_traitement_dat" model="risk.process">
         <field name="name">Traitement des opérations DAT</field>
-        <field name="code">OPE-05</field>
+        <field name="code">PROC-DAT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_fonds"/>
         <field name="category">operational</field>
-        <field name="count_risk">4</field>
-        <field name="description">Établissement et transmission des ordres de virement, comptabilisation des opérations DAT, suivi des intérêts.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_06" model="risk.process">
+    <record id="process_traitement_titres" model="risk.process">
         <field name="name">Traitement des opérations sur titres</field>
-        <field name="code">OPE-06</field>
+        <field name="code">PROC-TITRES</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_fonds"/>
         <field name="category">operational</field>
-        <field name="count_risk">5</field>
-        <field name="description">Établissement et transmission des ordres d'achat/vente, vérification des avis d'opéré, comptabilisation des opérations.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_07" model="risk.process">
+    <record id="process_souscription_rachat" model="risk.process">
         <field name="name">Traitement des opérations de souscription/rachat</field>
-        <field name="code">OPE-07</field>
+        <field name="code">PROC-SOUS-RACH</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_fonds"/>
         <field name="category">operational</field>
-        <field name="count_risk">5</field>
-        <field name="description">Vérification du cash disponible, établissement des ordres de paiement, comptabilisation des opérations de souscription et rachat.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_08" model="risk.process">
+    <record id="process_valorisation_actifs" model="risk.process">
         <field name="name">Valorisation des actifs</field>
-        <field name="code">OPE-08</field>
+        <field name="code">PROC-VALO</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_fonds"/>
         <field name="category">operational</field>
-        <field name="count_risk">2</field>
-        <field name="description">Mise à jour des cours des titres cotés, évaluation des titres non cotés.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_09" model="risk.process">
-        <field name="name">Traitement des frais de gestion</field>
-        <field name="code">OPE-09</field>
-        <field name="category">operational</field>
-        <field name="count_risk">5</field>
-        <field name="description">Traitement des frais de gestion (DDG, commission DC/BR), commission actif sous gestion, redevance annuelle, droit d'entrée et de sortie.</field>
+    <record id="process_etablissement_rapports" model="risk.process">
+        <field name="name">Etablissement des rapports réglementaires</field>
+        <field name="code">PROC-RAPP</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_fonds"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_10" model="risk.process">
+    <record id="process_paiement_frais" model="risk.process">
+        <field name="name">Traitement des paiements de frais de gestion</field>
+        <field name="code">PROC-FRAIS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_fonds"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_suivi_coupons" model="risk.process">
         <field name="name">Suivi des coupons à recevoir</field>
-        <field name="code">OPE-10</field>
+        <field name="code">PROC-COUPONS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_fonds"/>
         <field name="category">operational</field>
-        <field name="count_risk">2</field>
-        <field name="description">Suivi du paiement des coupons et amortissements par les émetteurs, réception des avis de crédit.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_11" model="risk.process">
-        <field name="name">Établissement des rapports réglementaires</field>
-        <field name="code">OPE-11</field>
-        <field name="category">operational</field>
-        <field name="count_risk">3</field>
-        <field name="description">Établissement des états financiers des Fonds, états de composition des actifs, rapports réglementaires, constitution des fonds de dossier.</field>
-    </record>
+    <!-- ============================================ -->
+    <!-- Gestion Clientèle                            -->
+    <!-- ============================================ -->
 
-    <!-- Clientèle -->
-    <record id="process_operational_12" model="risk.process">
+    <record id="process_entree_relation" model="risk.process">
         <field name="name">Entrées en relation</field>
-        <field name="code">OPE-12</field>
+        <field name="code">PROC-ENTREE</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_clientele"/>
         <field name="category">operational</field>
-        <field name="count_risk">5</field>
-        <field name="description">Collecte des informations KYC, évaluation des clients, création de compte, enregistrement et archivage des dossiers clients.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_13" model="risk.process">
+    <record id="process_vente" model="risk.process">
         <field name="name">Processus de vente</field>
-        <field name="code">OPE-13</field>
+        <field name="code">PROC-VENTE</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_clientele"/>
         <field name="category">operational</field>
-        <field name="count_risk">4</field>
-        <field name="description">Prospection, suivi clientèle, fidélisation, gestion des performances commerciales.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_14" model="risk.process">
-        <field name="name">Traitement des souscriptions/rachats (clientèle)</field>
-        <field name="code">OPE-14</field>
-        <field name="category">operational</field>
-        <field name="count_risk">5</field>
-        <field name="description">Réception et vérification des documents clients, enregistrement des opérations, transmission des bulletins, archivage.</field>
-    </record>
-
-    <record id="process_operational_15" model="risk.process">
+    <record id="process_reclamation" model="risk.process">
         <field name="name">Gestion des réclamations clients</field>
-        <field name="code">OPE-15</field>
-        <field name="category">operational</field>
-        <field name="count_risk">3</field>
-        <field name="description">Réception et traitement des réclamations, enregistrement et archivage des fiches de réclamation.</field>
+        <field name="code">PROC-RECLAM</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_clientele"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_16" model="risk.process">
+    <record id="process_reporting_client" model="risk.process">
         <field name="name">Reporting client</field>
-        <field name="code">OPE-16</field>
-        <field name="category">operational</field>
-        <field name="count_risk">1</field>
-        <field name="description">Transmission des rapports de gestion des Fonds aux clients.</field>
+        <field name="code">PROC-REP-CLI</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_clientele"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_17" model="risk.process">
-        <field name="name">Rédaction des rapports semestriels</field>
-        <field name="code">OPE-17</field>
-        <field name="category">operational</field>
-        <field name="count_risk">1</field>
-        <field name="description">Rédaction des rapports semestriels d'activité commerciale.</field>
-    </record>
-
-    <record id="process_operational_18" model="risk.process">
+    <record id="process_support_marketing" model="risk.process">
         <field name="name">Support marketing</field>
-        <field name="code">OPE-18</field>
-        <field name="category">operational</field>
-        <field name="count_risk">2</field>
-        <field name="description">Rédaction des documents de présentation des Fonds, support à l'élaboration des rapports de gestion.</field>
+        <field name="code">PROC-MARK</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_clientele"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
     </record>
 
-    <!-- Contrôle interne & Conformité -->
-    <record id="process_operational_19" model="risk.process">
+    <!-- ============================================ -->
+    <!-- Contrôle Interne - Conformité - Audit        -->
+    <!-- ============================================ -->
+
+    <record id="process_controle_dossiers" model="risk.process">
         <field name="name">Contrôle des dossiers clients</field>
-        <field name="code">OPE-19</field>
-        <field name="category">operational</field>
-        <field name="count_risk">3</field>
-        <field name="description">Vérification de l'exhaustivité et de la conformité des dossiers clients, validation des ouvertures de compte, contrôle de la note d'évaluation des investisseurs.</field>
+        <field name="code">PROC-CONT-DOS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_20" model="risk.process">
+    <record id="process_controle_souscription" model="risk.process">
+        <field name="name">Contrôle des opérations de souscription/rachat</field>
+        <field name="code">PROC-CONT-SOUS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_surveillance_operations" model="risk.process">
         <field name="name">Surveillance particulière des opérations</field>
-        <field name="code">OPE-20</field>
-        <field name="category">operational</field>
-        <field name="count_risk">5</field>
-        <field name="description">Suivi des opérations ≥ 50M FCFA et ≥ 10M FCFA inhabituelles, mise à jour des listes GAFI, suivi des opérations électroniques et occasionnelles.</field>
+        <field name="code">PROC-SURV</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_21" model="risk.process">
-        <field name="name">Suivi des opérations électroniques</field>
-        <field name="code">OPE-21</field>
-        <field name="category">operational</field>
-        <field name="count_risk">2</field>
-        <field name="description">Surveillance des transactions électroniques, détection des opérations suspectes, déclaration à la CENTIF.</field>
+    <record id="process_controle_vl" model="risk.process">
+        <field name="name">Contrôle du calcul et validation de la VL</field>
+        <field name="code">PROC-CONT-VL</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_22" model="risk.process">
-        <field name="name">Audit interne</field>
-        <field name="code">OPE-22</field>
-        <field name="category">operational</field>
-        <field name="count_risk">2</field>
-        <field name="description">Élaboration du plan d'audit interne, mise en œuvre des activités du plan d'audit.</field>
+    <record id="process_rapports_controle" model="risk.process">
+        <field name="name">Etablissement des rapports de contrôle interne</field>
+        <field name="code">PROC-RAPP-CONT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_operational_23" model="risk.process">
+    <record id="process_plan_audit" model="risk.process">
+        <field name="name">Elaboration et mise en œuvre du plan d'audit</field>
+        <field name="code">PROC-AUDIT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_lcb_ft" model="risk.process">
+        <field name="name">Lutte contre le blanchiment de capitaux</field>
+        <field name="code">PROC-LCB-FT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_controle_creation" model="risk.process">
+        <field name="name">Contrôle de la création de nouveaux OPCVM</field>
+        <field name="code">PROC-CONT-CREA</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_controle_tresorerie" model="risk.process">
+        <field name="name">Contrôle de la trésorerie</field>
+        <field name="code">PROC-CONT-TRESO</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_pv_ca" model="risk.process">
+        <field name="name">Etablissement des PV des réunions du CA et AG</field>
+        <field name="code">PROC-PV-CA</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_etats_financiers" model="risk.process">
+        <field name="name">Etablissement des Etats financiers de la société</field>
+        <field name="code">PROC-ETAT-FIN</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_gestion_depositaire" model="risk.process">
+        <field name="name">Gestion du dépositaire</field>
+        <field name="code">PROC-DEPOS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_gestion_conflits" model="risk.process">
+        <field name="name">Gestion des conflits d'intérêts</field>
+        <field name="code">PROC-CONFLIT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_incidents_informatiques" model="risk.process">
         <field name="name">Gestion des incidents informatiques</field>
-        <field name="code">OPE-23</field>
-        <field name="category">operational</field>
-        <field name="count_risk">1</field>
-        <field name="description">Rédaction et transmission des rapports sur la gestion des incidents informatiques.</field>
-    </record>
-
-    <record id="process_operational_24" model="risk.process">
-        <field name="name">Gestion du site web</field>
-        <field name="code">OPE-24</field>
-        <field name="category">operational</field>
-        <field name="count_risk">2</field>
-        <field name="description">Animation du site web, publication d'informations conformes à la réglementation AMF-UMOA.</field>
-    </record>
-
-    <!-- ============================================================ -->
-    <!-- 3. PROCESSUS SUPPORTS (Support)                              -->
-    <!-- ============================================================ -->
-
-    <!-- Ressources Humaines -->
-    <record id="process_support_01" model="risk.process">
-        <field name="name">Recrutement</field>
-        <field name="code">SUP-01</field>
+        <field name="code">PROC-INC-INFO</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
         <field name="category">support</field>
-        <field name="count_risk">6</field>
-        <field name="description">Expression et analyse des besoins, organisation des entretiens, notification du recrutement, transmission des contrats, enregistrement des dossiers agents, déclaration CNPS.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_02" model="risk.process">
-        <field name="name">Traitement de la paie</field>
-        <field name="code">SUP-02</field>
+    <record id="process_gestion_site_web" model="risk.process">
+        <field name="name">Gestion du site WEB et plateformes mobiles</field>
+        <field name="code">PROC-WEB</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_controle"/>
         <field name="category">support</field>
-        <field name="count_risk">4</field>
-        <field name="description">Transmission des informations au cabinet comptable, vérification des bulletins de salaire, paiement des salaires, signature et archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_03" model="risk.process">
-        <field name="name">Déclaration sociale</field>
-        <field name="code">SUP-03</field>
+    <!-- ============================================ -->
+    <!-- Gestion des risques                          -->
+    <!-- ============================================ -->
+
+    <record id="process_surveillance_ratios" model="risk.process">
+        <field name="name">Surveillance des ratios réglementaires</field>
+        <field name="code">PROC-RATIOS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_risk_management"/>
         <field name="category">support</field>
-        <field name="count_risk">6</field>
-        <field name="description">Déclaration CNPS, CMU, DISA, vérification des montants, paiement et archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_04" model="risk.process">
-        <field name="name">Évaluation du personnel</field>
-        <field name="code">SUP-04</field>
+    <record id="process_suivi_strategie" model="risk.process">
+        <field name="name">Suivi de la stratégie d'investissement</field>
+        <field name="code">PROC-SUIVI-STRAT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_risk_management"/>
+        <field name="category">pilotage</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_systeme_management_risques" model="risk.process">
+        <field name="name">Système de management des risques</field>
+        <field name="code">PROC-SMR</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_risk_management"/>
         <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Transmission des fiches d'évaluation, procédure d'évaluation, mise à jour des dossiers.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_05" model="risk.process">
-        <field name="name">Gestion des missions</field>
-        <field name="code">SUP-05</field>
+    <record id="process_support_risk_marketing" model="risk.process">
+        <field name="name">Support marketing risques</field>
+        <field name="code">PROC-RISK-MARK</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_risk_management"/>
         <field name="category">support</field>
-        <field name="count_risk">2</field>
-        <field name="description">Établissement et transmission des ordres de mission, comptes rendus de mission.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_06" model="risk.process">
-        <field name="name">Rupture de contrat</field>
-        <field name="code">SUP-06</field>
+    <!-- ============================================ -->
+    <!-- Gestion du système informatique              -->
+    <!-- ============================================ -->
+
+    <record id="process_securite_informatique" model="risk.process">
+        <field name="name">Gestion de la sécurité informatique</field>
+        <field name="code">PROC-SEC-INFO</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_informatique"/>
         <field name="category">support</field>
-        <field name="count_risk">6</field>
-        <field name="description">Gestion des démissions, rédaction des certificats de travail, solde de tout compte, déclaration CNPS, archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_07" model="risk.process">
-        <field name="name">Formation du personnel</field>
-        <field name="code">SUP-07</field>
+    <record id="process_changements_systemes" model="risk.process">
+        <field name="name">Gestion des changements aux systèmes de production</field>
+        <field name="code">PROC-CHG-SYS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_informatique"/>
         <field name="category">support</field>
-        <field name="count_risk">1</field>
-        <field name="description">Renforcement des capacités des employés, plan de formation.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_08" model="risk.process">
-        <field name="name">Gestion des congés</field>
-        <field name="code">SUP-08</field>
-        <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Demandes de congés, attestations de départ et de reprise, archivage.</field>
-    </record>
-
-    <record id="process_support_09" model="risk.process">
-        <field name="name">Gestion des absences</field>
-        <field name="code">SUP-09</field>
-        <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Demandes d'autorisation d'absence, validation, enregistrement et archivage.</field>
-    </record>
-
-    <record id="process_support_10" model="risk.process">
-        <field name="name">Gestion des permissions</field>
-        <field name="code">SUP-10</field>
-        <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Demandes de permission, validation, enregistrement et archivage.</field>
-    </record>
-
-    <record id="process_support_11" model="risk.process">
-        <field name="name">Avances, acomptes et prêts</field>
-        <field name="code">SUP-11</field>
-        <field name="category">support</field>
-        <field name="count_risk">6</field>
-        <field name="description">Examen des demandes, transmission, préparation des documents, comptabilisation, archivage.</field>
-    </record>
-
-    <!-- Administration -->
-    <record id="process_support_12" model="risk.process">
-        <field name="name">Gestion des courriers</field>
-        <field name="code">SUP-12</field>
-        <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Réception, enregistrement, affectation, traitement et archivage des courriers arrivés et départs.</field>
-    </record>
-
-    <record id="process_support_13" model="risk.process">
-        <field name="name">Gestion des moyens de communication</field>
-        <field name="code">SUP-13</field>
-        <field name="category">support</field>
-        <field name="count_risk">2</field>
-        <field name="description">Traitement des appels et mails, gestion des défaillances des moyens de communication.</field>
-    </record>
-
-    <!-- Système d'information -->
-    <record id="process_support_14" model="risk.process">
-        <field name="name">Sécurité informatique</field>
-        <field name="code">SUP-14</field>
-        <field name="category">support</field>
-        <field name="count_risk">4</field>
-        <field name="description">Suivi des sauvegardes, plan de reprise et de continuité, politique de sécurité informatique, procédure de gestion des incidents.</field>
-    </record>
-
-    <record id="process_support_15" model="risk.process">
-        <field name="name">Gestion des changements</field>
-        <field name="code">SUP-15</field>
-        <field name="category">support</field>
-        <field name="count_risk">1</field>
-        <field name="description">Rédaction et actualisation de la procédure de gestion des changements aux systèmes de production.</field>
-    </record>
-
-    <record id="process_support_16" model="risk.process">
+    <record id="process_prestataires_informatiques" model="risk.process">
         <field name="name">Gestion des prestataires informatiques</field>
-        <field name="code">SUP-16</field>
+        <field name="code">PROC-PREST-INFO</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_informatique"/>
         <field name="category">support</field>
-        <field name="count_risk">4</field>
-        <field name="description">Rédaction des contrats, procédure de gestion des prestataires, évaluation, enregistrement et archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_17" model="risk.process">
-        <field name="name">Sécurité des logiciels métier</field>
-        <field name="code">SUP-17</field>
+    <record id="process_securite_logiciels" model="risk.process">
+        <field name="name">Gestion de la sécurité des logiciels métier</field>
+        <field name="code">PROC-SEC-LOG</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_informatique"/>
         <field name="category">support</field>
-        <field name="count_risk">2</field>
-        <field name="description">Vérification des caractéristiques de sécurité des logiciels, conformité aux exigences réglementaires.</field>
+        <field name="active">True</field>
     </record>
 
-    <!-- Comptabilité & Finances (Société) -->
-    <record id="process_support_18" model="risk.process">
-        <field name="name">Gestion de la trésorerie (encaissement)</field>
-        <field name="code">SUP-18</field>
+    <!-- ============================================ -->
+    <!-- Gestion administrative                       -->
+    <!-- ============================================ -->
+
+    <record id="process_gestion_courriers" model="risk.process">
+        <field name="name">Gestion des courriers</field>
+        <field name="code">PROC-COURRIER</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_administratif"/>
         <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Encaissement des frais de gestion des Fonds, encaissement des autres commissions, comptabilisation et archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_19" model="risk.process">
-        <field name="name">Gestion du compte caisse</field>
-        <field name="code">SUP-19</field>
+    <record id="process_moyens_communication" model="risk.process">
+        <field name="name">Gestion des moyens de communication</field>
+        <field name="code">PROC-COMM</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_administratif"/>
         <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Réapprovisionnement de la caisse, paiements en espèces, enregistrement au brouillard de caisse, archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_20" model="risk.process">
-        <field name="name">Gestion des achats de biens</field>
-        <field name="code">SUP-20</field>
+    <!-- ============================================ -->
+    <!-- Gestion Ressources Humaines                  -->
+    <!-- ============================================ -->
+
+    <record id="process_recrutement" model="risk.process">
+        <field name="name">Processus de recrutement</field>
+        <field name="code">PROC-RECRUT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
         <field name="category">support</field>
-        <field name="count_risk">5</field>
-        <field name="description">Établissement des bons de commande, vérification des factures, paiement, comptabilisation, archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_21" model="risk.process">
-        <field name="name">Gestion des achats de services</field>
-        <field name="code">SUP-21</field>
+    <record id="process_paie" model="risk.process">
+        <field name="name">Traitement de la paie</field>
+        <field name="code">PROC-PAIE</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
         <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Validation des besoins, paiement, comptabilisation, archivage des factures.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_22" model="risk.process">
+    <record id="process_declaration_sociale" model="risk.process">
+        <field name="name">Déclaration sociale</field>
+        <field name="code">PROC-DEC-SOC</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_evaluation_personnel" model="risk.process">
+        <field name="name">Evaluation du personnel</field>
+        <field name="code">PROC-EVAL-PERS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_gestion_missions" model="risk.process">
+        <field name="name">Gestion des missions</field>
+        <field name="code">PROC-MISS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_rupture_contrat" model="risk.process">
+        <field name="name">Rupture de contrat</field>
+        <field name="code">PROC-RUPT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_formation" model="risk.process">
+        <field name="name">Formation du personnel</field>
+        <field name="code">PROC-FORM</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_avances_prets" model="risk.process">
+        <field name="name">Avances, Acomptes et Prêts au Personnel</field>
+        <field name="code">PROC-AVANCE</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_conges" model="risk.process">
+        <field name="name">Gestion des congés</field>
+        <field name="code">PROC-CONG</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_absences" model="risk.process">
+        <field name="name">Gestion des absences</field>
+        <field name="code">PROC-ABS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_permissions" model="risk.process">
+        <field name="name">Gestion des permissions</field>
+        <field name="code">PROC-PERM</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_rh"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- Gestion Comptable et financière              -->
+    <!-- ============================================ -->
+
+    <record id="process_encaissement_frais" model="risk.process">
+        <field name="name">Encaissement des Frais de gestion des Fonds</field>
+        <field name="code">PROC-ENC-FRAIS</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_encaissement_commissions" model="risk.process">
+        <field name="name">Encaissement des autres Commissions</field>
+        <field name="code">PROC-ENC-COMM</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_gestion_caisse" model="risk.process">
+        <field name="name">Gestion du Compte caisse</field>
+        <field name="code">PROC-CAISSE</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_achats_biens" model="risk.process">
+        <field name="name">Gestion des achats des biens</field>
+        <field name="code">PROC-ACHAT-BIEN</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_decaissement" model="risk.process">
+        <field name="name">Gestion de la trésorerie (décaissement)</field>
+        <field name="code">PROC-DEC</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_rapprochement_bancaire" model="risk.process">
         <field name="name">Rapprochement bancaire</field>
-        <field name="code">SUP-22</field>
+        <field name="code">PROC-RAP-BAN</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
         <field name="category">support</field>
-        <field name="count_risk">5</field>
-        <field name="description">Réception des relevés bancaires, vérification de la concordance, régularisations, transmission à la DGA, archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_23" model="risk.process">
+    <record id="process_immobilisations" model="risk.process">
         <field name="name">Gestion des immobilisations</field>
-        <field name="code">SUP-23</field>
+        <field name="code">PROC-IMMO</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
         <field name="category">support</field>
-        <field name="count_risk">4</field>
-        <field name="description">Inventaire des immobilisations, sortie des biens immobilisés ou désinvestissement, mise à jour du registre.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_24" model="risk.process">
+    <record id="process_gestion_stocks" model="risk.process">
         <field name="name">Gestion des stocks</field>
-        <field name="code">SUP-24</field>
+        <field name="code">PROC-STOCK</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
         <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Mise à jour de la fiche de stock (entrées/sorties), enregistrement et archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_25" model="risk.process">
+    <record id="process_elaboration_budget" model="risk.process">
+        <field name="name">Elaboration budgétaire</field>
+        <field name="code">PROC-BUDGET</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
+        <field name="category">pilotage</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_declaration_fiscale" model="risk.process">
         <field name="name">Déclaration fiscale</field>
-        <field name="code">SUP-25</field>
+        <field name="code">PROC-DEC-FISC</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
         <field name="category">support</field>
-        <field name="count_risk">5</field>
-        <field name="description">Transmission des factures au cabinet comptable, vérification des déclarations, validation, paiement, archivage.</field>
+        <field name="active">True</field>
     </record>
 
-    <record id="process_support_26" model="risk.process">
-        <field name="name">Établissement des états financiers (société)</field>
-        <field name="code">SUP-26</field>
+    <record id="process_etablissement_etats_financiers" model="risk.process">
+        <field name="name">Etablissement des Etats financiers</field>
+        <field name="code">PROC-ETAT-FIN-COMPT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
         <field name="category">support</field>
-        <field name="count_risk">3</field>
-        <field name="description">Établissement des états financiers semestriels et annuels, transmission au CAC, certification, dépôt.</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_achats_services" model="risk.process">
+        <field name="name">Gestion des achats de services</field>
+        <field name="code">PROC-ACHAT-SERV</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_comptable_financiere"/>
+        <field name="category">support</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- Gouvernance                                  -->
+    <!-- ============================================ -->
+
+    <record id="process_gouvernance_strategie" model="risk.process">
+        <field name="name">Gouvernance et définition de la stratégie</field>
+        <field name="code">PROC-GOV-STRAT</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_gouvernance"/>
+        <field name="category">pilotage</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_gestion_budget_gov" model="risk.process">
+        <field name="name">Gestion du budget</field>
+        <field name="code">PROC-GOV-BUDGET</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_gouvernance"/>
+        <field name="category">pilotage</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="process_ethique_deontologie" model="risk.process">
+        <field name="name">Gestion de l'éthique et de la déontologie</field>
+        <field name="code">PROC-GOV-ETH</field>
+        <field name="macro_process_id" ref="risk_management.macro_process_gouvernance"/>
+        <field name="category">pilotage</field>
+        <field name="active">True</field>
     </record>
 
 </odoo>

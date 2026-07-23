@@ -15,6 +15,7 @@ export class RiskHeatMap extends Component {
         console.log("🔥 Setup RiskHeatMap !");
         this.orm = useService("orm");
         this.action = useService("action");
+        this.notification = useService("notification");
 
         this.state = useState({
             loading: true,
@@ -33,21 +34,18 @@ export class RiskHeatMap extends Component {
             residualData: [],
             categoryData: [],
             controls: { effective: 0, partial: 0, ineffective: 0 },
-            // NOUVEAU : Risques Hors Appétit
             outOfAppetite: [],
-            // NOUVEAU : Top 5 Risques
             topRisks: [],
-            // NOUVEAU : Actions Correctives
             actions: {
                 overdue: 0,
                 in_progress: 0,
                 completed: 0,
                 not_started: 0,
             },
-            // NOUVEAU : Evolution par Catégorie
             categoryEvolution: [],
-            // NOUVEAU : Narratives
             narratives: [],
+            // Export
+            exporting: false,
         });
 
         onWillStart(async () => {
@@ -78,7 +76,8 @@ export class RiskHeatMap extends Component {
                     "inherent_impact", "inherent_probability",
                     "residual_impact", "residual_probability", "residual_score", "residual_level",
                     "category_id", "state", "active", "create_date",
-                    "assessment_ids", "last_assessment_date"
+                    "assessment_ids", "last_assessment_date",
+                    "control_ids", "control_effectiveness_level"
                 ],
                 { limit: 1000 }
             );
@@ -100,58 +99,83 @@ export class RiskHeatMap extends Component {
     }
 
     processData(data) {
+        console.log("🔥 processData - Début du traitement des données");
+
         // ============================================================
-        // 1. MATRICES HEATMAP
+        // 1. INITIALISATION DES MATRICES
         // ============================================================
         const matrix = this.initializeMatrix();
         const residualMatrix = this.initializeMatrix();
 
+        // ============================================================
+        // 2. VARIABLES STATISTIQUES
+        // ============================================================
         let total = data.length;
         let critical = 0, high = 0, medium = 0, low = 0;
+        let residualCritical = 0, residualHigh = 0, residualMedium = 0, residualLow = 0;
         let totalScore = 0;
         let categoryMap = {};
+        let controlStats = { effective: 0, partially_effective: 0, ineffective: 0 };
 
+        // ============================================================
+        // 3. PARCOURS DES RISQUES
+        // ============================================================
         data.forEach(risk => {
-            // Matrice Inhérente
+            // ---- 3.1 Matrice Inhérente ----
             const impact = parseInt(risk.inherent_impact) || 1;
             const prob = parseInt(risk.inherent_probability) || 1;
             if (matrix[impact]) {
                 matrix[impact][prob] = (matrix[impact][prob] || 0) + 1;
             }
 
-            // Matrice Résiduelle
-            const resImpact = parseInt(risk.residual_impact) || 1;
-            const resProb = parseInt(risk.residual_probability) || 1;
-            if (residualMatrix[resImpact]) {
-                residualMatrix[resImpact][resProb] = (residualMatrix[resImpact][resProb] || 0) + 1;
+            // ---- 3.2 Matrice Résiduelle (NOUVELLE LOGIQUE) ----
+            // Basée sur : Niveau inhérent + Niveau de contrôle
+            const inherentLevel = risk.inherent_level || 'low';
+            const controlLevel = risk.control_effectiveness_level || 'ineffective';
+
+            // Calcul du niveau résiduel selon la matrice
+            const residualLevel = this._getResidualLevelFromMatrix(inherentLevel, controlLevel);
+
+            // Déterminer la position dans la matrice 5x5
+            const position = this._getMatrixPositionFromLevel(residualLevel);
+            const residualImpact = position.impact;
+            const residualProb = position.prob;
+
+            if (residualMatrix[residualImpact]) {
+                residualMatrix[residualImpact][residualProb] = (residualMatrix[residualImpact][residualProb] || 0) + 1;
             }
 
-            // Niveaux
-            const level = risk.inherent_level || 'low';
-            if (level === 'critical') critical++;
-            else if (level === 'high') high++;
-            else if (level === 'medium') medium++;
+            // ---- 3.3 Statistiques des niveaux inhérents ----
+            if (inherentLevel === 'critical') critical++;
+            else if (inherentLevel === 'high') high++;
+            else if (inherentLevel === 'medium') medium++;
             else low++;
 
+            // ---- 3.4 Statistiques des niveaux résiduels ----
+            if (residualLevel === 'critical') residualCritical++;
+            else if (residualLevel === 'high') residualHigh++;
+            else if (residualLevel === 'medium') residualMedium++;
+            else if (residualLevel === 'low') residualLow++;
+
+            // ---- 3.5 Score total ----
             totalScore += risk.inherent_score || 0;
 
-            // Catégories
+            // ---- 3.6 Catégories ----
             const catName = risk.category_id ? risk.category_id[1] || 'Non catégorisé' : 'Non catégorisé';
             if (!categoryMap[catName]) {
                 categoryMap[catName] = { count: 0, score: 0 };
             }
             categoryMap[catName].count += 1;
             categoryMap[catName].score += risk.inherent_score || 0;
+
+            // ---- 3.7 Statistiques des contrôles ----
+            if (controlLevel === 'effective') controlStats.effective++;
+            else if (controlLevel === 'partially_effective') controlStats.partially_effective++;
+            else controlStats.ineffective++;
         });
 
-        // Statistiques résiduelles
-        const residualCritical = data.filter(r => r.residual_level === 'critical').length;
-        const residualHigh = data.filter(r => r.residual_level === 'high').length;
-        const residualMedium = data.filter(r => r.residual_level === 'medium').length;
-        const residualLow = data.filter(r => r.residual_level === 'low').length;
-
         // ============================================================
-        // 2. RISQUES HORS APPÉTIT
+        // 4. RISQUES HORS APPÉTIT
         // ============================================================
         const activeRisks = data.filter(r => r.active !== false);
         const outOfAppetite = activeRisks
@@ -169,7 +193,7 @@ export class RiskHeatMap extends Component {
             }));
 
         // ============================================================
-        // 3. TOP 5 RISQUES
+        // 5. TOP 5 RISQUES
         // ============================================================
         const topRisks = activeRisks
             .sort((a, b) => (b.inherent_score || 0) - (a.inherent_score || 0))
@@ -185,10 +209,8 @@ export class RiskHeatMap extends Component {
             }));
 
         // ============================================================
-        // 4. ACTIONS CORRECTIVES (simulation)
+        // 6. ACTIONS CORRECTIVES (Données de test)
         // ============================================================
-        // Idéalement, vous feriez un searchRead sur 'risk.corrective.action'
-        // Pour l'instant, on garde des données de test
         const actions = {
             overdue: 0,
             in_progress: 3,
@@ -197,7 +219,7 @@ export class RiskHeatMap extends Component {
         };
 
         // ============================================================
-        // 5. ÉVOLUTION PAR CATÉGORIE
+        // 7. ÉVOLUTION PAR CATÉGORIE
         // ============================================================
         const categoryEvolutionMap = {};
         activeRisks.forEach(r => {
@@ -210,12 +232,12 @@ export class RiskHeatMap extends Component {
             .sort((a, b) => b.value - a.value);
 
         // ============================================================
-        // 6. NARRATIVES
+        // 8. NARRATIVES
         // ============================================================
         const narratives = this.generateNarratives(activeRisks);
 
         // ============================================================
-        // MISE À JOUR DE L'ÉTAT
+        // 9. MISE À JOUR DE L'ÉTAT
         // ============================================================
         this.state.matrix = matrix;
         this.state.residualMatrix = residualMatrix;
@@ -226,31 +248,119 @@ export class RiskHeatMap extends Component {
         this.state.lowCount = low;
         this.state.avgScore = total > 0 ? (totalScore / total).toFixed(1) : 0;
         this.state.risks = data;
+
+        // Données pour les graphiques inhérents
         this.state.inherentData = [
             { label: 'Critiques', value: critical, color: '#dc3545' },
             { label: 'Élevés', value: high, color: '#fd7e14' },
             { label: 'Moyens', value: medium, color: '#ffc107' },
             { label: 'Faibles', value: low, color: '#28a745' },
         ];
+
+        // Données pour les graphiques résiduels (basés sur la nouvelle logique)
         this.state.residualData = [
             { label: 'Critiques', value: residualCritical, color: '#dc3545' },
             { label: 'Élevés', value: residualHigh, color: '#fd7e14' },
             { label: 'Moyens', value: residualMedium, color: '#ffc107' },
             { label: 'Faibles', value: residualLow, color: '#28a745' },
         ];
+
+        // Données par catégorie
         this.state.categoryData = Object.entries(categoryMap).map(([name, values]) => ({
             label: name,
             value: values.count,
         }));
+
+        // Autres données
         this.state.outOfAppetite = outOfAppetite;
         this.state.topRisks = topRisks;
         this.state.actions = actions;
         this.state.categoryEvolution = categoryEvolution;
         this.state.narratives = narratives;
+        this.state.controls = controlStats;
 
-        console.log("🔥 Dashboard chargé !", this.state);
+        console.log("🔥 Dashboard chargé !");
         console.log("🔥 Matrice inhérente :", this.state.matrix);
-        console.log("🔥 Matrice résiduelle :", this.state.residualMatrix);
+        console.log("🔥 Matrice résiduelle (basée sur inhérent + contrôle) :", this.state.residualMatrix);
+        console.log("🔥 Statistiques résiduelles :", {
+            critical: residualCritical,
+            high: residualHigh,
+            medium: residualMedium,
+            low: residualLow
+        });
+    }
+
+    // ============================================================
+    // MATRICE RÉSIDUELLE - NOUVELLE LOGIQUE
+    // ============================================================
+    _getResidualLevelFromMatrix(inherentLevel, controlLevel) {
+        /**
+         * Matrice d'évaluation du risque résiduel
+         *
+         * | Niveau inhérent | Efficacité des contrôles | Niveau résiduel |
+         * |-----------------|--------------------------|-----------------|
+         * | critical/high   | ineffective              | high            |
+         * | medium          | ineffective              | medium          |
+         * | low             | ineffective              | low             |
+         * | critical/high   | partially_effective      | high            |
+         * | medium          | partially_effective      | medium          |
+         * | low             | partially_effective      | low             |
+         * | critical/high   | effective                | medium          |
+         * | medium          | effective                | low             |
+         * | low             | effective                | low             |
+         */
+
+        // Normaliser le niveau inhérent
+        let normInherent = inherentLevel;
+        if (inherentLevel === 'critical') normInherent = 'high';
+
+        // Si le contrôle est inefficace ou partiellement efficace
+        if (controlLevel === 'ineffective' || controlLevel === 'partially_effective') {
+            return normInherent;
+        }
+
+        // Si le contrôle est efficace
+        if (controlLevel === 'effective') {
+            if (normInherent === 'high') return 'medium';
+            if (normInherent === 'medium') return 'low';
+            return 'low'; // low reste low
+        }
+
+        return normInherent;
+    }
+
+    _getMatrixPositionFromLevel(level) {
+        /**
+         * Retourne la position (impact, probabilité) dans la matrice 5x5
+         * en fonction du niveau de risque
+         */
+        const mapping = {
+            'critical': { impact: 5, prob: 5 },
+            'high': { impact: 4, prob: 4 },
+            'medium': { impact: 3, prob: 3 },
+            'low': { impact: 2, prob: 2 },
+        };
+        return mapping[level] || { impact: 3, prob: 3 };
+    }
+
+    _getImpactFromLevel(level) {
+        const mapping = {
+            'critical': 5,
+            'high': 4,
+            'medium': 3,
+            'low': 2,
+        };
+        return mapping[level] || 3;
+    }
+
+    _getProbabilityFromLevel(level) {
+        const mapping = {
+            'critical': 5,
+            'high': 4,
+            'medium': 3,
+            'low': 2,
+        };
+        return mapping[level] || 3;
     }
 
     // ============================================================
@@ -259,7 +369,6 @@ export class RiskHeatMap extends Component {
     generateNarratives(risks) {
         const narratives = [];
 
-        // Nouveaux risques identifiés (30 derniers jours)
         const now = new Date();
         const recentRisks = risks.filter(r => {
             if (!r.create_date) return false;
@@ -274,7 +383,6 @@ export class RiskHeatMap extends Component {
             });
         }
 
-        // Risques critiques
         const criticalRisks = risks.filter(r => r.inherent_level === 'critical');
         if (criticalRisks.length > 0) {
             narratives.push({
@@ -283,7 +391,6 @@ export class RiskHeatMap extends Component {
             });
         }
 
-        // Risques Cyber
         const cyberRisks = risks.filter(r => {
             const cat = r.category_id ? r.category_id[1] : '';
             return cat.toLowerCase().includes('cyber') || cat.toLowerCase().includes('sécurité');
@@ -319,11 +426,10 @@ export class RiskHeatMap extends Component {
         matrix[1][1] = 0;
 
         const residualMatrix = this.initializeMatrix();
-        residualMatrix[5][5] = 1;
+        // Simulation de la matrice résiduelle avec la nouvelle logique
         residualMatrix[4][4] = 1;
         residualMatrix[3][3] = 1;
-        residualMatrix[2][2] = 0;
-        residualMatrix[1][1] = 0;
+        residualMatrix[2][2] = 1;
 
         this.state.matrix = matrix;
         this.state.residualMatrix = residualMatrix;
@@ -342,8 +448,8 @@ export class RiskHeatMap extends Component {
         this.state.residualData = [
             { label: 'Critiques', value: 0, color: '#dc3545' },
             { label: 'Élevés', value: 0, color: '#fd7e14' },
-            { label: 'Moyens', value: 0, color: '#ffc107' },
-            { label: 'Faibles', value: 15, color: '#28a745' },
+            { label: 'Moyens', value: 3, color: '#ffc107' },
+            { label: 'Faibles', value: 12, color: '#28a745' },
         ];
         this.state.categoryData = [
             { label: 'Risque de non-conformité', value: 3 },
@@ -352,21 +458,14 @@ export class RiskHeatMap extends Component {
             { label: 'Risque financier', value: 2 },
         ];
 
-        // Données de test pour les nouvelles sections
         this.state.outOfAppetite = [
             { id: 1, name: 'Non respect de la réglementation', code: 'RISK-00001', level: 'critical', score: 25, category: 'Risque de non-conformité' },
             { id: 2, name: 'Impossibilité de vendre le titre', code: 'RISK-00002', level: 'high', score: 16, category: 'Risque opératoire' },
-            { id: 3, name: 'Sauvegardes incomplètes ou incorrectes', code: 'RISK-00093', level: 'critical', score: 20, category: 'Risque opératoire' },
-            { id: 4, name: 'Absence de procédure non formalisée', code: 'RISK-00094', level: 'critical', score: 25, category: 'Risque opératoire' },
-            { id: 5, name: 'Risque de non exhaustivité des dossiers', code: 'RISK-00098', level: 'high', score: 15, category: 'Risque de non-conformité' },
         ];
 
         this.state.topRisks = [
             { id: 1, name: 'Non respect de la réglementation', code: 'RISK-00001', level: 'critical', score: 25, rank: 1, category: 'Risque de non-conformité' },
             { id: 2, name: 'Impossibilité de vendre le titre', code: 'RISK-00002', level: 'high', score: 16, rank: 2, category: 'Risque opératoire' },
-            { id: 3, name: 'Mauvais paramétrage des caractéristique des Fonds', code: 'RISK-00003', level: 'medium', score: 6, rank: 3, category: 'Risque opératoire' },
-            { id: 4, name: 'Sauvegardes incomplètes ou incorrectes', code: 'RISK-00093', level: 'critical', score: 20, rank: 4, category: 'Risque opératoire' },
-            { id: 5, name: 'Absence de procédure non formalisée', code: 'RISK-00094', level: 'critical', score: 25, rank: 5, category: 'Risque opératoire' },
         ];
 
         this.state.actions = {
@@ -388,6 +487,264 @@ export class RiskHeatMap extends Component {
             { icon: '📈', text: 'Augmentation du risque Cyber (score: 16 → 20)' },
             { icon: '✅', text: 'Mise en place du plan de continuité fournisseur' },
         ];
+
+        this.state.controls = {
+            effective: 5,
+            partially_effective: 3,
+            ineffective: 2,
+        };
+    }
+
+    // ============================================================
+    // EXPORT EN IMAGE
+    // ============================================================
+    async exportMatrixToImage() {
+        this.state.exporting = true;
+
+        try {
+            // Récupérer le conteneur du tableau de bord
+            const container = document.querySelector('.o_risk_heatmap_container');
+            if (!container) {
+                throw new Error('Conteneur non trouvé');
+            }
+
+            // Vérifier si html2canvas est disponible
+            if (typeof html2canvas === 'undefined') {
+                // Charger html2canvas dynamiquement
+                await this._loadHtml2Canvas();
+            }
+
+            // Capturer le conteneur en image
+            const canvas = await html2canvas(container, {
+                scale: 2, // Meilleure qualité
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                allowTaint: true,
+                width: container.scrollWidth,
+                height: container.scrollHeight,
+                windowWidth: container.scrollWidth,
+                windowHeight: container.scrollHeight,
+            });
+
+            // Créer le lien de téléchargement
+            const link = document.createElement('a');
+            link.download = `matrices_risques_${new Date().toISOString().slice(0,10)}.png`;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            this.notification.add('✅ Matrices exportées en PNG avec succès !', { type: 'success' });
+
+        } catch (error) {
+            console.error('Erreur lors de l\'export PNG :', error);
+            // Fallback : exporter en HTML
+            this._exportAsHTML();
+        } finally {
+            this.state.exporting = false;
+        }
+    }
+
+    _loadHtml2Canvas() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+            script.onload = () => {
+                console.log('html2canvas chargé !');
+                resolve();
+            };
+            script.onerror = () => {
+                reject(new Error('Impossible de charger html2canvas'));
+            };
+            document.head.appendChild(script);
+        });
+    }
+
+    _exportAsHTML() {
+        try {
+            const html = this._generateExportHTML();
+            const blob = new Blob([html], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.download = `rapport_matrices_${new Date().toISOString().slice(0,10)}.html`;
+            link.href = URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            this.notification.add('✅ Rapport HTML exporté !', { type: 'success' });
+        } catch (error) {
+            console.error('Erreur export HTML :', error);
+            this.notification.add('❌ Erreur lors de l\'export', { type: 'danger' });
+        }
+    }
+
+    _generateExportHTML() {
+        const matrixData = this.state.matrix;
+        const residualData = this.state.residualMatrix;
+
+        let inherentRows = '';
+        let residualRows = '';
+
+        // Générer les lignes de la matrice inhérente
+        for (let impact = 5; impact >= 1; impact--) {
+            let cells = '';
+            for (let prob = 1; prob <= 5; prob++) {
+                const value = matrixData[impact] && matrixData[impact][prob] ? matrixData[impact][prob] : 0;
+                const score = impact * prob;
+                const color = this._getExportColor(score);
+                cells += `<td style="border:1px solid #dee2e6;padding:8px;text-align:center;background:${color};color:white;font-weight:bold;width:50px;height:40px;font-size:14px;">${value}</td>`;
+            }
+            inherentRows += `<tr><td style="border:1px solid #dee2e6;padding:8px;text-align:center;background:#f5f5f5;font-weight:bold;width:50px;">${impact}</td>${cells}</tr>`;
+        }
+
+        // Générer les lignes de la matrice résiduelle
+        for (let impact = 5; impact >= 1; impact--) {
+            let cells = '';
+            for (let prob = 1; prob <= 5; prob++) {
+                const value = residualData[impact] && residualData[impact][prob] ? residualData[impact][prob] : 0;
+                const score = impact * prob;
+                const color = this._getExportColor(score);
+                cells += `<td style="border:1px solid #dee2e6;padding:8px;text-align:center;background:${color};color:white;font-weight:bold;width:50px;height:40px;font-size:14px;">${value}</td>`;
+            }
+            residualRows += `<tr><td style="border:1px solid #dee2e6;padding:8px;text-align:center;background:#f5f5f5;font-weight:bold;width:50px;">${impact}</td>${cells}</tr>`;
+        }
+
+        return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Matrices des Risques</title>
+            <style>
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; background: #f5f7fa; }
+                .container { max-width: 1000px; margin: 0 auto; background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+                h1 { color: #1a237e; text-align: center; margin-bottom: 5px; font-size: 28px; }
+                .subtitle { text-align: center; color: #6c757d; margin-bottom: 20px; font-size: 14px; border-bottom: 2px solid #e8eaf6; padding-bottom: 15px; }
+                .risk-count { text-align: center; font-size: 18px; font-weight: bold; color: #1a237e; margin: 15px 0 25px; padding: 12px; background: #e8eaf6; border-radius: 8px; }
+                .matrices { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+                .matrix-container { flex: 1; min-width: 320px; }
+                .matrix-container h3 { text-align: center; color: #1a237e; margin-bottom: 15px; font-size: 18px; }
+                table { border-collapse: collapse; margin: 0 auto; width: 100%; max-width: 350px; }
+                th { background: #1a237e; color: white; padding: 10px; border: 1px solid #dee2e6; text-align: center; width: 50px; height: 35px; font-size: 13px; }
+                .legend { display: flex; justify-content: center; gap: 20px; margin-top: 25px; flex-wrap: wrap; padding: 15px 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; }
+                .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+                .legend-color { width: 24px; height: 24px; border-radius: 4px; border: 1px solid #dee2e6; }
+                .footer { text-align: center; margin-top: 25px; font-size: 12px; color: #6c757d; border-top: 1px solid #dee2e6; padding-top: 20px; }
+                .matrix-label { font-weight: bold; color: #495057; }
+                @media print {
+                    body { background: white; padding: 10px; }
+                    .container { box-shadow: none; border: 1px solid #ddd; }
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>📊 Matrices des Risques</h1>
+                <div class="subtitle">Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</div>
+                <div class="risk-count">Total des risques : ${this.state.totalRisks}</div>
+                
+                <div class="matrices">
+                    <div class="matrix-container">
+                        <h3>🔥 Matrice Inhérente</h3>
+                        <table>
+                            <tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+                            ${inherentRows}
+                        </table>
+                    </div>
+                    <div class="matrix-container">
+                        <h3>🔥 Matrice Résiduelle</h3>
+                        <table>
+                            <tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+                            ${residualRows}
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-color" style="background:#dc3545;"></span> Critique (20-25)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#fd7e14;"></span> Élevé (12-19)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#ffc107;"></span> Moyen (6-11)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#28a745;"></span> Faible (3-5)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#17a2b8;"></span> Très faible (1-2)</span>
+                </div>
+                
+                <div class="footer">
+                    Rapport généré automatiquement depuis le système de gestion des risques
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+    }
+
+    _getExportColor(score) {
+        if (score >= 20) return '#dc3545';  // Rouge - Critique
+        if (score >= 12) return '#fd7e14';  // Orange - Élevé
+        if (score >= 6) return '#ffc107';   // Jaune - Moyen
+        if (score >= 3) return '#28a745';   // Vert - Faible
+        return '#17a2b8';                   // Bleu - Très faible
+    }
+
+    async _exportDirectly() {
+        try {
+            // Récupérer le conteneur à exporter
+            const container = document.querySelector('.o_risk_heatmap_container');
+            if (!container) {
+                throw new Error('Conteneur non trouvé');
+            }
+
+            // Utiliser html2canvas si disponible
+            if (typeof html2canvas !== 'undefined') {
+                const canvas = await html2canvas(container, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    allowTaint: true,
+                });
+
+                // Télécharger l'image
+                const link = document.createElement('a');
+                link.download = `matrices_risques_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                this.notification.add('✅ Matrices exportées avec succès !', { type: 'success' });
+            } else {
+                // Fallback : utiliser l'action Odoo
+                await this._exportWithOdooAction();
+            }
+        } catch (error) {
+            console.error('Erreur d\'export direct :', error);
+            // Fallback
+            await this._exportWithOdooAction();
+        } finally {
+            this.state.exporting = false;
+        }
+    }
+
+    async _exportWithOdooAction() {
+        try {
+            // Créer un rapport HTML simple
+            const html = this._generateExportHTML();
+
+            // Télécharger le HTML en tant que fichier
+            const blob = new Blob([html], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.download = `rapport_matrices_${new Date().toISOString().slice(0,10)}.html`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            URL.revokeObjectURL(link.href);
+
+            this.notification.add('✅ Rapport exporté avec succès !', { type: 'success' });
+        } catch (error) {
+            console.error('Erreur d\'export Odoo :', error);
+            this.notification.add('❌ Erreur lors de l\'export', { type: 'danger' });
+        }
     }
 
     // ============================================================
@@ -516,6 +873,36 @@ export class RiskHeatMap extends Component {
             views: [[false, "list"], [false, "form"]],
             target: "current",
         });
+    }
+
+    // ============================================================
+    // EXPORT EN PDF
+    // ============================================================
+    exportMatrixToPDF() {
+        this.state.exporting = true;
+
+        try {
+            const html = this._generateExportHTML();
+            const printWindow = window.open('', '_blank', 'width=1000,height=800');
+            if (printWindow) {
+                printWindow.document.write(html);
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+
+                printWindow.onafterprint = () => {
+                    printWindow.close();
+                    this.notification.add('✅ PDF généré avec succès !', { type: 'success' });
+                };
+            } else {
+                this.notification.add('⚠️ Veuillez autoriser les popups', { type: 'warning' });
+            }
+        } catch (error) {
+            console.error('Erreur export PDF :', error);
+            this.notification.add('❌ Erreur lors de l\'export PDF', { type: 'danger' });
+        } finally {
+            this.state.exporting = false;
+        }
     }
 }
 

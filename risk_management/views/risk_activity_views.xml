@@ -109,4 +109,44 @@
         </field>
     </record>
 
+    <!-- ============================================================ -->
+    <!-- LIST VIEW HIÉRARCHIQUE (AVEC REGROUPEMENT)                    -->
+    <!-- ============================================================ -->
+
+    <record id="view_risk_activity_hierarchical_list" model="ir.ui.view">
+        <field name="name">risk.activity.hierarchical.list</field>
+        <field name="model">risk.activity</field>
+        <field name="arch" type="xml">
+            <list
+                string="Activités par processus"
+                default_group_by="macro_process_id,process_id"
+                expand="0"
+                decoration-success="risk_level == '1'"
+                decoration-info="risk_level == '2'"
+                decoration-warning="risk_level == '3'"
+                decoration-danger="risk_level in ('4','5')">
+
+                <!-- Champs de regroupement -->
+                <field name="macro_process_id" string="Processus"/>
+                <field name="process_id" string="Sous Processus"/>
+
+                <!-- Champs affichés -->
+                <field name="sequence" widget="handle"/>
+                <field name="code" string="Code"/>
+                <field name="name" string="Activité"/>
+                <field name="owner_id" string="Responsable"/>
+                <field name="risk_count" string="Risques" sum="Total" widget="statinfo"/>
+                <field name="risk_level" string="Niveau de risque" widget="badge"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'draft'"
+                       decoration-danger="state == 'archived'"/>
+                <field name="date_deadline" string="Date limite"/>
+                <field name="date_start" string="Date début"/>
+                <field name="date_end" string="Date fin"/>
+
+            </list>
+        </field>
+    </record>
+
 </odoo>

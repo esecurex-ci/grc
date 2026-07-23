@@ -2,14 +2,14 @@
 <odoo>
 
     <!-- ============================================================ -->
-    <!-- 1. RISQUES - MANAGEMENT GÉNÉRAL (PIL-01)                     -->
+    <!-- 1. RISQUES - GOUVERNANCE (PIL-01)                             -->
     <!-- ============================================================ -->
 
     <!-- Activité: Élaboration de la stratégie de gestion -->
     <record id="risk_pil_01_01_01" model="risk.risk">
         <field name="name">Inadéquation entre la stratégie de gestion et le profil de risque des investisseurs</field>
         <field name="code">RISK-PIL-01-01-01</field>
-        <field name="activity_id" ref="activity_pil_01_01"/>
+        <field name="activity_id" ref="risk_management.activity_pil_01_01"/>
         <field name="category_id" ref="risk_management.cat_strategic"/>
         <field name="risk_type">strategic</field>
         <field name="risk_source">internal</field>
@@ -26,7 +26,7 @@
     <record id="risk_pil_01_02_01" model="risk.risk">
         <field name="name">Comité des risques inexistant</field>
         <field name="code">RISK-PIL-01-02-01</field>
-        <field name="activity_id" ref="activity_pil_01_02"/>
+        <field name="activity_id" ref="risk_management.activity_pil_01_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -39,27 +39,10 @@
         <field name="cause">Réglementation peu contraignante, structure organisationnelle inadaptée</field>
     </record>
 
-    <!-- Activité: Dispositif de contrôle -->
-    <record id="risk_pil_01_03_01" model="risk.risk">
-        <field name="name">Dispositif de contrôle inexistant ou déficient</field>
-        <field name="code">RISK-PIL-01-03-01</field>
-        <field name="activity_id" ref="activity_pil_01_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
-        <field name="state">validated</field>
-        <field name="description">Insuffisance du dispositif de contrôle interne</field>
-        <field name="consequence">Décisions stratégiques mal informées</field>
-        <field name="cause">Inadaptation du manuel de procédure, absence de charte d'audit</field>
-    </record>
-
     <record id="risk_pil_01_02_02" model="risk.risk">
         <field name="name">Non-respect des limites budgétaires</field>
         <field name="code">RISK-PIL-01-02-02</field>
-        <field name="activity_id" ref="activity_pil_01_02"/>
+        <field name="activity_id" ref="risk_management.activity_pil_01_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -75,7 +58,7 @@
     <record id="risk_pil_01_02_03" model="risk.risk">
         <field name="name">Dépassement budgétaire (Surcoût)</field>
         <field name="code">RISK-PIL-01-02-03</field>
-        <field name="activity_id" ref="activity_pil_01_02"/>
+        <field name="activity_id" ref="risk_management.activity_pil_01_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -88,10 +71,27 @@
         <field name="cause">Mauvaise allocation des ressources, manque de suivi</field>
     </record>
 
+    <!-- Activité: Dispositif de contrôle -->
+    <record id="risk_pil_01_03_01" model="risk.risk">
+        <field name="name">Dispositif de contrôle inexistant ou déficient</field>
+        <field name="code">RISK-PIL-01-03-01</field>
+        <field name="activity_id" ref="risk_management.activity_pil_01_03"/>
+        <field name="category_id" ref="risk_management.cat_operational"/>
+        <field name="risk_type">operational</field>
+        <field name="risk_source">internal</field>
+        <field name="inherent_probability">5</field>
+        <field name="inherent_impact">5</field>
+        <field name="inherent_level">critical</field>
+        <field name="state">validated</field>
+        <field name="description">Insuffisance du dispositif de contrôle interne</field>
+        <field name="consequence">Décisions stratégiques mal informées</field>
+        <field name="cause">Inadaptation du manuel de procédure, absence de charte d'audit</field>
+    </record>
+
     <record id="risk_pil_01_03_02" model="risk.risk">
         <field name="name">Conflits entre les intérêts des investisseurs et ceux de la société</field>
         <field name="code">RISK-PIL-01-03-02</field>
-        <field name="activity_id" ref="activity_pil_01_03"/>
+        <field name="activity_id" ref="risk_management.activity_pil_01_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -107,7 +107,7 @@
     <record id="risk_pil_01_03_03" model="risk.risk">
         <field name="name">Divulgation de secret professionnel</field>
         <field name="code">RISK-PIL-01-03-03</field>
-        <field name="activity_id" ref="activity_pil_01_03"/>
+        <field name="activity_id" ref="risk_management.activity_pil_01_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -123,7 +123,7 @@
     <record id="risk_pil_01_03_04" model="risk.risk">
         <field name="name">Non-actualisation du registre des conflits d'intérêts</field>
         <field name="code">RISK-PIL-01-03-04</field>
-        <field name="activity_id" ref="activity_pil_01_03"/>
+        <field name="activity_id" ref="risk_management.activity_pil_01_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -137,14 +137,14 @@
     </record>
 
     <!-- ============================================================ -->
-    <!-- 2. RISQUES - GESTION DES RISQUES (PIL-02)                    -->
+    <!-- 2. RISQUES - GESTION DES RISQUES (PIL-02)                     -->
     <!-- ============================================================ -->
 
     <!-- Activité: Surveillance des ratios -->
     <record id="risk_pil_02_01_01" model="risk.risk">
         <field name="name">Suivi non effectué des ratios prudentiels</field>
         <field name="code">RISK-PIL-02-01-01</field>
-        <field name="activity_id" ref="activity_pil_02_01"/>
+        <field name="activity_id" ref="risk_management.activity_pil_02_01"/>
         <field name="category_id" ref="risk_management.cat_compliance"/>
         <field name="risk_type">compliance</field>
         <field name="risk_source">internal</field>
@@ -161,7 +161,7 @@
     <record id="risk_pil_02_02_01" model="risk.risk">
         <field name="name">Non-respect des orientations stratégiques</field>
         <field name="code">RISK-PIL-02-02-01</field>
-        <field name="activity_id" ref="activity_pil_02_02"/>
+        <field name="activity_id" ref="risk_management.activity_pil_02_02"/>
         <field name="category_id" ref="risk_management.cat_strategic"/>
         <field name="risk_type">strategic</field>
         <field name="risk_source">internal</field>
@@ -177,7 +177,7 @@
     <record id="risk_pil_02_02_02" model="risk.risk">
         <field name="name">Non-atteinte des objectifs fixés</field>
         <field name="code">RISK-PIL-02-02-02</field>
-        <field name="activity_id" ref="activity_pil_02_02"/>
+        <field name="activity_id" ref="risk_management.activity_pil_02_02"/>
         <field name="category_id" ref="risk_management.cat_strategic"/>
         <field name="risk_type">strategic</field>
         <field name="risk_source">internal</field>
@@ -193,7 +193,7 @@
     <record id="risk_pil_02_02_03" model="risk.risk">
         <field name="name">Défaillance dans le processus de reporting interne</field>
         <field name="code">RISK-PIL-02-02-03</field>
-        <field name="activity_id" ref="activity_pil_02_02"/>
+        <field name="activity_id" ref="risk_management.activity_pil_02_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -210,7 +210,7 @@
     <record id="risk_pil_02_03_01" model="risk.risk">
         <field name="name">Non mise à jour de la cartographie des risques</field>
         <field name="code">RISK-PIL-02-03-01</field>
-        <field name="activity_id" ref="activity_pil_02_03"/>
+        <field name="activity_id" ref="risk_management.activity_pil_02_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -226,7 +226,7 @@
     <record id="risk_pil_02_03_02" model="risk.risk">
         <field name="name">Non mise à jour de la politique de gestion des risques</field>
         <field name="code">RISK-PIL-02-03-02</field>
-        <field name="activity_id" ref="activity_pil_02_03"/>
+        <field name="activity_id" ref="risk_management.activity_pil_02_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -242,7 +242,7 @@
     <record id="risk_pil_02_03_03" model="risk.risk">
         <field name="name">Non mise à jour des manuels de procédure</field>
         <field name="code">RISK-PIL-02-03-03</field>
-        <field name="activity_id" ref="activity_pil_02_03"/>
+        <field name="activity_id" ref="risk_management.activity_pil_02_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -263,7 +263,7 @@
     <record id="risk_pil_03_01_01" model="risk.risk">
         <field name="name">Risque de non exhaustivité des dossiers</field>
         <field name="code">RISK-PIL-03-01-01</field>
-        <field name="activity_id" ref="activity_pil_03_01"/>
+        <field name="activity_id" ref="risk_management.activity_pil_03_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -279,7 +279,7 @@
     <record id="risk_pil_03_01_02" model="risk.risk">
         <field name="name">Non-validation de l'ouverture de compte client</field>
         <field name="code">RISK-PIL-03-01-02</field>
-        <field name="activity_id" ref="activity_pil_03_01"/>
+        <field name="activity_id" ref="risk_management.activity_pil_03_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -295,7 +295,7 @@
     <record id="risk_pil_03_01_03" model="risk.risk">
         <field name="name">Non mise en œuvre du processus d'évaluation</field>
         <field name="code">RISK-PIL-03-01-03</field>
-        <field name="activity_id" ref="activity_pil_03_01"/>
+        <field name="activity_id" ref="risk_management.activity_pil_03_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -312,7 +312,7 @@
     <record id="risk_pil_03_04_01" model="risk.risk">
         <field name="name">Non-conformité des informations des bulletins</field>
         <field name="code">RISK-PIL-03-04-01</field>
-        <field name="activity_id" ref="activity_pil_03_04"/>
+        <field name="activity_id" ref="risk_management.activity_pil_03_04"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -329,7 +329,7 @@
     <record id="risk_pil_03_05_01" model="risk.risk">
         <field name="name">Mauvaise comptabilisation des opérations</field>
         <field name="code">RISK-PIL-03-05-01</field>
-        <field name="activity_id" ref="activity_pil_03_05"/>
+        <field name="activity_id" ref="risk_management.activity_pil_03_05"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -345,7 +345,7 @@
     <record id="risk_pil_03_05_02" model="risk.risk">
         <field name="name">Non prise en compte par le logiciel de toutes les opérations</field>
         <field name="code">RISK-PIL-03-05-02</field>
-        <field name="activity_id" ref="activity_pil_03_05"/>
+        <field name="activity_id" ref="risk_management.activity_pil_03_05"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -366,7 +366,7 @@
     <record id="risk_ope_01_01_01" model="risk.risk">
         <field name="name">Non respect de la réglementation</field>
         <field name="code">RISK-OPE-01-01-01</field>
-        <field name="activity_id" ref="activity_ope_01_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_01_01"/>
         <field name="category_id" ref="risk_management.cat_compliance"/>
         <field name="risk_type">compliance</field>
         <field name="risk_source">internal</field>
@@ -383,7 +383,7 @@
     <record id="risk_ope_01_02_01" model="risk.risk">
         <field name="name">Impossibilité de vendre le titre</field>
         <field name="code">RISK-OPE-01-02-01</field>
-        <field name="activity_id" ref="activity_ope_01_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_01_02"/>
         <field name="category_id" ref="risk_management.cat_financial"/>
         <field name="risk_type">financial</field>
         <field name="risk_source">external</field>
@@ -400,7 +400,7 @@
     <record id="risk_ope_01_03_01" model="risk.risk">
         <field name="name">Risque de mauvaise évaluation des émetteurs</field>
         <field name="code">RISK-OPE-01-03-01</field>
-        <field name="activity_id" ref="activity_ope_01_03"/>
+        <field name="activity_id" ref="risk_management.activity_ope_01_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -417,7 +417,7 @@
     <record id="risk_ope_01_04_01" model="risk.risk">
         <field name="name">Propositions non validées à temps</field>
         <field name="code">RISK-OPE-01-04-01</field>
-        <field name="activity_id" ref="activity_ope_01_04"/>
+        <field name="activity_id" ref="risk_management.activity_ope_01_04"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -434,7 +434,7 @@
     <record id="risk_ope_01_05_01" model="risk.risk">
         <field name="name">Analyse insuffisante des données financières</field>
         <field name="code">RISK-OPE-01-05-01</field>
-        <field name="activity_id" ref="activity_ope_01_05"/>
+        <field name="activity_id" ref="risk_management.activity_ope_01_05"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -451,7 +451,7 @@
     <record id="risk_ope_01_06_01" model="risk.risk">
         <field name="name">Non-respect des conditions de négociation</field>
         <field name="code">RISK-OPE-01-06-01</field>
-        <field name="activity_id" ref="activity_ope_01_06"/>
+        <field name="activity_id" ref="risk_management.activity_ope_01_06"/>
         <field name="category_id" ref="risk_management.cat_financial"/>
         <field name="risk_type">financial</field>
         <field name="risk_source">external</field>
@@ -472,7 +472,7 @@
     <record id="risk_ope_02_01_01" model="risk.risk">
         <field name="name">Non respect de la réglementation</field>
         <field name="code">RISK-OPE-02-01-01</field>
-        <field name="activity_id" ref="activity_ope_02_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_02_01"/>
         <field name="category_id" ref="risk_management.cat_compliance"/>
         <field name="risk_type">compliance</field>
         <field name="risk_source">internal</field>
@@ -489,7 +489,7 @@
     <record id="risk_ope_02_02_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie</field>
         <field name="code">RISK-OPE-02-02-01</field>
-        <field name="activity_id" ref="activity_ope_02_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_02_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -506,7 +506,7 @@
     <record id="risk_ope_02_03_01" model="risk.risk">
         <field name="name">Risque d'erreur dans le traitement des informations</field>
         <field name="code">RISK-OPE-02-03-01</field>
-        <field name="activity_id" ref="activity_ope_02_03"/>
+        <field name="activity_id" ref="risk_management.activity_ope_02_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -523,7 +523,7 @@
     <record id="risk_ope_02_04_01" model="risk.risk">
         <field name="name">Risque d'erreur dans le traitement des informations</field>
         <field name="code">RISK-OPE-02-04-01</field>
-        <field name="activity_id" ref="activity_ope_02_04"/>
+        <field name="activity_id" ref="risk_management.activity_ope_02_04"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -540,7 +540,7 @@
     <record id="risk_ope_02_05_01" model="risk.risk">
         <field name="name">Mauvais paramétrage des caractéristiques du Fonds</field>
         <field name="code">RISK-OPE-02-05-01</field>
-        <field name="activity_id" ref="activity_ope_02_05"/>
+        <field name="activity_id" ref="risk_management.activity_ope_02_05"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -557,7 +557,7 @@
     <record id="risk_ope_02_06_01" model="risk.risk">
         <field name="name">Mauvais paramétrage des comptes dans le logiciel</field>
         <field name="code">RISK-OPE-02-06-01</field>
-        <field name="activity_id" ref="activity_ope_02_06"/>
+        <field name="activity_id" ref="risk_management.activity_ope_02_06"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -574,7 +574,7 @@
     <record id="risk_ope_02_07_01" model="risk.risk">
         <field name="name">Vérification incorrectement effectuée</field>
         <field name="code">RISK-OPE-02-07-01</field>
-        <field name="activity_id" ref="activity_ope_02_07"/>
+        <field name="activity_id" ref="risk_management.activity_ope_02_07"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -590,7 +590,7 @@
     <record id="risk_ope_02_07_02" model="risk.risk">
         <field name="name">Risque de non exhaustivité des pièces constituant le kit d'agrément</field>
         <field name="code">RISK-OPE-02-07-02</field>
-        <field name="activity_id" ref="activity_ope_02_07"/>
+        <field name="activity_id" ref="risk_management.activity_ope_02_07"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -606,7 +606,7 @@
     <record id="risk_ope_02_07_03" model="risk.risk">
         <field name="name">Incomplétude des documents</field>
         <field name="code">RISK-OPE-02-07-03</field>
-        <field name="activity_id" ref="activity_ope_02_07"/>
+        <field name="activity_id" ref="risk_management.activity_ope_02_07"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -627,7 +627,7 @@
     <record id="risk_ope_04_01_01" model="risk.risk">
         <field name="name">Défaillance dans le processus de reporting interne</field>
         <field name="code">RISK-OPE-04-01-01</field>
-        <field name="activity_id" ref="activity_ope_04_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_04_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -644,7 +644,7 @@
     <record id="risk_ope_04_02_01" model="risk.risk">
         <field name="name">Objectifs mal définis ou irréalistes</field>
         <field name="code">RISK-OPE-04-02-01</field>
-        <field name="activity_id" ref="activity_ope_04_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_04_02"/>
         <field name="category_id" ref="risk_management.cat_strategic"/>
         <field name="risk_type">strategic</field>
         <field name="risk_source">internal</field>
@@ -665,7 +665,7 @@
     <record id="risk_ope_03_01_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie</field>
         <field name="code">RISK-OPE-03-01-01</field>
-        <field name="activity_id" ref="activity_ope_03_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_03_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -682,7 +682,7 @@
     <record id="risk_ope_03_02_01" model="risk.risk">
         <field name="name">Défaillance du logiciel de métier</field>
         <field name="code">RISK-OPE-03-02-01</field>
-        <field name="activity_id" ref="activity_ope_03_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_03_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -699,7 +699,7 @@
     <record id="risk_ope_03_03_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie</field>
         <field name="code">RISK-OPE-03-03-01</field>
-        <field name="activity_id" ref="activity_ope_03_03"/>
+        <field name="activity_id" ref="risk_management.activity_ope_03_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -716,7 +716,7 @@
     <record id="risk_ope_03_04_01" model="risk.risk">
         <field name="name">Non-transmission de la matrice</field>
         <field name="code">RISK-OPE-03-04-01</field>
-        <field name="activity_id" ref="activity_ope_03_04"/>
+        <field name="activity_id" ref="risk_management.activity_ope_03_04"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -733,7 +733,7 @@
     <record id="risk_ope_03_05_01" model="risk.risk">
         <field name="name">Non respect du délai de validation de la VL</field>
         <field name="code">RISK-OPE-03-05-01</field>
-        <field name="activity_id" ref="activity_ope_03_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_03_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -754,7 +754,7 @@
     <record id="risk_ope_05_01_01" model="risk.risk">
         <field name="name">Non réception des relevés</field>
         <field name="code">RISK-OPE-05-01-01</field>
-        <field name="activity_id" ref="activity_ope_05_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_05_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -771,7 +771,7 @@
     <record id="risk_ope_05_02_01" model="risk.risk">
         <field name="name">Non concordance entre les comptes</field>
         <field name="code">RISK-OPE-05-02-01</field>
-        <field name="activity_id" ref="activity_ope_05_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_05_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -788,7 +788,7 @@
     <record id="risk_ope_05_03_01" model="risk.risk">
         <field name="name">Non comptabilisation des opérations de régularisation</field>
         <field name="code">RISK-OPE-05-03-01</field>
-        <field name="activity_id" ref="activity_ope_05_03"/>
+        <field name="activity_id" ref="risk_management.activity_ope_05_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -805,7 +805,7 @@
     <record id="risk_ope_05_04_01" model="risk.risk">
         <field name="name">Non vérification des opérations de régularisation du dépositaire</field>
         <field name="code">RISK-OPE-05-04-01</field>
-        <field name="activity_id" ref="activity_ope_05_04"/>
+        <field name="activity_id" ref="risk_management.activity_ope_05_04"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -822,7 +822,7 @@
     <record id="risk_ope_05_05_01" model="risk.risk">
         <field name="name">Non enregistrement des états dans le réseau</field>
         <field name="code">RISK-OPE-05-05-01</field>
-        <field name="activity_id" ref="activity_ope_05_05"/>
+        <field name="activity_id" ref="risk_management.activity_ope_05_05"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -836,119 +836,14 @@
     </record>
 
     <!-- ============================================================ -->
-    <!-- 9. RISQUES - TRAITEMENT DES OPÉRATIONS DAT (OPE-06)           -->
-    <!-- ============================================================ -->
-
-    <!-- Activité: Établir et transmettre les ordres de virement DAT -->
-    <record id="risk_ope_06_01_01" model="risk.risk">
-        <field name="name">Risque d'Erreur de saisie</field>
-        <field name="code">RISK-OPE-06-01-01</field>
-        <field name="activity_id" ref="activity_ope_06_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur les ordres de virement DAT</field>
-        <field name="consequence">Pertes financières, perte d'opportunité</field>
-        <field name="cause">Inattention, négligence</field>
-    </record>
-
-    <!-- Activité: Gérer l'insuffisance de liquidité DAT -->
-    <record id="risk_ope_06_02_01" model="risk.risk">
-        <field name="name">Risque d'Erreur de saisie</field>
-        <field name="code">RISK-OPE-06-02-01</field>
-        <field name="activity_id" ref="activity_ope_06_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur les ordres de virement en cas d'insuffisance</field>
-        <field name="consequence">Retards, pénalités</field>
-        <field name="cause">Manque d'attention, omission</field>
-    </record>
-
-    <!-- Activité: Réceptionner l'attestation de virement DAT -->
-    <record id="risk_ope_06_03_01" model="risk.risk">
-        <field name="name">Non réception de l'attestation de virement</field>
-        <field name="code">RISK-OPE-06-03-01</field>
-        <field name="activity_id" ref="activity_ope_06_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de l'attestation de virement</field>
-        <field name="consequence">Manque de traçabilité, problème d'audit</field>
-        <field name="cause">Communication insuffisante, manque de suivi</field>
-    </record>
-
-    <!-- Activité: Comptabiliser les opérations DAT -->
-    <record id="risk_ope_06_04_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie lors de la comptabilisation</field>
-        <field name="code">RISK-OPE-06-04-01</field>
-        <field name="activity_id" ref="activity_ope_06_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie lors de la comptabilisation DAT</field>
-        <field name="consequence">Erreurs comptables</field>
-        <field name="cause">Manque d'attention, mauvaise compréhension</field>
-    </record>
-
-    <!-- Activité: Enregistrer les documents DAT -->
-    <record id="risk_ope_06_05_01" model="risk.risk">
-        <field name="name">Erreurs de calcul des intérêts</field>
-        <field name="code">RISK-OPE-06-05-01</field>
-        <field name="activity_id" ref="activity_ope_06_05"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreurs de calcul des intérêts DAT</field>
-        <field name="consequence">Paiement incorrect, pertes financières</field>
-        <field name="cause">Mauvaise application du taux d'intérêt</field>
-    </record>
-
-    <record id="risk_ope_06_05_02" model="risk.risk">
-        <field name="name">Non enregistrement des documents</field>
-        <field name="code">RISK-OPE-06-05-02</field>
-        <field name="activity_id" ref="activity_ope_06_05"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-enregistrement des documents DAT</field>
-        <field name="consequence">Perte de traçabilité, problème d'audit</field>
-        <field name="cause">Omission ou négligence</field>
-    </record>
-
-    <!-- ============================================================ -->
-    <!-- 10. RISQUES - TRAITEMENT DES OPÉRATIONS SUR TITRES (OPE-07)   -->
+    <!-- 9. RISQUES - TRAITEMENT DES OPÉRATIONS SUR TITRES (OPE-07)   -->
     <!-- ============================================================ -->
 
     <!-- Activité: Établir et transmettre les ordres d'achat/vente -->
     <record id="risk_ope_07_01_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie sur les ordres</field>
         <field name="code">RISK-OPE-07-01-01</field>
-        <field name="activity_id" ref="activity_ope_07_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_07_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -965,7 +860,7 @@
     <record id="risk_ope_07_02_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie sur l'ordre de virement</field>
         <field name="code">RISK-OPE-07-02-01</field>
-        <field name="activity_id" ref="activity_ope_07_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_07_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -982,7 +877,7 @@
     <record id="risk_ope_07_03_01" model="risk.risk">
         <field name="name">Non vérification des avis d'opéré</field>
         <field name="code">RISK-OPE-07-03-01</field>
-        <field name="activity_id" ref="activity_ope_07_03"/>
+        <field name="activity_id" ref="risk_management.activity_ope_07_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -995,65 +890,15 @@
         <field name="cause">Manque d'attention, omission</field>
     </record>
 
-    <!-- Activité: Comptabiliser les opérations d'achat/vente -->
-    <record id="risk_ope_07_04_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-OPE-07-04-01</field>
-        <field name="activity_id" ref="activity_ope_07_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie lors de la comptabilisation</field>
-        <field name="consequence">Fausser les rapports financiers</field>
-        <field name="cause">Manque d'attention, mauvaise compréhension</field>
-    </record>
-
-    <record id="risk_ope_07_04_02" model="risk.risk">
-        <field name="name">Non enregistrement de l'opération</field>
-        <field name="code">RISK-OPE-07-04-02</field>
-        <field name="activity_id" ref="activity_ope_07_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Non-enregistrement des opérations sur titres</field>
-        <field name="consequence">Fausser les rapports financiers</field>
-        <field name="cause">Omission de comptabilisation</field>
-    </record>
-
-    <!-- Activité: Enregistrer les opérations sur titres -->
-    <record id="risk_ope_07_05_01" model="risk.risk">
-        <field name="name">Non-enregistrement des documents</field>
-        <field name="code">RISK-OPE-07-05-01</field>
-        <field name="activity_id" ref="activity_ope_07_05"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-enregistrement des documents sur titres</field>
-        <field name="consequence">Perte de traçabilité, problème d'audit</field>
-        <field name="cause">Omission ou négligence</field>
-    </record>
-
-        <!-- ============================================================ -->
-    <!-- 11. RISQUES - TRAITEMENT DES SOUSCRIPTIONS/RACHATS (OPE-08)   -->
+    <!-- ============================================================ -->
+    <!-- 10. RISQUES - SOUSCRIPTION/RACHAT (OPE-08)                    -->
     <!-- ============================================================ -->
 
     <!-- Activité: Vérifier le cash disponible -->
     <record id="risk_ope_08_01_01" model="risk.risk">
         <field name="name">Insuffisance de liquidité</field>
         <field name="code">RISK-OPE-08-01-01</field>
-        <field name="activity_id" ref="activity_ope_08_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_08_01"/>
         <field name="category_id" ref="risk_management.cat_financial"/>
         <field name="risk_type">financial</field>
         <field name="risk_source">internal</field>
@@ -1070,7 +915,7 @@
     <record id="risk_ope_08_02_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie</field>
         <field name="code">RISK-OPE-08-02-01</field>
-        <field name="activity_id" ref="activity_ope_08_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_08_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1083,99 +928,15 @@
         <field name="cause">Manque d'attention, omission</field>
     </record>
 
-    <!-- Activité: Gérer l'insuffisance de liquidité rachat -->
-    <record id="risk_ope_08_03_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-OPE-08-03-01</field>
-        <field name="activity_id" ref="activity_ope_08_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur les ordres de virement</field>
-        <field name="consequence">Retards, pénalités</field>
-        <field name="cause">Manque d'attention, omission</field>
-    </record>
-
-    <!-- Activité: Réceptionner l'avis de crédit souscription -->
-    <record id="risk_ope_08_04_01" model="risk.risk">
-        <field name="name">Non réception de l'avis de crédit</field>
-        <field name="code">RISK-OPE-08-04-01</field>
-        <field name="activity_id" ref="activity_ope_08_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">1</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de l'avis de crédit</field>
-        <field name="consequence">Manque de traçabilité</field>
-        <field name="cause">Omission, communication insuffisante</field>
-    </record>
-
-    <!-- Activité: Comptabiliser les souscriptions/rachats -->
-    <record id="risk_ope_08_05_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-OPE-08-05-01</field>
-        <field name="activity_id" ref="activity_ope_08_05"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie lors de la comptabilisation</field>
-        <field name="consequence">Fausser les rapports financiers</field>
-        <field name="cause">Manque d'attention, mauvaise compréhension</field>
-    </record>
-
-    <record id="risk_ope_08_05_02" model="risk.risk">
-        <field name="name">Non enregistrement des opérations</field>
-        <field name="code">RISK-OPE-08-05-02</field>
-        <field name="activity_id" ref="activity_ope_08_05"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Non-enregistrement des opérations</field>
-        <field name="consequence">Fausser les rapports financiers</field>
-        <field name="cause">Omission de comptabilisation</field>
-    </record>
-
-    <!-- Activité: Enregistrer les documents de souscription/rachat -->
-    <record id="risk_ope_08_06_01" model="risk.risk">
-        <field name="name">Non enregistrement des documents</field>
-        <field name="code">RISK-OPE-08-06-01</field>
-        <field name="activity_id" ref="activity_ope_08_06"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-enregistrement des documents</field>
-        <field name="consequence">Perte de traçabilité, problème d'audit</field>
-        <field name="cause">Omission ou négligence</field>
-    </record>
-
     <!-- ============================================================ -->
-    <!-- 12. RISQUES - VALORISATION DES ACTIFS (OPE-09)                -->
+    <!-- 11. RISQUES - VALORISATION DES ACTIFS (OPE-09)                -->
     <!-- ============================================================ -->
 
     <!-- Activité: Mettre à jour les cours des titres cotés -->
     <record id="risk_ope_09_01_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie</field>
         <field name="code">RISK-OPE-09-01-01</field>
-        <field name="activity_id" ref="activity_ope_09_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_09_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1192,7 +953,7 @@
     <record id="risk_ope_09_02_01" model="risk.risk">
         <field name="name">Mauvaise évaluation des titres</field>
         <field name="code">RISK-OPE-09-02-01</field>
-        <field name="activity_id" ref="activity_ope_09_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_09_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1206,264 +967,13 @@
     </record>
 
     <!-- ============================================================ -->
-    <!-- 13. RISQUES - TRAITEMENT DES FRAIS DE GESTION (OPE-10)        -->
-    <!-- ============================================================ -->
-
-    <!-- Activité: Traiter les frais de gestion (DDG, DC/BR) -->
-    <record id="risk_ope_10_01_01" model="risk.risk">
-        <field name="name">Non réception de la facture</field>
-        <field name="code">RISK-OPE-10-01-01</field>
-        <field name="activity_id" ref="activity_ope_10_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">2</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de la facture du dépositaire</field>
-        <field name="consequence">Non paiement des frais dus</field>
-        <field name="cause">Communication insuffisante, manque de suivi</field>
-    </record>
-
-    <record id="risk_ope_10_01_02" model="risk.risk">
-        <field name="name">Ecart trop important entre les montants provisionnés et ceux du dépositaire</field>
-        <field name="code">RISK-OPE-10-01-02</field>
-        <field name="activity_id" ref="activity_ope_10_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Écart entre les montants provisionnés et ceux du dépositaire</field>
-        <field name="consequence">Pertes financières, fausser les rapports</field>
-        <field name="cause">Différences des taux appliqués</field>
-    </record>
-
-    <record id="risk_ope_10_01_03" model="risk.risk">
-        <field name="name">Non réception de l'attestation de virement</field>
-        <field name="code">RISK-OPE-10-01-03</field>
-        <field name="activity_id" ref="activity_ope_10_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de l'attestation de virement</field>
-        <field name="consequence">Fausser les rapports financiers</field>
-        <field name="cause">Omission, communication insuffisante</field>
-    </record>
-
-    <record id="risk_ope_10_01_04" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie lors de l'enregistrement</field>
-        <field name="code">RISK-OPE-10-01-04</field>
-        <field name="activity_id" ref="activity_ope_10_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie lors de l'enregistrement</field>
-        <field name="consequence">Fausser les rapports financiers</field>
-        <field name="cause">Manque d'attention</field>
-    </record>
-
-    <record id="risk_ope_10_01_05" model="risk.risk">
-        <field name="name">Non enregistrement de l'attestation sur le réseau</field>
-        <field name="code">RISK-OPE-10-01-05</field>
-        <field name="activity_id" ref="activity_ope_10_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-enregistrement de l'attestation sur le réseau</field>
-        <field name="consequence">Perte de traçabilité</field>
-        <field name="cause">Omission, pertes de documents</field>
-    </record>
-
-    <!-- Activité: Traiter les commissions et redevances -->
-    <record id="risk_ope_10_02_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-OPE-10-02-01</field>
-        <field name="activity_id" ref="activity_ope_10_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur la facture des frais</field>
-        <field name="consequence">Retard de paiement, pénalités</field>
-        <field name="cause">Manque d'attention, omission</field>
-    </record>
-
-    <record id="risk_ope_10_02_02" model="risk.risk">
-        <field name="name">Non réception de la facture</field>
-        <field name="code">RISK-OPE-10-02-02</field>
-        <field name="activity_id" ref="activity_ope_10_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">1</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de la facture du régulateur</field>
-        <field name="consequence">Problème d'audit et de reporting</field>
-        <field name="cause">Manque de suivi, erreur dans les coordonnées</field>
-    </record>
-
-    <record id="risk_ope_10_02_03" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-OPE-10-02-03</field>
-        <field name="activity_id" ref="activity_ope_10_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur l'ordre de virement</field>
-        <field name="consequence">Retard de paiement, pénalités</field>
-        <field name="cause">Manque d'attention, omission</field>
-    </record>
-
-    <record id="risk_ope_10_02_04" model="risk.risk">
-        <field name="name">Non réception de l'attestation de virement</field>
-        <field name="code">RISK-OPE-10-02-04</field>
-        <field name="activity_id" ref="activity_ope_10_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de l'attestation de virement</field>
-        <field name="consequence">Perte de traçabilité</field>
-        <field name="cause">Omission, communication insuffisante</field>
-    </record>
-
-    <!-- Activité: Traiter les frais de gestion (droit d'entrée/sortie) -->
-    <record id="risk_ope_10_03_01" model="risk.risk">
-        <field name="name">Non vérification de la note de débit</field>
-        <field name="code">RISK-OPE-10-03-01</field>
-        <field name="activity_id" ref="activity_ope_10_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">1</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-vérification de la note de débit</field>
-        <field name="consequence">Fausser la VL, non paiement des frais</field>
-        <field name="cause">Manque d'attention, négligence</field>
-    </record>
-
-    <record id="risk_ope_10_03_02" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-OPE-10-03-02</field>
-        <field name="activity_id" ref="activity_ope_10_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur l'ordre de virement</field>
-        <field name="consequence">Pertes financières, fausser la VL</field>
-        <field name="cause">Manque d'attention, omission</field>
-    </record>
-
-    <record id="risk_ope_10_03_03" model="risk.risk">
-        <field name="name">Non réception de l'attestation de virement</field>
-        <field name="code">RISK-OPE-10-03-03</field>
-        <field name="activity_id" ref="activity_ope_10_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de l'attestation de virement</field>
-        <field name="consequence">Perte de traçabilité</field>
-        <field name="cause">Omission, défaillance du système</field>
-    </record>
-
-    <!-- ============================================================ -->
-    <!-- 14. RISQUES - SUIVI DES COUPONS (OPE-11)                      -->
-    <!-- ============================================================ -->
-
-    <record id="risk_ope_11_01_01" model="risk.risk">
-        <field name="name">Risque de non-envoi du mail</field>
-        <field name="code">RISK-OPE-11-01-01</field>
-        <field name="activity_id" ref="activity_ope_11_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-envoi du mail au dépositaire</field>
-        <field name="consequence">Retard de paiement, pertes financières</field>
-        <field name="cause">Omission, interruption de la connexion</field>
-    </record>
-
-    <record id="risk_ope_11_02_01" model="risk.risk">
-        <field name="name">Non réception de l'avis de crédit</field>
-        <field name="code">RISK-OPE-11-02-01</field>
-        <field name="activity_id" ref="activity_ope_11_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de l'avis de crédit</field>
-        <field name="consequence">Perte de traçabilité</field>
-        <field name="cause">Négligence, bugs ou pannes informatiques</field>
-    </record>
-
-    <record id="risk_ope_11_02_02" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie lors de la comptabilisation</field>
-        <field name="code">RISK-OPE-11-02-02</field>
-        <field name="activity_id" ref="activity_ope_11_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie lors de la comptabilisation</field>
-        <field name="consequence">Inexactitude des états financiers</field>
-        <field name="cause">Manque d'attention, omission</field>
-    </record>
-
-    <!-- ============================================================ -->
-    <!-- 15. RISQUES - RAPPORTS RÈGLEMENTAIRES (OPE-12)                -->
+    <!-- 12. RISQUES - RAPPORTS RÉGLEMENTAIRES (OPE-12)                -->
     <!-- ============================================================ -->
 
     <record id="risk_ope_12_01_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie</field>
         <field name="code">RISK-OPE-12-01-01</field>
-        <field name="activity_id" ref="activity_ope_12_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_12_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1479,7 +989,7 @@
     <record id="risk_ope_12_01_02" model="risk.risk">
         <field name="name">Non certification des états de composition</field>
         <field name="code">RISK-OPE-12-01-02</field>
-        <field name="activity_id" ref="activity_ope_12_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_12_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1495,7 +1005,7 @@
     <record id="risk_ope_12_02_01" model="risk.risk">
         <field name="name">Non enregistrement de tous les documents</field>
         <field name="code">RISK-OPE-12-02-01</field>
-        <field name="activity_id" ref="activity_ope_12_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_12_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1509,14 +1019,14 @@
     </record>
 
     <!-- ============================================================ -->
-    <!-- 16. RISQUES - GESTION CLIENTÈLE (OPE-13 à OPE-19)            -->
+    <!-- 13. RISQUES - GESTION CLIENTÈLE (OPE-13 à OPE-16)             -->
     <!-- ============================================================ -->
 
     <!-- Activité: Collecter les informations KYC -->
     <record id="risk_ope_13_01_01" model="risk.risk">
         <field name="name">Non-respect du dispositif KYC</field>
         <field name="code">RISK-OPE-13-01-01</field>
-        <field name="activity_id" ref="activity_ope_13_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_13_01"/>
         <field name="category_id" ref="risk_management.cat_compliance"/>
         <field name="risk_type">compliance</field>
         <field name="risk_source">internal</field>
@@ -1533,7 +1043,7 @@
     <record id="risk_ope_13_02_01" model="risk.risk">
         <field name="name">Défaillance du processus d'évaluation</field>
         <field name="code">RISK-OPE-13-02-01</field>
-        <field name="activity_id" ref="activity_ope_13_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_13_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1546,61 +1056,11 @@
         <field name="cause">Données incomplètes, sources non fiables</field>
     </record>
 
-    <!-- Activité: Créer le compte client -->
-    <record id="risk_ope_13_03_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-OPE-13-03-01</field>
-        <field name="activity_id" ref="activity_ope_13_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur les informations du client</field>
-        <field name="consequence">Risque de duplication des comptes</field>
-        <field name="cause">Mauvaise compréhension, manque d'attention</field>
-    </record>
-
-    <!-- Activité: Enregistrer et archiver le dossier client -->
-    <record id="risk_ope_13_04_01" model="risk.risk">
-        <field name="name">Non enregistrement du dossier</field>
-        <field name="code">RISK-OPE-13-04-01</field>
-        <field name="activity_id" ref="activity_ope_13_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-enregistrement du dossier client</field>
-        <field name="consequence">Amendes, problèmes d'audit</field>
-        <field name="cause">Manque de vigilance, omission</field>
-    </record>
-
-    <record id="risk_ope_13_04_02" model="risk.risk">
-        <field name="name">Non archivage du dossier</field>
-        <field name="code">RISK-OPE-13-04-02</field>
-        <field name="activity_id" ref="activity_ope_13_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-archivage du dossier client</field>
-        <field name="consequence">Problèmes d'audit</field>
-        <field name="cause">Omission, perte de document</field>
-    </record>
-
     <!-- Activité: Prospection commerciale -->
     <record id="risk_ope_14_01_01" model="risk.risk">
         <field name="name">Non-atteinte des objectifs de prospection</field>
         <field name="code">RISK-OPE-14-01-01</field>
-        <field name="activity_id" ref="activity_ope_14_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_14_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">external</field>
@@ -1616,7 +1076,7 @@
     <record id="risk_ope_14_01_02" model="risk.risk">
         <field name="name">Mauvaise compréhension des besoins des prospects</field>
         <field name="code">RISK-OPE-14-01-02</field>
-        <field name="activity_id" ref="activity_ope_14_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_14_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1632,7 +1092,7 @@
     <record id="risk_ope_14_01_03" model="risk.risk">
         <field name="name">Non mise à jour de la base de données</field>
         <field name="code">RISK-OPE-14-01-03</field>
-        <field name="activity_id" ref="activity_ope_14_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_14_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1649,7 +1109,7 @@
     <record id="risk_ope_14_02_01" model="risk.risk">
         <field name="name">Insatisfaction des clients</field>
         <field name="code">RISK-OPE-14-02-01</field>
-        <field name="activity_id" ref="activity_ope_14_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_14_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1666,7 +1126,7 @@
     <record id="risk_ope_14_03_01" model="risk.risk">
         <field name="name">Perte clientèle</field>
         <field name="code">RISK-OPE-14-03-01</field>
-        <field name="activity_id" ref="activity_ope_14_03"/>
+        <field name="activity_id" ref="risk_management.activity_ope_14_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1679,92 +1139,11 @@
         <field name="cause">Manque de propositions adaptées, insatisfaction</field>
     </record>
 
-    <!-- Activité: Traitement des souscriptions/rachats clientèle -->
-    <record id="risk_ope_15_01_01" model="risk.risk">
-        <field name="name">Non vérification des documents transmis par le client</field>
-        <field name="code">RISK-OPE-15-01-01</field>
-        <field name="activity_id" ref="activity_ope_15_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-vérification des documents</field>
-        <field name="consequence">Atteinte à la réputation, amendes</field>
-        <field name="cause">Manque d'attention, négligence</field>
-    </record>
-
-    <record id="risk_ope_15_02_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie lors de l'enregistrement</field>
-        <field name="code">RISK-OPE-15-02-01</field>
-        <field name="activity_id" ref="activity_ope_15_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie lors de l'enregistrement</field>
-        <field name="consequence">Retards, faux calcul de la VL</field>
-        <field name="cause">Manque d'attention, bug du logiciel</field>
-    </record>
-
-    <record id="risk_ope_15_03_01" model="risk.risk">
-        <field name="name">Non transmission des bulletins</field>
-        <field name="code">RISK-OPE-15-03-01</field>
-        <field name="activity_id" ref="activity_ope_15_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-transmission des bulletins</field>
-        <field name="consequence">Manque de visibilité, difficultés d'audit</field>
-        <field name="cause">Omission, perte de document</field>
-    </record>
-
-    <record id="risk_ope_15_04_01" model="risk.risk">
-        <field name="name">Non transmission de l'information au comptable</field>
-        <field name="code">RISK-OPE-15-04-01</field>
-        <field name="activity_id" ref="activity_ope_15_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-transmission de l'information au comptable</field>
-        <field name="consequence">Retards, non-prise en compte des opérations</field>
-        <field name="cause">Omission ou négligence</field>
-    </record>
-
-    <record id="risk_ope_15_05_01" model="risk.risk">
-        <field name="name">Non archivage des bulletins</field>
-        <field name="code">RISK-OPE-15-05-01</field>
-        <field name="activity_id" ref="activity_ope_15_05"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-archivage des bulletins</field>
-        <field name="consequence">Manque de traçabilité, problèmes d'audit</field>
-        <field name="cause">Omission, perte de document</field>
-    </record>
-
     <!-- Activité: Gestion des réclamations -->
     <record id="risk_ope_16_01_01" model="risk.risk">
         <field name="name">Non traitement des réclamations clients</field>
         <field name="code">RISK-OPE-16-01-01</field>
-        <field name="activity_id" ref="activity_ope_16_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_16_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1780,7 +1159,7 @@
     <record id="risk_ope_16_02_01" model="risk.risk">
         <field name="name">Non enregistrement des fiches de réclamation</field>
         <field name="code">RISK-OPE-16-02-01</field>
-        <field name="activity_id" ref="activity_ope_16_02"/>
+        <field name="activity_id" ref="risk_management.activity_ope_16_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1793,81 +1172,14 @@
         <field name="cause">Manque de vigilance, omission</field>
     </record>
 
-    <record id="risk_ope_16_02_02" model="risk.risk">
-        <field name="name">Non archivage des fiches de réclamation</field>
-        <field name="code">RISK-OPE-16-02-02</field>
-        <field name="activity_id" ref="activity_ope_16_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-archivage des réclamations</field>
-        <field name="consequence">Manque de traçabilité</field>
-        <field name="cause">Omission, perte de document</field>
-    </record>
-
-    <!-- Activité: Reporting client -->
-    <record id="risk_ope_17_01_01" model="risk.risk">
-        <field name="name">Non transmission des rapports de gestion</field>
-        <field name="code">RISK-OPE-17-01-01</field>
-        <field name="activity_id" ref="activity_ope_17_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">1</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-transmission des rapports de gestion</field>
-        <field name="consequence">Nuire à l'image de l'entreprise</field>
-        <field name="cause">Omission, rapport non rédigé</field>
-    </record>
-
-    <!-- Activité: Rédaction des rapports semestriels -->
-    <record id="risk_ope_18_01_01" model="risk.risk">
-        <field name="name">Défaillance dans le processus de reporting interne</field>
-        <field name="code">RISK-OPE-18-01-01</field>
-        <field name="activity_id" ref="activity_ope_18_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Défaillance dans le processus de reporting interne</field>
-        <field name="consequence">Manque de visibilité, inefficacité</field>
-        <field name="cause">Omission, manque de temps</field>
-    </record>
-
-    <!-- Activité: Support marketing -->
-    <record id="risk_ope_19_01_01" model="risk.risk">
-        <field name="name">Risque d'erreur dans le traitement des informations</field>
-        <field name="code">RISK-OPE-19-01-01</field>
-        <field name="activity_id" ref="activity_ope_19_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur dans le traitement des informations</field>
-        <field name="consequence">Difficulté à attirer des investisseurs</field>
-        <field name="cause">Manque d'attention ou de vigilance</field>
-    </record>
-
     <!-- ============================================================ -->
-    <!-- 17. RISQUES - SURVEILLANCE PARTICULIÈRE (OPE-21)              -->
+    <!-- 14. RISQUES - SURVEILLANCE PARTICULIÈRE (OPE-21)              -->
     <!-- ============================================================ -->
 
     <record id="risk_ope_21_01_01" model="risk.risk">
         <field name="name">Non-respect du dispositif KYC</field>
         <field name="code">RISK-OPE-21-01-01</field>
-        <field name="activity_id" ref="activity_ope_21_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_21_01"/>
         <field name="category_id" ref="risk_management.cat_compliance"/>
         <field name="risk_type">compliance</field>
         <field name="risk_source">internal</field>
@@ -1880,42 +1192,10 @@
         <field name="cause">Pièces manquantes, non-conformité des documents</field>
     </record>
 
-    <record id="risk_ope_21_02_01" model="risk.risk">
-        <field name="name">Non-respect du dispositif KYC</field>
-        <field name="code">RISK-OPE-21-02-01</field>
-        <field name="activity_id" ref="activity_ope_21_02"/>
-        <field name="category_id" ref="risk_management.cat_compliance"/>
-        <field name="risk_type">compliance</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-respect du dispositif KYC pour les opérations ≥ 10M inhabituelles</field>
-        <field name="consequence">Atteinte à la réputation, amendes</field>
-        <field name="cause">Pièces manquantes, non-conformité des documents</field>
-    </record>
-
-    <record id="risk_ope_21_03_01" model="risk.risk">
-        <field name="name">Non archivage des opérations</field>
-        <field name="code">RISK-OPE-21-03-01</field>
-        <field name="activity_id" ref="activity_ope_21_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-archivage des opérations confidentielles</field>
-        <field name="consequence">Amendes, suspension d'agrément</field>
-        <field name="cause">Omission, perte de documents</field>
-    </record>
-
     <record id="risk_ope_21_04_01" model="risk.risk">
         <field name="name">Non-mise à jour des listes GAFI</field>
         <field name="code">RISK-OPE-21-04-01</field>
-        <field name="activity_id" ref="activity_ope_21_04"/>
+        <field name="activity_id" ref="risk_management.activity_ope_21_04"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1928,30 +1208,14 @@
         <field name="cause">Omission, manque de temps</field>
     </record>
 
-    <record id="risk_ope_21_05_01" model="risk.risk">
-        <field name="name">Non respect de la règlementation</field>
-        <field name="code">RISK-OPE-21-05-01</field>
-        <field name="activity_id" ref="activity_ope_21_05"/>
-        <field name="category_id" ref="risk_management.cat_compliance"/>
-        <field name="risk_type">compliance</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-respect de la règlementation pour les opérations électroniques</field>
-        <field name="consequence">Atteinte à l'image, amendes</field>
-        <field name="cause">Négligence, systèmes non à jour</field>
-    </record>
-
     <!-- ============================================================ -->
-    <!-- 18. RISQUES - AUDIT INTERNE (OPE-22)                          -->
+    <!-- 15. RISQUES - AUDIT INTERNE (OPE-22)                          -->
     <!-- ============================================================ -->
 
     <record id="risk_ope_22_01_01" model="risk.risk">
         <field name="name">Non élaboration d'un plan d'audit</field>
         <field name="code">RISK-OPE-22-01-01</field>
-        <field name="activity_id" ref="activity_ope_22_01"/>
+        <field name="activity_id" ref="risk_management.activity_ope_22_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -1964,51 +1228,14 @@
         <field name="cause">Manque de planification, ressources insuffisantes</field>
     </record>
 
-    <record id="risk_ope_22_02_01" model="risk.risk">
-        <field name="name">Non-mise en œuvre du plan d'audit</field>
-        <field name="code">RISK-OPE-22-02-01</field>
-        <field name="activity_id" ref="activity_ope_22_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Non-mise en œuvre du plan d'audit</field>
-        <field name="consequence">Manque d'amélioration continue</field>
-        <field name="cause">Manque de temps, ressources insuffisantes</field>
-    </record>
-
     <!-- ============================================================ -->
-    <!-- 19. RISQUES - GOUVERNANCE (PIL-01)                            -->
+    <!-- 16. RISQUES - RESSOURCES HUMAINES (SUP-01 à SUP-07)           -->
     <!-- ============================================================ -->
 
-    <!-- Activité: Élaboration de la stratégie de gestion -->
-    <record id="risk_pil_01_01_02" model="risk.risk">
-        <field name="name">Inadéquation de la stratégie de gestion</field>
-        <field name="code">RISK-PIL-01-01-02</field>
-        <field name="activity_id" ref="activity_pil_01_01"/>
-        <field name="category_id" ref="risk_management.cat_strategic"/>
-        <field name="risk_type">strategic</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Stratégie de gestion inadaptée</field>
-        <field name="consequence">Insatisfaction des investisseurs</field>
-        <field name="cause">Erreur d'allocation d'actifs</field>
-    </record>
-        <!-- ============================================================ -->
-    <!-- 20. RISQUES - RESSOURCES HUMAINES (SUP-01 à SUP-11)           -->
-    <!-- ============================================================ -->
-
-    <!-- Activité: Analyser les besoins en personnel -->
     <record id="risk_sup_01_01_01" model="risk.risk">
-        <field name="name">Risque de sous-estimation ou sur-estimation des besoins</field>
+        <field name="name">Risque de sous-estimation des besoins en personnel</field>
         <field name="code">RISK-SUP-01-01-01</field>
-        <field name="activity_id" ref="activity_sup_01_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_01_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2021,339 +1248,10 @@
         <field name="cause">Mauvaise évaluation des charges de travail</field>
     </record>
 
-    <!-- Activité: Organiser les entretiens d'embauche -->
-    <record id="risk_sup_01_02_01" model="risk.risk">
-        <field name="name">Inadéquation entre les méthodes d'entretien et les exigences du poste</field>
-        <field name="code">RISK-SUP-01-02-01</field>
-        <field name="activity_id" ref="activity_sup_01_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Méthodes d'entretien inadaptées</field>
-        <field name="consequence">Mauvais choix de candidat, turnover élevé</field>
-        <field name="cause">Manque de compréhension des exigences du poste</field>
-    </record>
-
-    <!-- Activité: Transmettre le contrat d'embauche -->
-    <record id="risk_sup_01_03_01" model="risk.risk">
-        <field name="name">Non envoi de la notification</field>
-        <field name="code">RISK-SUP-01-03-01</field>
-        <field name="activity_id" ref="activity_sup_01_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-envoi de la notification au candidat</field>
-        <field name="consequence">Perte du candidat, perte de temps</field>
-        <field name="cause">Omission, erreur dans les coordonnées</field>
-    </record>
-
-    <record id="risk_sup_01_03_02" model="risk.risk">
-        <field name="name">Risques liés à des erreurs dans le contenu du contrat</field>
-        <field name="code">RISK-SUP-01-03-02</field>
-        <field name="activity_id" ref="activity_sup_01_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreurs dans le contenu du contrat</field>
-        <field name="consequence">Refus de signer, retard de prise de poste</field>
-        <field name="cause">Manque de vérification, erreur de saisie</field>
-    </record>
-
-    <!-- Activité: Enregistrer le dossier agent -->
-    <record id="risk_sup_01_04_01" model="risk.risk">
-        <field name="name">Non enregistrement du dossier du salarié</field>
-        <field name="code">RISK-SUP-01-04-01</field>
-        <field name="activity_id" ref="activity_sup_01_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-enregistrement du dossier du salarié</field>
-        <field name="consequence">Retards administratifs, non-conformité</field>
-        <field name="cause">Omission, mauvaise saisie</field>
-    </record>
-
-    <record id="risk_sup_01_04_02" model="risk.risk">
-        <field name="name">Déclarations inexactes ou incomplètes</field>
-        <field name="code">RISK-SUP-01-04-02</field>
-        <field name="activity_id" ref="activity_sup_01_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Déclarations inexactes ou incomplètes</field>
-        <field name="consequence">Non-couverture sociale, conflits</field>
-        <field name="cause">Omission de données essentielles</field>
-    </record>
-
-    <record id="risk_sup_01_04_03" model="risk.risk">
-        <field name="name">Non mise à jour du dossier du salarié</field>
-        <field name="code">RISK-SUP-01-04-03</field>
-        <field name="activity_id" ref="activity_sup_01_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-mise à jour du dossier du salarié</field>
-        <field name="consequence">Difficulté à suivre les évolutions de carrière</field>
-        <field name="cause">Négligence, manque de contrôle</field>
-    </record>
-
-    <record id="risk_sup_01_04_04" model="risk.risk">
-        <field name="name">Non archivage du dossier</field>
-        <field name="code">RISK-SUP-01-04-04</field>
-        <field name="activity_id" ref="activity_sup_01_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-archivage du dossier</field>
-        <field name="consequence">Risques juridiques, difficultés d'audit</field>
-        <field name="cause">Négligence, perte de documents</field>
-    </record>
-
-    <!-- Activité: Traitement de la paie -->
-    <record id="risk_sup_02_01_01" model="risk.risk">
-        <field name="name">Non-transmission de certaines informations</field>
-        <field name="code">RISK-SUP-02-01-01</field>
-        <field name="activity_id" ref="activity_sup_02_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-transmission des modifications salariales</field>
-        <field name="consequence">Erreurs sur les salaires</field>
-        <field name="cause">Négligence, dysfonctionnements de communication</field>
-    </record>
-
-    <record id="risk_sup_02_02_01" model="risk.risk">
-        <field name="name">Non vérification des bulletins de salaire</field>
-        <field name="code">RISK-SUP-02-02-01</field>
-        <field name="activity_id" ref="activity_sup_02_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-vérification des bulletins de salaire</field>
-        <field name="consequence">Paiement incorrect des salaires</field>
-        <field name="cause">Surcharge de travail, négligence</field>
-    </record>
-
-    <record id="risk_sup_02_03_01" model="risk.risk">
-        <field name="name">Risque d'erreur sur les salaires</field>
-        <field name="code">RISK-SUP-02-03-01</field>
-        <field name="activity_id" ref="activity_sup_02_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur sur les salaires</field>
-        <field name="consequence">Paiement incorrect</field>
-        <field name="cause">Manque d'attention ou de vigilance</field>
-    </record>
-
-    <record id="risk_sup_02_04_01" model="risk.risk">
-        <field name="name">Non enregistrement et non archivage des bulletins</field>
-        <field name="code">RISK-SUP-02-04-01</field>
-        <field name="activity_id" ref="activity_sup_02_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-enregistrement et non-archivage des bulletins</field>
-        <field name="consequence">Absence de preuves en cas de litige</field>
-        <field name="cause">Négligence, systèmes défaillants</field>
-    </record>
-
-    <!-- Activité: Déclaration sociale -->
-    <record id="risk_sup_03_01_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-SUP-03-01-01</field>
-        <field name="activity_id" ref="activity_sup_03_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie lors de la déclaration CNPS</field>
-        <field name="consequence">Non-conformité, invalidité des cotisations</field>
-        <field name="cause">Inattention, mauvaise saisie</field>
-    </record>
-
-    <record id="risk_sup_03_02_01" model="risk.risk">
-        <field name="name">Non vérification de la conformité</field>
-        <field name="code">RISK-SUP-03-02-01</field>
-        <field name="activity_id" ref="activity_sup_03_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-vérification de la conformité des déclarations</field>
-        <field name="consequence">Écarts, pénalités</field>
-        <field name="cause">Erreurs de calcul, omission</field>
-    </record>
-
-    <!-- Activité: Évaluation du personnel -->
-    <record id="risk_sup_04_01_01" model="risk.risk">
-        <field name="name">Non-transmission de la fiche d'évaluation</field>
-        <field name="code">RISK-SUP-04-01-01</field>
-        <field name="activity_id" ref="activity_sup_04_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-transmission de la fiche d'évaluation</field>
-        <field name="consequence">Manque de visibilité sur la performance</field>
-        <field name="cause">Omission</field>
-    </record>
-
-    <record id="risk_sup_04_02_01" model="risk.risk">
-        <field name="name">Difficulté à identifier les axes d'amélioration</field>
-        <field name="code">RISK-SUP-04-02-01</field>
-        <field name="activity_id" ref="activity_sup_04_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Difficulté à identifier les axes d'amélioration</field>
-        <field name="consequence">Démotivation, perte de talents</field>
-        <field name="cause">Manque de clarté des critères</field>
-    </record>
-
-    <!-- Activité: Gestion des missions -->
-    <record id="risk_sup_05_01_01" model="risk.risk">
-        <field name="name">Risque de non-transmission de l'ordre de mission</field>
-        <field name="code">RISK-SUP-05-01-01</field>
-        <field name="activity_id" ref="activity_sup_05_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-transmission de l'ordre de mission</field>
-        <field name="consequence">Pertes d'opportunité</field>
-        <field name="cause">Omission, négligence</field>
-    </record>
-
-    <record id="risk_sup_05_01_02" model="risk.risk">
-        <field name="name">Risque d'erreurs administratives</field>
-        <field name="code">RISK-SUP-05-01-02</field>
-        <field name="activity_id" ref="activity_sup_05_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreurs administratives dans l'ordre de mission</field>
-        <field name="consequence">Problèmes de remboursement</field>
-        <field name="cause">Manque d'attention, erreur de saisie</field>
-    </record>
-
-    <!-- Activité: Rupture de contrat -->
-    <record id="risk_sup_06_01_01" model="risk.risk">
-        <field name="name">Non réception de la lettre de démission</field>
-        <field name="code">RISK-SUP-06-01-01</field>
-        <field name="activity_id" ref="activity_sup_06_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">2</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de la lettre de démission</field>
-        <field name="consequence">Conflits sur le préavis</field>
-        <field name="cause">Départ précipité, omission</field>
-    </record>
-
-    <record id="risk_sup_06_02_01" model="risk.risk">
-        <field name="name">Risque d'erreur dans le certificat de travail</field>
-        <field name="code">RISK-SUP-06-02-01</field>
-        <field name="activity_id" ref="activity_sup_06_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur dans le certificat de travail</field>
-        <field name="consequence">Litiges, recours juridiques</field>
-        <field name="cause">Manque d'attention, erreur de saisie</field>
-    </record>
-
-    <record id="risk_sup_06_03_01" model="risk.risk">
-        <field name="name">Non déclaration à la CNPS de la démission</field>
-        <field name="code">RISK-SUP-06-03-01</field>
-        <field name="activity_id" ref="activity_sup_06_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-déclaration de la démission à la CNPS</field>
-        <field name="consequence">Violation des obligations légales</field>
-        <field name="cause">Négligence, omission</field>
-    </record>
-
-    <!-- Activité: Formation du personnel -->
     <record id="risk_sup_07_01_01" model="risk.risk">
         <field name="name">Absence d'un plan de formation</field>
         <field name="code">RISK-SUP-07-01-01</field>
-        <field name="activity_id" ref="activity_sup_07_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_07_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2366,82 +1264,14 @@
         <field name="cause">Négligence, absence de priorisation</field>
     </record>
 
-    <!-- Activité: Gestion des congés -->
-    <record id="risk_sup_08_01_01" model="risk.risk">
-        <field name="name">Non envoi de la fiche de demande de congé</field>
-        <field name="code">RISK-SUP-08-01-01</field>
-        <field name="activity_id" ref="activity_sup_08_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-envoi de la demande de congé</field>
-        <field name="consequence">Non-validation des congés</field>
-        <field name="cause">Omission, absence de procédure</field>
-    </record>
-
-    <!-- Activité: Gestion des absences -->
-    <record id="risk_sup_09_01_01" model="risk.risk">
-        <field name="name">Non envoi de la fiche d'autorisation d'absence</field>
-        <field name="code">RISK-SUP-09-01-01</field>
-        <field name="activity_id" ref="activity_sup_09_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-envoi de la demande d'absence</field>
-        <field name="consequence">Non-validation des absences</field>
-        <field name="cause">Omission, absence de procédure</field>
-    </record>
-
-    <!-- Activité: Gestion des permissions -->
-    <record id="risk_sup_10_01_01" model="risk.risk">
-        <field name="name">Non envoi de la fiche de permission</field>
-        <field name="code">RISK-SUP-10-01-01</field>
-        <field name="activity_id" ref="activity_sup_10_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-envoi de la demande de permission</field>
-        <field name="consequence">Non-validation des permissions</field>
-        <field name="cause">Omission, absence de procédure</field>
-    </record>
-
-    <!-- Activité: Avances, acomptes et prêts -->
-    <record id="risk_sup_11_01_01" model="risk.risk">
-        <field name="name">Risque d'erreur dans l'évaluation de la solvabilité</field>
-        <field name="code">RISK-SUP-11-01-01</field>
-        <field name="activity_id" ref="activity_sup_11_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur dans l'évaluation de la solvabilité</field>
-        <field name="consequence">Créances irrécouvrables</field>
-        <field name="cause">Absence de vérification des antécédents</field>
-    </record>
-
     <!-- ============================================================ -->
-    <!-- 21. RISQUES - SYSTÈME INFORMATIQUE (SUP-14 à SUP-17)          -->
+    <!-- 17. RISQUES - SYSTÈME D'INFORMATION (SUP-14)                  -->
     <!-- ============================================================ -->
 
     <record id="risk_sup_14_01_01" model="risk.risk">
         <field name="name">Sauvegardes incomplètes ou incorrectes</field>
         <field name="code">RISK-SUP-14-01-01</field>
-        <field name="activity_id" ref="activity_sup_14_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_14_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2454,175 +1284,14 @@
         <field name="cause">Absence de procédure, méthodes obsolètes</field>
     </record>
 
-    <record id="risk_sup_14_02_01" model="risk.risk">
-        <field name="name">Plan de reprise et de continuité non établi</field>
-        <field name="code">RISK-SUP-14-02-01</field>
-        <field name="activity_id" ref="activity_sup_14_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
-        <field name="state">validated</field>
-        <field name="description">Absence de plan de reprise et de continuité</field>
-        <field name="consequence">Pertes de données, interruption prolongée</field>
-        <field name="cause">Omission, manque de temps</field>
-    </record>
-
-    <record id="risk_sup_14_03_01" model="risk.risk">
-        <field name="name">Absence de politique et procédure formalisées</field>
-        <field name="code">RISK-SUP-14-03-01</field>
-        <field name="activity_id" ref="activity_sup_14_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
-        <field name="state">validated</field>
-        <field name="description">Absence de politique de sécurité informatique</field>
-        <field name="consequence">Vulnérabilité aux cyberattaques</field>
-        <field name="cause">Surcharge de travail, omission</field>
-    </record>
-
-    <record id="risk_sup_14_04_01" model="risk.risk">
-        <field name="name">Absence de procédure de gestion des incidents</field>
-        <field name="code">RISK-SUP-14-04-01</field>
-        <field name="activity_id" ref="activity_sup_14_04"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
-        <field name="state">validated</field>
-        <field name="description">Absence de procédure de gestion des incidents</field>
-        <field name="consequence">Retard de détection, amplification des impacts</field>
-        <field name="cause">Omission, manque de temps</field>
-    </record>
-
-    <record id="risk_sup_15_01_01" model="risk.risk">
-        <field name="name">Absence de procédure de gestion des changements</field>
-        <field name="code">RISK-SUP-15-01-01</field>
-        <field name="activity_id" ref="activity_sup_15_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
-        <field name="state">validated</field>
-        <field name="description">Absence de procédure de gestion des changements</field>
-        <field name="consequence">Modifications non contrôlées, perte de stabilité</field>
-        <field name="cause">Omission, manque de temps</field>
-    </record>
-
-    <record id="risk_sup_16_01_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie sur les clauses du contrat</field>
-        <field name="code">RISK-SUP-16-01-01</field>
-        <field name="activity_id" ref="activity_sup_16_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur les clauses du contrat</field>
-        <field name="consequence">Annulation du contrat, litiges</field>
-        <field name="cause">Manque de vérification, absence de modèles standards</field>
-    </record>
-
-    <record id="risk_sup_16_02_01" model="risk.risk">
-        <field name="name">Absence de procédure de gestion des prestataires</field>
-        <field name="code">RISK-SUP-16-02-01</field>
-        <field name="activity_id" ref="activity_sup_16_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">5</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Absence de procédure de gestion des prestataires</field>
-        <field name="consequence">Mauvaise gestion, fuite de données</field>
-        <field name="cause">Omission, manque de temps</field>
-    </record>
-
-    <record id="risk_sup_17_01_01" model="risk.risk">
-        <field name="name">Défaillance du système de sécurité du logiciel métier</field>
-        <field name="code">RISK-SUP-17-01-01</field>
-        <field name="activity_id" ref="activity_sup_17_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Défaillance du système de sécurité du logiciel métier</field>
-        <field name="consequence">Vol de données, perturbation des opérations</field>
-        <field name="cause">Mises à jour insuffisantes, failles techniques</field>
-    </record>
-
-    <record id="risk_sup_17_02_01" model="risk.risk">
-        <field name="name">Non-conformité aux exigences réglementaires</field>
-        <field name="code">RISK-SUP-17-02-01</field>
-        <field name="activity_id" ref="activity_sup_17_01"/>
-        <field name="category_id" ref="risk_management.cat_compliance"/>
-        <field name="risk_type">compliance</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">1</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">low</field>
-        <field name="state">validated</field>
-        <field name="description">Non-conformité aux exigences réglementaires</field>
-        <field name="consequence">Sanctions du régulateur</field>
-        <field name="cause">Méconnaissance des obligations réglementaires</field>
-    </record>
-
     <!-- ============================================================ -->
-    <!-- 22. RISQUES - COMPTABILITÉ & FINANCES (SUP-18 à SUP-26)       -->
+    <!-- 18. RISQUES - COMPTABILITÉ & FINANCES (SUP-18 à SUP-22)       -->
     <!-- ============================================================ -->
-
-    <!-- Activité: Gestion de la trésorerie encaissement -->
-    <record id="risk_sup_18_01_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie sur la note de débit</field>
-        <field name="code">RISK-SUP-18-01-01</field>
-        <field name="activity_id" ref="activity_sup_18_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur la note de débit</field>
-        <field name="consequence">Facturation incorrecte</field>
-        <field name="cause">Manque d'attention</field>
-    </record>
-
-    <record id="risk_sup_18_02_01" model="risk.risk">
-        <field name="name">Non réception de l'attestation de virement</field>
-        <field name="code">RISK-SUP-18-02-01</field>
-        <field name="activity_id" ref="activity_sup_18_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-réception de l'attestation de virement</field>
-        <field name="consequence">Perte de traçabilité</field>
-        <field name="cause">Omission, non-transmission</field>
-    </record>
 
     <record id="risk_sup_18_03_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie des montants</field>
         <field name="code">RISK-SUP-18-03-01</field>
-        <field name="activity_id" ref="activity_sup_18_03"/>
+        <field name="activity_id" ref="risk_management.activity_sup_18_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2635,11 +1304,10 @@
         <field name="cause">Manque d'attention, mauvaise compréhension</field>
     </record>
 
-    <!-- Activité: Gestion du compte caisse -->
     <record id="risk_sup_19_01_01" model="risk.risk">
         <field name="name">Non-respect de la procédure interne</field>
         <field name="code">RISK-SUP-19-01-01</field>
-        <field name="activity_id" ref="activity_sup_19_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_19_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2652,76 +1320,10 @@
         <field name="cause">Négligence, manque de contrôle</field>
     </record>
 
-    <record id="risk_sup_19_02_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-SUP-19-02-01</field>
-        <field name="activity_id" ref="activity_sup_19_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">4</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur les paiements en espèces</field>
-        <field name="consequence">Risque de fraude, incohérences</field>
-        <field name="cause">Manque d'attention, négligence</field>
-    </record>
-
-    <!-- Activité: Gestion des achats de biens -->
-    <record id="risk_sup_20_01_01" model="risk.risk">
-        <field name="name">Risque d'erreur ou d'omission dans le bon de commande</field>
-        <field name="code">RISK-SUP-20-01-01</field>
-        <field name="activity_id" ref="activity_sup_20_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">4</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur ou omission dans le bon de commande</field>
-        <field name="consequence">Retards, risque de fraude</field>
-        <field name="cause">Mauvaise saisie, inattention</field>
-    </record>
-
-    <record id="risk_sup_20_02_01" model="risk.risk">
-        <field name="name">Non vérification des factures</field>
-        <field name="code">RISK-SUP-20-02-01</field>
-        <field name="activity_id" ref="activity_sup_20_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-vérification des factures</field>
-        <field name="consequence">Paiement de factures incorrectes</field>
-        <field name="cause">Manque d'attention, négligence</field>
-    </record>
-
-    <record id="risk_sup_20_03_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-SUP-20-03-01</field>
-        <field name="activity_id" ref="activity_sup_20_03"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">4</field>
-        <field name="inherent_impact">5</field>
-        <field name="inherent_level">high</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie lors de la comptabilisation</field>
-        <field name="consequence">Problème d'audit, manque de traçabilité</field>
-        <field name="cause">Négligence, bugs ou pannes informatiques</field>
-    </record>
-
-    <!-- Activité: Rapprochement bancaire -->
     <record id="risk_sup_22_01_01" model="risk.risk">
         <field name="name">Non réception des relevés bancaires</field>
         <field name="code">RISK-SUP-22-01-01</field>
-        <field name="activity_id" ref="activity_sup_22_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_22_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2737,7 +1339,7 @@
     <record id="risk_sup_22_02_01" model="risk.risk">
         <field name="name">Risque d'incohérence entre les relevés et les enregistrements</field>
         <field name="code">RISK-SUP-22-02-01</field>
-        <field name="activity_id" ref="activity_sup_22_02"/>
+        <field name="activity_id" ref="risk_management.activity_sup_22_02"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2753,7 +1355,7 @@
     <record id="risk_sup_22_03_01" model="risk.risk">
         <field name="name">Non comptabilisation des régularisations</field>
         <field name="code">RISK-SUP-22-03-01</field>
-        <field name="activity_id" ref="activity_sup_22_03"/>
+        <field name="activity_id" ref="risk_management.activity_sup_22_03"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2766,44 +1368,14 @@
         <field name="cause">Omission, bugs ou pannes</field>
     </record>
 
-    <!-- Activité: Gestion des immobilisations -->
-    <record id="risk_sup_23_01_01" model="risk.risk">
-        <field name="name">Risque d'erreur de comptage</field>
-        <field name="code">RISK-SUP-23-01-01</field>
-        <field name="activity_id" ref="activity_sup_23_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de comptage des immobilisations</field>
-        <field name="consequence">Erreurs dans l'évaluation des actifs</field>
-        <field name="cause">Inattention, erreur de comptage</field>
-    </record>
+    <!-- ============================================================ -->
+    <!-- 19. RISQUES - GESTION DES STOCKS (SUP-24)                     -->
+    <!-- ============================================================ -->
 
-    <record id="risk_sup_23_02_01" model="risk.risk">
-        <field name="name">Risque d'erreur de saisie</field>
-        <field name="code">RISK-SUP-23-02-01</field>
-        <field name="activity_id" ref="activity_sup_23_02"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreur de saisie sur les immobilisations</field>
-        <field name="consequence">Erreurs dans l'évaluation des actifs</field>
-        <field name="cause">Négligence, erreur de saisie</field>
-    </record>
-
-    <!-- Activité: Gestion des stocks -->
     <record id="risk_sup_24_01_01" model="risk.risk">
         <field name="name">Non mise à jour de la fiche de stock</field>
         <field name="code">RISK-SUP-24-01-01</field>
-        <field name="activity_id" ref="activity_sup_24_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_24_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2816,11 +1388,14 @@
         <field name="cause">Négligence, absence de suivi</field>
     </record>
 
-    <!-- Activité: Déclaration fiscale -->
+    <!-- ============================================================ -->
+    <!-- 20. RISQUES - DÉCLARATION FISCALE (SUP-25)                    -->
+    <!-- ============================================================ -->
+
     <record id="risk_sup_25_01_01" model="risk.risk">
         <field name="name">Non-transmission de toutes les factures</field>
         <field name="code">RISK-SUP-25-01-01</field>
-        <field name="activity_id" ref="activity_sup_25_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_25_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2833,27 +1408,14 @@
         <field name="cause">Factures mal archivées, égarées</field>
     </record>
 
-    <record id="risk_sup_25_02_01" model="risk.risk">
-        <field name="name">Risque d'erreurs dans les déclarations fiscales</field>
-        <field name="code">RISK-SUP-25-02-01</field>
-        <field name="activity_id" ref="activity_sup_25_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Erreurs dans les déclarations fiscales</field>
-        <field name="consequence">Amendes, pénalités</field>
-        <field name="cause">Erreur de saisie, non-prise en compte des informations</field>
-    </record>
+    <!-- ============================================================ -->
+    <!-- 21. RISQUES - ÉTATS FINANCIERS SOCIÉTÉ (SUP-26)               -->
+    <!-- ============================================================ -->
 
-    <!-- Activité: États financiers société -->
     <record id="risk_sup_26_01_01" model="risk.risk">
         <field name="name">Risque d'erreur de saisie</field>
         <field name="code">RISK-SUP-26-01-01</field>
-        <field name="activity_id" ref="activity_sup_26_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_26_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2867,13 +1429,13 @@
     </record>
 
     <!-- ============================================================ -->
-    <!-- 23. RISQUES - ADMINISTRATION (SUP-12 à SUP-13)                -->
+    <!-- 22. RISQUES - ADMINISTRATION (SUP-12 à SUP-13)                -->
     <!-- ============================================================ -->
 
     <record id="risk_sup_12_01_01" model="risk.risk">
         <field name="name">Non réception et non enregistrement des courriers</field>
         <field name="code">RISK-SUP-12-01-01</field>
-        <field name="activity_id" ref="activity_sup_12_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_12_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2886,26 +1448,10 @@
         <field name="cause">Négligence, défaillance du processus</field>
     </record>
 
-    <record id="risk_sup_12_02_01" model="risk.risk">
-        <field name="name">Non archivage des courriers</field>
-        <field name="code">RISK-SUP-12-02-01</field>
-        <field name="activity_id" ref="activity_sup_12_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">4</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Non-archivage des courriers</field>
-        <field name="consequence">Perte d'informations, problème d'audit</field>
-        <field name="cause">Manque de vigilance, omission</field>
-    </record>
-
     <record id="risk_sup_13_01_01" model="risk.risk">
         <field name="name">Mauvaise communication avec l'interlocuteur</field>
         <field name="code">RISK-SUP-13-01-01</field>
-        <field name="activity_id" ref="activity_sup_13_01"/>
+        <field name="activity_id" ref="risk_management.activity_sup_13_01"/>
         <field name="category_id" ref="risk_management.cat_operational"/>
         <field name="risk_type">operational</field>
         <field name="risk_source">internal</field>
@@ -2917,22 +1463,5 @@
         <field name="consequence">Retards, perte d'informations</field>
         <field name="cause">Absence de processus définis</field>
     </record>
-
-    <record id="risk_sup_13_02_01" model="risk.risk">
-        <field name="name">Défaillance des moyens de communication</field>
-        <field name="code">RISK-SUP-13-02-01</field>
-        <field name="activity_id" ref="activity_sup_13_01"/>
-        <field name="category_id" ref="risk_management.cat_operational"/>
-        <field name="risk_type">operational</field>
-        <field name="risk_source">internal</field>
-        <field name="inherent_probability">3</field>
-        <field name="inherent_impact">3</field>
-        <field name="inherent_level">medium</field>
-        <field name="state">validated</field>
-        <field name="description">Défaillance des moyens de communication</field>
-        <field name="consequence">Perturbation des opérations</field>
-        <field name="cause">Pannes, défaillances techniques</field>
-    </record>
-
 
 </odoo>

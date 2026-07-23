@@ -126,26 +126,49 @@
                                 <field name="control_ids" nolabel="1"
                                        context="{'default_risk_ids': [(4, id)]}"
                                        options="{'no_create': True}"/>
+
+                                <!-- Ajout du niveau d'efficacité des contrôles -->
+                                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-weight: 600; color: #495057;">
+                                            <i class="fa fa-bar-chart" style="margin-right: 5px;"/>
+                                            Niveau d'efficacité des contrôles :
+                                        </span>
+                                        <span>
+                                            <field name="control_effectiveness_level" widget="badge"
+                                                   decoration-danger="control_effectiveness_level == 'ineffective'"
+                                                   decoration-warning="control_effectiveness_level == 'partially_effective'"
+                                                   decoration-success="control_effectiveness_level == 'effective'"/>
+                                        </span>
+                                    </div>
+                                </div>
                             </group>
 
-                            <!-- 3. ÉVALUATION RÉSIDUELLE -->
+                            <!-- 3. ÉVALUATION RÉSIDUELLE (Après contrôles) -->
                             <group string="🟢 Évaluation résiduelle (Après contrôles)"
                                    style="background: #f8f9fa; border: 2px solid #28a745; border-radius: 8px; padding: 15px;">
                                 <div class="alert alert-success" role="alert" style="margin-bottom: 10px;">
                                     <i class="fa fa-check-circle" title="Succès"/>
                                     <strong>Évaluation après la mise en place des contrôles</strong>
-                                    <span class="text-muted"> - Score résiduel</span>
+                                    <span class="text-muted"> - Calculé automatiquement selon la matrice</span>
                                 </div>
                                 <group>
                                     <group>
-                                        <field name="residual_probability"
-                                               widget="selection"
-                                               options="{'no_create': True}"
-                                               style="font-weight: bold;"/>
-                                        <field name="residual_impact"
-                                               widget="selection"
-                                               options="{'no_create': True}"
-                                               style="font-weight: bold;"/>
+                                        <!-- Affichage du niveau d'efficacité des contrôles -->
+                                        <div style="margin-bottom: 10px; padding: 8px 12px; background: #e8f4fd; border-radius: 6px; border: 1px solid #17a2b8;">
+                                            <span style="font-weight: 600; color: #495057;">
+                                                <i class="fa fa-shield" style="margin-right: 5px;"/>
+                                                Efficacité des contrôles :
+                                            </span>
+                                            <field name="control_effectiveness_level" widget="badge"
+                                                   decoration-danger="control_effectiveness_level == 'ineffective'"
+                                                   decoration-warning="control_effectiveness_level == 'partially_effective'"
+                                                   decoration-success="control_effectiveness_level == 'effective'"/>
+                                        </div>
+
+                                        <!-- ⚠️ SUPPRIMER residual_probability et residual_impact -->
+                                        <!-- <field name="residual_probability"/>  ← À SUPPRIMER -->
+                                        <!-- <field name="residual_impact"/>       ← À SUPPRIMER -->
                                     </group>
                                     <group>
                                         <div style="background: #28a745; border-radius: 8px; padding: 15px; color: white; text-align: center;">
@@ -160,7 +183,7 @@
                                         </div>
                                     </group>
                                 </group>
-                                <!-- Comparaison visuelle - Sans t-if ni t-esc -->
+                                <!-- Comparaison visuelle -->
                                 <div style="margin-top: 15px; padding: 10px; background: #fff; border-radius: 8px; text-align: center; border: 1px solid #dee2e6;">
                                     <span style="font-size: 14px;">
                                         <span style="color: #dc3545;">🔴 Score inhérent: <strong><field name="inherent_score" readonly="1"/></strong></span>
@@ -395,73 +418,105 @@
                         </page>
 
                     </notebook>
+
+
+
                 </sheet>
+                <!--chatter>
+                    <div style="max-height: 200px !important; overflow: auto; position: relative;">
+                        <field name="message_follower_ids"/>
+                            <field name="activity_ids"/>
+                            <field name="message_ids"/>
+                    </div>
+                </chatter-->
             </form>
         </field>
     </record>
 
-    <record id="view_risk_list" model="ir.ui.view">
-    <field name="name">risk.list</field>
+    <record id="view_risk_hierarchical_list" model="ir.ui.view">
+    <field name="name">risk.hierarchical.list</field>
     <field name="model">risk.risk</field>
     <field name="arch" type="xml">
         <list
+            string="Risques par processus"
+            default_group_by="macro_process_id"
+            expand="1"
             decoration-success="inherent_level == 'low'"
             decoration-info="inherent_level == 'medium'"
             decoration-warning="inherent_level == 'high'"
             decoration-danger="inherent_level == 'critical'">
 
-            <!-- Code et Nom -->
+            <field name="macro_process_id" string="Macro-processus"/>
+            <field name="process_id" string="Processus" optional="show"/>
+            <field name="activity_id" string="Activité" optional="show"/>
             <field name="code" string="Code"/>
             <field name="name" string="Risque"/>
-
-            <!-- Catégorie -->
             <field name="category_id" string="Catégorie"/>
-
-            <!-- ⭐ ACTIVITÉ -->
-            <field name="activity_id" string="Activité" optional="show"/>
-            <field name="process_id" string="Processus" optional="show"/>
-            <field name="macro_process_id" string="Macro-processus" optional="hide"/>
-
-            <!-- Scores -->
             <field name="inherent_score" string="Score inhérent" sum="Total"/>
             <field name="residual_score" string="Score résiduel" sum="Total"/>
-
-            <!-- Priorité -->
             <field name="priority_id" string="Priorité" optional="show"/>
-            <field name="priority_level" string="Niveau" optional="hide"/>
-
-            <!-- Niveaux -->
             <field name="inherent_level" widget="badge"
-                   class="badge"
                    decoration-success="inherent_level == 'low'"
                    decoration-info="inherent_level == 'medium'"
                    decoration-warning="inherent_level == 'high'"
                    decoration-danger="inherent_level == 'critical'"/>
-
-            <!-- Statut -->
             <field name="state" widget="badge"
-                   class="badge"
                    decoration-success="state == 'validated'"
                    decoration-warning="state == 'draft'"
                    decoration-danger="state == 'obsolete'"/>
-
-            <!-- Propriétaire -->
             <field name="owner_id" string="Propriétaire" optional="show"/>
-
-            <!-- Dates -->
-            <field name="last_review_date" string="Dernière révision" optional="hide"/>
-            <field name="next_review_date" string="Prochaine révision" optional="hide"/>
-
-            <!-- Métriques -->
-            <field name="incident_count" string="Incidents" optional="hide" sum="Total"/>
-            <field name="document_count" string="Documents" optional="hide" sum="Total"/>
-            <field name="assessment_count" string="Évaluations" optional="hide" sum="Total"/>
-
-            <!-- Actif -->
-            <field name="active" string="Actif" widget="boolean" optional="hide"/>
 
         </list>
     </field>
+</record>
+
+    <!-- Vue Tree hiérarchique -->
+<record id="view_risk_hierarchical_list" model="ir.ui.view">
+    <field name="name">risk.hierarchical.list</field>
+    <field name="model">risk.risk</field>
+    <field name="arch" type="xml">
+        <!-- ajouter activity_id si on veut par activité -->
+        <list
+            string="Risques par processus"
+            default_group_by="macro_process_id,process_id"
+            decoration-success="inherent_level == 'low'"
+            decoration-info="inherent_level == 'medium'"
+            decoration-warning="inherent_level == 'high'"
+            decoration-danger="inherent_level == 'critical'">
+
+            <!--field name="macro_process_id" string="Macro-processus"/>
+            <field name="process_id" string="Processus"/-->
+
+            <field name="code" string="Code"/>
+            <field name="name" string="Risque"/>
+            <field name="activity_id" string="Activité"/>
+            <field name="category_id" string="Catégorie"/>
+            <field name="inherent_score" string="Score inhérent" sum="Total"/>
+            <field name="residual_score" string="Score résiduel" sum="Total"/>
+            <field name="priority_id" string="Priorité"/>
+            <field name="inherent_level" widget="badge"
+                   decoration-success="inherent_level == 'low'"
+                   decoration-info="inherent_level == 'medium'"
+                   decoration-warning="inherent_level == 'high'"
+                   decoration-danger="inherent_level == 'critical'"/>
+            <field name="state" widget="badge"
+                   decoration-success="state == 'validated'"
+                   decoration-warning="state == 'draft'"
+                   decoration-danger="state == 'obsolete'"/>
+            <field name="owner_id" string="Propriétaire"/>
+
+        </list>
+    </field>
+</record>
+
+<record id="action_risk_risk" model="ir.actions.act_window">
+    <field name="name">Risk Register</field>
+    <field name="res_model">risk.risk</field>
+    <field name="context">{
+        'group_by': ['process_id', 'macro_process_id','activity_id']
+    }</field>
+    <field name="view_mode">list,form,kanban,graph</field>
+    <field name="view_id" ref="risk_management.view_risk_hierarchical_list"/>
 </record>
 
 </odoo>

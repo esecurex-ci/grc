@@ -48,16 +48,9 @@ class RiskActivity(models.Model):
     # RELATIONS HIÉRARCHIQUES
     # =====================================================
 
-    macro_process_id = fields.Many2one(
-        'risk.macro.process',
-        string='Macro Processus',
-        related='process_id.macro_process_id',
-        store=True
-    )
-
     process_id = fields.Many2one(
         'risk.process',
-        string='Processus',
+        string='Sous Processus',
         required=True,
         tracking=True
     )
@@ -143,6 +136,47 @@ class RiskActivity(models.Model):
         help="Événement calendrier lié à cette activité",
         tracking=True,
         copy=False
+    )
+
+    name = fields.Char(
+        string='Activité',
+        required=True,
+        tracking=True
+    )
+
+    code = fields.Char(
+        string='Code',
+        help='Code unique de l\'activité',
+        tracking=True
+    )
+
+    sequence = fields.Integer(
+        string='Séquence',
+        default=10
+    )
+
+    description = fields.Html(
+        string='Description'
+    )
+
+    summary = fields.Char(
+        string='Résumé'
+    )
+
+    icon = fields.Char(string='Icône', default='fa-tasks')
+
+    user_id = fields.Many2one(
+        'res.users',
+        string='Utilisateur responsable',
+        tracking=True
+    )
+
+    macro_process_id = fields.Many2one(
+        'risk.macro.process',
+        string='Processus',
+        related='process_id.macro_process_id',
+        store=True,  # ⚠️ IMPORTANT pour le group_by
+        tracking=True
     )
 
     active = fields.Boolean(default=True)

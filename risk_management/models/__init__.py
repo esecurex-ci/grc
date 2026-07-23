@@ -37,4 +37,4 @@ from . import (rm_risk_kri, rm_risk_control, rm_risk_treatment_plan, rm_risk_exe
                rm_risk_document_audit,
                rm_risk_kri_cron, rm_risk_kri_compute_wizard, rm_risk_subprocess, rm_risk_generic,
                rm_risk_kri, rm_risk_kri_measure, rm_risk_dmr, rm_risk_action_plan, rm_risk_action_task, rm_risk_export,
-               rm_risk_function, rm_risk_priority)
+               rm_risk_function, rm_risk_priority, rm_heatmap_export)

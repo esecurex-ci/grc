@@ -14,13 +14,25 @@
             <div t-else="">
 
                 <!-- ========================================= -->
-                <!-- TITRE                                    -->
+                <!-- TITRE + BOUTONS EXPORT                   -->
                 <!-- ========================================= -->
                 <div class="dashboard-header">
                     <h2>📊 Tableau de Bord des Risques</h2>
-                    <div class="dashboard-date">
-                        <i class="fa fa-calendar" title="Date de mise à jour"/>
-                        Généré le <t t-esc="new Date().toLocaleDateString('fr-FR')"/>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <div class="dashboard-date">
+                            <i class="fa fa-calendar" title="Date de mise à jour"/>
+                            Généré le <t t-esc="new Date().toLocaleDateString('fr-FR')"/>
+                        </div>
+                        <button class="btn btn-primary btn-sm" t-on-click="exportMatrixToImage" t-att-disabled="state.exporting">
+                            <i class="fa" t-attf-class="fa #{state.exporting ? 'fa-spinner fa-spin' : 'fa-file-image-o'}"/>
+                            <t t-if="state.exporting">Export en cours...</t>
+                            <t t-else="">📸 Exporter en PNG</t>
+                        </button>
+                        <button class="btn btn-secondary btn-sm" t-on-click="exportMatrixToPDF" t-att-disabled="state.exporting">
+                            <i class="fa" t-attf-class="fa #{state.exporting ? 'fa-spinner fa-spin' : 'fa-file-pdf-o'}"/>
+                            <t t-if="state.exporting">Export en cours...</t>
+                            <t t-else="">📄 Exporter en PDF</t>
+                        </button>
                     </div>
                 </div>
 
@@ -130,7 +142,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">📈 Risque Inherent par Période</h5>
+                            <h5 class="chart-title">📈 Risque Inhérent par Période</h5>
                             <t t-if="state.inherentData and state.inherentData.length">
                                 <t t-call="rm_risk.BarChart">
                                     <t t-set="data" t-value="state.inherentData"/>
@@ -150,7 +162,7 @@
 
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">📉 Risque Residuel par Période</h5>
+                            <h5 class="chart-title">📉 Risque Résiduel par Période</h5>
                             <t t-if="state.residualData and state.residualData.length">
                                 <t t-call="rm_risk.BarChart">
                                     <t t-set="data" t-value="state.residualData"/>
@@ -170,12 +182,12 @@
                 </div>
 
                 <!-- ========================================= -->
-                <!-- DEUXIÈME LIGNE DE GRAPHIQUES  Catégorie de risque selon le niveau de risque total           -->
+                <!-- DEUXIÈME LIGNE DE GRAPHIQUES             -->
                 <!-- ========================================= -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">📊 Niveau de Risque par Categorie</h5>
+                            <h5 class="chart-title">📊 Niveau de Risque par Catégorie</h5>
                             <t t-if="state.categoryData and state.categoryData.length">
                                 <t t-call="rm_risk.CategoryChart">
                                     <t t-set="data" t-value="state.categoryData"/>
@@ -220,8 +232,8 @@
                 <!-- ========================================= -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
-                        <div class="heatmap-card">
-                            <h5 class="chart-title">🔥 Matrice des Riques </h5>
+                        <div class="heatmap-card" id="inherent-heatmap">
+                            <h5 class="chart-title">🔥 Matrice des Risques Inhérents</h5>
                             <div style="display:flex;justify-content:center;">
                                 <div style="display:flex;flex-direction:column;align-items:center;">
                                     <div style="display:flex;">
@@ -253,52 +265,88 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div style="font-size:11px;color:#6c757d;margin-top:8px;">
+                                        Impact →
+                                    </div>
                                 </div>
                             </div>
                             <div style="text-align:center;margin-top:10px;font-size:12px;color:#6c757d;">
                                 Total: <t t-esc="state.totalRisks"/> risques
                             </div>
+                            <div style="display:flex;justify-content:center;gap:15px;margin-top:8px;flex-wrap:wrap;font-size:10px;">
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#dc3545;"></span> Critique</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#fd7e14;"></span> Élevé</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ffc107;"></span> Moyen</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#28a745;"></span> Faible</span>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Dans risk_heatmap.xml, pour la matrice résiduelle -->
+                    <!-- Matrice Résiduelle -->
                     <div class="col-md-6">
-                        <div class="heatmap-card">
-                            <h5 class="chart-title">🔥 Matrice des Risques Residuels</h5>
+                        <div class="heatmap-card" id="residual-heatmap">
+                            <h5 class="chart-title">🔥 Matrice des Risques Résiduels</h5>
                             <div style="display:flex;justify-content:center;">
                                 <div style="display:flex;flex-direction:column;align-items:center;">
                                     <div style="display:flex;">
+                                        <!-- Axe vertical : Niveau inhérent -->
                                         <div style="display:flex;flex-direction:column;justify-content:space-around;padding-right:8px;font-size:9px;font-weight:600;color:#495057;height:230px;">
-                                            <div>Catastrophic</div>
-                                            <div>Major</div>
-                                            <div>Moderate</div>
-                                            <div>Minor</div>
-                                            <div>Insignificant</div>
+                                            <div style="color:#dc3545;">Critique</div>
+                                            <div style="color:#fd7e14;">Élevé</div>
+                                            <div style="color:#ffc107;">Moyen</div>
+                                            <div style="color:#28a745;">Faible</div>
+                                            <div style="color:#17a2b8;">Très faible</div>
                                         </div>
+                                        <!-- Matrice -->
                                         <div style="display:flex;flex-direction:column;gap:2px;">
                                             <t t-foreach="[5, 4, 3, 2, 1]" t-as="impact" t-key="impact">
                                                 <div style="display:flex;gap:2px;">
                                                     <t t-foreach="[1, 2, 3, 4, 5]" t-as="likelihood" t-key="likelihood">
-                                                        <div t-att-class="'heatmap-cell d-flex justify-content-center align-items-center text-white fw-bold cursor-pointer ' + getCellClass(impact, likelihood)"
-                                                             t-on-click="() => this.openRiskList(impact, likelihood)"
-                                                             style="width:40px;height:40px;border-radius:4px;transition:all 0.2s;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-size:14px;font-weight:700;">
-                                                            <t t-esc="state.residualMatrix[impact][likelihood] || 0"/>
+                                                        <div t-att-class="'heatmap-cell d-flex justify-content-center align-items-center text-white fw-bold ' + getCellClass(impact, likelihood)"
+                                                             style="width:40px;height:40px;border-radius:4px;transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-size:14px;font-weight:700;cursor:default;">
+                                                            <t t-esc="state.residualMatrix[impact] ? state.residualMatrix[impact][likelihood] || 0 : 0"/>
                                                         </div>
                                                     </t>
                                                 </div>
                                             </t>
-                                            <div style="display:flex;justify-content:space-around;padding-top:4px;font-size:8px;font-weight:600;color:#495057;text-align:center;">
-                                                <div style="width:40px;">Remote</div>
-                                                <div style="width:40px;">Unlikely</div>
-                                                <div style="width:40px;">Possible</div>
-                                                <div style="width:40px;">Probable</div>
-                                                <div style="width:40px;">Highly<br/>Probable</div>
+                                            <!-- Axe horizontal : Niveau de contrôle -->
+                                            <div style="display:flex;justify-content:space-around;padding-top:4px;font-size:7px;font-weight:600;color:#495057;text-align:center;">
+                                                <div style="width:40px;color:#dc3545;">Inefficace</div>
+                                                <div style="width:40px;color:#fd7e14;">Partiel</div>
+                                                <div style="width:40px;color:#28a745;">Efficace</div>
+                                                <div style="width:40px;color:#17a2b8;">Très efficace</div>
+                                                <div style="width:40px;color:#1a237e;">Optimal</div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div style="font-size:11px;color:#6c757d;margin-top:8px;">
+                                        Niveau de contrôle →
                                     </div>
                                 </div>
                             </div>
                             <div style="text-align:center;margin-top:10px;font-size:12px;color:#6c757d;">
                                 Résiduels: <t t-esc="state.totalRisks"/> risques
+                            </div>
+                            <div style="display:flex;justify-content:center;gap:15px;margin-top:8px;flex-wrap:wrap;font-size:10px;">
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#dc3545;"></span> Critique</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#fd7e14;"></span> Élevé</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ffc107;"></span> Moyen</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#28a745;"></span> Faible</span>
+                            </div>
+                            <!-- Légende de la matrice résiduelle -->
+                            <div style="margin-top:10px;padding:10px;background:#f8f9fa;border-radius:6px;border:1px solid #dee2e6;">
+                                <div style="font-size:11px;color:#495057;text-align:center;">
+                                    <strong>📌 Comment lire cette matrice :</strong><br/>
+                                    <span style="font-size:10px;color:#6c757d;">
+                                        Le niveau résiduel est déterminé par la combinaison du <strong>niveau inhérent</strong> (ligne)
+                                        et du <strong>niveau de contrôle</strong> (colonne).
+                                    </span>
+                                </div>
+                                <div style="display:flex;justify-content:center;gap:15px;margin-top:5px;flex-wrap:wrap;font-size:9px;color:#495057;">
+                                    <span style="background:#f8d7da;padding:2px 8px;border-radius:4px;">🔴 Inhérent élevé + Contrôle faible = Résiduel élevé</span>
+                                    <span style="background:#d4edda;padding:2px 8px;border-radius:4px;">🟢 Contrôle efficace = Résiduel réduit</span>
+                                </div>
                             </div>
                         </div>
                     </div>

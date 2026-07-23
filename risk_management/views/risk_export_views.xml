@@ -28,7 +28,7 @@
                         </group>
                     </group>
 
-                    <!-- Statistiques d'aperçu avec style -->
+                    <!-- Statistiques d'aperçu -->
                     <group string="Aperçu des données" colspan="2">
                         <group>
                             <div class="o_stat_info">

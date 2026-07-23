@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ============================================================ -->
-    <!-- KRI - GESTION DE PORTEFEUILLE                                 -->
-    <!-- ============================================================ -->
-
+    <!-- KRI - GESTION DE PORTEFEUILLE -->
     <record id="kri_ope_01_01_01" model="risk.kri">
-        <field name="name">Ratios règlementaires</field>
+        <field name="name">Ratios règlementaires et limites de diversification</field>
         <field name="code">KRI-OPE-01-01-01</field>
         <field name="description">Suivi des ratios règlementaires et des limites de diversification</field>
         <field name="unit">%</field>
@@ -17,7 +14,7 @@
     <record id="kri_ope_01_02_01" model="risk.kri">
         <field name="name">Indicateurs de Liquidité du Marché</field>
         <field name="code">KRI-OPE-01-02-01</field>
-        <field name="description">Fréquence des transactions journalières sur une période donnée (ex. 30 jours). Plus le volume est faible, plus le risque de blocage est élevé.</field>
+        <field name="description">Fréquence des transactions journalières sur une période donnée (ex. 30 jours).</field>
         <field name="unit">Volume/jour</field>
         <field name="measure_frequency">daily</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_01_02_01')])]"/>
@@ -59,10 +56,7 @@
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_01_06_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - CRÉATION DE NOUVEAUX OPCVM                              -->
-    <!-- ============================================================ -->
-
+    <!-- KRI - CRÉATION DE NOUVEAUX OPCVM -->
     <record id="kri_ope_02_01_01" model="risk.kri">
         <field name="name">Taux de documents nécessitant des corrections</field>
         <field name="code">KRI-OPE-02-01-01</field>
@@ -72,14 +66,29 @@
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_02_01_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - BACK OFFICE                                             -->
-    <!-- ============================================================ -->
+    <record id="kri_ope_02_05_01" model="risk.kri">
+        <field name="name">Nombre d'anomalies détectées lors des contrôles</field>
+        <field name="code">KRI-OPE-02-05-01</field>
+        <field name="description">Nombre d'anomalies détectées lors des contrôles internes sur le paramétrage des fonds</field>
+        <field name="unit">Nombre</field>
+        <field name="measure_frequency">monthly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_02_05_01')])]"/>
+    </record>
 
+    <record id="kri_ope_02_07_01" model="risk.kri">
+        <field name="name">Nombre de rejets de l'AMF UEMOA</field>
+        <field name="code">KRI-OPE-02-07-01</field>
+        <field name="description">Nombre de rejets ou demandes de complément de la part de l'AMF UEMOA</field>
+        <field name="unit">Nombre</field>
+        <field name="measure_frequency">quarterly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_02_07_01')])]"/>
+    </record>
+
+    <!-- KRI - CALCUL ET VALIDATION DE LA VL -->
     <record id="kri_ope_03_01_01" model="risk.kri">
         <field name="name">Nombre de recalculs de VL</field>
         <field name="code">KRI-OPE-03-01-01</field>
-        <field name="description">Nombre de recalculs de VL avant validation. Des recalculs répétés signalent des problèmes de saisie ou de méthodologie.</field>
+        <field name="description">Nombre de recalculs de VL avant validation.</field>
         <field name="unit">Nombre</field>
         <field name="measure_frequency">daily</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_03_01_01')])]"/>
@@ -97,16 +106,31 @@
     <record id="kri_ope_03_02_01" model="risk.kri">
         <field name="name">Occurrence de défaillance du système</field>
         <field name="code">KRI-OPE-03-02-01</field>
-        <field name="description">Nombre d'occurrence de la défaillance du système (bugs bloquants, indisponibilité de la VL)</field>
+        <field name="description">Nombre d'occurrence de la défaillance du système (bugs bloquants)</field>
         <field name="unit">Nombre/mois</field>
         <field name="measure_frequency">monthly</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_03_02_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - RÉCONCILIATION DES COMPTES                              -->
-    <!-- ============================================================ -->
+    <record id="kri_ope_03_04_01" model="risk.kri">
+        <field name="name">Taux de conformité aux délais de soumission</field>
+        <field name="code">KRI-OPE-03-04-01</field>
+        <field name="description">Proportion des rapports soumis dans les délais réglementaires et internes</field>
+        <field name="unit">%</field>
+        <field name="measure_frequency">monthly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_03_04_01')])]"/>
+    </record>
 
+    <record id="kri_ope_03_05_01" model="risk.kri">
+        <field name="name">Délai moyen de validation de la VL</field>
+        <field name="code">KRI-OPE-03-05-01</field>
+        <field name="description">Délai moyen de validation de la valeur liquidative</field>
+        <field name="unit">Heures</field>
+        <field name="measure_frequency">daily</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_03_05_01')])]"/>
+    </record>
+
+    <!-- KRI - RÉCONCILIATION DES COMPTES -->
     <record id="kri_ope_05_01_01" model="risk.kri">
         <field name="name">Montant total des écarts en % de l'AUM</field>
         <field name="code">KRI-OPE-05-01-01</field>
@@ -116,14 +140,20 @@
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_05_01_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - TRAITEMENT DES OPÉRATIONS SUR TITRES                    -->
-    <!-- ============================================================ -->
+    <record id="kri_ope_05_02_01" model="risk.kri">
+        <field name="name">Nombre d'écarts non résolus</field>
+        <field name="code">KRI-OPE-05-02-01</field>
+        <field name="description">Nombre d'écarts non résolus signalés lors des audits internes</field>
+        <field name="unit">Nombre</field>
+        <field name="measure_frequency">monthly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_05_02_01')])]"/>
+    </record>
 
+    <!-- KRI - TRAITEMENT DES OPÉRATIONS SUR TITRES -->
     <record id="kri_ope_07_01_01" model="risk.kri">
         <field name="name">Délai moyen de transmission des ordres</field>
         <field name="code">KRI-OPE-07-01-01</field>
-        <field name="description">Délai moyen entre la Validation de la Proposition d'Investissement et la Transmission des ordres d'Achat/Vente au Dépositaire</field>
+        <field name="description">Délai moyen entre la Validation de la Proposition et la Transmission des ordres</field>
         <field name="unit">Jours</field>
         <field name="measure_frequency">monthly</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_07_01_01')])]"/>
@@ -132,29 +162,60 @@
     <record id="kri_ope_07_01_02" model="risk.kri">
         <field name="name">Nombre d'opérations non comptabilisées à T+1</field>
         <field name="code">KRI-OPE-07-01-02</field>
-        <field name="description">Nombre d'opérations sur Titre non comptabilisées à T+1 après exécution lors des rapprochements comptables</field>
+        <field name="description">Nombre d'opérations sur Titre non comptabilisées à T+1. Seuil de tolérance : 0</field>
         <field name="unit">Nombre</field>
         <field name="measure_frequency">daily</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_07_01_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - SOUSCRIPTION/RACHAT                                     -->
-    <!-- ============================================================ -->
+    <record id="kri_ope_07_01_03" model="risk.kri">
+        <field name="name">Taux de retour pour corrections</field>
+        <field name="code">KRI-OPE-07-01-03</field>
+        <field name="description">Pourcentage des bulletins retournés par le contrôleur interne</field>
+        <field name="unit">%</field>
+        <field name="measure_frequency">monthly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_07_01_01')])]"/>
+    </record>
 
+    <!-- KRI - SOUSCRIPTION/RACHAT -->
     <record id="kri_ope_08_01_01" model="risk.kri">
         <field name="name">Seuil de liquidité des Fonds</field>
         <field name="code">KRI-OPE-08-01-01</field>
-        <field name="description">Seuil de liquidité minimum requis pour chaque Fonds. ECG : 10%, ECO : 10%, PAT : 10%, ECL : 20%, GOORGOORLU : 20%</field>
+        <field name="description">Seuil de liquidité minimum requis : ECG 10%, ECO 10%, PAT 10%, ECL 20%, GOORGOORLU 20%</field>
         <field name="unit">%</field>
         <field name="measure_frequency">daily</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_08_01_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - GESTION CLIENTÈLE                                       -->
-    <!-- ============================================================ -->
+    <record id="kri_ope_08_02_01" model="risk.kri">
+        <field name="name">Délai moyen de règlement des rachats</field>
+        <field name="code">KRI-OPE-08-02-01</field>
+        <field name="description">Délai moyen de règlement des rachats</field>
+        <field name="unit">Jours</field>
+        <field name="measure_frequency">monthly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_08_02_01')])]"/>
+    </record>
 
+    <!-- KRI - RAPPORTS RÉGLEMENTAIRES -->
+    <record id="kri_ope_12_01_01" model="risk.kri">
+        <field name="name">Montant total des pénalités de retard</field>
+        <field name="code">KRI-OPE-12-01-01</field>
+        <field name="description">Montant Total des pénalités de retard - Maximum 50.000 FCFA par an</field>
+        <field name="unit">FCFA</field>
+        <field name="measure_frequency">quarterly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_12_01_01')])]"/>
+    </record>
+
+    <record id="kri_ope_12_01_02" model="risk.kri">
+        <field name="name">Taux de conformité aux délais de soumission</field>
+        <field name="code">KRI-OPE-12-01-02</field>
+        <field name="description">Proportion des rapports soumis dans les délais réglementaires</field>
+        <field name="unit">%</field>
+        <field name="measure_frequency">quarterly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_12_01_01')])]"/>
+    </record>
+
+    <!-- KRI - GESTION CLIENTÈLE -->
     <record id="kri_ope_13_01_01" model="risk.kri">
         <field name="name">Dossiers clients incomplets</field>
         <field name="code">KRI-OPE-13-01-01</field>
@@ -173,6 +234,15 @@
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_14_01_01')])]"/>
     </record>
 
+    <record id="kri_ope_14_02_01" model="risk.kri">
+        <field name="name">Nombre des plaintes clients</field>
+        <field name="code">KRI-OPE-14-02-01</field>
+        <field name="description">Nombre des plaintes reçus - Seuil d'alerte Maximum 2</field>
+        <field name="unit">Nombre</field>
+        <field name="measure_frequency">monthly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_14_02_01')])]"/>
+    </record>
+
     <record id="kri_ope_16_01_01" model="risk.kri">
         <field name="name">Taux de réclamations non traitées dans les délais</field>
         <field name="code">KRI-OPE-16-01-01</field>
@@ -182,12 +252,9 @@
         <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_16_01_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - CONTRÔLE INTERNE & CONFORMITÉ                           -->
-    <!-- ============================================================ -->
-
+    <!-- KRI - CONTRÔLE INTERNE -->
     <record id="kri_pil_03_01_01" model="risk.kri">
-        <field name="name">Taux d'erreurs détectées lors des audits</field>
+        <field name="name">% d'erreurs détectées lors des audits</field>
         <field name="code">KRI-PIL-03-01-01</field>
         <field name="description">Nombre de dossiers avec anomalies après un contrôle de deuxième niveau</field>
         <field name="unit">%</field>
@@ -195,10 +262,16 @@
         <field name="risk_ids" eval="[(6, 0, [ref('risk_pil_03_01_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - SYSTÈME D'INFORMATION                                   -->
-    <!-- ============================================================ -->
+    <record id="kri_pil_03_04_01" model="risk.kri">
+        <field name="name">Délai moyen de traitement des souscriptions</field>
+        <field name="code">KRI-PIL-03-04-01</field>
+        <field name="description">Délai moyen de traitement des souscriptions (jours)</field>
+        <field name="unit">Jours</field>
+        <field name="measure_frequency">monthly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_pil_03_04_01')])]"/>
+    </record>
 
+    <!-- KRI - SYSTÈME D'INFORMATION -->
     <record id="kri_sup_14_01_01" model="risk.kri">
         <field name="name">Taux d'échec des sauvegardes</field>
         <field name="code">KRI-SUP-14-01-01</field>
@@ -211,20 +284,17 @@
     <record id="kri_sup_14_01_02" model="risk.kri">
         <field name="name">Temps moyen de récupération des données</field>
         <field name="code">KRI-SUP-14-01-02</field>
-        <field name="description">Temps moyen de récupération des données après un incident (en heures/jours)</field>
+        <field name="description">Temps moyen de récupération des données après un incident</field>
         <field name="unit">Heures</field>
         <field name="measure_frequency">monthly</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_sup_14_01_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - RESSOURCES HUMAINES                                     -->
-    <!-- ============================================================ -->
-
+    <!-- KRI - RESSOURCES HUMAINES -->
     <record id="kri_sup_01_01_01" model="risk.kri">
         <field name="name">Turnover du personnel</field>
         <field name="code">KRI-SUP-01-01-01</field>
-        <field name="description">Taux de turnover du personnel</field>
+        <field name="description">Taux de turnover du personnel - Seuil d'alerte 17%</field>
         <field name="unit">%</field>
         <field name="measure_frequency">quarterly</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_sup_01_01_01')])]"/>
@@ -233,16 +303,13 @@
     <record id="kri_sup_07_01_01" model="risk.kri">
         <field name="name">Taux de participation aux formations</field>
         <field name="code">KRI-SUP-07-01-01</field>
-        <field name="description">(Nombre de salariés formés / Effectif total) × 100. Un taux faible peut indiquer un manque d'accessibilité aux formations</field>
+        <field name="description">(Nombre de salariés formés / Effectif total) × 100</field>
         <field name="unit">%</field>
         <field name="measure_frequency">quarterly</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_sup_07_01_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - COMPTABILITÉ & FINANCES                                 -->
-    <!-- ============================================================ -->
-
+    <!-- KRI - COMPTABILITÉ & FINANCES -->
     <record id="kri_sup_18_03_01" model="risk.kri">
         <field name="name">Taux d'erreur de saisie des montants d'encaissement</field>
         <field name="code">KRI-SUP-18-03-01</field>
@@ -252,19 +319,43 @@
         <field name="risk_ids" eval="[(6, 0, [ref('risk_sup_18_03_01')])]"/>
     </record>
 
+    <record id="kri_sup_19_01_01" model="risk.kri">
+        <field name="name">Montant total de la fraude</field>
+        <field name="code">KRI-SUP-19-01-01</field>
+        <field name="description">Montant total de la fraude détectée - Seuil d'alerte Maximum 1 FCFA</field>
+        <field name="unit">FCFA</field>
+        <field name="measure_frequency">daily</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_sup_19_01_01')])]"/>
+    </record>
+
     <record id="kri_sup_22_01_01" model="risk.kri">
         <field name="name">Montant total des écarts non justifiés</field>
         <field name="code">KRI-SUP-22-01-01</field>
-        <field name="description">Montant total des écarts non justifiés entre les enregistrements comptables et bancaires</field>
+        <field name="description">Montant total des écarts non justifiés entre enregistrements comptables et bancaires</field>
         <field name="unit">FCFA</field>
         <field name="measure_frequency">monthly</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_sup_22_01_01')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - GOUVERNANCE                                             -->
-    <!-- ============================================================ -->
+    <record id="kri_sup_25_01_01" model="risk.kri">
+        <field name="name">Nombre de retards dans le dépôt des déclarations fiscales</field>
+        <field name="code">KRI-SUP-25-01-01</field>
+        <field name="description">Nombre de retards dans le dépôt des déclarations fiscales</field>
+        <field name="unit">Nombre</field>
+        <field name="measure_frequency">quarterly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_sup_25_01_01')])]"/>
+    </record>
 
+    <record id="kri_sup_26_01_01" model="risk.kri">
+        <field name="name">Taux de respect des délais de transmission</field>
+        <field name="code">KRI-SUP-26-01-01</field>
+        <field name="description">Taux de respect des délais de transmission des états financiers</field>
+        <field name="unit">%</field>
+        <field name="measure_frequency">quarterly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_sup_26_01_01')])]"/>
+    </record>
+
+    <!-- KRI - GOUVERNANCE -->
     <record id="kri_pil_01_01_01" model="risk.kri">
         <field name="name">Taux de conformité profil-client / allocation</field>
         <field name="code">KRI-PIL-01-01-01</field>
@@ -292,10 +383,6 @@
         <field name="risk_ids" eval="[(6, 0, [ref('risk_pil_01_03_04')])]"/>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- KRI - GESTION DES RISQUES (PIL-02)                            -->
-    <!-- ============================================================ -->
-
     <record id="kri_pil_02_02_01" model="risk.kri">
         <field name="name">Écart d'Allocation d'Actifs</field>
         <field name="code">KRI-PIL-02-02-01</field>
@@ -303,6 +390,24 @@
         <field name="unit">%</field>
         <field name="measure_frequency">monthly</field>
         <field name="risk_ids" eval="[(6, 0, [ref('risk_pil_02_02_01')])]"/>
+    </record>
+
+    <record id="kri_ope_21_01_01" model="risk.kri">
+        <field name="name">Taux de transactions suspectes signalées</field>
+        <field name="code">KRI-OPE-21-01-01</field>
+        <field name="description">Taux de transactions suspectes signalées aux autorités (CENTIF, AMF-UEMOA)</field>
+        <field name="unit">%</field>
+        <field name="measure_frequency">monthly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_21_01_01')])]"/>
+    </record>
+
+    <record id="kri_ope_22_01_01" model="risk.kri">
+        <field name="name">Taux d'avancement du plan d'audit</field>
+        <field name="code">KRI-OPE-22-01-01</field>
+        <field name="description">Taux d'avancement du plan d'audit interne</field>
+        <field name="unit">%</field>
+        <field name="measure_frequency">quarterly</field>
+        <field name="risk_ids" eval="[(6, 0, [ref('risk_ope_22_01_01')])]"/>
     </record>
 
 </odoo>

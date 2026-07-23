@@ -270,4 +270,15 @@
         </field>
     </record>
 
+    <record id="view_risk_graph" model="ir.ui.view">
+        <field name="name">risk.graph</field>
+        <field name="model">risk.risk</field>
+        <field name="arch" type="xml">
+            <graph>
+                <field name="macro_process_id"/>
+                <field name="inherent_score" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
 </odoo>

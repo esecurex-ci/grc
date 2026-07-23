@@ -19,6 +19,7 @@
         'data/cron_data.xml',
         'data/email_template_data.xml',
         'data/risk_categories.xml',
+        'data/risk_macro_process_data.xml',
         'data/risk_process_data.xml',
         'data/risk_activity_data.xml',
         'data/risk_risk_data.xml',
@@ -122,6 +123,7 @@
         'views/risk_risk_dashboard_views.xml',
         'views/risk_config_views.xml',
         'views/risk_process_cartography_views.xml',
+        'views/risk_heatmap_export_views.xml',
 
         # ============================================================
         # 9. VUES GOUVERNANCE (DOIVENT ÊTRE AVANT LES ACTIONS)

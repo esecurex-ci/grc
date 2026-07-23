@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 1. Gestion Portefeuille -->
+    <record id="macro_process_portefeuille" model="risk.macro.process">
+        <field name="name">Gestion Portefeuille</field>
+        <field name="code">MP-PORT</field>
+        <field name="description">Processus de gestion du portefeuille d'investissement</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 2. Gestion Comptable des Fonds -->
+    <record id="macro_process_comptable_fonds" model="risk.macro.process">
+        <field name="name">Gestion Comptable des Fonds</field>
+        <field name="code">MP-COMPT</field>
+        <field name="description">Processus comptable et de back office des fonds</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 3. Gestion Clientèle -->
+    <record id="macro_process_clientele" model="risk.macro.process">
+        <field name="name">Gestion Clientèle</field>
+        <field name="code">MP-CLIENT</field>
+        <field name="description">Processus de gestion de la clientèle et commercialisation</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 4. Contrôle Interne - Conformité - Audit -->
+    <record id="macro_process_controle" model="risk.macro.process">
+        <field name="name">Contrôle Interne - Conformité - Audit</field>
+        <field name="code">MP-CONTROLE</field>
+        <field name="description">Processus de contrôle interne, conformité et audit</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 5. Gestion des risques -->
+    <record id="macro_process_risk_management" model="risk.macro.process">
+        <field name="name">Gestion des risques</field>
+        <field name="code">MP-RISK</field>
+        <field name="description">Processus de gestion des risques</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 6. Gestion du système informatique -->
+    <record id="macro_process_informatique" model="risk.macro.process">
+        <field name="name">Gestion du système informatique</field>
+        <field name="code">MP-INFO</field>
+        <field name="description">Processus de gestion du système d'information et sécurité informatique</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 7. Gestion administrative -->
+    <record id="macro_process_administratif" model="risk.macro.process">
+        <field name="name">Gestion administrative</field>
+        <field name="code">MP-ADMIN</field>
+        <field name="description">Processus de gestion administrative</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 8. Gestion Ressources Humaines -->
+    <record id="macro_process_rh" model="risk.macro.process">
+        <field name="name">Gestion Ressources Humaines</field>
+        <field name="code">MP-RH</field>
+        <field name="description">Processus de gestion des ressources humaines</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 9. Gestion Comptable et financière -->
+    <record id="macro_process_comptable_financiere" model="risk.macro.process">
+        <field name="name">Gestion Comptable et financière</field>
+        <field name="code">MP-COMPT-FIN</field>
+        <field name="description">Processus de gestion comptable et financière de la société</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 10. Gouvernance -->
+    <record id="macro_process_gouvernance" model="risk.macro.process">
+        <field name="name">Gouvernance</field>
+        <field name="code">MP-GOV</field>
+        <field name="description">Processus de gouvernance et de définition de la stratégie</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>

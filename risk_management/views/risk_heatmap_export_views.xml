@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_risk_heatmap_export_form" model="ir.ui.view">
+        <field name="name">risk.heatmap.export.wizard.form</field>
+        <field name="model">risk.heatmap.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Exporter les matrices">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>📊 Export des matrices de risques</h1>
+                        <p class="text-muted">
+                            Exportez les matrices inhérente et résiduelle en image pour vos rapports.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="export_format" required="1" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="total_risks" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Aperçu des matrices" colspan="2">
+                        <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;padding:10px;">
+                            <div style="border:1px solid #dee2e6;border-radius:8px;padding:10px;background:#f8f9fa;">
+                                <strong>Matrice inhérente</strong>
+                                <div style="margin-top:5px;font-size:12px;color:#6c757d;">
+                                    <field name="matrix_data" nolabel="1" readonly="1"/>
+                                </div>
+                            </div>
+                            <div style="border:1px solid #dee2e6;border-radius:8px;padding:10px;background:#f8f9fa;">
+                                <strong>Matrice résiduelle</strong>
+                                <div style="margin-top:5px;font-size:12px;color:#6c757d;">
+                                    <field name="residual_matrix_data" nolabel="1" readonly="1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </group>
+
+                    <!-- Fichier généré -->
+                    <group string="Fichier généré" colspan="2" invisible="not file_data">
+                        <div class="alert alert-success" role="status" style="margin-top: 5px;">
+                            <i class="fa fa-check-circle" title="Succès"/>
+                            <strong>✅ Export terminé !</strong>
+                            <div style="margin-top: 8px;">
+                                <field name="file_name" readonly="1" style="margin-bottom: 5px;"/>
+                                <br/>
+                                <button name="action_download" string="📥 Télécharger" type="object" class="btn-primary"/>
+                            </div>
+                        </div>
+                    </group>
+
+                    <footer>
+                        <button name="action_export_matrices" string="📤 Exporter" type="object" class="btn-primary"/>
+                        <button string="Fermer" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

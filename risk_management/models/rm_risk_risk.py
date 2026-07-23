@@ -129,7 +129,12 @@ class RiskRisk(models.Model):
     assessment_ids = fields.One2many('risk.assessment', 'risk_id', string='Évaluations')
     activity_id = fields.Many2one('risk.activity', string='Activité', ondelete='set null', tracking=True,
                                   help='Activité concernée par ce risque')
-    process_id = fields.Many2one('risk.process', related='activity_id.process_id', store=True, string='Processus')
+    process_id = fields.Many2one(
+        'risk.process',
+        store=True,
+        compute='_compute_hierarchy_fields',
+        string='Sous Processus'
+    )
     risk_level = fields.Selection([
         ('1', 'Très faible'),
         ('2', 'Faible'),
@@ -137,8 +142,29 @@ class RiskRisk(models.Model):
         ('4', 'Élevé'),
         ('5', 'Critique')
     ], string='Niveau de risque', default='1', help='Niveau de risque (1 = Très faible, 5 = Critique)', store=True)
-    macro_process_id = fields.Many2one('risk.macro.process', related='activity_id.macro_process_id', store=True,
-                                       string='Macro-processus')
+    macro_process_id = fields.Many2one(
+        'risk.macro.process',
+        compute='_compute_hierarchy_fields',
+        store=True,
+        string='Processus'
+    )
+    macro_process_name = fields.Char(
+        related='macro_process_id.name',
+        store=True,
+        string='Nom du macro-processus'
+    )
+
+    hierarchy_display = fields.Char(
+        compute='_compute_hierarchy_display',
+        string='Hiérarchie',
+        store=False
+    )
+
+    process_name = fields.Char(
+        related='process_id.name',
+        store=True,
+        string='Nom du processus'
+    )
     last_assessment_id = fields.Many2one('risk.assessment', compute='_compute_last_assessment', compute_sudo=True,
                                          store=True, string='Dernière évaluation')
     last_assessment_date = fields.Date(compute='_compute_last_assessment', compute_sudo=True, store=True,
@@ -151,7 +177,7 @@ class RiskRisk(models.Model):
         ('pilotage', 'Processus de Pilotage'),
         ('operational', 'Processus Opérationnels'),
         ('support', 'Processus Supports'),
-    ], string='Catégorie de processus', related='process_id.category', store=True)
+    ], string='Catégorie de processus', compute='_compute_hierarchy_fields', store=True)
 
     last_risk_level = fields.Selection(
         selection='_get_level_selection',
@@ -320,6 +346,38 @@ class RiskRisk(models.Model):
         string='Nom de la priorité',
         store=True
     )
+
+    # Dans votre modèle risk.risk, ajoutez :
+
+    parent_id = fields.Many2one(
+        'risk.risk',
+        string='Parent',
+        ondelete='cascade',
+        help="Parent hiérarchique (si ce risque est un sous-élément)"
+    )
+    child_ids = fields.One2many(
+        'risk.risk',
+        'parent_id',
+        string='Enfants'
+    )
+    parent_path = fields.Char(index=True)
+    _parent_name = 'parent_id'
+    _parent_store = True
+    _order = 'parent_path'
+
+    # ============================================================
+    # CHAMPS POUR LE NIVEAU DE CONTRÔLE
+    # ============================================================
+
+    control_effectiveness_level = fields.Selection([
+        ('ineffective', 'Inefficace ou informel'),
+        ('partially_effective', 'Partiellement efficace'),
+        ('effective', 'Efficace'),
+    ], string='Niveau d\'efficacité des contrôles',
+        compute='_compute_control_effectiveness_level',
+        store=True,
+        help="Niveau d'efficacité des contrôles en place")
+
 
     # ============================================================
     # COMPUTE DMR
@@ -606,22 +664,25 @@ class RiskRisk(models.Model):
             rec.residual_level = rec._get_level_from_score(residual)
 
     def _get_level_from_score(self, score):
-        """Détermine le niveau à partir du score en utilisant l'échelle configurée"""
+        """Détermine le niveau à partir du score selon l'échelle configurée"""
         try:
+            # Essayer d'utiliser l'échelle configurée
             level_scale = self._get_level_scale()
             for level in level_scale:
                 if level.score_min <= score <= level.score_max:
                     return level.value
         except Exception:
             pass
-        # Valeurs par défaut si l'échelle n'est pas disponible
+
+        # Fallback selon votre échelle
         if score <= 5:
             return 'low'
-        if score <= 10:
+        elif score <= 15:
             return 'medium'
-        if score <= 15:
+        elif score <= 25:
             return 'high'
         return 'critical'
+
 
     # Méthode de fallback pour la compatibilité
     def _get_level(self, score):
@@ -669,11 +730,54 @@ class RiskRisk(models.Model):
             record.active = False
         return True
 
+    @api.depends('activity_id', 'activity_id.process_id', 'activity_id.process_id.macro_process_id')
+    def _compute_hierarchy_fields(self):
+        """Calcule tous les champs hiérarchiques à partir de l'activité"""
+        for record in self:
+            if record.activity_id:
+                record.process_id = record.activity_id.process_id
+                if record.activity_id.process_id:
+                    record.macro_process_id = record.activity_id.process_id.macro_process_id
+                    record.process_category = record.activity_id.process_id.category
+                else:
+                    record.macro_process_id = False
+                    record.process_category = False
+            else:
+                record.process_id = False
+                record.macro_process_id = False
+                record.process_category = False
+
     @api.onchange('activity_id')
     def _onchange_activity_id(self):
+        """Met à jour les champs quand l'activité change"""
         if self.activity_id:
             self.process_id = self.activity_id.process_id
-            self.macro_process_id = self.activity_id.macro_process_id
+            if self.activity_id.process_id:
+                self.macro_process_id = self.activity_id.process_id.macro_process_id
+                self.process_category = self.activity_id.process_id.category
+            else:
+                self.macro_process_id = False
+                self.process_category = False
+        else:
+            self.process_id = False
+            self.macro_process_id = False
+            self.process_category = False
+
+    @api.depends('activity_id', 'activity_id.process_id', 'activity_id.process_id.macro_process_id')
+    def _compute_macro_process(self):
+        for record in self:
+            if record.activity_id and record.activity_id.process_id:
+                record.macro_process_id = record.activity_id.process_id.macro_process_id
+            else:
+                record.macro_process_id = False
+
+    @api.onchange('activity_id')
+    def _onchange_activity_id(self):
+        """Remplit automatiquement le macro-processus quand l'activité change"""
+        if self.activity_id and self.activity_id.process_id:
+            self.macro_process_id = self.activity_id.process_id.macro_process_id
+        else:
+            self.macro_process_id = False
 
     # ============================================================
     # MÉTHODE POUR LA MATRICE
@@ -1838,3 +1942,308 @@ class RiskRisk(models.Model):
             return '#fd7e14'  # Orange - Élevé
         else:
             return '#dc3545'  # Rouge - Critique
+
+    @api.depends('activity_id', 'activity_id.process_id', 'activity_id.process_id.macro_process_id')
+    def _compute_hierarchy_display(self):
+        for record in self:
+            parts = []
+            if record.activity_id:
+                if record.activity_id.process_id and record.activity_id.process_id.macro_process_id:
+                    parts.append(record.activity_id.process_id.macro_process_id.name)
+                if record.activity_id.process_id:
+                    parts.append(record.activity_id.process_id.name)
+                parts.append(record.activity_id.name)
+            record.hierarchy_display = ' > '.join(parts) if parts else 'Non catégorisé'
+
+    # ============================================================
+    # CALCUL DU RISQUE RÉSIDUEL AVEC MATRICE
+    # ============================================================
+
+    @api.depends('inherent_probability', 'inherent_impact', 'inherent_level', 'control_ids')
+    def _compute_control_effectiveness_level(self):
+        """Calcule le niveau d'efficacité des contrôles"""
+        for record in self:
+            if not record.control_ids:
+                record.control_effectiveness_level = 'ineffective'
+                continue
+
+            # Récupérer le niveau d'efficacité des contrôles
+            # On prend le niveau le plus bas (le plus critique)
+            effectiveness_values = []
+            for control in record.control_ids:
+                if control.effectiveness == 'high':
+                    effectiveness_values.append('effective')
+                elif control.effectiveness == 'medium':
+                    effectiveness_values.append('partially_effective')
+                else:
+                    effectiveness_values.append('ineffective')
+
+            # Si au moins un contrôle est inefficace, le niveau est inefficace
+            if 'ineffective' in effectiveness_values:
+                record.control_effectiveness_level = 'ineffective'
+            elif 'partially_effective' in effectiveness_values:
+                record.control_effectiveness_level = 'partially_effective'
+            else:
+                record.control_effectiveness_level = 'effective'
+
+    # ============================================================
+    # CALCUL DES SCORES AVEC MATRICE RÉSIDUELLE (VERSION CORRIGÉE)
+    # ============================================================
+    @api.depends('inherent_probability', 'inherent_impact', 'control_effectiveness_level')
+    def _compute_scores(self):
+        """Calcule les scores et niveaux avec la matrice résiduelle"""
+        for rec in self:
+            # --- 1. Score inhérent ---
+            prob_value = int(rec.inherent_probability or 3)
+            impact_value = int(rec.inherent_impact or 3)
+            inherent = prob_value * impact_value
+            rec.inherent_score = inherent
+            rec.inherent_level = rec._get_level_from_score(inherent)
+
+            # --- 2. Niveau résiduel selon la matrice ---
+            inherent_level = rec.inherent_level or 'low'
+            control_level = rec.control_effectiveness_level or 'ineffective'
+
+            residual_level = rec._get_residual_level_from_matrix(inherent_level, control_level)
+            rec.residual_level = residual_level
+
+            # --- 3. Score résiduel (score maximum du niveau résiduel) ---
+            residual_score = rec._get_max_score_for_level(residual_level)
+
+            # --- 4. Vérification : le score résiduel ne doit pas dépasser le score inhérent ---
+            if residual_score > inherent:
+                residual_score = inherent
+
+            rec.residual_score = residual_score
+
+    def _get_level_from_score(self, score):
+        """Détermine le niveau à partir du score selon l'échelle configurée"""
+        try:
+            # Essayer d'utiliser l'échelle configurée
+            level_scale = self._get_level_scale()
+            for level in level_scale:
+                if level.score_min <= score <= level.score_max:
+                    return level.value
+        except Exception:
+            pass
+
+        # Fallback selon votre échelle
+        if score <= 5:
+            return 'low'
+        elif score <= 15:
+            return 'medium'
+        elif score <= 25:
+            return 'high'
+        return 'critical'
+
+    def _get_max_score_for_level(self, level):
+        """Retourne le score maximum pour un niveau donné selon votre échelle"""
+        mapping = {
+            'critical': 25,
+            'high': 25,
+            'medium': 15,
+            'low': 5,
+        }
+        return mapping.get(level, 4)
+
+    def _get_residual_level_from_matrix(self, inherent_level, control_level):
+        """
+        Détermine le niveau résiduel selon la matrice
+
+        Échelle :
+        - Faible : 1 à 5
+        - Modéré : 6 à 15
+        - Élevé : 16 à 25
+
+        Matrice :
+        ┌──────────────────┬─────────────────────┬──────────────────┐
+        │ Niveau inhérent  │ Efficacité contrôles │ Niveau résiduel  │
+        ├──────────────────┼─────────────────────┼──────────────────┤
+        │ Élevé (16-25)    │ Inefficace          │ Élevé (16-25)    │
+        │ Modéré (6-15)    │ Inefficace          │ Modéré (6-15)    │
+        │ Faible (1-5)     │ Inefficace          │ Faible (1-5)     │
+        │ Élevé (16-25)    │ Partiellement       │ Élevé (16-25)    │
+        │ Modéré (6-15)    │ Partiellement       │ Modéré (6-15)    │
+        │ Faible (1-5)     │ Partiellement       │ Faible (1-5)     │
+        │ Élevé (16-25)    │ Efficace            │ Modéré (6-15)    │
+        │ Modéré (6-15)    │ Efficace            │ Faible (1-5)     │
+        │ Faible (1-5)     │ Efficace            │ Faible (1-5)     │
+        └──────────────────┴─────────────────────┴──────────────────┘
+        """
+        # Mapping des niveaux Odoo vers les niveaux de la matrice
+        level_mapping = {
+            'critical': 'high',
+            'high': 'high',
+            'medium': 'medium',
+            'low': 'low'
+        }
+
+        # Normaliser le niveau inhérent
+        norm_inherent = level_mapping.get(inherent_level, 'low')
+
+        # Cas 1 : Contrôle inefficace ou partiellement efficace
+        # → Le niveau résiduel reste le même que le niveau inhérent
+        if control_level in ['ineffective', 'partially_effective']:
+            return norm_inherent
+
+        # Cas 2 : Contrôle efficace
+        # → Le niveau résiduel est réduit
+        if control_level == 'effective':
+            if norm_inherent == 'high':
+                return 'medium'
+            elif norm_inherent == 'medium':
+                return 'low'
+            else:  # low
+                return 'low'
+
+        # Par défaut (fallback)
+        return norm_inherent
+
+
+    def _get_score_from_level(self, level):
+        """Retourne un score approximatif basé sur le niveau"""
+        mapping = {
+            'critical': 20,
+            'high': 16,
+            'medium': 9,
+            'low': 4,
+        }
+        return mapping.get(level, 4)
+
+
+    # ============================================================
+    # MÉTHODE POUR METTRE À JOUR LES CONTROLES
+    # ============================================================
+
+    @api.onchange('control_ids')
+    def _onchange_control_ids(self):
+        """Met à jour le niveau d'efficacité des contrôles quand les contrôles changent"""
+        self._compute_control_effectiveness_level()
+        self._compute_scores()
+
+    # ============================================================
+    # MÉTHODE POUR RECALCULER TOUS LES RISQUES
+    # ============================================================
+
+    def action_recalculate_risk_levels(self):
+        """
+        Action pour recalculer manuellement tous les niveaux de risque.
+        À appeler depuis un bouton ou une action.
+        """
+        risks = self.search([])
+        count = 0
+        for risk in risks:
+            risk._compute_control_effectiveness_level()
+            risk._compute_scores()
+            count += 1
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Recalcul terminé',
+            'res_model': 'risk.risk',
+            'view_mode': 'list',
+            'target': 'new',
+            'context': {
+                'default_name': f'{count} risques recalculés avec la nouvelle matrice résiduelle'
+            }
+        }
+
+    # ============================================================
+    # MÉTHODE POUR EXPORTER LA MATRICE EN HTML (POUR LE RAPPORT)
+    # ============================================================
+
+    def get_residual_matrix_html(self):
+        """Génère le HTML de la matrice résiduelle"""
+        html = '''
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
+            <h3 style="text-align: center; color: #1a237e; margin-bottom: 20px;">📊 Matrice d'évaluation du risque résiduel</h3>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+                <thead>
+                    <tr style="background-color: #1a237e; color: white;">
+                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: center; width: 25%;">Niveau inhérent</th>
+                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: center; width: 30%;">Efficacité des contrôles</th>
+                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: center; width: 25%;">Niveau résiduel</th>
+                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: center; width: 20%;">Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+        '''
+
+        matrix = [
+            # Niveau inhérent, Contrôle, Résiduel, Statut
+            ('Élevé', 'Inefficace ou informel', 'Élevé', '🔴 Critique'),
+            ('Modéré', 'Inefficace ou informel', 'Modéré', '🟠 Élevé'),
+            ('Faible', 'Inefficace ou informel', 'Faible', '🟡 Moyen'),
+            ('Élevé', 'Partiellement efficace', 'Élevé', '🔴 Critique'),
+            ('Modéré', 'Partiellement efficace', 'Modéré', '🟠 Élevé'),
+            ('Faible', 'Partiellement efficace', 'Faible', '🟡 Moyen'),
+            ('Élevé', 'Efficace', 'Modéré', '🟡 Moyen'),
+            ('Modéré', 'Efficace', 'Faible', '🟢 Faible'),
+            ('Faible', 'Efficace', 'Faible', '🟢 Faible'),
+        ]
+
+        row_colors = ['#f8f9fa', '#ffffff']
+        for i, row in enumerate(matrix):
+            color = row_colors[i % 2]
+
+            # Déterminer la couleur du niveau résiduel
+            level_colors = {
+                'Élevé': '#dc3545',
+                'Modéré': '#fd7e14',
+                'Faible': '#28a745',
+            }
+            level_color = level_colors.get(row[2], '#6c757d')
+
+            html += f'''
+                <tr style="background-color: {color};">
+                    <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">
+                        <span style="font-weight: bold;">{row[0]}</span>
+                    </td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">
+                        {row[1]}
+                    </td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">
+                        <span style="background-color: {level_color}; color: white; padding: 2px 12px; border-radius: 12px; font-weight: bold;">
+                            {row[2]}
+                        </span>
+                    </td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">
+                        {row[3]}
+                    </td>
+                </tr>
+            '''
+
+        html += '''
+                </tbody>
+            </table>
+
+            <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #1a237e;">
+                <p style="margin: 0; font-size: 13px; color: #333;">
+                    <strong>📌 Légende :</strong>
+                    <span style="display: inline-block; margin: 0 10px;">
+                        <span style="background-color: #dc3545; color: white; padding: 2px 8px; border-radius: 10px;">🔴</span> Critique
+                    </span>
+                    <span style="display: inline-block; margin: 0 10px;">
+                        <span style="background-color: #fd7e14; color: white; padding: 2px 8px; border-radius: 10px;">🟠</span> Élevé
+                    </span>
+                    <span style="display: inline-block; margin: 0 10px;">
+                        <span style="background-color: #ffc107; color: white; padding: 2px 8px; border-radius: 10px;">🟡</span> Moyen
+                    </span>
+                    <span style="display: inline-block; margin: 0 10px;">
+                        <span style="background-color: #28a745; color: white; padding: 2px 8px; border-radius: 10px;">🟢</span> Faible
+                    </span>
+                </p>
+            </div>
+
+            <div style="margin-top: 15px; padding: 15px; background: #e8f4fd; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                <p style="margin: 0; font-size: 13px; color: #333;">
+                    <strong>💡 Comment utiliser cette matrice :</strong><br>
+                    Le niveau résiduel est déterminé par la combinaison du <strong>niveau inhérent</strong> et de l'<strong>efficacité des contrôles</strong>.
+                    Des contrôles efficaces peuvent réduire le risque résiduel d'un ou deux niveaux.
+                </p>
+            </div>
+        </div>
+        '''
+
+        return html

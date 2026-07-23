@@ -11,7 +11,7 @@ from datetime import datetime
 
 class RiskExportWizard(models.TransientModel):
     _name = 'risk.export.wizard'
-    _description = 'Assistant d\'export des données GRC'
+    _description = "Assistant d'export des données GRC"
 
     # Options d'export
     export_type = fields.Selection([
@@ -19,17 +19,17 @@ class RiskExportWizard(models.TransientModel):
         ('risks_with_relations', 'Risques avec relations'),
         ('full', 'Données complètes'),
         ('matrix', 'Matrice des risques'),
-    ], string='Type d\'export', default='risks', required=True)
+    ], string="Type d'export", default='risks', required=True)
 
     export_format = fields.Selection([
         ('xlsx', 'Excel (.xlsx)'),
         ('csv', 'CSV'),
         ('json', 'JSON'),
         ('xml', 'XML'),
-    ], string='Format d\'export', default='xlsx', required=True)
+    ], string="Format d'export", default='xlsx', required=True)
 
-    include_relations = fields.Boolean(string='Inclure les relations', default=True)
-    include_historical = fields.Boolean(string='Inclure l\'historique', default=False)
+    include_relations = fields.Boolean(string="Inclure les relations", default=True)
+    include_historical = fields.Boolean(string="Inclure l'historique", default=False)
 
     file_name = fields.Char(string='Nom du fichier')
     file_data = fields.Binary(string='Fichier', attachment=True)
@@ -94,6 +94,15 @@ class RiskExportWizard(models.TransientModel):
         }
         return colors.get(level, '#f8f9fa')
 
+    def _get_control_level_label(self, level):
+        """Retourne le libellé du niveau de contrôle"""
+        labels = {
+            'ineffective': 'Inefficace ou informel',
+            'partially_effective': 'Partiellement efficace',
+            'effective': 'Efficace',
+        }
+        return labels.get(level, level or 'Non défini')
+
     def _export_xlsx(self):
         """Export Excel complet avec couleurs et dates formatées"""
         output = io.BytesIO()
@@ -155,20 +164,24 @@ class RiskExportWizard(models.TransientModel):
     def _write_risks_sheet(self, worksheet, workbook, risks, header_format, cell_format, number_format, date_format):
         """Écrit la feuille des risques avec couleurs et processus"""
         headers = [
-            'Code', 'Nom', 'Catégorie', 'Sous-catégorie',
+            'Code', 'Nom du risque', 'Catégorie', 'Sous-catégorie',
             'Type', 'Source', 'Statut', 'Propriétaire',
-            # ⭐ PROCESSUS AJOUTÉS
+            # Hiérarchie
             'Processus', 'Sous Processus', 'Activité',
+            # Évaluation inhérente
             'Probabilité inhérente', 'Impact inhérent',
             'Score inhérent', 'Niveau inhérent',
-            'Probabilité résiduelle', 'Impact résiduel',
+            # Évaluation des contrôles
+            "Niveau d'efficacité des contrôles",
+            # Évaluation résiduelle
             'Score résiduel', 'Niveau résiduel',
+            # Dates
             'Dernière révision', 'Prochaine révision',
-            'Société', 'Actif'
+            'Actif'
         ]
 
         # Largeur des colonnes
-        col_widths = [15, 25, 18, 18, 15, 15, 15, 18, 20, 20, 20, 18, 15, 12, 15, 18, 15, 12, 15, 18, 18, 18, 10]
+        col_widths = [12, 30, 18, 18, 15, 15, 12, 18, 18, 18, 18, 18, 15, 12, 15, 22, 12, 15, 18, 18, 15, 10]
         for col, width in enumerate(col_widths):
             worksheet.set_column(col, col, width)
 
@@ -212,7 +225,6 @@ class RiskExportWizard(models.TransientModel):
             worksheet.write(row, col, risk.owner_id.name or '', cell_format)
             col += 1
 
-            # ⭐ PROCESSUS AJOUTÉS
             # Macro-processus
             worksheet.write(row, col, risk.macro_process_id.name or '', cell_format)
             col += 1
@@ -252,15 +264,31 @@ class RiskExportWizard(models.TransientModel):
                 'bg_color': self._get_level_bg_color(level),
                 'font_color': self._get_level_color(level)
             })
-            worksheet.write(row, col, level or '', level_format)
+            # Utiliser la méthode corrigée pour obtenir le libellé
+            level_label = self._get_selection_label('inherent_level', level)
+            worksheet.write(row, col, level_label, level_format)
             col += 1
 
-            # Probabilité résiduelle
-            worksheet.write(row, col, risk.residual_probability or '', number_format)
-            col += 1
-
-            # Impact résiduel
-            worksheet.write(row, col, risk.residual_impact or '', number_format)
+            # Niveau d'efficacité des contrôles
+            control_level = risk.control_effectiveness_level or 'ineffective'
+            control_label = self._get_control_level_label(control_level)
+            control_colors = {
+                'ineffective': '#f8d7da',
+                'partially_effective': '#fff3cd',
+                'effective': '#d4edda',
+            }
+            control_text_colors = {
+                'ineffective': '#721c24',
+                'partially_effective': '#856404',
+                'effective': '#155724',
+            }
+            control_format = workbook.add_format({
+                'align': 'center', 'valign': 'vcenter', 'border': 1,
+                'bold': True,
+                'bg_color': control_colors.get(control_level, '#f8f9fa'),
+                'font_color': control_text_colors.get(control_level, '#000000')
+            })
+            worksheet.write(row, col, control_label, control_format)
             col += 1
 
             # Score résiduel avec couleur
@@ -282,10 +310,11 @@ class RiskExportWizard(models.TransientModel):
                 'bg_color': self._get_level_bg_color(residual_level),
                 'font_color': self._get_level_color(residual_level)
             })
-            worksheet.write(row, col, residual_level or '', residual_level_format)
+            residual_label = self._get_selection_label('residual_level', residual_level)
+            worksheet.write(row, col, residual_label, residual_level_format)
             col += 1
 
-            # Dates formatées
+            # Dates
             if risk.last_review_date:
                 if isinstance(risk.last_review_date, datetime):
                     worksheet.write_datetime(row, col, risk.last_review_date, date_format)
@@ -306,10 +335,6 @@ class RiskExportWizard(models.TransientModel):
                                     cell_format)
             else:
                 worksheet.write(row, col, '', cell_format)
-            col += 1
-
-            # Société
-            worksheet.write(row, col, risk.company_id.name or '', cell_format)
             col += 1
 
             # Actif
@@ -361,12 +386,12 @@ class RiskExportWizard(models.TransientModel):
             worksheet.write(row, impact, total_col, number_format)
         worksheet.write(row, 6, len(risks), number_format)
 
+        # Légende
         worksheet.write(row + 2, 0, 'Légende :', header_format)
         legend_colors = [
-            ('Faible (1-4)', '#28a745'),
-            ('Moyen (5-9)', '#ffc107'),
-            ('Élevé (10-16)', '#fd7e14'),
-            ('Critique (17-25)', '#dc3545'),
+            ('Faible (1-5)', '#28a745'),
+            ('Modéré (6-15)', '#ffc107'),
+            ('Élevé (16-25)', '#fd7e14'),
         ]
         for i, (label, color) in enumerate(legend_colors):
             cell_format_color = workbook.add_format({
@@ -406,17 +431,18 @@ class RiskExportWizard(models.TransientModel):
                 worksheet.write(row, 0, risk.code or '', cell_format)
                 worksheet.write(row, 1, risk.name or '', cell_format)
                 worksheet.write(row, 2, control.name or '', cell_format)
-                worksheet.write(row, 3, control.control_type or '', cell_format)
+                worksheet.write(row, 3, self._get_selection_label('control_type', control.control_type), cell_format)
                 eff = control.effectiveness or ''
+                eff_label = self._get_effectiveness_label(eff)
                 eff_format = effectiveness_formats.get(eff, cell_format)
-                worksheet.write(row, 4, eff, eff_format)
-                worksheet.write(row, 5, control.state or '', cell_format)
+                worksheet.write(row, 4, eff_label, eff_format)
+                worksheet.write(row, 5, self._get_selection_label('state', control.state), cell_format)
                 row += 1
 
     def _write_incidents_sheet(self, workbook, risks, header_format, cell_format, number_format, date_format):
         """Écrit la feuille des incidents avec dates formatées"""
         worksheet = workbook.add_worksheet('Incidents')
-        headers = ['Code risque', 'Risque', 'Incident', 'Date', 'Gravité', 'Perte']
+        headers = ['Code risque', 'Risque', 'Incident', 'Date', 'Gravité', 'Perte (FCFA)']
         for col, header in enumerate(headers):
             worksheet.write(0, col, header, header_format)
             worksheet.set_column(col, col, 18)
@@ -452,15 +478,16 @@ class RiskExportWizard(models.TransientModel):
                 else:
                     worksheet.write(row, 3, '', cell_format)
                 severity = incident.severity or ''
+                severity_label = self._get_selection_label('severity', severity)
                 severity_format = severity_formats.get(severity, cell_format)
-                worksheet.write(row, 4, severity, severity_format)
+                worksheet.write(row, 4, severity_label, severity_format)
                 worksheet.write(row, 5, incident.total_loss or 0, number_format)
                 row += 1
 
     def _write_kris_sheet(self, workbook, risks, header_format, cell_format, number_format):
         """Écrit la feuille des KRI"""
         worksheet = workbook.add_worksheet('KRI')
-        headers = ['Code risque', 'Risque', 'KRI', 'Valeur', 'Seuil Rouge', 'Statut']
+        headers = ['Code risque', 'Risque', 'KRI', 'Valeur actuelle', 'Seuil rouge', 'Statut']
         for col, header in enumerate(headers):
             worksheet.write(0, col, header, header_format)
             worksheet.set_column(col, col, 18)
@@ -469,7 +496,7 @@ class RiskExportWizard(models.TransientModel):
             'red': workbook.add_format(
                 {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#f8d7da', 'font_color': '#721c24',
                  'bold': True}),
-            'yellow': workbook.add_format(
+            'amber': workbook.add_format(
                 {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#fff3cd', 'font_color': '#856404',
                  'bold': True}),
             'green': workbook.add_format(
@@ -486,8 +513,9 @@ class RiskExportWizard(models.TransientModel):
                 worksheet.write(row, 3, kri.current_value or 0, number_format)
                 worksheet.write(row, 4, kri.threshold_red or 0, number_format)
                 status = kri.status or ''
+                status_label = self._get_selection_label('status', status)
                 status_format = status_formats.get(status, cell_format)
-                worksheet.write(row, 5, status, status_format)
+                worksheet.write(row, 5, status_label, status_format)
                 row += 1
 
     def _write_actions_sheet(self, workbook, risks, header_format, cell_format, number_format, date_format):
@@ -499,7 +527,7 @@ class RiskExportWizard(models.TransientModel):
             worksheet.set_column(col, col, 18)
 
         action_status_formats = {
-            'done': workbook.add_format(
+            'completed': workbook.add_format(
                 {'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#d4edda', 'font_color': '#155724',
                  'bold': True}),
             'in_progress': workbook.add_format(
@@ -512,11 +540,11 @@ class RiskExportWizard(models.TransientModel):
 
         row = 1
         for risk in risks:
-            for action in risk.action_ids:
+            for action in risk.action_plan_ids:
                 worksheet.write(row, 0, risk.code or '', cell_format)
                 worksheet.write(row, 1, risk.name or '', cell_format)
                 worksheet.write(row, 2, action.name or '', cell_format)
-                worksheet.write(row, 3, action.responsible_id.name or '', cell_format)
+                worksheet.write(row, 3, action.owner_id.name or '', cell_format)
                 if action.deadline:
                     if isinstance(action.deadline, datetime):
                         worksheet.write_datetime(row, 4, action.deadline, date_format)
@@ -526,8 +554,9 @@ class RiskExportWizard(models.TransientModel):
                 else:
                     worksheet.write(row, 4, '', cell_format)
                 status = action.state or ''
+                status_label = self._get_selection_label('state', status)
                 status_format = action_status_formats.get(status, cell_format)
-                worksheet.write(row, 5, status, status_format)
+                worksheet.write(row, 5, status_label, status_format)
                 row += 1
 
     def _write_summary_sheet(self, workbook, risks, header_format, cell_format, number_format):
@@ -536,7 +565,7 @@ class RiskExportWizard(models.TransientModel):
 
         worksheet.write(0, 0, 'Indicateur', header_format)
         worksheet.write(0, 1, 'Valeur', header_format)
-        worksheet.set_column(0, 0, 30)
+        worksheet.set_column(0, 0, 35)
         worksheet.set_column(1, 1, 20)
 
         row = 1
@@ -547,7 +576,7 @@ class RiskExportWizard(models.TransientModel):
 
         levels = ['critical', 'high', 'medium', 'low']
         level_labels = {'critical': 'Risques critiques', 'high': 'Risques élevés',
-                        'medium': 'Risques moyens', 'low': 'Risques faibles'}
+                        'medium': 'Risques modérés', 'low': 'Risques faibles'}
         level_colors = {'critical': '#dc3545', 'high': '#fd7e14',
                         'medium': '#ffc107', 'low': '#28a745'}
 
@@ -563,7 +592,7 @@ class RiskExportWizard(models.TransientModel):
             worksheet.write(row, 1, count, color_format)
             row += 1
 
-        # ⭐ STATISTIQUES PAR PROCESSUS AJOUTÉES
+        # STATISTIQUES PAR MACRO-PROCESSUS
         row += 1
         worksheet.write(row, 0, '--- STATISTIQUES PAR PROCESSUS ---', header_format)
         row += 1
@@ -571,9 +600,29 @@ class RiskExportWizard(models.TransientModel):
         worksheet.write(row, 1, 'Nombre de risques', header_format)
         row += 1
 
+        macro_stats = {}
+        for risk in risks:
+            macro_name = risk.macro_process_id.name or 'Sans processus'
+            if macro_name not in macro_stats:
+                macro_stats[macro_name] = 0
+            macro_stats[macro_name] += 1
+
+        for macro_name, count in sorted(macro_stats.items(), key=lambda x: x[1], reverse=True):
+            worksheet.write(row, 0, macro_name, cell_format)
+            worksheet.write(row, 1, count, number_format)
+            row += 1
+
+        # STATISTIQUES PAR PROCESSUS
+        row += 1
+        worksheet.write(row, 0, '--- STATISTIQUES PAR SOUS PROCESSUS ---', header_format)
+        row += 1
+        worksheet.write(row, 0, 'Sous Processus', header_format)
+        worksheet.write(row, 1, 'Nombre de risques', header_format)
+        row += 1
+
         process_stats = {}
         for risk in risks:
-            process_name = risk.process_id.name or 'Sans processus'
+            process_name = risk.process_id.name or 'Sans sous processus'
             if process_name not in process_stats:
                 process_stats[process_name] = 0
             process_stats[process_name] += 1
@@ -583,6 +632,7 @@ class RiskExportWizard(models.TransientModel):
             worksheet.write(row, 1, count, number_format)
             row += 1
 
+        # STATISTIQUES PAR ACTIVITÉ
         row += 1
         worksheet.write(row, 0, '--- STATISTIQUES PAR ACTIVITÉ ---', header_format)
         row += 1
@@ -606,28 +656,51 @@ class RiskExportWizard(models.TransientModel):
         row += 1
         total_score = sum(risks.mapped('inherent_score') or [0])
         avg_score = total_score / len(risks) if risks else 0
-        worksheet.write(row, 0, 'Score moyen', cell_format)
+        worksheet.write(row, 0, 'Score inhérent moyen', cell_format)
         worksheet.write(row, 1, round(avg_score, 2), number_format)
+        row += 1
+
+        total_residual = sum(risks.mapped('residual_score') or [0])
+        avg_residual = total_residual / len(risks) if risks else 0
+        worksheet.write(row, 0, 'Score résiduel moyen', cell_format)
+        worksheet.write(row, 1, round(avg_residual, 2), number_format)
         row += 1
 
         stats = [
             ('Contrôles', len(risks.mapped('control_ids'))),
             ('Incidents', len(risks.mapped('incident_ids'))),
             ('KRI', len(risks.mapped('kri_ids'))),
-            ('Actions', len(risks.mapped('action_ids'))),
+            ('Plans d\'action', len(risks.mapped('action_plan_ids'))),
         ]
         for label, value in stats:
             worksheet.write(row, 0, label, cell_format)
             worksheet.write(row, 1, value, number_format)
             row += 1
 
+        # Répartition des niveaux résiduels
+        row += 1
+        worksheet.write(row, 0, '--- RÉPARTITION DES NIVEAUX RÉSIDUELS ---', header_format)
+        row += 1
+
+        for level in levels:
+            count = len(risks.filtered(lambda r: r.residual_level == level))
+            color_format = workbook.add_format({
+                'align': 'center', 'valign': 'vcenter', 'border': 1,
+                'bg_color': level_colors[level],
+                'font_color': 'white' if level in ['critical', 'high'] else 'black',
+                'bold': True
+            })
+            worksheet.write(row, 0, f"Résiduel {level_labels[level]}", cell_format)
+            worksheet.write(row, 1, count, color_format)
+            row += 1
+
     def _get_matrix_color(self, score):
         """Retourne la couleur pour la matrice"""
-        if score <= 4:
+        if score <= 5:
             return '#28a745'
-        elif score <= 9:
+        elif score <= 15:
             return '#ffc107'
-        elif score <= 16:
+        elif score <= 25:
             return '#fd7e14'
         else:
             return '#dc3545'
@@ -636,11 +709,41 @@ class RiskExportWizard(models.TransientModel):
         """Retourne le libellé d'une sélection"""
         if not value:
             return ''
+
+        # Récupérer le champ
         field = self.env['risk.risk']._fields.get(field_name)
-        if field and hasattr(field, 'selection'):
-            selection = dict(field.selection)
-            return selection.get(value, value)
+        if not field:
+            return value
+
+        # Gérer les sélections
+        if hasattr(field, 'selection'):
+            # Si c'est une fonction (selection dynamique), on l'appelle
+            if callable(field.selection):
+                try:
+                    # Appeler la méthode de sélection avec le bon contexte
+                    selection = field.selection(self.env['risk.risk'])
+                    selection_dict = dict(selection)
+                    return selection_dict.get(value, value)
+                except Exception:
+                    return value
+            else:
+                # Si c'est une liste de tuples
+                try:
+                    selection_dict = dict(field.selection)
+                    return selection_dict.get(value, value)
+                except ValueError:
+                    return value
+
         return value
+
+    def _get_effectiveness_label(self, value):
+        """Retourne le libellé de l'efficacité des contrôles"""
+        labels = {
+            'high': 'Élevée',
+            'medium': 'Moyenne',
+            'low': 'Faible',
+        }
+        return labels.get(value, value or '')
 
     def _export_csv(self):
         """Export en CSV"""
@@ -650,7 +753,13 @@ class RiskExportWizard(models.TransientModel):
         output = StringIO()
         writer = csv.writer(output)
 
-        headers = ['Code', 'Nom', 'Catégorie', 'Processus', 'Activité', 'Score', 'Niveau', 'Statut']
+        headers = [
+            'Code', 'Nom du risque', 'Catégorie', 'Processus', 'Sous Processus', 'Activité',
+            'Score inhérent', 'Niveau inhérent',
+            "Niveau d'efficacité des contrôles",
+            'Score résiduel', 'Niveau résiduel',
+            'Statut', 'Propriétaire'
+        ]
         writer.writerow(headers)
 
         for risk in self._get_risks():
@@ -658,11 +767,16 @@ class RiskExportWizard(models.TransientModel):
                 risk.code or '',
                 risk.name or '',
                 risk.category_id.name or '',
+                risk.macro_process_id.name or '',
                 risk.process_id.name or '',
                 risk.activity_id.name or '',
                 risk.inherent_score or 0,
-                risk.inherent_level or '',
-                risk.state or '',
+                self._get_selection_label('inherent_level', risk.inherent_level),
+                self._get_control_level_label(risk.control_effectiveness_level),
+                risk.residual_score or 0,
+                self._get_selection_label('residual_level', risk.residual_level),
+                self._get_selection_label('state', risk.state),
+                risk.owner_id.name or '',
             ])
 
         file_data = base64.b64encode(output.getvalue().encode('utf-8'))
@@ -688,29 +802,36 @@ class RiskExportWizard(models.TransientModel):
                 'name': risk.name or '',
                 'category': risk.category_id.name or '',
                 'subcategory': risk.subcategory_id.name or '',
-                'type': risk.risk_type or '',
-                'source': risk.risk_source or '',
-                'state': risk.state or '',
+                'type': self._get_selection_label('risk_type', risk.risk_type),
+                'source': self._get_selection_label('risk_source', risk.risk_source),
+                'state': self._get_selection_label('state', risk.state),
                 'owner': risk.owner_id.name or '',
-                # ⭐ PROCESSUS AJOUTÉS
+                # Hiérarchie
                 'macro_process': risk.macro_process_id.name or '',
                 'process': risk.process_id.name or '',
                 'activity': risk.activity_id.name or '',
+                # Inhérent
+                'inherent_probability': risk.inherent_probability or '',
+                'inherent_impact': risk.inherent_impact or '',
                 'inherent_score': risk.inherent_score or 0,
-                'inherent_level': risk.inherent_level or '',
+                'inherent_level': self._get_selection_label('inherent_level', risk.inherent_level),
+                # Contrôles
+                'control_effectiveness': self._get_control_level_label(risk.control_effectiveness_level),
+                # Résiduel
                 'residual_score': risk.residual_score or 0,
-                'residual_level': risk.residual_level or '',
+                'residual_level': self._get_selection_label('residual_level', risk.residual_level),
                 'active': risk.active,
                 'last_review_date': risk.last_review_date.strftime('%d/%m/%Y') if risk.last_review_date else '',
                 'next_review_date': risk.next_review_date.strftime('%d/%m/%Y') if risk.next_review_date else '',
-                'controls': [c.name for c in risk.control_ids],
+                'controls': [{'name': c.name, 'type': c.control_type, 'effectiveness': c.effectiveness} for c in
+                             risk.control_ids],
                 'incidents_count': len(risk.incident_ids),
                 'kris': [
                     {
                         'name': k.name,
                         'value': k.current_value,
                         'threshold_red': k.threshold_red,
-                        'status': k.status
+                        'status': self._get_selection_label('status', k.status)
                     }
                     for k in risk.kri_ids
                 ],
@@ -735,47 +856,54 @@ class RiskExportWizard(models.TransientModel):
         risks = self._get_risks()
 
         xml = ['<?xml version="1.0" encoding="UTF-8"?>']
-        xml.append('<risks>')
+        xml.append('<risques>')
 
         for risk in risks:
-            xml.append(f'  <risk code="{risk.code or ""}">')
-            xml.append(f'    <name>{risk.name or ""}</name>')
-            xml.append(f'    <category>{risk.category_id.name or ""}</category>')
-            xml.append(f'    <subcategory>{risk.subcategory_id.name or ""}</subcategory>')
-            xml.append(f'    <type>{risk.risk_type or ""}</type>')
-            xml.append(f'    <source>{risk.risk_source or ""}</source>')
-            xml.append(f'    <state>{risk.state or ""}</state>')
-            xml.append(f'    <owner>{risk.owner_id.name or ""}</owner>')
-            # ⭐ PROCESSUS AJOUTÉS
-            xml.append(f'    <macro_process>{risk.macro_process_id.name or ""}</macro_process>')
-            xml.append(f'    <process>{risk.process_id.name or ""}</process>')
-            xml.append(f'    <activity>{risk.activity_id.name or ""}</activity>')
-            xml.append(f'    <inherent_score>{risk.inherent_score or 0}</inherent_score>')
-            xml.append(f'    <inherent_level>{risk.inherent_level or ""}</inherent_level>')
-            xml.append(f'    <residual_score>{risk.residual_score or 0}</residual_score>')
-            xml.append(f'    <residual_level>{risk.residual_level or ""}</residual_level>')
-            xml.append(f'    <active>{str(risk.active).lower()}</active>')
+            xml.append(f'  <risque code="{risk.code or ""}">')
+            xml.append(f'    <nom>{risk.name or ""}</nom>')
+            xml.append(f'    <categorie>{risk.category_id.name or ""}</categorie>')
+            xml.append(f'    <sous_categorie>{risk.subcategory_id.name or ""}</sous_categorie>')
+            xml.append(f'    <type>{self._get_selection_label("risk_type", risk.risk_type)}</type>')
+            xml.append(f'    <source>{self._get_selection_label("risk_source", risk.risk_source)}</source>')
+            xml.append(f'    <statut>{self._get_selection_label("state", risk.state)}</statut>')
+            xml.append(f'    <proprietaire>{risk.owner_id.name or ""}</proprietaire>')
+            # Hiérarchie
+            xml.append(f'    <macro_processus>{risk.macro_process_id.name or ""}</macro_processus>')
+            xml.append(f'    <processus>{risk.process_id.name or ""}</processus>')
+            xml.append(f'    <activite>{risk.activity_id.name or ""}</activite>')
+            # Inhérent
+            xml.append(f'    <probabilite_inherente>{risk.inherent_probability or ""}</probabilite_inherente>')
+            xml.append(f'    <impact_inherent>{risk.inherent_impact or ""}</impact_inherent>')
+            xml.append(f'    <score_inherent>{risk.inherent_score or 0}</score_inherent>')
+            xml.append(f'    <niveau_inherent>{self._get_selection_label("inherent_level", risk.inherent_level)}</niveau_inherent>')
+            # Contrôles
+            xml.append(f'    <efficacite_controles>{self._get_control_level_label(risk.control_effectiveness_level)}</efficacite_controles>')
+            # Résiduel
+            xml.append(f'    <score_residuel>{risk.residual_score or 0}</score_residuel>')
+            xml.append(f'    <niveau_residuel>{self._get_selection_label("residual_level", risk.residual_level)}</niveau_residuel>')
+            xml.append(f'    <actif>{str(risk.active).lower()}</actif>')
             xml.append(
-                f'    <last_review_date>{risk.last_review_date.strftime("%d/%m/%Y") if risk.last_review_date else ""}</last_review_date>')
+                f'    <derniere_revision>{risk.last_review_date.strftime("%d/%m/%Y") if risk.last_review_date else ""}</derniere_revision>')
             xml.append(
-                f'    <next_review_date>{risk.next_review_date.strftime("%d/%m/%Y") if risk.next_review_date else ""}</next_review_date>')
+                f'    <prochaine_revision>{risk.next_review_date.strftime("%d/%m/%Y") if risk.next_review_date else ""}</prochaine_revision>')
 
             if risk.control_ids:
-                xml.append('    <controls>')
+                xml.append('    <controles>')
                 for control in risk.control_ids:
-                    xml.append(f'      <control>{control.name}</control>')
-                xml.append('    </controls>')
+                    xml.append(
+                        f'      <controle nom="{control.name}" type="{control.control_type}" efficacite="{control.effectiveness}"/>')
+                xml.append('    </controles>')
 
             if risk.kri_ids:
                 xml.append('    <kris>')
                 for kri in risk.kri_ids:
                     xml.append(
-                        f'      <kri name="{kri.name}" value="{kri.current_value}" threshold_red="{kri.threshold_red}" status="{kri.status}"/>')
+                        f'      <kri nom="{kri.name}" valeur="{kri.current_value}" seuil_rouge="{kri.threshold_red}" statut="{self._get_selection_label("status", kri.status)}"/>')
                 xml.append('    </kris>')
 
-            xml.append('  </risk>')
+            xml.append('  </risque>')
 
-        xml.append('</risks>')
+        xml.append('</risques>')
 
         xml_data = '\n'.join(xml)
         file_data = base64.b64encode(xml_data.encode('utf-8'))
@@ -816,7 +944,7 @@ class RiskExportWizard(models.TransientModel):
 
 class RiskImportWizard(models.TransientModel):
     _name = 'risk.import.wizard'
-    _description = 'Assistant d\'import des données GRC'
+    _description = "Assistant d'import des données GRC"
 
     file_name = fields.Char(string='Nom du fichier')
     file_data = fields.Binary(string='Fichier', required=True)
@@ -824,9 +952,9 @@ class RiskImportWizard(models.TransientModel):
         ('json', 'JSON'),
         ('xml', 'XML'),
         ('csv', 'CSV'),
-    ], string='Type d\'import', default='json', required=True)
+    ], string="Type d'import", default='json', required=True)
     dry_run = fields.Boolean(string='Mode simulation', default=True)
-    import_log = fields.Text(string='Journal d\'import')
+    import_log = fields.Text(string="Journal d'import")
 
     state = fields.Selection([
         ('draft', 'Brouillon'),
@@ -892,12 +1020,10 @@ class RiskImportWizard(models.TransientModel):
                     'risk_type': item.get('type', ''),
                     'risk_source': item.get('source', ''),
                     'state': item.get('state', 'draft'),
-                    'inherent_score': int(item.get('inherent_score', 0)),
-                    'inherent_level': item.get('inherent_level', ''),
                     'active': item.get('active', True),
                 }
 
-                # ⭐ IMPORT DES PROCESSUS
+                # Hiérarchie
                 if item.get('process'):
                     process = self.env['risk.process'].search([('name', '=', item.get('process'))], limit=1)
                     if process:
@@ -933,23 +1059,19 @@ class RiskImportWizard(models.TransientModel):
         updated = 0
         errors = []
 
-        for risk_elem in root.findall('risk'):
+        for risk_elem in root.findall('risque'):
             try:
                 code = risk_elem.get('code', '')
-                name = risk_elem.find('name')
-                state = risk_elem.find('state')
-                score = risk_elem.find('inherent_score')
-                process_elem = risk_elem.find('process')
-                activity_elem = risk_elem.find('activity')
+                name_elem = risk_elem.find('nom')
+                state_elem = risk_elem.find('statut')
+                process_elem = risk_elem.find('processus')
+                activity_elem = risk_elem.find('activite')
 
                 vals = {
-                    'name': name.text if name is not None else 'Risque importé',
+                    'name': name_elem.text if name_elem is not None else 'Risque importé',
                     'code': code,
-                    'state': state.text if state is not None else 'draft',
+                    'state': state_elem.text if state_elem is not None else 'draft',
                 }
-
-                if score is not None and score.text:
-                    vals['inherent_score'] = int(score.text)
 
                 if process_elem is not None and process_elem.text:
                     process = self.env['risk.process'].search([('name', '=', process_elem.text)], limit=1)
@@ -991,15 +1113,14 @@ class RiskImportWizard(models.TransientModel):
         for row in reader:
             try:
                 vals = {
-                    'name': row.get('Nom', 'Risque importé'),
+                    'name': row.get('Nom du risque', 'Risque importé'),
                     'code': row.get('Code', ''),
                     'state': row.get('Statut', 'draft'),
                 }
 
-                if row.get('Score'):
-                    vals['inherent_score'] = int(row.get('Score'))
+                if row.get('Score inhérent'):
+                    vals['inherent_score'] = int(row.get('Score inhérent'))
 
-                # ⭐ IMPORT DES PROCESSUS
                 if row.get('Processus'):
                     process = self.env['risk.process'].search([('name', '=', row.get('Processus'))], limit=1)
                     if process:
