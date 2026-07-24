@@ -2,6 +2,62 @@
 <odoo>
 
     <!-- ========================================= -->
+    <!-- VUE LISTE HIÉRARCHIQUE - KRI             -->
+    <!-- ========================================= -->
+    <record id="view_risk_kri_hierarchical_list" model="ir.ui.view">
+        <field name="name">risk.kri.hierarchical.list</field>
+        <field name="model">risk.kri</field>
+        <field name="arch" type="xml">
+            <list
+                string="KRI par processus"
+                default_group_by="macro_process_id,process_id,activity_id"
+                expand="0"
+                decoration-success="status == 'green'"
+                decoration-warning="status == 'amber'"
+                decoration-danger="status == 'red'">
+
+
+
+                <!-- Informations principales -->
+                <field name="code" string="Code"/>
+                <field name="name" widget="text" string="Nom du KRI" optional="show" class="text-wrap"/>
+                <field name="category" string="Catégorie"/>
+                <field name="activity_id" string="Activité"/>
+                <!-- Risques associés -->
+                <field name="risk_count" string="Risques" sum="Total" widget="statinfo"/>
+
+                <!-- Propriétaire -->
+                <field name="owner_id" string="Propriétaire" optional="show"/>
+
+                <!-- Valeurs -->
+                <field name="current_value" string="Valeur actuelle" sum="Total"/>
+                <field name="unit" string="Unité" optional="hide"/>
+
+                <!-- Statuts -->
+                <field name="status" string="Statut" widget="badge"/>
+                <field name="trend" string="Tendance" widget="badge"/>
+                <field name="variation" string="Variation (%)" optional="hide"/>
+
+                <!-- Dates -->
+                <field name="last_measure_date" string="Dernière mesure" optional="show"/>
+                <field name="next_measure_date" string="Prochaine mesure" optional="show"/>
+                <field name="overdue" string="En retard" widget="boolean" optional="hide"/>
+
+                <!-- Alertes -->
+                <field name="alert_count" string="Alertes" widget="badge" optional="hide"/>
+
+                <!-- Seuils -->
+                <field name="threshold_warning" string="Seuil alerte" optional="hide"/>
+                <field name="threshold_critical" string="Seuil critique" optional="hide"/>
+
+                <!-- Actif -->
+                <field name="active" string="Actif" widget="boolean" optional="hide"/>
+
+            </list>
+        </field>
+    </record>
+
+    <!-- ========================================= -->
     <!-- VUE LISTE - KRI                           -->
     <!-- ========================================= -->
    <record id="view_risk_kri_list" model="ir.ui.view">

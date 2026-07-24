@@ -151,6 +151,12 @@ class RiskAssessment(models.Model):
         'assessment_id'
     )
 
+    action_plan_ids = fields.Many2many(
+        'risk.action.plan',
+        string='Plans d\'action associés',
+        help="Plans d'action liés à ce traitement"
+    )
+
     treatment_plan_count = fields.Integer(
         compute='_compute_treatment_plan_count'
     )
@@ -307,6 +313,25 @@ class RiskAssessment(models.Model):
 
     def action_close(self):
         self.write({'state': 'closed'})
+
+    def action_reset(self):
+        self.write({'state': 'draft'})
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('code', 'New') == 'New':
+                vals['code'] = self.env['ir.sequence'].next_by_code('risk.treatment.plan')
+        return super().create(vals_list)
+
+    def action_start(self):
+        self.write({'state': 'in_progress'})
+
+    def action_complete(self):
+        self.write({'state': 'completed'})
+
+    def action_cancel(self):
+        self.write({'state': 'cancelled'})
 
     def action_reset(self):
         self.write({'state': 'draft'})

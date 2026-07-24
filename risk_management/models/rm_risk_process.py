@@ -114,7 +114,7 @@ class RiskProcess(models.Model):
     validation_date = fields.Date(
         string='Date de validation',
         tracking=True,
-        help="Date à laquelle le processus a été validé"
+        help="Date à laquelle le sous processus a été validé"
     )
 
     validation_user_id = fields.Many2one(

@@ -147,7 +147,7 @@ class RiskMacroProcess(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Processus',
             'res_model': 'risk.process',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('macro_process_id', '=', self.id)],
             'context': {'default_macro_process_id': self.id},
         }
@@ -158,7 +158,7 @@ class RiskMacroProcess(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Activités',
             'res_model': 'risk.activity',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('macro_process_id', '=', self.id)],
             'context': {'default_macro_process_id': self.id},
         }
@@ -169,7 +169,7 @@ class RiskMacroProcess(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Risques',
             'res_model': 'risk.risk',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('macro_process_id', '=', self.id)],
             'context': {'default_macro_process_id': self.id},
         }

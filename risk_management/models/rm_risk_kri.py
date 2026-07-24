@@ -241,6 +241,30 @@ class RiskKri(models.Model):
         help="Notes et commentaires supplémentaires"
     )
 
+    macro_process_id = fields.Many2one(
+        'risk.macro.process',
+        compute='_compute_hierarchy_fields',
+        store=True,
+        string='Macro-processus',
+        help="Macro-processus déduit des risques associés"
+    )
+
+    process_id = fields.Many2one(
+        'risk.process',
+        compute='_compute_hierarchy_fields',
+        store=True,
+        string='Processus',
+        help="Processus déduit des risques associés"
+    )
+
+    activity_id = fields.Many2one(
+        'risk.activity',
+        compute='_compute_hierarchy_fields',
+        store=True,
+        string='Activité',
+        help="Activité déduite des risques associés"
+    )
+
     # ============================================================
     # RELATIONS GRC
     # ============================================================
@@ -545,3 +569,70 @@ class RiskKri(models.Model):
 
             except Exception as e:
                 _logger.error(f"Erreur pour KRI {kri.code}: {str(e)}")
+
+    # ============================================================
+    # COMPUTE HIÉRARCHIE
+    # ============================================================
+
+    @api.depends('risk_ids', 'risk_ids.activity_id', 'risk_ids.process_id', 'risk_ids.macro_process_id')
+    def _compute_hierarchy_fields(self):
+        """
+        Calcule les champs hiérarchiques à partir des risques associés.
+        Si plusieurs risques sont associés, on prend le premier trouvé.
+        """
+        for record in self:
+            # Réinitialiser
+            record.macro_process_id = False
+            record.process_id = False
+            record.activity_id = False
+
+            if not record.risk_ids:
+                continue
+
+            # Parcourir les risques associés pour trouver la hiérarchie
+            for risk in record.risk_ids:
+                # Si l'activité existe
+                if risk.activity_id:
+                    record.activity_id = risk.activity_id.id
+                    if risk.activity_id.process_id:
+                        record.process_id = risk.activity_id.process_id.id
+                        if risk.activity_id.process_id.macro_process_id:
+                            record.macro_process_id = risk.activity_id.process_id.macro_process_id.id
+                            break  # On s'arrête au premier trouvé
+
+                # Sinon, si le process_id direct existe
+                elif risk.process_id:
+                    record.process_id = risk.process_id.id
+                    if risk.process_id.macro_process_id:
+                        record.macro_process_id = risk.process_id.macro_process_id.id
+                        break
+
+                # Sinon, si le macro_process_id direct existe
+                elif risk.macro_process_id:
+                    record.macro_process_id = risk.macro_process_id.id
+                    break
+
+    # ============================================================
+    # MÉTHODE POUR RECALCULER LA HIÉRARCHIE
+    # ============================================================
+
+    def action_recalculate_hierarchy(self):
+        """
+        Action pour recalculer manuellement la hiérarchie de tous les KRI.
+        """
+        kris = self.search([])
+        count = 0
+        for kri in kris:
+            kri._compute_hierarchy_fields()
+            count += 1
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Recalcul terminé',
+            'res_model': 'risk.kri',
+            'view_mode': 'list',
+            'target': 'new',
+            'context': {
+                'default_name': f'{count} KRI recalculés'
+            }
+        }

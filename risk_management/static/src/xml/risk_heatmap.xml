@@ -18,20 +18,32 @@
                 <!-- ========================================= -->
                 <div class="dashboard-header">
                     <h2>📊 Tableau de Bord des Risques</h2>
+                    <!-- Dans le header du dashboard -->
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                         <div class="dashboard-date">
                             <i class="fa fa-calendar" title="Date de mise à jour"/>
                             Généré le <t t-esc="new Date().toLocaleDateString('fr-FR')"/>
                         </div>
-                        <button class="btn btn-primary btn-sm" t-on-click="exportMatrixToImage" t-att-disabled="state.exporting">
+
+                        <!-- Bouton : Exporter tout le dashboard -->
+                        <button class="btn btn-primary btn-sm" t-on-click="exportFullDashboard" t-att-disabled="state.exporting">
                             <i class="fa" t-attf-class="fa #{state.exporting ? 'fa-spinner fa-spin' : 'fa-file-image-o'}"/>
                             <t t-if="state.exporting">Export en cours...</t>
-                            <t t-else="">📸 Exporter en PNG</t>
+                            <t t-else="">📸 Exporter tout</t>
                         </button>
+
+                        <!-- Bouton : Exporter uniquement les matrices -->
+                        <button class="btn btn-success btn-sm" t-on-click="exportMatricesOnly" t-att-disabled="state.exporting">
+                            <i class="fa" t-attf-class="fa #{state.exporting ? 'fa-spinner fa-spin' : 'fa-th'}"/>
+                            <t t-if="state.exporting">Export en cours...</t>
+                            <t t-else="">📊 Matrices seules</t>
+                        </button>
+
+                        <!-- Bouton : Exporter en PDF -->
                         <button class="btn btn-secondary btn-sm" t-on-click="exportMatrixToPDF" t-att-disabled="state.exporting">
                             <i class="fa" t-attf-class="fa #{state.exporting ? 'fa-spinner fa-spin' : 'fa-file-pdf-o'}"/>
                             <t t-if="state.exporting">Export en cours...</t>
-                            <t t-else="">📄 Exporter en PDF</t>
+                            <t t-else="">📄 PDF</t>
                         </button>
                     </div>
                 </div>
@@ -265,8 +277,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div style="font-size:11px;color:#6c757d;margin-top:8px;">
-                                        Impact →
+                                    <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding:0 5px;">
+                                        <div style="display:flex;align-items:center;gap:5px;">
+                                            <span style="background:#1a237e;color:white;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:bold;">
+                                                <i class="fa fa-arrow-up"></i> Impact
+                                            </span>
+                                        </div>
+                                        <div style="display:flex;align-items:center;gap:5px;">
+                                            <span style="background:#1a237e;color:white;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:bold;">
+                                                Probabilité <i class="fa fa-arrow-right"></i>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -320,8 +341,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div style="font-size:11px;color:#6c757d;margin-top:8px;">
-                                        Niveau de contrôle →
+                                    <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding:0 5px;">
+                                        <div style="display:flex;align-items:center;gap:5px;">
+                                            <span style="background:#6f42c1;color:white;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:bold;">
+                                                <i class="fa fa-arrow-up"></i> Niveau inhérent
+                                            </span>
+                                        </div>
+                                        <div style="display:flex;align-items:center;gap:5px;">
+                                            <span style="background:#6f42c1;color:white;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:bold;">
+                                                Niveau de contrôle <i class="fa fa-arrow-right"></i>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

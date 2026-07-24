@@ -904,6 +904,302 @@ export class RiskHeatMap extends Component {
             this.state.exporting = false;
         }
     }
+
+    // ============================================================
+    // EXPORT : TOUT LE DASHBOARD
+    // ============================================================
+    async exportFullDashboard() {
+        this.state.exporting = true;
+
+        try {
+            const container = document.querySelector('.o_risk_heatmap_container');
+            if (!container) {
+                throw new Error('Conteneur non trouvé');
+            }
+
+            if (typeof html2canvas === 'undefined') {
+                await this._loadHtml2Canvas();
+            }
+
+            const canvas = await html2canvas(container, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                allowTaint: true,
+                width: container.scrollWidth,
+                height: container.scrollHeight,
+                windowWidth: container.scrollWidth,
+                windowHeight: container.scrollHeight,
+            });
+
+            const link = document.createElement('a');
+            link.download = `dashboard_risques_${new Date().toISOString().slice(0,10)}.png`;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            this.notification.add('✅ Dashboard exporté avec succès !', { type: 'success' });
+
+        } catch (error) {
+            console.error('Erreur export dashboard :', error);
+            this.notification.add('❌ Erreur lors de l\'export', { type: 'danger' });
+        } finally {
+            this.state.exporting = false;
+        }
+    }
+
+    // ============================================================
+    // EXPORT : UNIQUEMENT LES MATRICES
+    // ============================================================
+    async exportMatricesOnly() {
+        this.state.exporting = true;
+
+        try {
+            // Récupérer uniquement les conteneurs des matrices
+            const inherentElement = document.querySelector('#inherent-heatmap');
+            const residualElement = document.querySelector('#residual-heatmap');
+
+            if (!inherentElement || !residualElement) {
+                throw new Error('Conteneurs des matrices non trouvés');
+            }
+
+            if (typeof html2canvas === 'undefined') {
+                await this._loadHtml2Canvas();
+            }
+
+            // Capturer les deux matrices séparément
+            const inherentCanvas = await html2canvas(inherentElement, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                allowTaint: true,
+            });
+
+            const residualCanvas = await html2canvas(residualElement, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                allowTaint: true,
+            });
+
+            // Créer une image combinée (côte à côte)
+            const combinedCanvas = document.createElement('canvas');
+            const totalWidth = inherentCanvas.width + residualCanvas.width + 40; // 40px d'espacement
+            const maxHeight = Math.max(inherentCanvas.height, residualCanvas.height);
+            combinedCanvas.width = totalWidth;
+            combinedCanvas.height = maxHeight + 100; // +100 pour le titre
+
+            const ctx = combinedCanvas.getContext('2d');
+
+            // Fond blanc
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, combinedCanvas.width, combinedCanvas.height);
+
+            // Titre
+            ctx.fillStyle = '#1a237e';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('📊 Matrices des Risques', combinedCanvas.width / 2, 45);
+
+            // Sous-titre
+            ctx.fillStyle = '#6c757d';
+            ctx.font = '14px Arial';
+            ctx.fillText(`Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, combinedCanvas.width / 2, 70);
+
+            // Coller les deux images
+            ctx.drawImage(inherentCanvas, 20, 90);
+            ctx.drawImage(residualCanvas, inherentCanvas.width + 40, 90);
+
+            // Ajouter une légende en bas
+            const legendY = Math.max(inherentCanvas.height, residualCanvas.height) + 110;
+            ctx.textAlign = 'center';
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#495057';
+
+            const legendItems = [
+                { color: '#dc3545', label: 'Critique' },
+                { color: '#fd7e14', label: 'Élevé' },
+                { color: '#ffc107', label: 'Moyen' },
+                { color: '#28a745', label: 'Faible' },
+                { color: '#17a2b8', label: 'Très faible' },
+            ];
+
+            const totalLegendWidth = legendItems.length * 120;
+            let startX = (combinedCanvas.width - totalLegendWidth) / 2;
+
+            legendItems.forEach(item => {
+                ctx.fillStyle = item.color;
+                ctx.fillRect(startX, legendY - 8, 16, 16);
+                ctx.fillStyle = '#495057';
+                ctx.textAlign = 'center';
+                ctx.fillText(item.label, startX + 50, legendY + 5);
+                startX += 120;
+            });
+
+            // Télécharger l'image combinée
+            const link = document.createElement('a');
+            link.download = `matrices_risques_${new Date().toISOString().slice(0,10)}.png`;
+            link.href = combinedCanvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            this.notification.add('✅ Matrices exportées avec succès !', { type: 'success' });
+
+        } catch (error) {
+            console.error('Erreur export matrices :', error);
+            this.notification.add('❌ Erreur lors de l\'export des matrices', { type: 'danger' });
+        } finally {
+            this.state.exporting = false;
+        }
+    }
+
+    // ============================================================
+    // EXPORT : PDF (via impression)
+    // ============================================================
+    exportMatrixToPDF() {
+        this.state.exporting = true;
+
+        try {
+            // Générer un HTML avec uniquement les matrices
+            const html = this._generateMatricesOnlyHTML();
+            const printWindow = window.open('', '_blank', 'width=1000,height=800');
+            if (printWindow) {
+                printWindow.document.write(html);
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+
+                printWindow.onafterprint = () => {
+                    printWindow.close();
+                    this.notification.add('✅ PDF généré avec succès !', { type: 'success' });
+                };
+            } else {
+                this.notification.add('⚠️ Veuillez autoriser les popups', { type: 'warning' });
+            }
+        } catch (error) {
+            console.error('Erreur export PDF :', error);
+            this.notification.add('❌ Erreur lors de l\'export PDF', { type: 'danger' });
+        } finally {
+            this.state.exporting = false;
+        }
+    }
+
+    // ============================================================
+    // GÉNÉRER UN HTML UNIQUEMENT POUR LES MATRICES
+    // ============================================================
+    _generateMatricesOnlyHTML() {
+        const matrixData = this.state.matrix;
+        const residualData = this.state.residualMatrix;
+
+        let inherentRows = '';
+        let residualRows = '';
+
+        // ---- Matrice Inhérente ----
+        for (let impact = 5; impact >= 1; impact--) {
+            let cells = '';
+            for (let prob = 1; prob <= 5; prob++) {
+                const value = matrixData[impact] && matrixData[impact][prob] ? matrixData[impact][prob] : 0;
+                const score = impact * prob;
+                const color = this._getExportColor(score);
+                cells += `<td style="border:1px solid #dee2e6;padding:8px;text-align:center;background:${color};color:white;font-weight:bold;width:50px;height:40px;font-size:14px;">${value}</td>`;
+            }
+            inherentRows += `<tr><td style="border:1px solid #dee2e6;padding:8px;text-align:center;background:#f5f5f5;font-weight:bold;width:50px;">${impact}</td>${cells}</tr>`;
+        }
+
+        // ---- Matrice Résiduelle ----
+        for (let impact = 5; impact >= 1; impact--) {
+            let cells = '';
+            for (let prob = 1; prob <= 5; prob++) {
+                const value = residualData[impact] && residualData[impact][prob] ? residualData[impact][prob] : 0;
+                const score = impact * prob;
+                const color = this._getExportColor(score);
+                cells += `<td style="border:1px solid #dee2e6;padding:8px;text-align:center;background:${color};color:white;font-weight:bold;width:50px;height:40px;font-size:14px;">${value}</td>`;
+            }
+            residualRows += `<tr><td style="border:1px solid #dee2e6;padding:8px;text-align:center;background:#f5f5f5;font-weight:bold;width:50px;">${impact}</td>${cells}</tr>`;
+        }
+
+        return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Matrices des Risques</title>
+            <style>
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; background: #f5f7fa; }
+                .container { max-width: 1000px; margin: 0 auto; background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+                h1 { color: #1a237e; text-align: center; margin-bottom: 5px; font-size: 28px; }
+                .subtitle { text-align: center; color: #6c757d; margin-bottom: 20px; font-size: 14px; border-bottom: 2px solid #e8eaf6; padding-bottom: 15px; }
+                .risk-count { text-align: center; font-size: 18px; font-weight: bold; color: #1a237e; margin: 15px 0 25px; padding: 12px; background: #e8eaf6; border-radius: 8px; }
+                .matrices { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+                .matrix-container { flex: 1; min-width: 320px; }
+                .matrix-container h3 { text-align: center; color: #1a237e; margin-bottom: 15px; font-size: 18px; }
+                table { border-collapse: collapse; margin: 0 auto; width: 100%; max-width: 350px; }
+                th { background: #1a237e; color: white; padding: 10px; border: 1px solid #dee2e6; text-align: center; width: 50px; height: 35px; font-size: 13px; }
+                .axis-label { font-size: 11px; font-weight: 600; color: #495057; text-align: center; }
+                .legend { display: flex; justify-content: center; gap: 20px; margin-top: 25px; flex-wrap: wrap; padding: 15px 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; }
+                .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+                .legend-color { width: 24px; height: 24px; border-radius: 4px; border: 1px solid #dee2e6; }
+                .footer { text-align: center; margin-top: 25px; font-size: 12px; color: #6c757d; border-top: 1px solid #dee2e6; padding-top: 20px; }
+                .matrix-label { font-weight: bold; color: #495057; }
+                @media print {
+                    body { background: white; padding: 10px; }
+                    .container { box-shadow: none; border: 1px solid #ddd; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>📊 Matrices des Risques</h1>
+                <div class="subtitle">Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</div>
+                <div class="risk-count">Total des risques : ${this.state.totalRisks}</div>
+                
+                <div class="matrices">
+                    <div class="matrix-container">
+                        <h3>🔥 Matrice Inhérente</h3>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:5px;padding:0 5px;">
+                            <span style="font-size:11px;font-weight:600;color:#495057;">Impact ↑</span>
+                            <span style="font-size:11px;font-weight:600;color:#495057;">Probabilité →</span>
+                        </div>
+                        <table>
+                            <tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+                            ${inherentRows}
+                        </table>
+                    </div>
+                    <div class="matrix-container">
+                        <h3>🔥 Matrice Résiduelle</h3>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:5px;padding:0 5px;">
+                            <span style="font-size:11px;font-weight:600;color:#495057;">Niveau inhérent ↑</span>
+                            <span style="font-size:11px;font-weight:600;color:#495057;">Niveau de contrôle →</span>
+                        </div>
+                        <table>
+                            <tr><th></th><th>Ineff.</th><th>Partiel</th><th>Effic.</th><th>Très eff.</th><th>Optimal</th></tr>
+                            ${residualRows}
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-color" style="background:#dc3545;"></span> Critique (20-25)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#fd7e14;"></span> Élevé (12-19)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#ffc107;"></span> Moyen (6-11)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#28a745;"></span> Faible (3-5)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#17a2b8;"></span> Très faible (1-2)</span>
+                </div>
+                
+                <div class="footer">
+                    Rapport généré automatiquement depuis le système de gestion des risques
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+    }
 }
 
 console.log("🔥 Action enregistrée avec succès !");

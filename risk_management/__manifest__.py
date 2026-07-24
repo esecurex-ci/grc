@@ -141,6 +141,7 @@
         'views/risk_export_views.xml',
         'views/risk_function_views.xml',
         'views/risk_priority_views.xml',
+        'views/risk_assessment_views.xml',
 
         # ============================================================
         # 10. ACTIONS (RÉFÉRENCENT LES VUES)

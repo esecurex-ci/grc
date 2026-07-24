@@ -63,7 +63,7 @@ class RiskTreatmentPlan(models.Model):
     # =====================================================
 
     target_date = fields.Date(
-        string='Target Date',
+        string='Date Cible',
         required=True,
         tracking=True
     )
@@ -88,6 +88,14 @@ class RiskTreatmentPlan(models.Model):
         'res.currency',
         string='Currency',
         default=lambda self: self.env.company.currency_id
+    )
+
+    code = fields.Char(
+        string='Code',
+        tracking=True,
+        readonly=True,
+        default='New',
+        copy=False
     )
 
     # =====================================================
