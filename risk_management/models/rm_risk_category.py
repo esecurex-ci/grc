@@ -2,7 +2,7 @@ from odoo import models, fields
 
 class RiskCategory(models.Model):
     _name = 'risk.category'
-    _description = 'Risk Category'
+    _description = 'Categorie de Risque '
     _order = 'code'
 
     name = fields.Char(required=True)

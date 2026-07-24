@@ -16,6 +16,8 @@ class RiskRisk(models.Model):
     consequence_description = fields.Html(string='Conséquence')
     category_id = fields.Many2one('risk.category', string='Catégorie', tracking=True,
                                   default=lambda self: self._get_default_category())
+    cause = fields.Html(string='Cause')
+    consequence = fields.Html(string='Conséquence')
 
     @api.model
     def _get_default_category(self):
@@ -122,9 +124,7 @@ class RiskRisk(models.Model):
         ('human', 'Humain'),
         ('supplier', 'Fournisseur')
     ], string='Source du risque', tracking=True)
-    cause = fields.Html(string='Cause')
     risk_event = fields.Html(string='Événement redouté')
-    consequence = fields.Html(string='Conséquence')
     existing_control = fields.Html(string='Contrôles existants')
     assessment_ids = fields.One2many('risk.assessment', 'risk_id', string='Évaluations')
     activity_id = fields.Many2one('risk.activity', string='Activité', ondelete='set null', tracking=True,
@@ -151,7 +151,7 @@ class RiskRisk(models.Model):
     macro_process_name = fields.Char(
         related='macro_process_id.name',
         store=True,
-        string='Nom du macro-processus'
+        string='Désignation du Processus'
     )
 
     hierarchy_display = fields.Char(
@@ -163,7 +163,7 @@ class RiskRisk(models.Model):
     process_name = fields.Char(
         related='process_id.name',
         store=True,
-        string='Nom du processus'
+        string='Désignation du sous processus'
     )
     last_assessment_id = fields.Many2one('risk.assessment', compute='_compute_last_assessment', compute_sudo=True,
                                          store=True, string='Dernière évaluation')
@@ -1077,7 +1077,7 @@ class RiskRisk(models.Model):
 
     heatmap_html = fields.Html(
         compute='_compute_heatmap_html',
-        string='Carte de chaleur',
+        string='Carte',
         sanitize=False,
         store=False
     )

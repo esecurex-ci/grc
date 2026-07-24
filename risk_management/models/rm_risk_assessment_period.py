@@ -9,13 +9,14 @@ class RiskAssessmentPeriod(models.Model):
 
     name = fields.Char(
         required=True,
-        string='Nom',
+        string='Désignation',
     )
 
-    code = fields.Char()
+    code = fields.Char(string='Code')
 
     date_start = fields.Date(
-        required=True
+        required=True,
+        string='Date de début'
     )
 
     date_end = fields.Date(
@@ -30,7 +31,8 @@ class RiskAssessmentPeriod(models.Model):
             ('closed', 'Clôturé')
         ],
         default='draft',
-        tracking=True
+        tracking=True,
+        string='Status'
     )
 
     active = fields.Boolean(
@@ -40,12 +42,12 @@ class RiskAssessmentPeriod(models.Model):
     assessment_ids = fields.One2many(
         'risk.assessment',
         'period_id',
-        string='Assessments',
+        string='Evaluations',
     )
 
     assessment_count = fields.Integer(
         compute='_compute_assessment_count',
-        string='Assessments',
+        string='Evaluations',
     )
 
     @api.depends('assessment_ids')

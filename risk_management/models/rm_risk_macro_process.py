@@ -145,7 +145,7 @@ class RiskMacroProcess(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Processus',
+            'name': 'Sous Processus',
             'res_model': 'risk.process',
             'view_mode': 'list,form',
             'domain': [('macro_process_id', '=', self.id)],

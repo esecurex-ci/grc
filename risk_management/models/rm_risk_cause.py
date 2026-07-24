@@ -2,9 +2,9 @@ from odoo import models, fields
 
 class RiskCause(models.Model):
     _name = 'risk.cause'
-    _description = 'Risk Cause'
+    _description = 'Causes du Risque'
 
-    name = fields.Char(required=True)
+    name = fields.Char(required=True, string='Désignation')
 
     description = fields.Text()
 

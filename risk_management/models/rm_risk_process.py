@@ -18,7 +18,7 @@ class RiskProcess(models.Model):
         ('support', 'Processus Supports'),
     ], string='Catégorie', required=True, default='operational', tracking=True)
 
-    macro_process_id = fields.Many2one('risk.macro.process', string='Famille', tracking=True)
+    macro_process_id = fields.Many2one('risk.macro.process', string='Processus', tracking=True)
     description = fields.Text(string='Description')
     owner_id = fields.Many2one('hr.employee', string='Propriétaire', tracking=True)
     active = fields.Boolean(default=True)

@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class RiskKri(models.Model):
     _name = 'risk.kri'
-    _description = 'Key Risk Indicator'
+    _description = 'Indicateur Clé de Risque'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'status, name'
 
@@ -41,7 +41,8 @@ class RiskKri(models.Model):
         'risk.subprocess',
         string='Sous-processus',
         tracking=True,
-        help="Sous-processus concerné"
+        store=False,
+        help="Sous-processus concerné",
     )
 
     risk_generic_id = fields.Many2one(
