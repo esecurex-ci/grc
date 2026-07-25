@@ -67,7 +67,7 @@ class RiskControl(models.Model):
 
     process_id = fields.Many2one(
         'risk.process',
-        string='Processus',
+        string='Sous Processus',
         tracking=True
     )
 

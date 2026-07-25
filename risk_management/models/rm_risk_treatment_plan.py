@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class RiskTreatmentPlan(models.Model):
     _name = 'risk.treatment.plan'
-    _description = 'Risk Treatment Plan'
+    _description = 'Plan de traitement'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'target_date, name'
 
@@ -18,14 +18,14 @@ class RiskTreatmentPlan(models.Model):
     # =====================================================
 
     name = fields.Char(
-        string='Plan Name',
+        string='Nom du plan',
         required=True,
         tracking=True
     )
 
     assessment_id = fields.Many2one(
         'risk.assessment',
-        string='Assessment',
+        string='Évaluation',
         required=True,
         ondelete='cascade',
         tracking=True
@@ -33,7 +33,7 @@ class RiskTreatmentPlan(models.Model):
 
     risk_id = fields.Many2one(
         'risk.risk',
-        string='Risk',
+        string='Risque',
         related='assessment_id.risk_id',
         store=True,
         readonly=True
@@ -42,14 +42,14 @@ class RiskTreatmentPlan(models.Model):
     # ✅ Correction : utiliser risk.function au lieu de hr.employee
     owner_id = fields.Many2one(
         'risk.function',
-        string='Action Owner (Function)',
+        string='Responsable',
         tracking=True
     )
 
     # ✅ Optionnel : garder un champ pour l'employé (information)
     owner_employee_id = fields.Many2one(
         'hr.employee',
-        string='Action Owner (Employee)',
+        string='Employé',
         tracking=True
     )
 
@@ -69,7 +69,7 @@ class RiskTreatmentPlan(models.Model):
     )
 
     completion_date = fields.Date(
-        string='Completion Date',
+        string='Date de fin',
         readonly=True,
         tracking=True
     )
@@ -86,7 +86,7 @@ class RiskTreatmentPlan(models.Model):
 
     currency_id = fields.Many2one(
         'res.currency',
-        string='Currency',
+        string='Devise',
         default=lambda self: self.env.company.currency_id
     )
 
@@ -103,7 +103,7 @@ class RiskTreatmentPlan(models.Model):
     # =====================================================
 
     progress = fields.Float(
-        string='Progress',
+        string='Progression',
         default=0,
         tracking=True,
         help='Progress percentage (0-100)'
@@ -111,10 +111,10 @@ class RiskTreatmentPlan(models.Model):
 
     state = fields.Selection(
         [
-            ('draft', 'Draft'),
-            ('in_progress', 'In Progress'),
-            ('completed', 'Completed'),
-            ('cancelled', 'Cancelled')
+            ('draft', 'Brouillon'),
+            ('in_progress', 'En Progression'),
+            ('completed', 'Clôturé'),
+            ('cancelled', 'Annulé')
         ],
         string='Status',
         default='draft',
@@ -133,13 +133,13 @@ class RiskTreatmentPlan(models.Model):
     is_overdue = fields.Boolean(
         compute='_compute_is_overdue',
         store=True,
-        string='Is Overdue'
+        string='En retard'
     )
 
     days_remaining = fields.Integer(
         compute='_compute_is_overdue',
         store=True,
-        string='Days Remaining'
+        string='Date restante'
     )
 
     notification_group_id = fields.Many2one(

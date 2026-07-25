@@ -23,7 +23,7 @@ class RiskDocument(models.Model):
 
     category_id = fields.Many2one(
         "risk.document.category",
-        string="Category",
+        string="Catégorie",
         required=True,
         tracking=True,
         index=True,
@@ -31,25 +31,25 @@ class RiskDocument(models.Model):
     )
 
     document_type = fields.Selection([
-        ("policy", "Policy"),
-        ("procedure", "Procedure"),
+        ("policy", "Polique"),
+        ("procedure", "Procédure"),
         ("standard", "Standard"),
-        ("guideline", "Guideline"),
-        ("manual", "Manual"),
+        ("guideline", "Ligne directrice"),
+        ("manual", "Manuel"),
         ("instruction", "Instruction"),
         ("template", "Template"),
         ("form", "Form"),
-        ("register", "Register"),
+        ("register", "Régistre"),
         ("record", "Record"),
-    ], string="Document Type", default="policy", required=True, tracking=True, index=True)
+    ], string="Type Document", default="policy", required=True, tracking=True, index=True)
 
-    process_id = fields.Many2one("risk.process", string="Business Process", tracking=True, index=True,
+    process_id = fields.Many2one("risk.process", string="Sous Process", tracking=True, index=True,
                                  ondelete="restrict")
 
     # ✅ REMPLACEMENT des champs employés par des champs fonction
     owner_id = fields.Many2one(
         "risk.function",
-        string="Document Owner (Function)",
+        string="Propriétaire Document (Function)",
         tracking=True,
         index=True,
         ondelete="restrict",
@@ -58,7 +58,7 @@ class RiskDocument(models.Model):
 
     author_id = fields.Many2one(
         "risk.function",
-        string="Author (Function)",
+        string="Auteur (Function)",
         tracking=True,
         index=True,
         ondelete="restrict",
@@ -67,7 +67,7 @@ class RiskDocument(models.Model):
 
     reviewer_id = fields.Many2one(
         "risk.function",
-        string="Reviewer (Function)",
+        string="Chargé de réviser (Function)",
         tracking=True,
         index=True,
         ondelete="restrict",
@@ -76,7 +76,7 @@ class RiskDocument(models.Model):
 
     approver_id = fields.Many2one(
         "risk.function",
-        string="Approver (Function)",
+        string="Validateur (Function)",
         tracking=True,
         index=True,
         ondelete="restrict",
@@ -87,7 +87,7 @@ class RiskDocument(models.Model):
     # Ces champs peuvent être utilisés pour des informations supplémentaires
     owner_employee_id = fields.Many2one(
         "hr.employee",
-        string="Owner (Employee)",
+        string="Auteur (Employé)",
         tracking=True,
         index=True,
         help="Employé responsable (information supplémentaire)"
@@ -95,7 +95,7 @@ class RiskDocument(models.Model):
 
     author_employee_id = fields.Many2one(
         "hr.employee",
-        string="Author (Employee)",
+        string="Auteur (Employé)",
         tracking=True,
         index=True,
         help="Employé auteur (information supplémentaire)"
@@ -104,43 +104,43 @@ class RiskDocument(models.Model):
     # Noms des fonctions (pour l'affichage)
     owner_function_name = fields.Char(
         related='owner_id.complete_name',
-        string="Owner Function Name",
+        string="Fonction de Propriétaire",
         store=True
     )
     author_function_name = fields.Char(
         related='author_id.complete_name',
-        string="Author Function Name",
+        string="Function de l'Auteur",
         store=True
     )
     reviewer_function_name = fields.Char(
         related='reviewer_id.complete_name',
-        string="Reviewer Function Name",
+        string="Function de Révision",
         store=True
     )
     approver_function_name = fields.Char(
         related='approver_id.complete_name',
-        string="Approver Function Name",
+        string="Function de Validateur",
         store=True
     )
 
-    summary = fields.Char(string="Summary", translate=True)
+    summary = fields.Char(string="Résumé", translate=True)
     description = fields.Html(string="Description", translate=True)
-    objective = fields.Html(string="Objective", translate=True)
-    scope = fields.Html(string="Scope", translate=True)
-    content = fields.Html(string="Content", translate=True)
+    objective = fields.Html(string="Objectif", translate=True)
+    scope = fields.Html(string="Périmètre", translate=True)
+    content = fields.Html(string="Contenu", translate=True)
 
     confidentiality = fields.Selection([
-        ("public", "Public"),
-        ("internal", "Internal"),
-        ("confidential", "Confidential"),
-        ("restricted", "Restricted"),
+        ("public", "Publique"),
+        ("internal", "Interne"),
+        ("confidential", "Confidentiel"),
+        ("restricted", "Limité"),
         ("secret", "Secret"),
-    ], default="internal", tracking=True, required=True)
+    ], default="internal", tracking=True, required=True, string="Niveau de confidentialité")
 
     language = fields.Selection([
         ("fr", "Français"),
         ("en", "English"),
-    ], default="fr", required=True)
+    ], default="fr", required=True, srting="Langue")
 
     keywords = fields.Char()
     tags = fields.Many2many("risk.tag", string="Tags")
@@ -186,7 +186,7 @@ class RiskDocument(models.Model):
         "risk_document_attachment_rel",
         "document_id",
         "attachment_id",
-        string="Attachments",
+        string="Pièces jointes",
     )
 
     attachment_count = fields.Integer(
@@ -199,10 +199,10 @@ class RiskDocument(models.Model):
     # VERSION MANAGEMENT
     # =====================================================
 
-    version_major = fields.Integer(string="Major Version", default=1, tracking=True)
-    version_minor = fields.Integer(string="Minor Version", default=0, tracking=True)
-    version_label = fields.Char(compute="_compute_version_label", store=True)
-    current_version_id = fields.Many2one("risk.document.version", string="Current Version", readonly=True, copy=False)
+    version_major = fields.Integer(string="Version Majeure", default=1, tracking=True)
+    version_minor = fields.Integer(string="Version Mineure", default=0, tracking=True)
+    version_label = fields.Char(compute="_compute_version_label", store=True, string="Version")
+    current_version_id = fields.Many2one("risk.document.version", string="Version Actuelle", readonly=True, copy=False)
     version_ids = fields.One2many("risk.document.version", "document_id", string="Versions")
 
     # =====================================================
@@ -258,18 +258,19 @@ class RiskDocument(models.Model):
 
     state = fields.Selection(
         [
-            ("draft", "Draft"),
-            ("preparation", "In Preparation"),
-            ("review", "Under Review"),
-            ("approval", "Pending Approval"),
-            ("approved", "Approved"),
-            ("published", "Published"),
+            ("draft", "Brouillon"),
+            ("preparation", "En Préparation"),
+            ("review", "En Révision"),
+            ("approval", "En Validation"),
+            ("approved", "Validé"),
+            ("published", "Publié"),
             ("obsolete", "Obsolete"),
-            ("archived", "Archived"),
+            ("archived", "Archivé"),
         ],
         default="draft",
         tracking=True,
-        index=True
+        index=True,
+        string='Statut'
     )
 
     is_current = fields.Boolean(
@@ -282,14 +283,14 @@ class RiskDocument(models.Model):
     # DOCUMENT LIFECYCLE
     # =====================================================
 
-    creation_date = fields.Date(default=fields.Date.today, readonly=True)
-    effective_date = fields.Date(tracking=True)
-    approval_date = fields.Date(tracking=True)
-    publication_date = fields.Date(tracking=True)
-    next_review_date = fields.Date(tracking=True)
-    expiry_date = fields.Date(tracking=True)
-    archive_date = fields.Date(tracking=True)
-    destruction_date = fields.Date(tracking=True)
+    creation_date = fields.Date(default=fields.Date.today, readonly=True, string="Date de création")
+    effective_date = fields.Date(tracking=True, string="Date d'effet")
+    approval_date = fields.Date(tracking=True, string="Date d'approbation")
+    publication_date = fields.Date(tracking=True, string="Date de publication")
+    next_review_date = fields.Date(tracking=True, string="Date de la prochaine révision")
+    expiry_date = fields.Date(tracking=True, string="Date d'expiration")
+    archive_date = fields.Date(tracking=True, string="Date d'archivage")
+    destruction_date = fields.Date(tracking=True, string="Date de destruction")
 
     # =====================================================
     # REVIEW MANAGEMENT
@@ -297,25 +298,26 @@ class RiskDocument(models.Model):
 
     review_frequency = fields.Selection(
         [
-            ("monthly", "Monthly"),
-            ("quarterly", "Quarterly"),
-            ("semiannual", "Semi Annual"),
-            ("annual", "Annual"),
-            ("biennial", "Every 2 Years"),
-            ("triennial", "Every 3 Years"),
+            ("monthly", "Mensuelle"),
+            ("quarterly", "Trimestrielle"),
+            ("semiannual", "Semi-Annuel"),
+            ("annual", "Annuelle"),
+            ("biennial", "Biénnialle"),
+            ("triennial", "Triénnialle"),
         ],
         default="annual",
-        tracking=True
+        tracking=True,
+        string="Fréquence de révision"
     )
 
-    review_ids = fields.One2many("risk.document.review", "document_id", string="Reviews")
-    last_review_date = fields.Date(compute="_compute_last_review")
+    review_ids = fields.One2many("risk.document.review", "document_id", string="Réviseur")
+    last_review_date = fields.Date(compute="_compute_last_review", string="Date de la dernière révision")
 
     review_status = fields.Selection(
         [
-            ("ok", "Up To Date"),
-            ("due", "Review Due"),
-            ("overdue", "Overdue"),
+            ("ok", "A jour"),
+            ("due", "A mettre à jour"),
+            ("overdue", "En retard"),
         ],
         compute="_compute_review_status",
         store=True,
@@ -338,24 +340,25 @@ class RiskDocument(models.Model):
     # APPROVAL
     # =====================================================
 
-    approval_ids = fields.One2many("risk.document.approval", "document_id", string="Approvals")
-    approval_required = fields.Boolean(default=True)
+    approval_ids = fields.One2many("risk.document.approval", "document_id", string="Approuvé")
+    approval_required = fields.Boolean(default=True, string="A approuver avant publication")
     approval_level = fields.Selection(
         [
-            ("single", "Single Approval"),
-            ("double", "Double Approval"),
-            ("committee", "Committee"),
+            ("single", "Approbation Simple"),
+            ("double", "Double Approbation"),
+            ("committee", "Comité"),
         ],
-        default="single"
+        default="single",
+        string="Niveau d'approbation"
     )
 
     # =====================================================
     # DISTRIBUTION
     # =====================================================
 
-    distribution_ids = fields.One2many("risk.document.distribution", "document_id")
-    mandatory_read = fields.Boolean(default=False)
-    mandatory_training = fields.Boolean(default=False)
+    distribution_ids = fields.One2many("risk.document.distribution", "document_id", string="Distribution")
+    mandatory_read = fields.Boolean(default=False, string="Lecture obligatoire")
+    mandatory_training = fields.Boolean(default=False, string="Formation obligatoire")
 
     # =====================================================
     # DOCUMENT HEALTH
@@ -364,26 +367,28 @@ class RiskDocument(models.Model):
     document_health_score = fields.Float(
         compute="_compute_document_health",
         store=True,
-        digits=(16, 2)
+        digits=(16, 2),
+        string="Score de santé"
     )
 
     health_level = fields.Selection(
         [
-            ("excellent", "Excellent"),
-            ("good", "Good"),
-            ("warning", "Warning"),
-            ("critical", "Critical"),
+            ("excellent", "Excéllent"),
+            ("good", "Bon"),
+            ("warning", "Avertissement"),
+            ("critical", "Critique"),
         ],
         compute="_compute_document_health",
-        store=True
+        store=True,
+        string="Niveau de santé"
     )
 
     # =====================================================
     # OBSOLETE / ARCHIVE
     # =====================================================
 
-    obsolete_reason = fields.Text()
-    archive_reason = fields.Text()
+    obsolete_reason = fields.Text(string="Raison de l'obsolescence")
+    archive_reason = fields.Text(string="Raison de l'archivage")
 
     image_128 = fields.Binary(string='Image', attachment=True, help='Image du document')
     color = fields.Integer(string='Color', help='Couleur pour l\'affichage en kanban')
