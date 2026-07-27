@@ -23,6 +23,7 @@
         'data/risk_process_data.xml',
         'data/risk_activity_data.xml',
         'data/risk_risk_data.xml',
+        #'data/kri_formula_templates.xml',
         'data/kri_data.xml',
         #'data/employee_data.xml',
         'data/risk_control_data.xml',

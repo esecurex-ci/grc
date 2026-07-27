@@ -20,38 +20,31 @@ class RiskKriCron(models.Model):
 
         for kri in kris:
             try:
-                # Ici, vous pouvez implémenter la logique pour récupérer
-                # les valeurs des paramètres depuis d'autres modèles
-                # Exemple : récupérer les données depuis risk.risk ou risk.incident
-
-                # Pour l'instant, on fait un calcul simple avec des valeurs par défaut
                 params = {}
                 fields_list = kri.formula_fields.split(',') if kri.formula_fields else []
 
                 for field_name in fields_list:
                     field_name = field_name.strip()
-                    # Récupérer la valeur depuis les données (à adapter)
-                    # Exemple : depuis les incidents
+                    # Récupérer la valeur depuis les données (à adapter selon vos besoins)
                     if field_name == 'incidents':
-                        # Compter les incidents du mois
                         params[field_name] = self.env['risk.incident'].search_count([
                             ('create_date', '>=', fields.Date.today().replace(day=1)),
-                            ('state', '=', 'validated')
                         ])
+                    elif field_name == 'errors':
+                        params[field_name] = 0  # À remplacer par votre logique
+                    elif field_name == 'total':
+                        params[field_name] = 1  # À remplacer par votre logique
                     else:
-                        # Valeur par défaut (à adapter)
                         params[field_name] = 0
 
-                # Calculer la valeur
                 value = kri.compute_value_from_formula(**params)
 
-                # Créer la mesure
                 self.env['risk.kri.measure'].create({
                     'kri_id': kri.id,
                     'value': value,
                     'measure_date': fields.Date.today(),
                     'comment': f"Calcul automatique par cron le {fields.Date.today()}",
-                    'parameters': str(params),
+                    'formula_version': kri.formula_version,
                 })
 
                 _logger.info(f"KRI {kri.code} calculé: {value}")

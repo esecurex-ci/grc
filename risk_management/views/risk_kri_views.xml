@@ -122,6 +122,8 @@
                 <header>
                     <button name="action_add_measure" string="➕ Ajouter une mesure" type="object" class="btn-primary"/>
                     <button name="action_view_measures" string="📊 Voir les mesures" type="object"/>
+                    <button name="action_test_formula" string="🧪 Tester la formule" type="object" class="btn-secondary"/>
+                    <button name="action_apply_formula_template" string="📋 Modèles de formules" type="object" class="btn-secondary"/>
                     <field name="status" widget="badge"/>
                     <field name="trend" widget="badge"/>
                 </header>
@@ -201,19 +203,50 @@
                             <field name="action_plan"/>
                             <field name="notes"/>
                         </page>
-                        <page string="🧮 Formule de calcul">
+                        <page string="🧮 Formule" name="formula">
                             <group string="Méthode de calcul">
-                                <field name="formula" placeholder="Description de la méthode de calcul..."/>
+                                <field name="formula" placeholder="Description textuelle de la méthode de calcul..."/>
                             </group>
                             <group string="Expression de calcul">
-                                <field name="formula_expression" placeholder="Ex: (errors / total) * 100"/>
-                                <field name="formula_fields" placeholder="champs_necessaires, séparés, par, des, virgules"/>
-                                <div class="alert alert-info" role="status" style="margin-top:10px;">
-                                    <i class="fa fa-info-circle" title="Information"/>
-                                    <strong>📌 Exemple :</strong><br/>
-                                    - <strong>Formule :</strong> (Nombre d'erreurs / Nombre total) × 100<br/>
-                                    - <strong>Expression :</strong> (errors / total) * 100<br/>
-                                    - <strong>Champs :</strong> errors, total
+                                <field name="formula_expression"
+                                       placeholder="Ex: (errors / total) * 100"
+                                       help="Expression Python pour le calcul automatique"/>
+                                <field name="formula_fields"
+                                       placeholder="errors, total"
+                                       help="Champs requis pour le calcul (séparés par des virgules)"/>
+                            </group>
+
+                            <!-- ✅ AJOUT : Exemples de formules -->
+                            <group string="📋 Exemples de formules" colspan="2">
+                                <div style="background:#f8f9fa;border-radius:8px;padding:12px;border:1px solid #dee2e6;">
+                                    <strong style="color:#1a237e;">Formules courantes :</strong>
+                                    <table style="width:100%;margin-top:8px;font-size:12px;">
+                                        <tr>
+                                            <td style="padding:4px;"><strong>Taux d'erreur</strong></td>
+                                            <td style="padding:4px;">(errors / total) * 100</td>
+                                            <td style="padding:4px;color:#6c757d;">errors, total</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:4px;"><strong>Écart en %</strong></td>
+                                            <td style="padding:4px;">((actual - expected) / expected) * 100</td>
+                                            <td style="padding:4px;color:#6c757d;">actual, expected</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:4px;"><strong>Taux de conformité</strong></td>
+                                            <td style="padding:4px;">(valid / total) * 100</td>
+                                            <td style="padding:4px;color:#6c757d;">valid, total</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:4px;"><strong>Variation</strong></td>
+                                            <td style="padding:4px;">((current - previous) / previous) * 100</td>
+                                            <td style="padding:4px;color:#6c757d;">current, previous</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:4px;"><strong>Moyenne</strong></td>
+                                            <td style="padding:4px;">sum_values / count</td>
+                                            <td style="padding:4px;color:#6c757d;">sum_values, count</td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </group>
                         </page>

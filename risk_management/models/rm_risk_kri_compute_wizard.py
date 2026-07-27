@@ -68,13 +68,18 @@ class RiskKriComputeWizard(models.TransientModel):
         string='Code KRI'
     )
 
+    formula_version = fields.Integer(
+        related='kri_id.formula_version',
+        readonly=True,
+        string='Version de la formule'
+    )
+
     @api.onchange('kri_id')
     def _onchange_kri_id(self):
         if self.kri_id:
             self.formula_expression = self.kri_id.formula_expression
             self.formula_fields = self.kri_id.formula_fields
 
-            # Créer les paramètres
             if self.formula_fields:
                 fields_list = [f.strip() for f in self.formula_fields.split(',')]
                 for field_name in fields_list:
@@ -85,7 +90,6 @@ class RiskKriComputeWizard(models.TransientModel):
         """Calcule la valeur à partir des paramètres saisis"""
         self.ensure_one()
 
-        # Récupérer les valeurs des paramètres
         params = {}
         for param in self.parameter_ids:
             params[param.name] = param.value
@@ -114,11 +118,13 @@ class RiskKriComputeWizard(models.TransientModel):
         if self.computed_value is None:
             raise ValidationError(_("Veuillez d'abord calculer la valeur."))
 
+        # Créer la mesure avec la version de la formule
         self.env['risk.kri.measure'].create({
             'kri_id': self.kri_id.id,
             'value': self.computed_value,
             'measure_date': self.measure_date,
             'comment': self.comment or f"Calcul automatique le {fields.Date.today()}",
+            'formula_version': self.formula_version,
         })
 
         return {

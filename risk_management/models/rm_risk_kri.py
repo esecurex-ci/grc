@@ -77,22 +77,49 @@ class RiskKri(models.Model):
     )
 
     # ============================================================
-    # FORMULE DE CALCUL
+    # FORMULE DE CALCUL AVEC HISTORISATION
     # ============================================================
 
     formula = fields.Text(
         string="Méthode de calcul",
-        help="Formule de calcul du KRI"
+        help="Formule de calcul du KRI",
+        tracking=True
     )
 
     formula_expression = fields.Char(
         string="Expression de calcul",
-        help="Expression Python pour le calcul"
+        help="Expression Python pour le calcul",
+        tracking=True
     )
 
     formula_fields = fields.Char(
         string="Champs nécessaires",
-        help="Champs requis pour le calcul (séparés par des virgules)"
+        help="Champs requis pour le calcul (séparés par des virgules)",
+        tracking=True
+    )
+
+    # Historique des formules
+    formula_history_ids = fields.One2many(
+        'risk.kri.formula.history',
+        'kri_id',
+        string='Historique des formules'
+    )
+
+    formula_version = fields.Integer(
+        string='Version de la formule',
+        default=1,
+        tracking=True
+    )
+
+    formula_last_modified = fields.Datetime(
+        string='Dernière modification de la formule',
+        readonly=True
+    )
+
+    formula_last_modified_by = fields.Many2one(
+        'res.users',
+        string='Dernière modification par',
+        readonly=True
     )
 
     # ============================================================
@@ -123,6 +150,27 @@ class RiskKri(models.Model):
         string='Seuil critique',
         default=80,
         help="Seuil déclenchant une alerte critique"
+    )
+
+    threshold_green = fields.Float(
+        string='🟢 Seuil Vert (OK)',
+        default=0,
+        help="Valeur en dessous de laquelle le KRI est vert",
+        tracking=True
+    )
+
+    threshold_amber = fields.Float(
+        string='🟡 Seuil Orange (Alerte)',
+        default=50,
+        help="Valeur à partir de laquelle le KRI passe en alerte orange",
+        tracking=True
+    )
+
+    threshold_red = fields.Float(
+        string='🔴 Seuil Rouge (Critique)',
+        default=80,
+        help="Valeur à partir de laquelle le KRI passe en alerte rouge",
+        tracking=True
     )
 
     # ============================================================
@@ -213,25 +261,6 @@ class RiskKri(models.Model):
         string='Dernière alerte'
     )
 
-    # Dans votre modèle risk.kri
-    threshold_green = fields.Float(
-        string='Seuil Vert (OK)',
-        default=0,
-        help="Valeur en dessous de laquelle le KRI est vert"
-    )
-
-    threshold_amber = fields.Float(
-        string='Seuil Orange (Alerte)',
-        default=50,
-        help="Valeur à partir de laquelle le KRI passe en alerte orange"
-    )
-
-    threshold_red = fields.Float(
-        string='Seuil Rouge (Critique)',
-        default=80,
-        help="Valeur à partir de laquelle le KRI passe en alerte rouge"
-    )
-
     action_plan = fields.Html(
         string="Plan d'action",
         help="Plan d'action en cas d'alerte ou de dépassement des seuils"
@@ -241,6 +270,10 @@ class RiskKri(models.Model):
         string='Notes',
         help="Notes et commentaires supplémentaires"
     )
+
+    # ============================================================
+    # HIÉRARCHIE GRC
+    # ============================================================
 
     macro_process_id = fields.Many2one(
         'risk.macro.process',
@@ -284,10 +317,9 @@ class RiskKri(models.Model):
     active = fields.Boolean(default=True)
 
     # ============================================================
-    # PROCESSUS ET ACTIVITÉS (via les risques) - VERSION SIMPLIFIÉE
+    # PROCESSUS ET ACTIVITÉS (via les risques)
     # ============================================================
 
-    # ✅ Uniquement des champs Text calculés, PAS de Many2many !
     process_list = fields.Text(
         compute='_compute_process_list',
         string='Processus',
@@ -307,6 +339,64 @@ class RiskKri(models.Model):
         string='Nombre de risques liés',
         store=True
     )
+
+    # ============================================================
+    # SURCHARGE DE WRITE POUR HISTORISER LES FORMULES
+    # ============================================================
+
+    def write(self, vals):
+        """Surcharge pour historiser les modifications de formule"""
+        formula_changed = False
+        formula_fields = ['formula', 'formula_expression', 'formula_fields']
+
+        for record in self:
+            for field in formula_fields:
+                if field in vals and vals[field] != getattr(record, field):
+                    formula_changed = True
+                    break
+
+        result = super().write(vals)
+
+        if formula_changed:
+            for record in self:
+                record._create_formula_history()
+
+        return result
+
+    def _create_formula_history(self):
+        """Crée un enregistrement d'historique pour la formule actuelle"""
+        self.ensure_one()
+
+        self.env['risk.kri.formula.history'].create({
+            'kri_id': self.id,
+            'formula': self.formula,
+            'formula_expression': self.formula_expression,
+            'formula_fields': self.formula_fields,
+            'formula_version': self.formula_version,
+            'tolerance': self.tolerance,
+            'threshold_green': self.threshold_green,
+            'threshold_amber': self.threshold_amber,
+            'threshold_red': self.threshold_red,
+            'measure_frequency': self.measure_frequency,
+            'created_by': self.env.user.id,
+        })
+
+        self.formula_version += 1
+        self.formula_last_modified = fields.Datetime.now()
+        self.formula_last_modified_by = self.env.user
+
+    def action_view_formula_history(self):
+        """Ouvre la vue de l'historique des formules"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Historique des formules - {self.name}',
+            'res_model': 'risk.kri.formula.history',
+            'view_mode': 'list,form',
+            'domain': [('kri_id', '=', self.id)],
+            'context': {'default_kri_id': self.id},
+            'target': 'current',
+        }
 
     # ============================================================
     # COMPUTES
@@ -398,20 +488,16 @@ class RiskKri(models.Model):
 
     @api.depends('risk_ids', 'risk_ids.activity_id', 'risk_ids.activity_id.process_id', 'risk_ids.process_id')
     def _compute_process_list(self):
-        """Calcule la liste des processus et activités à partir des risques associés"""
         for record in self:
             processes = set()
             activities = set()
 
             for risk in record.risk_ids:
-                # Via l'activité du risque
                 if risk.activity_id:
                     if risk.activity_id.name:
                         activities.add(risk.activity_id.name)
                     if risk.activity_id.process_id and risk.activity_id.process_id.name:
                         processes.add(risk.activity_id.process_id.name)
-
-                # Via le process_id direct du risque
                 if risk.process_id and risk.process_id.name:
                     processes.add(risk.process_id.name)
 
@@ -423,14 +509,38 @@ class RiskKri(models.Model):
         for record in self:
             record.risk_count = len(record.risk_ids)
 
+    @api.depends('risk_ids', 'risk_ids.activity_id', 'risk_ids.process_id', 'risk_ids.macro_process_id')
+    def _compute_hierarchy_fields(self):
+        for record in self:
+            record.macro_process_id = False
+            record.process_id = False
+            record.activity_id = False
+
+            if not record.risk_ids:
+                continue
+
+            for risk in record.risk_ids:
+                if risk.activity_id:
+                    record.activity_id = risk.activity_id.id
+                    if risk.activity_id.process_id:
+                        record.process_id = risk.activity_id.process_id.id
+                        if risk.activity_id.process_id.macro_process_id:
+                            record.macro_process_id = risk.activity_id.process_id.macro_process_id.id
+                            break
+                elif risk.process_id:
+                    record.process_id = risk.process_id.id
+                    if risk.process_id.macro_process_id:
+                        record.macro_process_id = risk.process_id.macro_process_id.id
+                        break
+                elif risk.macro_process_id:
+                    record.macro_process_id = risk.macro_process_id.id
+                    break
+
     # ============================================================
     # CALCUL AUTOMATIQUE
     # ============================================================
 
     def compute_value_from_formula(self, **kwargs):
-        """
-        Calcule la valeur du KRI à partir de la formule stockée.
-        """
         self.ensure_one()
 
         if not self.formula_expression:
@@ -453,9 +563,6 @@ class RiskKri(models.Model):
             raise ValidationError(_("Erreur de calcul: %s") % str(e))
 
     def compute_and_save_measure(self, **kwargs):
-        """
-        Calcule la valeur et enregistre une mesure.
-        """
         self.ensure_one()
 
         value = self.compute_value_from_formula(**kwargs)
@@ -465,6 +572,7 @@ class RiskKri(models.Model):
             'value': value,
             'measure_date': fields.Date.today(),
             'comment': f"Calcul automatique le {fields.Date.today()}",
+            'formula_version': self.formula_version,
         })
 
         return measure
@@ -514,7 +622,6 @@ class RiskKri(models.Model):
         }
 
     def action_generate_alert(self):
-        """Génère une alerte pour ce KRI"""
         self.ensure_one()
         if self.status in ['amber', 'red']:
             self.env['risk.kri.alert'].create({
@@ -526,7 +633,6 @@ class RiskKri(models.Model):
             })
 
     def action_reset_thresholds(self):
-        """Réinitialise les seuils aux valeurs par défaut"""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
@@ -535,6 +641,24 @@ class RiskKri(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'context': {'default_kri_id': self.id},
+        }
+
+    def action_recalculate_hierarchy(self):
+        kris = self.search([])
+        count = 0
+        for kri in kris:
+            kri._compute_hierarchy_fields()
+            count += 1
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Recalcul terminé',
+            'res_model': 'risk.kri',
+            'view_mode': 'list',
+            'target': 'new',
+            'context': {
+                'default_name': f'{count} KRI recalculés'
+            }
         }
 
     @api.model
@@ -564,6 +688,7 @@ class RiskKri(models.Model):
                     'value': value,
                     'measure_date': fields.Date.today(),
                     'comment': f"Calcul automatique par cron le {fields.Date.today()}",
+                    'formula_version': kri.formula_version,
                 })
 
                 _logger.info(f"KRI {kri.code} calculé: {value}")
@@ -571,69 +696,129 @@ class RiskKri(models.Model):
             except Exception as e:
                 _logger.error(f"Erreur pour KRI {kri.code}: {str(e)}")
 
-    # ============================================================
-    # COMPUTE HIÉRARCHIE
-    # ============================================================
+    def action_test_formula(self):
+        """Ouvre l'assistant de test de formule"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '🧪 Tester la formule',
+            'res_model': 'risk.kri.formula.test.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_formula_expression': self.formula_expression,
+                'default_formula_fields': self.formula_fields,
+            },
+        }
 
-    @api.depends('risk_ids', 'risk_ids.activity_id', 'risk_ids.process_id', 'risk_ids.macro_process_id')
-    def _compute_hierarchy_fields(self):
-        """
-        Calcule les champs hiérarchiques à partir des risques associés.
-        Si plusieurs risques sont associés, on prend le premier trouvé.
-        """
-        for record in self:
-            # Réinitialiser
-            record.macro_process_id = False
-            record.process_id = False
-            record.activity_id = False
+    def action_apply_formula_template(self):
+        """Ouvre l'assistant d'application de modèle de formule"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': '📋 Appliquer un modèle de formule',
+            'res_model': 'risk.kri.formula.apply.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_kri_id': self.id,
+            },
+        }
 
-            if not record.risk_ids:
-                continue
 
-            # Parcourir les risques associés pour trouver la hiérarchie
-            for risk in record.risk_ids:
-                # Si l'activité existe
-                if risk.activity_id:
-                    record.activity_id = risk.activity_id.id
-                    if risk.activity_id.process_id:
-                        record.process_id = risk.activity_id.process_id.id
-                        if risk.activity_id.process_id.macro_process_id:
-                            record.macro_process_id = risk.activity_id.process_id.macro_process_id.id
-                            break  # On s'arrête au premier trouvé
+# ============================================================
+# MODÈLE D'HISTORIQUE DES FORMULES
+# ============================================================
 
-                # Sinon, si le process_id direct existe
-                elif risk.process_id:
-                    record.process_id = risk.process_id.id
-                    if risk.process_id.macro_process_id:
-                        record.macro_process_id = risk.process_id.macro_process_id.id
-                        break
+class RiskKriFormulaHistory(models.Model):
+    _name = 'risk.kri.formula.history'
+    _description = 'Historique des formules KRI'
+    _order = 'create_date desc, id desc'
 
-                # Sinon, si le macro_process_id direct existe
-                elif risk.macro_process_id:
-                    record.macro_process_id = risk.macro_process_id.id
-                    break
+    kri_id = fields.Many2one(
+        'risk.kri',
+        string='KRI',
+        required=True,
+        ondelete='cascade'
+    )
 
-    # ============================================================
-    # MÉTHODE POUR RECALCULER LA HIÉRARCHIE
-    # ============================================================
+    formula_version = fields.Integer(
+        string='Version',
+        help="Numéro de version de la formule"
+    )
 
-    def action_recalculate_hierarchy(self):
-        """
-        Action pour recalculer manuellement la hiérarchie de tous les KRI.
-        """
-        kris = self.search([])
-        count = 0
-        for kri in kris:
-            kri._compute_hierarchy_fields()
-            count += 1
+    formula = fields.Text(
+        string='Méthode de calcul',
+        help="Formule de calcul du KRI à cette version"
+    )
+
+    formula_expression = fields.Char(
+        string='Expression de calcul',
+        help="Expression Python pour le calcul"
+    )
+
+    formula_fields = fields.Char(
+        string='Champs nécessaires',
+        help="Champs requis pour le calcul"
+    )
+
+    tolerance = fields.Char(
+        string='Tolérance',
+        help="Valeur de tolérance"
+    )
+
+    threshold_green = fields.Float(
+        string='🟢 Seuil Vert'
+    )
+
+    threshold_amber = fields.Float(
+        string='🟡 Seuil Orange'
+    )
+
+    threshold_red = fields.Float(
+        string='🔴 Seuil Rouge'
+    )
+
+    measure_frequency = fields.Selection([
+        ('daily', 'Quotidienne'),
+        ('weekly', 'Hebdomadaire'),
+        ('monthly', 'Mensuelle'),
+        ('quarterly', 'Trimestrielle'),
+        ('semiannual', 'Semestrielle'),
+        ('annual', 'Annuelle'),
+    ], string='Fréquence de capture')
+
+    created_by = fields.Many2one(
+        'res.users',
+        string='Modifié par',
+        default=lambda self: self.env.user
+    )
+
+    create_date = fields.Datetime(
+        string='Date de modification',
+        default=fields.Datetime.now
+    )
+
+    def action_restore_formula(self):
+        """Restaure une version précédente de la formule"""
+        self.ensure_one()
+
+        self.kri_id.write({
+            'formula': self.formula,
+            'formula_expression': self.formula_expression,
+            'formula_fields': self.formula_fields,
+            'tolerance': self.tolerance,
+            'threshold_green': self.threshold_green,
+            'threshold_amber': self.threshold_amber,
+            'threshold_red': self.threshold_red,
+            'measure_frequency': self.measure_frequency,
+        })
 
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Recalcul terminé',
+            'name': 'Formule restaurée',
             'res_model': 'risk.kri',
-            'view_mode': 'list',
-            'target': 'new',
-            'context': {
-                'default_name': f'{count} KRI recalculés'
-            }
+            'view_mode': 'form',
+            'res_id': self.kri_id.id,
+            'target': 'current',
         }

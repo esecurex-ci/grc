@@ -1,0 +1,95 @@
+<!-- data/kri_formula_templates.xml -->
+<odoo>
+
+    <!-- Modèle : Taux d'erreur -->
+    <record id="kri_formula_template_error_rate" model="risk.kri.formula.template">
+        <field name="name">📊 Taux d'erreur</field>
+        <field name="category">quality</field>
+        <field name="formula_expression">(errors / total) * 100</field>
+        <field name="formula_fields">errors, total</field>
+        <field name="unit">%</field>
+        <field name="measure_unit">percentage</field>
+        <field name="sample_parameters">{"errors": 5, "total": 100}</field>
+        <field name="expected_result">5.0</field>
+        <field name="description">Calcule le pourcentage d'erreurs sur un total.</field>
+    </record>
+
+    <!-- Modèle : Taux de conformité -->
+    <record id="kri_formula_template_compliance_rate" model="risk.kri.formula.template">
+        <field name="name">✅ Taux de conformité</field>
+        <field name="category">compliance</field>
+        <field name="formula_expression">(compliant / total) * 100</field>
+        <field name="formula_fields">compliant, total</field>
+        <field name="unit">%</field>
+        <field name="measure_unit">percentage</field>
+        <field name="sample_parameters">{"compliant": 85, "total": 100}</field>
+        <field name="expected_result">85.0</field>
+        <field name="description">Calcule le pourcentage de conformité sur un total.</field>
+    </record>
+
+    <!-- Modèle : Variation -->
+    <record id="kri_formula_template_variation" model="risk.kri.formula.template">
+        <field name="name">📈 Variation</field>
+        <field name="category">financial</field>
+        <field name="formula_expression">((current - previous) / previous) * 100</field>
+        <field name="formula_fields">current, previous</field>
+        <field name="unit">%</field>
+        <field name="measure_unit">percentage</field>
+        <field name="sample_parameters">{"current": 110, "previous": 100}</field>
+        <field name="expected_result">10.0</field>
+        <field name="description">Calcule la variation en pourcentage entre deux valeurs.</field>
+    </record>
+
+    <!-- Modèle : Taux de turnover -->
+    <record id="kri_formula_template_turnover" model="risk.kri.formula.template">
+        <field name="name">👥 Taux de turnover</field>
+        <field name="category">hr</field>
+        <field name="formula_expression">(departures / workforce) * 100</field>
+        <field name="formula_fields">departures, workforce</field>
+        <field name="unit">%</field>
+        <field name="measure_unit">percentage</field>
+        <field name="sample_parameters">{"departures": 3, "workforce": 50}</field>
+        <field name="expected_result">6.0</field>
+        <field name="description">Calcule le taux de turnover du personnel.</field>
+    </record>
+
+    <!-- Modèle : Écart budgétaire -->
+    <record id="kri_formula_template_budget_gap" model="risk.kri.formula.template">
+        <field name="name">📊 Écart budgétaire</field>
+        <field name="category">financial</field>
+        <field name="formula_expression">((actual - budget) / budget) * 100</field>
+        <field name="formula_fields">actual, budget</field>
+        <field name="unit">%</field>
+        <field name="measure_unit">percentage</field>
+        <field name="sample_parameters">{"actual": 110000, "budget": 100000}</field>
+        <field name="expected_result">10.0</field>
+        <field name="description">Calcule l'écart entre le réel et le budget.</field>
+    </record>
+
+    <!-- Modèle : Montant des pertes -->
+    <record id="kri_formula_template_loss_amount" model="risk.kri.formula.template">
+        <field name="name">💰 Montant des pertes</field>
+        <field name="category">financial</field>
+        <field name="formula_expression">loss_amount</field>
+        <field name="formula_fields">loss_amount</field>
+        <field name="unit">FCFA</field>
+        <field name="measure_unit">amount</field>
+        <field name="sample_parameters">{"loss_amount": 1500000}</field>
+        <field name="expected_result">1500000.0</field>
+        <field name="description">Montant total des pertes constatées.</field>
+    </record>
+
+    <!-- Modèle : Délai moyen -->
+    <record id="kri_formula_template_avg_delay" model="risk.kri.formula.template">
+        <field name="name">⏱️ Délai moyen</field>
+        <field name="category">operational</field>
+        <field name="formula_expression">sum_delays / count</field>
+        <field name="formula_fields">sum_delays, count</field>
+        <field name="unit">jours</field>
+        <field name="measure_unit">days</field>
+        <field name="sample_parameters">{"sum_delays": 45, "count": 10}</field>
+        <field name="expected_result">4.5</field>
+        <field name="description">Calcule le délai moyen.</field>
+    </record>
+
+</odoo>

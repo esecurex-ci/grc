@@ -180,15 +180,15 @@
     <!-- PROCESSUS                                             -->
     <!-- ===================================================== -->
 
-    <!-- ✅ ACTION - Processus -->
+    <!-- ✅ ACTION - Processus
     <record id="action_risk_process" model="ir.actions.act_window">
-        <field name="name">Cartographie des Processus</field>
+        <field name="name">Cartographie des Sous Processus</field>
         <field name="res_model">risk.process</field>
         <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="view_risk_process_kanban"/>
         <field name="search_view_id" ref="view_risk_process_search"/>
     </record>
-
+    -->
     <!-- ✅ ACTION - Rapport Conseil -->
     <record id="action_risk_process_board_report" model="ir.actions.act_window">
         <field name="name">📊 Rapport Conseil</field>
@@ -201,7 +201,29 @@
                 📊 Rapport pour le Conseil d'Administration
             </p>
             <p>
-                Synthèse des processus avec leurs niveaux de risque.
+                Synthèse des sous processus avec leurs niveaux de risque.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_risk_process" model="ir.actions.act_window">
+        <field name="name">Sous-processus</field>
+        <field name="res_model">risk.process</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="view_id" ref="risk_management.view_risk_process_hierarchical_list"/>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('risk_management.view_risk_process_hierarchical_list')}),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('risk_management.view_risk_process_kanban')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('risk_management.view_risk_process_form')})
+        ]"/>
+        <field name="search_view_id" ref="view_risk_process_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📋 Gestion des sous-processus
+            </p>
+            <p>
+                Les sous-processus sont organisés par macro-processus et catégorie.
             </p>
         </field>
     </record>

@@ -1,5 +1,6 @@
 from odoo import models, fields
 
+
 class RiskKriAlert(models.Model):
     _name = 'risk.kri.alert'
     _description = 'KRI Alert'
