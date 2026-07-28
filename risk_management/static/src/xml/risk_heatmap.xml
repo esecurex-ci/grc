@@ -364,7 +364,7 @@
                                 <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ffc107;"></span> Moyen</span>
                                 <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#28a745;"></span> Faible</span>
                             </div>
-                            <!-- Légende de la matrice résiduelle -->
+                            <!-- Légende de la matrice résiduelle
                             <div style="margin-top:10px;padding:10px;background:#f8f9fa;border-radius:6px;border:1px solid #dee2e6;">
                                 <div style="font-size:11px;color:#495057;text-align:center;">
                                     <strong>📌 Comment lire cette matrice :</strong><br/>
@@ -378,6 +378,7 @@
                                     <span style="background:#d4edda;padding:2px 8px;border-radius:4px;">🟢 Contrôle efficace = Résiduel réduit</span>
                                 </div>
                             </div>
+                            -->
                         </div>
                     </div>
                 </div>
