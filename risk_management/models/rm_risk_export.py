@@ -75,20 +75,18 @@ class RiskExportWizard(models.TransientModel):
         return self.env['risk.risk'].search([('active', '=', True)])
 
     def _get_level_color(self, level):
-        """Retourne la couleur selon le niveau de risque"""
+        """Retourne la couleur selon le niveau de risque (échelle à 3 niveaux : Faible/Modéré/Élevé)"""
         colors = {
-            'critical': '#dc3545',
-            'high': '#fd7e14',
+            'high': '#dc3545',
             'medium': '#ffc107',
             'low': '#28a745',
         }
         return colors.get(level, '#6c757d')
 
     def _get_level_bg_color(self, level):
-        """Retourne la couleur de fond selon le niveau de risque"""
+        """Retourne la couleur de fond selon le niveau de risque (échelle à 3 niveaux)"""
         colors = {
-            'critical': '#f8d7da',
-            'high': '#ffe5cc',
+            'high': '#f8d7da',
             'medium': '#fff3cd',
             'low': '#d4edda',
         }
@@ -257,6 +255,7 @@ class RiskExportWizard(models.TransientModel):
             # Score inhérent avec couleur
             score = risk.inherent_score or 0
             level = risk.inherent_level or 'low'
+            residual_level = risk.residual_level or 'low'
             score_format = workbook.add_format({
                 'align': 'center', 'valign': 'vcenter', 'border': 1,
                 'bold': True,
@@ -370,7 +369,7 @@ class RiskExportWizard(models.TransientModel):
                 color = self._get_matrix_color(score)
                 cell_format_color = workbook.add_format({
                     'align': 'center', 'valign': 'vcenter', 'border': 1,
-                    'bg_color': color, 'font_color': 'white' if score > 12 else 'black',
+                    'bg_color': color, 'font_color': 'white' if score > 15 else 'black',
                     'bold': True
                 })
                 worksheet.write(row, impact, count, cell_format_color)
@@ -388,12 +387,12 @@ class RiskExportWizard(models.TransientModel):
         legend_colors = [
             ('Faible (1-5)', '#28a745'),
             ('Modéré (6-15)', '#ffc107'),
-            ('Élevé (16-25)', '#fd7e14'),
+            ('Élevé (16-25)', '#dc3545'),
         ]
         for i, (label, color) in enumerate(legend_colors):
             cell_format_color = workbook.add_format({
                 'align': 'center', 'valign': 'vcenter', 'border': 1,
-                'bg_color': color, 'font_color': 'white' if i > 1 else 'black',
+                'bg_color': color, 'font_color': 'white' if i == 2 else 'black',
                 'bold': True
             })
             worksheet.write(row + 2 + i, 1, label, cell_format_color)
@@ -571,10 +570,10 @@ class RiskExportWizard(models.TransientModel):
         worksheet.write(row, 1, len(risks), number_format)
         row += 1
 
-        levels = ['critical', 'high', 'medium', 'low']
-        level_labels = {'critical': 'Risques critiques', 'high': 'Risques élevés',
+        levels = ['high', 'medium', 'low']
+        level_labels = {'high': 'Risques élevés',
                         'medium': 'Risques modérés', 'low': 'Risques faibles'}
-        level_colors = {'critical': '#dc3545', 'high': '#fd7e14',
+        level_colors = {'high': '#dc3545',
                         'medium': '#ffc107', 'low': '#28a745'}
 
         for level in levels:
@@ -582,7 +581,7 @@ class RiskExportWizard(models.TransientModel):
             color_format = workbook.add_format({
                 'align': 'center', 'valign': 'vcenter', 'border': 1,
                 'bg_color': level_colors[level],
-                'font_color': 'white' if level in ['critical', 'high'] else 'black',
+                'font_color': 'white' if level == 'high' else 'black',
                 'bold': True
             })
             worksheet.write(row, 0, level_labels[level], cell_format)
@@ -657,12 +656,6 @@ class RiskExportWizard(models.TransientModel):
         worksheet.write(row, 1, round(avg_score, 2), number_format)
         row += 1
 
-        total_residual = sum(risks.mapped('residual_score') or [0])
-        avg_residual = total_residual / len(risks) if risks else 0
-        worksheet.write(row, 0, 'Score résiduel moyen', cell_format)
-        worksheet.write(row, 1, round(avg_residual, 2), number_format)
-        row += 1
-
         stats = [
             ('Contrôles', len(risks.mapped('control_ids'))),
             ('Incidents', len(risks.mapped('incident_ids'))),
@@ -684,7 +677,7 @@ class RiskExportWizard(models.TransientModel):
             color_format = workbook.add_format({
                 'align': 'center', 'valign': 'vcenter', 'border': 1,
                 'bg_color': level_colors[level],
-                'font_color': 'white' if level in ['critical', 'high'] else 'black',
+                'font_color': 'white' if level == 'high' else 'black',
                 'bold': True
             })
             worksheet.write(row, 0, f"Résiduel {level_labels[level]}", cell_format)
@@ -692,13 +685,11 @@ class RiskExportWizard(models.TransientModel):
             row += 1
 
     def _get_matrix_color(self, score):
-        """Retourne la couleur pour la matrice"""
+        """Retourne la couleur pour la matrice (échelle réelle : Faible 1-5 / Modéré 6-15 / Élevé 16-25)"""
         if score <= 5:
             return '#28a745'
         elif score <= 15:
             return '#ffc107'
-        elif score <= 25:
-            return '#fd7e14'
         else:
             return '#dc3545'
 
@@ -796,39 +787,39 @@ class RiskExportWizard(models.TransientModel):
         for risk in risks:
             risk_data = {
                 'code': risk.code or '',
-                'name': risk.name or '',
-                'category': risk.category_id.name or '',
-                'subcategory': risk.subcategory_id.name or '',
+                'nom': risk.name or '',
+                'categorie': risk.category_id.name or '',
+                'sous_categorie': risk.subcategory_id.name or '',
                 'type': self._get_selection_label('risk_type', risk.risk_type),
                 'source': self._get_selection_label('risk_source', risk.risk_source),
-                'state': self._get_selection_label('state', risk.state),
-                'owner': risk.owner_id.name or '',
+                'statut': self._get_selection_label('state', risk.state),
+                'proprietaire': risk.owner_id.name or '',
                 # Hiérarchie
-                'macro_process': risk.macro_process_id.name or '',
-                'process': risk.process_id.name or '',
-                'activity': risk.activity_id.name or '',
+                'macro_processus': risk.macro_process_id.name or '',
+                'processus': risk.process_id.name or '',
+                'activite': risk.activity_id.name or '',
                 # Inhérent
-                'inherent_probability': risk.inherent_probability or '',
-                'inherent_impact': risk.inherent_impact or '',
-                'inherent_score': risk.inherent_score or 0,
-                'inherent_level': self._get_selection_label('inherent_level', risk.inherent_level),
+                'probabilite_inherente': risk.inherent_probability or '',
+                'impact_inherent': risk.inherent_impact or '',
+                'score_inherent': risk.inherent_score or 0,
+                'niveau_inherent': self._get_selection_label('inherent_level', risk.inherent_level),
                 # Contrôles
-                'control_effectiveness': self._get_control_level_label(risk.control_effectiveness_level),
+                'efficacite_controles': self._get_control_level_label(risk.control_effectiveness_level),
                 # Résiduel
-                'residual_score': risk.residual_score or 0,
-                'residual_level': self._get_selection_label('residual_level', risk.residual_level),
-                'active': risk.active,
-                'last_review_date': risk.last_review_date.strftime('%d/%m/%Y') if risk.last_review_date else '',
-                'next_review_date': risk.next_review_date.strftime('%d/%m/%Y') if risk.next_review_date else '',
-                'controls': [{'name': c.name, 'type': c.control_type, 'effectiveness': c.effectiveness} for c in
-                             risk.control_ids],
-                'incidents_count': len(risk.incident_ids),
+                'score_residuel': risk.residual_score or 0,
+                'niveau_residuel': self._get_selection_label('residual_level', risk.residual_level),
+                'actif': risk.active,
+                'derniere_revision': risk.last_review_date.strftime('%d/%m/%Y') if risk.last_review_date else '',
+                'prochaine_revision': risk.next_review_date.strftime('%d/%m/%Y') if risk.next_review_date else '',
+                'controles': [{'nom': c.name, 'type': c.control_type, 'efficacite': c.effectiveness} for c in
+                              risk.control_ids],
+                'nombre_incidents': len(risk.incident_ids),
                 'kris': [
                     {
-                        'name': k.name,
-                        'value': k.current_value,
-                        'threshold_red': k.threshold_red,
-                        'status': self._get_selection_label('status', k.status)
+                        'nom': k.name,
+                        'valeur': k.current_value,
+                        'seuil_rouge': k.threshold_red,
+                        'statut': self._get_selection_label('status', k.status)
                     }
                     for k in risk.kri_ids
                 ],
@@ -941,29 +932,28 @@ class RiskExportWizard(models.TransientModel):
 
     def _write_residual_matrix_sheet(self, worksheet, workbook, risks, header_format, cell_format, number_format):
         """
-        Écrit la feuille de la matrice des risques résiduels 5x5
-        Basée sur : Niveau inhérent + Niveau de contrôle
+        Écrit la feuille de la matrice des risques résiduels 3x3
+        Basée sur : Niveau inhérent (Faible/Modéré/Élevé) + Niveau de contrôle (Inefficace/Partiel/Efficace)
         """
         worksheet.write(0, 0, 'Niveau inhérent ↓ / Niveau de contrôle →', header_format)
 
-        # En-têtes des colonnes (Niveaux de contrôle)
-        control_levels = ['Inefficace', 'Partiel', 'Efficace', 'Très efficace', 'Optimal']
+        # En-têtes des colonnes (Niveaux de contrôle réels du modèle : 3 valeurs seulement)
+        control_levels = ['Inefficace', 'Partiellement efficace', 'Efficace']
         for i, label in enumerate(control_levels):
             worksheet.write(0, i + 1, label, header_format)
-        worksheet.write(0, 6, 'Total', header_format)
+        worksheet.write(0, 4, 'Total', header_format)
 
-        # Initialiser la matrice 5x5
+        # Initialiser la matrice 3x3
         matrix = {}
-        for i in range(1, 6):
-            for j in range(1, 6):
+        for i in range(1, 4):
+            for j in range(1, 4):
                 matrix[f"{i}_{j}"] = 0
 
-        # Mapping des niveaux vers des indices numériques
+        # Mapping des niveaux vers des indices numériques (échelle réelle à 3 niveaux)
         level_to_index = {
             'low': 1,
             'medium': 2,
             'high': 3,
-            'critical': 4,
         }
 
         # Mapping inverse pour l'affichage
@@ -971,16 +961,13 @@ class RiskExportWizard(models.TransientModel):
             1: 'Faible',
             2: 'Modéré',
             3: 'Élevé',
-            4: 'Critique',
         }
 
-        # Mapping des niveaux de contrôle vers des indices
+        # Mapping des niveaux de contrôle vers des indices (3 valeurs réelles du champ control_effectiveness_level)
         control_to_index = {
             'ineffective': 1,
             'partially_effective': 2,
             'effective': 3,
-            'very_effective': 4,
-            'optimal': 5,
         }
 
         # Remplir la matrice résiduelle selon la logique : inhérent + contrôle
@@ -988,10 +975,6 @@ class RiskExportWizard(models.TransientModel):
             inherent_level = risk.inherent_level or 'low'
             control_level = risk.control_effectiveness_level or 'ineffective'
 
-            # Calculer le niveau résiduel selon la matrice
-            residual_level = self._get_residual_level_from_matrix(inherent_level, control_level)
-
-            # Déterminer la position
             # Niveau inhérent en ligne (Y)
             row_index = level_to_index.get(inherent_level, 1)
             # Niveau de contrôle en colonne (X)
@@ -1003,13 +986,12 @@ class RiskExportWizard(models.TransientModel):
 
         # Écrire la matrice
         row = 1
-        for i in range(1, 6):  # Niveaux inhérents (lignes)
-            # Libellé du niveau inhérent
+        for i in range(1, 4):  # Niveaux inhérents (lignes)
             level_label = index_to_level.get(i, '')
             worksheet.write(row, 0, level_label, cell_format)
 
             total_row = 0
-            for j in range(1, 6):  # Niveaux de contrôle (colonnes)
+            for j in range(1, 4):  # Niveaux de contrôle (colonnes)
                 key = f"{i}_{j}"
                 count = matrix.get(key, 0)
                 total_row += count
@@ -1020,7 +1002,6 @@ class RiskExportWizard(models.TransientModel):
                     self._get_control_level_from_index(j)
                 )
 
-                # Couleur en fonction du niveau résiduel
                 bg_color = self._get_level_bg_color(residual_level)
                 font_color = self._get_level_color(residual_level)
 
@@ -1033,120 +1014,83 @@ class RiskExportWizard(models.TransientModel):
 
                 worksheet.write(row, j, count, cell_format_color)
 
-            worksheet.write(row, 6, total_row, number_format)
+            worksheet.write(row, 4, total_row, number_format)
             row += 1
 
         # Total par colonne
         worksheet.write(row, 0, 'Total', header_format)
-        for j in range(1, 6):
-            total_col = sum(matrix.get(f"{i}_{j}", 0) for i in range(1, 6))
+        for j in range(1, 4):
+            total_col = sum(matrix.get(f"{i}_{j}", 0) for i in range(1, 4))
             worksheet.write(row, j, total_col, number_format)
-        worksheet.write(row, 6, len(risks), number_format)
+        worksheet.write(row, 4, len(risks), number_format)
 
-        # Légende
+        # Légende (échelle réelle à 3 niveaux)
         worksheet.write(row + 2, 0, 'Légende :', header_format)
         legend_colors = [
-            ('🔴 Critique', '#dc3545'),
-            ('🟠 Élevé', '#fd7e14'),
+            ('🔴 Élevé', '#dc3545'),
             ('🟡 Modéré', '#ffc107'),
             ('🟢 Faible', '#28a745'),
         ]
         for i, (label, color) in enumerate(legend_colors):
             cell_format_color = workbook.add_format({
                 'align': 'center', 'valign': 'vcenter', 'border': 1,
-                'bg_color': color, 'font_color': 'white' if i < 2 else 'black',
+                'bg_color': color, 'font_color': 'white' if i == 0 else 'black',
                 'bold': True
             })
             worksheet.write(row + 2 + i, 1, label, cell_format_color)
 
         # Ajouter une explication
-        worksheet.write(row + 7, 0, '📌 Comment lire cette matrice :', header_format)
-        worksheet.write(row + 8, 0,
+        worksheet.write(row + 6, 0, '📌 Comment lire cette matrice :', header_format)
+        worksheet.write(row + 7, 0,
                         'Le niveau résiduel est déterminé par la combinaison du niveau inhérent (ligne) et du niveau de contrôle (colonne).',
                         cell_format)
-        worksheet.write(row + 9, 0, 'Un contrôle efficace réduit le niveau résiduel d\'un ou deux niveaux.',
+        worksheet.write(row + 8, 0, 'Un contrôle efficace réduit le niveau résiduel d\'un ou deux niveaux.',
                         cell_format)
 
         # Ajuster les largeurs des colonnes
         worksheet.set_column(0, 0, 25)
-        for i in range(1, 7):
-            worksheet.set_column(i, i, 16)
+        for i in range(1, 5):
+            worksheet.set_column(i, i, 18)
 
-    def _get_control_level_label(self, level):
-        """Retourne le libellé du niveau de contrôle"""
-        labels = {
-            'ineffective': 'Inefficace ou informel',
-            'partially_effective': 'Partiellement efficace',
-            'effective': 'Efficace',
-        }
-        return labels.get(level, level or 'Non défini')
 
     # ============================================================
     # MÉTHODES POUR LA MATRICE RÉSIDUELLE (AJOUTER ICI)
     # ============================================================
 
     def _get_residual_level_from_matrix(self, inherent_level, control_level):
-        """Détermine le niveau résiduel selon la matrice"""
-        # Normaliser le niveau inhérent
-        norm_inherent = inherent_level
-        if inherent_level == 'critical':
-            norm_inherent = 'high'
-
+        """Détermine le niveau résiduel selon la matrice (échelle réelle à 3 niveaux)"""
         # Si le contrôle est inefficace ou partiellement efficace
         if control_level in ['ineffective', 'partially_effective']:
-            return norm_inherent
+            return inherent_level
 
         # Si le contrôle est efficace
         if control_level == 'effective':
-            if norm_inherent == 'high':
+            if inherent_level == 'high':
                 return 'medium'
-            elif norm_inherent == 'medium':
+            elif inherent_level == 'medium':
                 return 'low'
             else:  # low
                 return 'low'
 
-        return norm_inherent
+        return inherent_level
 
     def _get_level_from_index(self, index):
-        """Retourne le niveau à partir de l'index"""
+        """Retourne le niveau à partir de l'index (échelle réelle à 3 niveaux)"""
         mapping = {
             1: 'low',
             2: 'medium',
             3: 'high',
-            4: 'critical',
         }
         return mapping.get(index, 'low')
 
     def _get_control_level_from_index(self, index):
-        """Retourne le niveau de contrôle à partir de l'index"""
+        """Retourne le niveau de contrôle à partir de l'index (3 valeurs réelles du modèle)"""
         mapping = {
             1: 'ineffective',
             2: 'partially_effective',
             3: 'effective',
-            4: 'very_effective',
-            5: 'optimal',
         }
         return mapping.get(index, 'ineffective')
-
-    def _get_level_color(self, level):
-        """Retourne la couleur selon le niveau de risque"""
-        colors = {
-            'critical': '#dc3545',
-            'high': '#fd7e14',
-            'medium': '#ffc107',
-            'low': '#28a745',
-        }
-        return colors.get(level, '#6c757d')
-
-    def _get_level_bg_color(self, level):
-        """Retourne la couleur de fond selon le niveau de risque"""
-        colors = {
-            'critical': '#f8d7da',
-            'high': '#ffe5cc',
-            'medium': '#fff3cd',
-            'low': '#d4edda',
-        }
-        return colors.get(level, '#f8f9fa')
 
 
 class RiskImportWizard(models.TransientModel):
@@ -1354,161 +1298,3 @@ class RiskImportWizard(models.TransientModel):
             result += f"\n\nErreurs:\n" + "\n".join(errors)
 
         return result
-
-    def _write_residual_matrix_sheet(self, worksheet, workbook, risks, header_format, cell_format, number_format):
-        """
-        Écrit la feuille de la matrice des risques résiduels
-        Basée sur : Niveau inhérent + Niveau de contrôle
-        """
-        # Titre
-        worksheet.merge_range('A1:G1', '📊 MATRICE DES RISQUES RÉSIDUELS', header_format)
-
-        # Sous-titre
-        worksheet.write(1, 0, 'Basée sur la combinaison : Niveau inhérent + Efficacité des contrôles', cell_format)
-
-        # En-têtes des colonnes (Niveaux de contrôle)
-        worksheet.write(3, 0, 'Niveau inhérent ↓ / Niveau de contrôle →', header_format)
-
-        control_levels = ['Inefficace', 'Partiel', 'Efficace', 'Très efficace', 'Optimal']
-        for i, label in enumerate(control_levels):
-            worksheet.write(3, i + 1, label, header_format)
-        worksheet.write(3, 6, 'Total', header_format)
-
-        # Initialiser la matrice 5x5
-        matrix = {}
-        for i in range(1, 6):
-            for j in range(1, 6):
-                matrix[f"{i}_{j}"] = 0
-
-        # Mapping des niveaux vers des indices numériques
-        level_to_index = {
-            'low': 1,
-            'medium': 2,
-            'high': 3,
-            'critical': 4,
-        }
-
-        # Mapping inverse pour l'affichage
-        index_to_level = {
-            1: 'Faible',
-            2: 'Modéré',
-            3: 'Élevé',
-            4: 'Critique',
-        }
-
-        # Mapping des niveaux de contrôle vers des indices
-        control_to_index = {
-            'ineffective': 1,
-            'partially_effective': 2,
-            'effective': 3,
-            'very_effective': 4,
-            'optimal': 5,
-        }
-
-        # Remplir la matrice résiduelle selon la logique : inhérent + contrôle
-        for risk in risks:
-            inherent_level = risk.inherent_level or 'low'
-            control_level = risk.control_effectiveness_level or 'ineffective'
-
-            # Niveau inhérent en ligne (Y)
-            row_index = level_to_index.get(inherent_level, 1)
-            # Niveau de contrôle en colonne (X)
-            col_index = control_to_index.get(control_level, 1)
-
-            key = f"{row_index}_{col_index}"
-            if key in matrix:
-                matrix[key] += 1
-
-        # Écrire la matrice
-        row = 4
-        for i in range(1, 6):  # Niveaux inhérents (lignes)
-            # Libellé du niveau inhérent
-            level_label = index_to_level.get(i, '')
-            worksheet.write(row, 0, level_label, cell_format)
-
-            total_row = 0
-            for j in range(1, 6):  # Niveaux de contrôle (colonnes)
-                key = f"{i}_{j}"
-                count = matrix.get(key, 0)
-                total_row += count
-
-                # Déterminer le niveau résiduel pour la couleur
-                residual_level = self._get_residual_level_from_matrix(
-                    self._get_level_from_index(i),
-                    self._get_control_level_from_index(j)
-                )
-
-                # Couleur en fonction du niveau résiduel
-                bg_color = self._get_level_bg_color(residual_level)
-                font_color = self._get_level_color(residual_level)
-
-                cell_format_color = workbook.add_format({
-                    'align': 'center', 'valign': 'vcenter', 'border': 1,
-                    'bg_color': bg_color,
-                    'font_color': font_color,
-                    'bold': True if count > 0 else False
-                })
-
-                worksheet.write(row, j, count, cell_format_color)
-
-            worksheet.write(row, 6, total_row, number_format)
-            row += 1
-
-        # Total par colonne
-        worksheet.write(row, 0, 'Total', header_format)
-        for j in range(1, 6):
-            total_col = sum(matrix.get(f"{i}_{j}", 0) for i in range(1, 6))
-            worksheet.write(row, j, total_col, number_format)
-        worksheet.write(row, 6, len(risks), number_format)
-
-        # Légende
-        legend_row = row + 2
-        worksheet.write(legend_row, 0, 'Légende :', header_format)
-        legend_colors = [
-            ('🔴 Critique', '#dc3545'),
-            ('🟠 Élevé', '#fd7e14'),
-            ('🟡 Modéré', '#ffc107'),
-            ('🟢 Faible', '#28a745'),
-        ]
-        for i, (label, color) in enumerate(legend_colors):
-            cell_format_color = workbook.add_format({
-                'align': 'center', 'valign': 'vcenter', 'border': 1,
-                'bg_color': color, 'font_color': 'white' if i < 2 else 'black',
-                'bold': True
-            })
-            worksheet.write(legend_row + i, 1, label, cell_format_color)
-
-        # Ajouter une explication
-        worksheet.write(legend_row + 5, 0, '📌 Comment lire cette matrice :', header_format)
-        worksheet.write(legend_row + 6, 0,
-                        'Le niveau résiduel est déterminé par la combinaison du niveau inhérent (ligne) et du niveau de contrôle (colonne).',
-                        cell_format)
-        worksheet.write(legend_row + 7, 0, 'Un contrôle efficace réduit le niveau résiduel d\'un ou deux niveaux.',
-                        cell_format)
-
-        # Matrice de correspondance
-        worksheet.write(legend_row + 9, 0, '📋 Matrice de correspondance :', header_format)
-        correspondence = [
-            ['Niveau inhérent', 'Efficacité des contrôles', 'Niveau résiduel'],
-            ['Critique / Élevé', 'Inefficace', 'Élevé'],
-            ['Modéré', 'Inefficace', 'Modéré'],
-            ['Faible', 'Inefficace', 'Faible'],
-            ['Critique / Élevé', 'Partiellement efficace', 'Élevé'],
-            ['Modéré', 'Partiellement efficace', 'Modéré'],
-            ['Faible', 'Partiellement efficace', 'Faible'],
-            ['Critique / Élevé', 'Efficace', 'Modéré'],
-            ['Modéré', 'Efficace', 'Faible'],
-            ['Faible', 'Efficace', 'Faible'],
-        ]
-
-        for i, row_data in enumerate(correspondence):
-            for j, val in enumerate(row_data):
-                if i == 0:
-                    worksheet.write(legend_row + 9 + i, j, val, header_format)
-                else:
-                    worksheet.write(legend_row + 9 + i, j, val, cell_format)
-
-        # Ajuster les largeurs des colonnes
-        worksheet.set_column(0, 0, 25)
-        for i in range(1, 7):
-            worksheet.set_column(i, i, 16)
