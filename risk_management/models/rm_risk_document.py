@@ -17,7 +17,7 @@ class RiskDocument(models.Model):
     # CHAMPS PRINCIPAUX
     # =====================================================
 
-    name = fields.Char(string="Title", required=True, tracking=True, translate=True, index=True)
+    name = fields.Char(string="Titre", required=True, tracking=True, translate=True, index=True)
     code = fields.Char(string="Code", required=True, copy=False, tracking=True, index=True)
     reference = fields.Char(string="Reference", tracking=True, index=True)
 
@@ -43,7 +43,7 @@ class RiskDocument(models.Model):
         ("record", "Record"),
     ], string="Type Document", default="policy", required=True, tracking=True, index=True)
 
-    process_id = fields.Many2one("risk.process", string="Sous Process", tracking=True, index=True,
+    process_id = fields.Many2one("risk.process", string="Sous Processus", tracking=True, index=True,
                                  ondelete="restrict")
 
     # ✅ REMPLACEMENT des champs employés par des champs fonction
