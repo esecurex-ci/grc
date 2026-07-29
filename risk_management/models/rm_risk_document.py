@@ -31,7 +31,7 @@ class RiskDocument(models.Model):
     )
 
     document_type = fields.Selection([
-        ("policy", "Polique"),
+        ("policy", "Politique"),
         ("procedure", "Procédure"),
         ("standard", "Standard"),
         ("guideline", "Ligne directrice"),

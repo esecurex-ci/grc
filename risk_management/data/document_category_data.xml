@@ -7,57 +7,33 @@
         <!-- ========================================= -->
 
         <record id="doc_category_policies" model="risk.document.category">
-            <field name="code">POL</field>
-            <field name="name">Politiques</field>
+            <field name="code">REG-AMF</field>
+            <field name="name">Réglementation AMF-UMOA</field>
             <field name="description">Documents de politique générale définissant les orientations et principes</field>
         </record>
 
         <record id="doc_category_procedures" model="risk.document.category">
-            <field name="code">PROC</field>
-            <field name="name">Procédures</field>
+            <field name="code">PRO-INT</field>
+            <field name="name">Procédures internes</field>
             <field name="description">Documents détaillant les processus et modes opératoires</field>
         </record>
 
         <record id="doc_category_standards" model="risk.document.category">
-            <field name="code">STD</field>
-            <field name="name">Standards &amp; Normes</field>
+            <field name="code">AU-OHADA</field>
+            <field name="name">Acte uniforme OHADA</field>
             <field name="description">Standards techniques et normes de référence</field>
         </record>
 
         <record id="doc_category_guidelines" model="risk.document.category">
-            <field name="code">GLD</field>
-            <field name="name">Lignes directrices</field>
+            <field name="code">PRO-GRP</field>
+            <field name="name">Procédures du Groupe</field>
             <field name="description">Guides et recommandations de bonnes pratiques</field>
-        </record>
-
-        <record id="doc_category_templates" model="risk.document.category">
-            <field name="code">TPL</field>
-            <field name="name">Templates</field>
-            <field name="description">Modèles de documents réutilisables</field>
-        </record>
-
-        <record id="doc_category_forms" model="risk.document.category">
-            <field name="code">FRM</field>
-            <field name="name">Formulaires</field>
-            <field name="description">Formulaires et questionnaires standards</field>
-        </record>
-
-        <record id="doc_category_regulatory" model="risk.document.category">
-            <field name="code">REG</field>
-            <field name="name">Réglementaires</field>
-            <field name="description">Documents liés à la conformité réglementaire</field>
-        </record>
-
-        <record id="doc_category_bcp" model="risk.document.category">
-            <field name="code">BCP</field>
-            <field name="name">Continuité d'activité</field>
-            <field name="description">Plans de continuité et de reprise d'activité</field>
         </record>
 
         <!-- ========================================= -->
         <!-- SOUS-CATÉGORIES                          -->
         <!-- ========================================= -->
-
+        <!--
         <record id="doc_category_policies_security" model="risk.document.category">
             <field name="code">POL-SEC</field>
             <field name="name">Sécurité</field>
@@ -85,6 +61,6 @@
             <field name="parent_id" ref="doc_category_procedures"/>
             <field name="description">Procédures RH et administratives</field>
         </record>
-
+        -->
     </data>
 </odoo>
