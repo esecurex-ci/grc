@@ -24,7 +24,6 @@ export class RiskHeatMap extends Component {
             residualMatrix: this.initializeMatrix(),
             // Statistiques globales
             totalRisks: 0,
-            criticalCount: 0,
             highCount: 0,
             mediumCount: 0,
             lowCount: 0,
@@ -46,6 +45,8 @@ export class RiskHeatMap extends Component {
             narratives: [],
             // Export
             exporting: false,
+            exportingInherentMatrix: false,
+            exportingResidualMatrix: false,
         });
 
         onWillStart(async () => {
@@ -111,8 +112,8 @@ export class RiskHeatMap extends Component {
         // 2. VARIABLES STATISTIQUES
         // ============================================================
         let total = data.length;
-        let critical = 0, high = 0, medium = 0, low = 0;
-        let residualCritical = 0, residualHigh = 0, residualMedium = 0, residualLow = 0;
+        let high = 0, medium = 0, low = 0;
+        let residualHigh = 0, residualMedium = 0, residualLow = 0;
         let totalScore = 0;
         let categoryMap = {};
         let controlStats = { effective: 0, partially_effective: 0, ineffective: 0 };
@@ -146,14 +147,12 @@ export class RiskHeatMap extends Component {
             }
 
             // ---- 3.3 Statistiques des niveaux inhérents ----
-            if (inherentLevel === 'critical') critical++;
-            else if (inherentLevel === 'high') high++;
+            if (inherentLevel === 'high') high++;
             else if (inherentLevel === 'medium') medium++;
             else low++;
 
             // ---- 3.4 Statistiques des niveaux résiduels ----
-            if (residualLevel === 'critical') residualCritical++;
-            else if (residualLevel === 'high') residualHigh++;
+            if (residualLevel === 'high') residualHigh++;
             else if (residualLevel === 'medium') residualMedium++;
             else if (residualLevel === 'low') residualLow++;
 
@@ -179,7 +178,7 @@ export class RiskHeatMap extends Component {
         // ============================================================
         const activeRisks = data.filter(r => r.active !== false);
         const outOfAppetite = activeRisks
-            .filter(r => (r.inherent_level === 'critical' || r.inherent_level === 'high'))
+            .filter(r => r.inherent_level === 'high')
             .filter(r => (r.inherent_score || 0) >= 15)
             .sort((a, b) => (b.inherent_score || 0) - (a.inherent_score || 0))
             .slice(0, 5)
@@ -242,7 +241,6 @@ export class RiskHeatMap extends Component {
         this.state.matrix = matrix;
         this.state.residualMatrix = residualMatrix;
         this.state.totalRisks = total;
-        this.state.criticalCount = critical;
         this.state.highCount = high;
         this.state.mediumCount = medium;
         this.state.lowCount = low;
@@ -251,17 +249,15 @@ export class RiskHeatMap extends Component {
 
         // Données pour les graphiques inhérents
         this.state.inherentData = [
-            { label: 'Critiques', value: critical, color: '#dc3545' },
-            { label: 'Élevés', value: high, color: '#fd7e14' },
-            { label: 'Moyens', value: medium, color: '#ffc107' },
+            { label: 'Élevés', value: high, color: '#dc3545' },
+            { label: 'Modérés', value: medium, color: '#ffc107' },
             { label: 'Faibles', value: low, color: '#28a745' },
         ];
 
         // Données pour les graphiques résiduels (basés sur la nouvelle logique)
         this.state.residualData = [
-            { label: 'Critiques', value: residualCritical, color: '#dc3545' },
-            { label: 'Élevés', value: residualHigh, color: '#fd7e14' },
-            { label: 'Moyens', value: residualMedium, color: '#ffc107' },
+            { label: 'Élevés', value: residualHigh, color: '#dc3545' },
+            { label: 'Modérés', value: residualMedium, color: '#ffc107' },
             { label: 'Faibles', value: residualLow, color: '#28a745' },
         ];
 
@@ -283,7 +279,6 @@ export class RiskHeatMap extends Component {
         console.log("🔥 Matrice inhérente :", this.state.matrix);
         console.log("🔥 Matrice résiduelle (basée sur inhérent + contrôle) :", this.state.residualMatrix);
         console.log("🔥 Statistiques résiduelles :", {
-            critical: residualCritical,
             high: residualHigh,
             medium: residualMedium,
             low: residualLow
@@ -299,34 +294,30 @@ export class RiskHeatMap extends Component {
          *
          * | Niveau inhérent | Efficacité des contrôles | Niveau résiduel |
          * |-----------------|--------------------------|-----------------|
-         * | critical/high   | ineffective              | high            |
+         * | high            | ineffective              | high            |
          * | medium          | ineffective              | medium          |
          * | low             | ineffective              | low             |
-         * | critical/high   | partially_effective      | high            |
+         * | high            | partially_effective      | high            |
          * | medium          | partially_effective      | medium          |
          * | low             | partially_effective      | low             |
-         * | critical/high   | effective                | medium          |
+         * | high            | effective                | medium          |
          * | medium          | effective                | low             |
          * | low             | effective                | low             |
          */
 
-        // Normaliser le niveau inhérent
-        let normInherent = inherentLevel;
-        if (inherentLevel === 'critical') normInherent = 'high';
-
         // Si le contrôle est inefficace ou partiellement efficace
         if (controlLevel === 'ineffective' || controlLevel === 'partially_effective') {
-            return normInherent;
+            return inherentLevel;
         }
 
         // Si le contrôle est efficace
         if (controlLevel === 'effective') {
-            if (normInherent === 'high') return 'medium';
-            if (normInherent === 'medium') return 'low';
+            if (inherentLevel === 'high') return 'medium';
+            if (inherentLevel === 'medium') return 'low';
             return 'low'; // low reste low
         }
 
-        return normInherent;
+        return inherentLevel;
     }
 
     _getMatrixPositionFromLevel(level) {
@@ -335,7 +326,6 @@ export class RiskHeatMap extends Component {
          * en fonction du niveau de risque
          */
         const mapping = {
-            'critical': { impact: 5, prob: 5 },
             'high': { impact: 4, prob: 4 },
             'medium': { impact: 3, prob: 3 },
             'low': { impact: 2, prob: 2 },
@@ -345,7 +335,6 @@ export class RiskHeatMap extends Component {
 
     _getImpactFromLevel(level) {
         const mapping = {
-            'critical': 5,
             'high': 4,
             'medium': 3,
             'low': 2,
@@ -355,7 +344,6 @@ export class RiskHeatMap extends Component {
 
     _getProbabilityFromLevel(level) {
         const mapping = {
-            'critical': 5,
             'high': 4,
             'medium': 3,
             'low': 2,
@@ -383,11 +371,11 @@ export class RiskHeatMap extends Component {
             });
         }
 
-        const criticalRisks = risks.filter(r => r.inherent_level === 'critical');
-        if (criticalRisks.length > 0) {
+        const highRisks = risks.filter(r => r.inherent_level === 'high');
+        if (highRisks.length > 0) {
             narratives.push({
                 icon: '🔴',
-                text: `${criticalRisks.length} risque(s) critique(s) nécessitent une attention immédiate.`
+                text: `${highRisks.length} risque(s) à niveau élevé nécessitent une attention immédiate.`
             });
         }
 
@@ -434,21 +422,18 @@ export class RiskHeatMap extends Component {
         this.state.matrix = matrix;
         this.state.residualMatrix = residualMatrix;
         this.state.totalRisks = 15;
-        this.state.criticalCount = 4;
-        this.state.highCount = 3;
+        this.state.highCount = 7;
         this.state.mediumCount = 5;
         this.state.lowCount = 3;
         this.state.avgScore = "15.7";
         this.state.inherentData = [
-            { label: 'Critiques', value: 4, color: '#dc3545' },
-            { label: 'Élevés', value: 3, color: '#fd7e14' },
-            { label: 'Moyens', value: 5, color: '#ffc107' },
+            { label: 'Élevés', value: 7, color: '#dc3545' },
+            { label: 'Modérés', value: 5, color: '#ffc107' },
             { label: 'Faibles', value: 3, color: '#28a745' },
         ];
         this.state.residualData = [
-            { label: 'Critiques', value: 0, color: '#dc3545' },
-            { label: 'Élevés', value: 0, color: '#fd7e14' },
-            { label: 'Moyens', value: 3, color: '#ffc107' },
+            { label: 'Élevés', value: 0, color: '#dc3545' },
+            { label: 'Modérés', value: 3, color: '#ffc107' },
             { label: 'Faibles', value: 12, color: '#28a745' },
         ];
         this.state.categoryData = [
@@ -459,12 +444,12 @@ export class RiskHeatMap extends Component {
         ];
 
         this.state.outOfAppetite = [
-            { id: 1, name: 'Non respect de la réglementation', code: 'RISK-00001', level: 'critical', score: 25, category: 'Risque de non-conformité' },
+            { id: 1, name: 'Non respect de la réglementation', code: 'RISK-00001', level: 'high', score: 20, category: 'Risque de non-conformité' },
             { id: 2, name: 'Impossibilité de vendre le titre', code: 'RISK-00002', level: 'high', score: 16, category: 'Risque opératoire' },
         ];
 
         this.state.topRisks = [
-            { id: 1, name: 'Non respect de la réglementation', code: 'RISK-00001', level: 'critical', score: 25, rank: 1, category: 'Risque de non-conformité' },
+            { id: 1, name: 'Non respect de la réglementation', code: 'RISK-00001', level: 'high', score: 20, rank: 1, category: 'Risque de non-conformité' },
             { id: 2, name: 'Impossibilité de vendre le titre', code: 'RISK-00002', level: 'high', score: 16, rank: 2, category: 'Risque opératoire' },
         ];
 
@@ -665,11 +650,9 @@ export class RiskHeatMap extends Component {
                 </div>
                 
                 <div class="legend">
-                    <span class="legend-item"><span class="legend-color" style="background:#dc3545;"></span> Critique (20-25)</span>
-                    <span class="legend-item"><span class="legend-color" style="background:#fd7e14;"></span> Élevé (12-19)</span>
-                    <span class="legend-item"><span class="legend-color" style="background:#ffc107;"></span> Moyen (6-11)</span>
-                    <span class="legend-item"><span class="legend-color" style="background:#28a745;"></span> Faible (3-5)</span>
-                    <span class="legend-item"><span class="legend-color" style="background:#17a2b8;"></span> Très faible (1-2)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#dc3545;"></span> Élevé (16-25)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#ffc107;"></span> Modéré (6-15)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#28a745;"></span> Faible (1-5)</span>
                 </div>
                 
                 <div class="footer">
@@ -682,11 +665,9 @@ export class RiskHeatMap extends Component {
     }
 
     _getExportColor(score) {
-        if (score >= 20) return '#dc3545';  // Rouge - Critique
-        if (score >= 12) return '#fd7e14';  // Orange - Élevé
-        if (score >= 6) return '#ffc107';   // Jaune - Moyen
-        if (score >= 3) return '#28a745';   // Vert - Faible
-        return '#17a2b8';                   // Bleu - Très faible
+        if (score >= 16) return '#dc3545';  // Rouge - Élevé
+        if (score >= 6) return '#ffc107';   // Jaune - Modéré
+        return '#28a745';                   // Vert - Faible
     }
 
     async _exportDirectly() {
@@ -752,11 +733,9 @@ export class RiskHeatMap extends Component {
     // ============================================================
     getCellClass(impact, likelihood) {
         const score = impact * likelihood;
-        if (score >= 20) return 'hm-red';
-        if (score >= 12) return 'hm-orange';
+        if (score >= 16) return 'hm-red';
         if (score >= 6) return 'hm-yellow';
-        if (score >= 3) return 'hm-green';
-        return 'hm-blue';
+        return 'hm-green';
     }
 
     getBarWidth(value, max) {
@@ -776,9 +755,8 @@ export class RiskHeatMap extends Component {
 
     getLevelBadge(level) {
         const badges = {
-            'critical': 'badge-danger',
-            'high': 'badge-warning',
-            'medium': 'badge-info',
+            'high': 'badge-danger',
+            'medium': 'badge-warning',
             'low': 'badge-success',
         };
         return badges[level] || 'badge-secondary';
@@ -786,20 +764,17 @@ export class RiskHeatMap extends Component {
 
     getLevelLabel(level) {
         const labels = {
-            'critical': '🔴 Critique',
-            'high': '🟠 Élevé',
-            'medium': '🟡 Moyen',
+            'high': '🔴 Élevé',
+            'medium': '🟡 Modéré',
             'low': '🟢 Faible',
         };
         return labels[level] || level;
     }
 
     getScoreColor(score) {
-        if (score >= 20) return '#dc3545';
-        if (score >= 15) return '#fd7e14';
-        if (score >= 10) return '#ffc107';
-        if (score >= 5) return '#28a745';
-        return '#17a2b8';
+        if (score >= 16) return '#dc3545';
+        if (score >= 6) return '#ffc107';
+        return '#28a745';
     }
 
     // ============================================================
@@ -829,13 +804,13 @@ export class RiskHeatMap extends Component {
         });
     }
 
-    openCriticalRisks() {
+    openHighRisks() {
         this.action.doAction({
             type: "ir.actions.act_window",
-            name: "Risques critiques",
+            name: "Risques à niveau élevé",
             res_model: "risk.risk",
             views: [[false, "list"], [false, "form"]],
-            domain: [["inherent_level", "=", "critical"]],
+            domain: [["inherent_level", "=", "high"]],
             target: "current",
         });
     }
@@ -847,8 +822,7 @@ export class RiskHeatMap extends Component {
             res_model: "risk.risk",
             views: [[false, "list"], [false, "form"]],
             domain: [
-                ["inherent_level", "in", ["critical", "high"]],
-                ["inherent_score", ">=", 15]
+                ["inherent_level", "=", "high"]
             ],
             target: "current",
         });
@@ -951,6 +925,48 @@ export class RiskHeatMap extends Component {
     }
 
     // ============================================================
+    // EXPORT : UNE SEULE MATRICE (bouton dédié sur chaque carte)
+    // ============================================================
+    async exportSingleMatrix(elementId, filenamePrefix) {
+        const flagKey = elementId === 'inherent-heatmap' ? 'exportingInherentMatrix' : 'exportingResidualMatrix';
+        this.state[flagKey] = true;
+
+        try {
+            const element = document.querySelector(`#${elementId}`);
+            if (!element) {
+                throw new Error('Conteneur non trouvé');
+            }
+
+            if (typeof html2canvas === 'undefined') {
+                await this._loadHtml2Canvas();
+            }
+
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                allowTaint: true,
+            });
+
+            const link = document.createElement('a');
+            link.download = `${filenamePrefix}_${new Date().toISOString().slice(0, 10)}.png`;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            this.notification.add('✅ Matrice exportée avec succès !', { type: 'success' });
+
+        } catch (error) {
+            console.error('Erreur export matrice unique :', error);
+            this.notification.add('❌ Erreur lors de l\'export de la matrice', { type: 'danger' });
+        } finally {
+            this.state[flagKey] = false;
+        }
+    }
+
+    // ============================================================
     // EXPORT : UNIQUEMENT LES MATRICES
     // ============================================================
     async exportMatricesOnly() {
@@ -1021,11 +1037,9 @@ export class RiskHeatMap extends Component {
             ctx.fillStyle = '#495057';
 
             const legendItems = [
-                { color: '#dc3545', label: 'Critique' },
-                { color: '#fd7e14', label: 'Élevé' },
-                { color: '#ffc107', label: 'Moyen' },
+                { color: '#dc3545', label: 'Élevé' },
+                { color: '#ffc107', label: 'Modéré' },
                 { color: '#28a745', label: 'Faible' },
-                { color: '#17a2b8', label: 'Très faible' },
             ];
 
             const totalLegendWidth = legendItems.length * 120;
@@ -1185,11 +1199,9 @@ export class RiskHeatMap extends Component {
                 </div>
                 
                 <div class="legend">
-                    <span class="legend-item"><span class="legend-color" style="background:#dc3545;"></span> Critique (20-25)</span>
-                    <span class="legend-item"><span class="legend-color" style="background:#fd7e14;"></span> Élevé (12-19)</span>
-                    <span class="legend-item"><span class="legend-color" style="background:#ffc107;"></span> Moyen (6-11)</span>
-                    <span class="legend-item"><span class="legend-color" style="background:#28a745;"></span> Faible (3-5)</span>
-                    <span class="legend-item"><span class="legend-color" style="background:#17a2b8;"></span> Très faible (1-2)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#dc3545;"></span> Élevé (16-25)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#ffc107;"></span> Modéré (6-15)</span>
+                    <span class="legend-item"><span class="legend-color" style="background:#28a745;"></span> Faible (1-5)</span>
                 </div>
                 
                 <div class="footer">

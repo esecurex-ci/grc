@@ -35,38 +35,32 @@
                         </div>
                     </div>
                     <div class="col-2">
-                        <div class="kpi-card kpi-critical" t-on-click="openCriticalProcesses">
-                            <div class="kpi-label">🔴 Critiques</div>
-                            <div class="kpi-value"><t t-esc="state.critical"/></div>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <div class="kpi-card kpi-high">
-                            <div class="kpi-label">🟠 Élevés</div>
+                        <div class="kpi-card kpi-high" t-on-click="openHighRiskProcesses">
+                            <div class="kpi-label">🔴 Élevés</div>
                             <div class="kpi-value"><t t-esc="state.high"/></div>
                         </div>
                     </div>
                     <div class="col-2">
                         <div class="kpi-card kpi-medium">
-                            <div class="kpi-label">🟡 Moyens</div>
+                            <div class="kpi-label">🟡 Modérés</div>
                             <div class="kpi-value"><t t-esc="state.medium"/></div>
                         </div>
                     </div>
-                    <div class="col-2">
+                    <div class="col-3">
                         <div class="kpi-card kpi-low">
                             <div class="kpi-label">🟢 Faibles</div>
                             <div class="kpi-value"><t t-esc="state.low"/></div>
                         </div>
                     </div>
-                    <div class="col-2">
-                        <div class="kpi-card kpi-avg" t-on-click="openCriticalProcesses">
-                            <div class="kpi-label">🔴 Taux critique</div>
+                    <div class="col-3">
+                        <div class="kpi-card kpi-avg" t-on-click="openHighRiskProcesses">
+                            <div class="kpi-label">🔴 Taux de risque élevé</div>
                             <div class="kpi-value">
-                                <t t-esc="state.critical"/> / <t t-esc="state.totalProcesses"/>
+                                <t t-esc="state.high"/> / <t t-esc="state.totalProcesses"/>
                             </div>
                             <div class="kpi-progress">
                                 <div class="progress-track">
-                                    <div class="progress-fill" t-attf-style="width:#{(state.critical / Math.max(state.totalProcesses, 1)) * 100}%;background:#dc3545;"></div>
+                                    <div class="progress-fill" t-attf-style="width:#{(state.high / Math.max(state.totalProcesses, 1)) * 100}%;background:#dc3545;"></div>
                                 </div>
                             </div>
                         </div>
@@ -97,9 +91,8 @@
                                     <thead>
                                         <tr>
                                             <th>Catégorie ↓</th>
-                                            <th>🔴 Critiques</th>
-                                            <th>🟠 Élevés</th>
-                                            <th>🟡 Moyens</th>
+                                            <th>🔴 Élevés</th>
+                                            <th>🟡 Modérés</th>
                                             <th>🟢 Faibles</th>
                                             <th>Total</th>
                                         </tr>
@@ -107,13 +100,10 @@
                                     <tbody>
                                         <tr t-foreach="Object.keys(state.matrix)" t-as="cat" t-key="cat">
                                             <td><strong><t t-esc="formatCategory(cat)"/></strong></td>
-                                            <td t-attf-class="cell-{{state.matrix[cat].critical > 0 ? 'danger' : 'empty'}}">
-                                                <t t-esc="state.matrix[cat].critical || 0"/>
-                                            </td>
-                                            <td t-attf-class="cell-{{state.matrix[cat].high > 0 ? 'warning' : 'empty'}}">
+                                            <td t-attf-class="cell-{{state.matrix[cat].high > 0 ? 'danger' : 'empty'}}">
                                                 <t t-esc="state.matrix[cat].high || 0"/>
                                             </td>
-                                            <td t-attf-class="cell-{{state.matrix[cat].medium > 0 ? 'info' : 'empty'}}">
+                                            <td t-attf-class="cell-{{state.matrix[cat].medium > 0 ? 'warning' : 'empty'}}">
                                                 <t t-esc="state.matrix[cat].medium || 0"/>
                                             </td>
                                             <td t-attf-class="cell-{{state.matrix[cat].low > 0 ? 'success' : 'empty'}}">
@@ -123,7 +113,6 @@
                                         </tr>
                                         <tr style="font-weight:bold;background:#f8f9fa;">
                                             <td>Total</td>
-                                            <td><t t-esc="state.critical"/></td>
                                             <td><t t-esc="state.high"/></td>
                                             <td><t t-esc="state.medium"/></td>
                                             <td><t t-esc="state.low"/></td>
@@ -137,17 +126,17 @@
                 </div>
 
                 <!-- ========================================= -->
-                <!-- DEUX COLONNES : CRITIQUES + TOP 5        -->
+                <!-- DEUX COLONNES : RISQUE ÉLEVÉ + TOP 5     -->
                 <!-- ========================================= -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">🎯 Processus Critiques</h5>
-                            <div t-if="state.criticalProcesses.length > 0">
-                                <div class="risk-item" t-foreach="state.criticalProcesses" t-as="process" t-key="process.id">
+                            <h5 class="chart-title">🎯 Processus à Risque Élevé</h5>
+                            <div t-if="state.highRiskProcesses.length > 0">
+                                <div class="risk-item" t-foreach="state.highRiskProcesses" t-as="process" t-key="process.id">
                                     <div class="process-item" t-on-click="() => openProcessById(process.id)">
                                         <div class="process-info">
-                                            <span class="risk-level-badge critical">🔴 Critique</span>
+                                            <span class="risk-level-badge high">🔴 Élevé</span>
                                             <span class="process-name"><t t-esc="process.name"/></span>
                                             <span class="process-code"><t t-esc="process.code"/></span>
                                         </div>
@@ -157,12 +146,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a href="#" class="view-all-link" t-on-click.prevent="openCriticalProcesses">
-                                    Voir tous les processus critiques →
+                                <a href="#" class="view-all-link" t-on-click.prevent="openHighRiskProcesses">
+                                    Voir tous les processus à risque élevé →
                                 </a>
                             </div>
                             <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
-                                ✅ Aucun processus critique
+                                ✅ Aucun processus à risque élevé
                             </div>
                         </div>
                     </div>
@@ -279,9 +268,8 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="dashboard-legend">
-                            <span><span class="legend-color" style="background:#dc3545;"></span> Critique</span>
-                            <span><span class="legend-color" style="background:#fd7e14;"></span> Élevé</span>
-                            <span><span class="legend-color" style="background:#ffc107;"></span> Moyen</span>
+                            <span><span class="legend-color" style="background:#dc3545;"></span> Élevé</span>
+                            <span><span class="legend-color" style="background:#ffc107;"></span> Modéré</span>
                             <span><span class="legend-color" style="background:#28a745;"></span> Faible</span>
                             <span class="legend-separator">|</span>
                             <span><i class="fa fa-user" title="Propriétaire"></i> Propriétaire</span>

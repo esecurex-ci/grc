@@ -71,12 +71,10 @@
     font-weight: bold;
 }
 
-.kpi-critical { border-left-color: #dc3545; }
-.kpi-critical .kpi-value { color: #dc3545; }
-.kpi-high { border-left-color: #fd7e14; }
-.kpi-high .kpi-value { color: #fd7e14; }
-.kpi-medium { border-left-color: #f0ad4e; }
-.kpi-medium .kpi-value { color: #f0ad4e; }
+.kpi-high { border-left-color: #dc3545; }
+.kpi-high .kpi-value { color: #dc3545; }
+.kpi-medium { border-left-color: #ffc107; }
+.kpi-medium .kpi-value { color: #ffc107; }
 .kpi-low { border-left-color: #28a745; }
 .kpi-low .kpi-value { color: #28a745; }
 .kpi-avg { border-left-color: #1a237e; }
@@ -311,9 +309,8 @@
     text-align: center;
 }
 
-.risk-level-badge.critical { background: #dc3545; }
-.risk-level-badge.high { background: #fd7e14; }
-.risk-level-badge.medium { background: #f0ad4e; color: #000; }
+.risk-level-badge.high { background: #dc3545; }
+.risk-level-badge.medium { background: #ffc107; color: #000; }
 .risk-level-badge.low { background: #28a745; }
 
 /* ========================================================== */

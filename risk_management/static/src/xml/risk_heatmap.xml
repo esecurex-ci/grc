@@ -59,24 +59,18 @@
                         </div>
                     </div>
                     <div class="col-2">
-                        <div class="kpi-card kpi-critical" t-on-click="openCriticalRisks">
-                            <div class="kpi-label">🔴 Critiques</div>
-                            <div class="kpi-value"><t t-esc="state.criticalCount"/></div>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <div class="kpi-card kpi-high">
-                            <div class="kpi-label">🟠 Élevés</div>
+                        <div class="kpi-card kpi-high" t-on-click="openHighRisks">
+                            <div class="kpi-label">🔴 Élevés</div>
                             <div class="kpi-value"><t t-esc="state.highCount"/></div>
                         </div>
                     </div>
-                    <div class="col-2">
+                    <div class="col-3">
                         <div class="kpi-card kpi-medium">
-                            <div class="kpi-label">🟡 Moyens</div>
+                            <div class="kpi-label">🟡 Modérés</div>
                             <div class="kpi-value"><t t-esc="state.mediumCount"/></div>
                         </div>
                     </div>
-                    <div class="col-2">
+                    <div class="col-3">
                         <div class="kpi-card kpi-low">
                             <div class="kpi-label">🟢 Faibles</div>
                             <div class="kpi-value"><t t-esc="state.lowCount"/></div>
@@ -164,10 +158,9 @@
                                 <div class="text-muted text-center py-3">Aucune donnée</div>
                             </t>
                             <div class="chart-legend">
-                                <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
-                                <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
-                                <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
-                                <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
+                                <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Élevé</span>
+                                <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Modéré</span>
+                                <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Faible</span>
                             </div>
                         </div>
                     </div>
@@ -184,10 +177,9 @@
                                 <div class="text-muted text-center py-3">Aucune donnée</div>
                             </t>
                             <div class="chart-legend">
-                                <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
-                                <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
-                                <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
-                                <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
+                                <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Élevé</span>
+                                <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Modéré</span>
+                                <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Faible</span>
                             </div>
                         </div>
                     </div>
@@ -244,6 +236,15 @@
                 <!-- ========================================= -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
+                        <div class="d-flex justify-content-end mb-1">
+                            <button class="btn btn-outline-primary btn-sm matrix-export-btn"
+                                    t-on-click="() => this.exportSingleMatrix('inherent-heatmap', 'matrice_risques_inherents')"
+                                    t-att-disabled="state.exportingInherentMatrix"
+                                    title="Exporter cette matrice en image">
+                                <i class="fa" t-attf-class="fa #{state.exportingInherentMatrix ? 'fa-spinner fa-spin' : 'fa-camera'}"/>
+                                📸 Exporter
+                            </button>
+                        </div>
                         <div class="heatmap-card" id="inherent-heatmap">
                             <h5 class="chart-title">🔥 Matrice des Risques Inhérents</h5>
                             <div style="display:flex;justify-content:center;">
@@ -295,9 +296,8 @@
                                 Total: <t t-esc="state.totalRisks"/> risques
                             </div>
                             <div style="display:flex;justify-content:center;gap:15px;margin-top:8px;flex-wrap:wrap;font-size:10px;">
-                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#dc3545;"></span> Critique</span>
-                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#fd7e14;"></span> Élevé</span>
-                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ffc107;"></span> Moyen</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#dc3545;"></span> Élevé</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ffc107;"></span> Modéré</span>
                                 <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#28a745;"></span> Faible</span>
                             </div>
                         </div>
@@ -306,6 +306,15 @@
                     <!-- Dans risk_heatmap.xml, pour la matrice résiduelle -->
                     <!-- Matrice Résiduelle -->
                     <div class="col-md-6">
+                        <div class="d-flex justify-content-end mb-1">
+                            <button class="btn btn-outline-primary btn-sm matrix-export-btn"
+                                    t-on-click="() => this.exportSingleMatrix('residual-heatmap', 'matrice_risques_residuels')"
+                                    t-att-disabled="state.exportingResidualMatrix"
+                                    title="Exporter cette matrice en image">
+                                <i class="fa" t-attf-class="fa #{state.exportingResidualMatrix ? 'fa-spinner fa-spin' : 'fa-camera'}"/>
+                                📸 Exporter
+                            </button>
+                        </div>
                         <div class="heatmap-card" id="residual-heatmap">
                             <h5 class="chart-title">🔥 Matrice des Risques Résiduels</h5>
                             <div style="display:flex;justify-content:center;">
@@ -313,11 +322,11 @@
                                     <div style="display:flex;">
                                         <!-- Axe vertical : Niveau inhérent -->
                                         <div style="display:flex;flex-direction:column;justify-content:space-around;padding-right:8px;font-size:9px;font-weight:600;color:#495057;height:230px;">
-                                            <div style="color:#dc3545;">Critique</div>
-                                            <div style="color:#fd7e14;">Élevé</div>
-                                            <div style="color:#ffc107;">Moyen</div>
+                                            <div></div>
+                                            <div style="color:#dc3545;">Élevé</div>
+                                            <div style="color:#ffc107;">Modéré</div>
                                             <div style="color:#28a745;">Faible</div>
-                                            <div style="color:#17a2b8;">Très faible</div>
+                                            <div></div>
                                         </div>
                                         <!-- Matrice -->
                                         <div style="display:flex;flex-direction:column;gap:2px;">
@@ -359,9 +368,8 @@
                                 Résiduels: <t t-esc="state.totalRisks"/> risques
                             </div>
                             <div style="display:flex;justify-content:center;gap:15px;margin-top:8px;flex-wrap:wrap;font-size:10px;">
-                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#dc3545;"></span> Critique</span>
-                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#fd7e14;"></span> Élevé</span>
-                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ffc107;"></span> Moyen</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#dc3545;"></span> Élevé</span>
+                                <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ffc107;"></span> Modéré</span>
                                 <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#28a745;"></span> Faible</span>
                             </div>
                             <!-- Légende de la matrice résiduelle
@@ -406,9 +414,8 @@
                 <div class="row mt-2">
                     <div class="col-12">
                         <div class="dashboard-legend">
-                            <span><span class="legend-color" style="background:#dc3545;"></span> Critique</span>
-                            <span><span class="legend-color" style="background:#fd7e14;"></span> Élevé</span>
-                            <span><span class="legend-color" style="background:#ffc107;"></span> Moyen</span>
+                            <span><span class="legend-color" style="background:#dc3545;"></span> Élevé</span>
+                            <span><span class="legend-color" style="background:#ffc107;"></span> Modéré</span>
                             <span><span class="legend-color" style="background:#28a745;"></span> Faible</span>
                             <span class="legend-separator">|</span>
                             <span><i class="fa fa-user"/> Propriétaire</span>

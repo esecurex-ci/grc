@@ -19,12 +19,11 @@ export class ProcessDashboard extends Component {
         this.state = useState({
             loading: true,
             totalProcesses: 0,
-            critical: 0,
             high: 0,
             medium: 0,
             low: 0,
             riskDistribution: [],
-            criticalProcesses: [],
+            highRiskProcesses: [],
             topProcesses: [],
             processesWithoutRisk: [],
             matrix: {},
@@ -99,16 +98,14 @@ export class ProcessDashboard extends Component {
         processes.forEach(process => {
             const processRisks = riskMap[process.id] || [];
 
-            // ✅ CORRIGÉ : utiliser inherent_level au lieu de severity
-            const criticalCount = processRisks.filter(r => r.inherent_level === 'critical').length;
+            // ✅ Échelle à 3 niveaux : Élevé (16-25) / Modéré (6-15) / Faible (1-5)
             const highCount = processRisks.filter(r => r.inherent_level === 'high').length;
             const mediumCount = processRisks.filter(r => r.inherent_level === 'medium').length;
             const lowCount = processRisks.filter(r => r.inherent_level === 'low').length;
 
             // Déterminer le niveau global du processus
             let level = 'low';
-            if (criticalCount > 0) level = 'critical';
-            else if (highCount > 0) level = 'high';
+            if (highCount > 0) level = 'high';
             else if (mediumCount > 0) level = 'medium';
 
             // ✅ CORRIGÉ : utiliser le champ 'category' (Selection) directement
@@ -118,7 +115,6 @@ export class ProcessDashboard extends Component {
             processLevels[process.id] = {
                 ...process,
                 riskCount: processRisks.length,
-                criticalCount,
                 highCount,
                 mediumCount,
                 lowCount,
@@ -128,7 +124,7 @@ export class ProcessDashboard extends Component {
 
             // Statistiques par catégorie
             if (!categories[categoryLabel]) {
-                categories[categoryLabel] = { critical: 0, high: 0, medium: 0, low: 0, total: 0 };
+                categories[categoryLabel] = { high: 0, medium: 0, low: 0, total: 0 };
             }
             categories[categoryLabel][level]++;
             categories[categoryLabel].total++;
@@ -138,26 +134,24 @@ export class ProcessDashboard extends Component {
         // 1. KPI CARDS
         // ============================================================
         this.state.totalProcesses = processes.length;
-        this.state.critical = Object.values(processLevels).filter(p => p.level === 'critical').length;
         this.state.high = Object.values(processLevels).filter(p => p.level === 'high').length;
         this.state.medium = Object.values(processLevels).filter(p => p.level === 'medium').length;
         this.state.low = Object.values(processLevels).filter(p => p.level === 'low').length;
 
         // ============================================================
-        // 2. RISK DISTRIBUTION (pour les Donuts)
+        // 2. RISK DISTRIBUTION (pour les Donuts) - Échelle à 3 niveaux
         // ============================================================
         this.state.riskDistribution = [
-            { label: 'Critique', value: this.state.critical, color: '#dc3545' },
-            { label: 'Élevé', value: this.state.high, color: '#fd7e14' },
-            { label: 'Moyen', value: this.state.medium, color: '#ffc107' },
+            { label: 'Élevé', value: this.state.high, color: '#dc3545' },
+            { label: 'Modéré', value: this.state.medium, color: '#ffc107' },
             { label: 'Faible', value: this.state.low, color: '#28a745' }
         ];
 
         // ============================================================
-        // 3. PROCESSUS CRITIQUES
+        // 3. PROCESSUS À RISQUE ÉLEVÉ
         // ============================================================
-        this.state.criticalProcesses = Object.values(processLevels)
-            .filter(p => p.level === 'critical')
+        this.state.highRiskProcesses = Object.values(processLevels)
+            .filter(p => p.level === 'high')
             .map(p => ({
                 id: p.id,
                 name: p.name,
@@ -221,30 +215,23 @@ export class ProcessDashboard extends Component {
     generateNarratives() {
         const narratives = [];
 
-        if (this.state.critical > 0) {
-            narratives.push({
-                icon: '🔴',
-                text: `${this.state.critical} processus sont critiques : une attention immédiate est requise.`
-            });
-        }
-
         if (this.state.high > 0) {
             narratives.push({
-                icon: '🟠',
-                text: `${this.state.high} processus ont un niveau de risque élevé.`
+                icon: '🔴',
+                text: `${this.state.high} processus présentent un niveau de risque élevé : une attention prioritaire est requise.`
             });
         }
 
-        const totalRisky = this.state.critical + this.state.high;
+        const totalRisky = this.state.high;
         if (totalRisky === 0) {
             narratives.push({
                 icon: '✅',
-                text: 'Aucun processus à risque critique ou élevé. Bonne maîtrise des risques !'
+                text: 'Aucun processus à risque élevé. Bonne maîtrise des risques !'
             });
         } else if (totalRisky > this.state.totalProcesses * 0.5) {
             narratives.push({
                 icon: '⚠️',
-                text: `Plus de 50% des processus (${totalRisky}/${this.state.totalProcesses}) présentent des risques critiques ou élevés.`
+                text: `Plus de 50% des processus (${totalRisky}/${this.state.totalProcesses}) présentent un risque élevé.`
             });
         }
 
@@ -272,34 +259,32 @@ export class ProcessDashboard extends Component {
         console.log("📊 loadTestData !");
 
         this.state.totalProcesses = 7;
-        this.state.critical = 7;
-        this.state.high = 0;
+        this.state.high = 7;
         this.state.medium = 0;
         this.state.low = 0;
 
         this.state.riskDistribution = [
-            { label: 'Critique', value: 7, color: '#dc3545' },
-            { label: 'Élevé', value: 0, color: '#fd7e14' },
-            { label: 'Moyen', value: 0, color: '#ffc107' },
+            { label: 'Élevé', value: 7, color: '#dc3545' },
+            { label: 'Modéré', value: 0, color: '#ffc107' },
             { label: 'Faible', value: 0, color: '#28a745' }
         ];
 
-        this.state.criticalProcesses = [
+        this.state.highRiskProcesses = [
             { id: 1, name: 'Processus A', code: 'PRC-A', count: 5, owner: 'Jean Dupont' },
             { id: 2, name: 'Processus B', code: 'PRC-B', count: 3, owner: 'Marie Martin' },
             { id: 3, name: 'Processus C', code: 'PRC-C', count: 2, owner: 'Pierre Durand' },
         ];
 
         this.state.topProcesses = [
-            { id: 1, name: 'Processus A', code: 'PRC-A', count: 5, level: 'critical', owner: 'Jean Dupont' },
+            { id: 1, name: 'Processus A', code: 'PRC-A', count: 5, level: 'high', owner: 'Jean Dupont' },
             { id: 2, name: 'Processus B', code: 'PRC-B', count: 3, level: 'high', owner: 'Marie Martin' },
             { id: 3, name: 'Processus C', code: 'PRC-C', count: 2, level: 'medium', owner: 'Pierre Durand' },
         ];
 
         this.state.matrix = {
-            'Processus de Pilotage': { critical: 2, high: 0, medium: 0, low: 0, total: 2 },
-            'Processus Opérationnels': { critical: 3, high: 0, medium: 0, low: 0, total: 3 },
-            'Processus Supports': { critical: 2, high: 0, medium: 0, low: 0, total: 2 },
+            'Processus de Pilotage': { high: 2, medium: 0, low: 0, total: 2 },
+            'Processus Opérationnels': { high: 3, medium: 0, low: 0, total: 3 },
+            'Processus Supports': { high: 2, medium: 0, low: 0, total: 2 },
         };
 
         this.state.categoryStats = {
@@ -318,9 +303,8 @@ export class ProcessDashboard extends Component {
     renderDonutChart(distribution, total) {
         if (!distribution || distribution.length === 0) {
             distribution = [
-                { label: 'Critique', value: this.state.critical || 0, color: '#dc3545' },
-                { label: 'Élevé', value: this.state.high || 0, color: '#fd7e14' },
-                { label: 'Moyen', value: this.state.medium || 0, color: '#ffc107' },
+                { label: 'Élevé', value: this.state.high || 0, color: '#dc3545' },
+                { label: 'Modéré', value: this.state.medium || 0, color: '#ffc107' },
                 { label: 'Faible', value: this.state.low || 0, color: '#28a745' }
             ];
         }
@@ -369,9 +353,8 @@ export class ProcessDashboard extends Component {
     // ============================================================
     getLevelBadge(level) {
         const badges = {
-            'critical': '🔴 Critique',
-            'high': '🟠 Élevé',
-            'medium': '🟡 Moyen',
+            'high': '🔴 Élevé',
+            'medium': '🟡 Modéré',
             'low': '🟢 Faible'
         };
         return badges[level] || '⚪ Inconnu';
@@ -379,7 +362,6 @@ export class ProcessDashboard extends Component {
 
     getMaxDistribution() {
         const max = Math.max(
-            this.state.critical,
             this.state.high,
             this.state.medium,
             this.state.low,
@@ -420,13 +402,16 @@ export class ProcessDashboard extends Component {
         }
     }
 
-    openCriticalProcesses = () => {
+    openHighRiskProcesses = () => {
         if (this.action) {
             this.action.doAction({
                 type: 'ir.actions.act_window',
-                name: 'Processus critiques',
+                name: 'Processus à risque élevé',
                 res_model: 'risk.process',
                 views: [[false, 'list'], [false, 'form']],
+                // ⚠️ Ce domaine filtre sur risk.process.risk_level (échelle 1-5 propre au processus),
+                // distincte de l'échelle inherent_level (Faible/Modéré/Élevé) utilisée dans ce dashboard.
+                // À vérifier séparément si '5' correspond toujours à un niveau réel dans ton contexte.
                 domain: [['risk_level', '=', '5']],
             });
         } else {

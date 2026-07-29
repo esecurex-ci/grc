@@ -92,7 +92,7 @@
             font-weight: bold;
         }
 
-        &.kpi-critical {
+        &.kpi-high {
             border-left-color: #dc3545;
 
             .kpi-value {
@@ -100,19 +100,11 @@
             }
         }
 
-        &.kpi-high {
-            border-left-color: #fd7e14;
-
-            .kpi-value {
-                color: #fd7e14;
-            }
-        }
-
         &.kpi-medium {
-            border-left-color: #f0ad4e;
+            border-left-color: #ffc107;
 
             .kpi-value {
-                color: #f0ad4e;
+                color: #ffc107;
             }
         }
 
@@ -406,8 +398,8 @@
         }
 
         &-warning {
-            background: #fd7e14;
-            color: white;
+            background: #ffc107;
+            color: #212529;
         }
 
         &-info {
@@ -428,6 +420,21 @@
         &-primary {
             background: #1a237e;
             color: white;
+        }
+    }
+
+    // ============================================================
+    // BOUTON D'EXPORT UNITAIRE (par matrice)
+    // ============================================================
+    .matrix-export-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
     }
 
@@ -479,17 +486,11 @@
     .hm-red {
         background: #dc3545;
     }
-    .hm-orange {
-        background: #fd7e14;
-    }
     .hm-yellow {
-        background: #f0ad4e;
+        background: #ffc107;
     }
     .hm-green {
         background: #28a745;
-    }
-    .hm-blue {
-        background: #17a2b8;
     }
 
     // ============================================================
