@@ -183,7 +183,7 @@ class RiskExportWizard(models.TransientModel):
             # Évaluation des contrôles
             "Niveau d'efficacité des contrôles",
             # Évaluation résiduelle
-            'Score résiduel', 'Niveau résiduel',
+            'Niveau résiduel',
             # Dates
             'Dernière révision', 'Prochaine révision',
             'Actif'
@@ -298,18 +298,6 @@ class RiskExportWizard(models.TransientModel):
                 'font_color': control_text_colors.get(control_level, '#000000')
             })
             worksheet.write(row, col, control_label, control_format)
-            col += 1
-
-            # Score résiduel avec couleur
-            residual_score = risk.residual_score or 0
-            residual_level = risk.residual_level or 'low'
-            residual_score_format = workbook.add_format({
-                'align': 'center', 'valign': 'vcenter', 'border': 1,
-                'bold': True,
-                'bg_color': self._get_level_bg_color(residual_level),
-                'font_color': self._get_level_color(residual_level)
-            })
-            worksheet.write(row, col, residual_score, residual_score_format)
             col += 1
 
             # Niveau résiduel avec couleur
