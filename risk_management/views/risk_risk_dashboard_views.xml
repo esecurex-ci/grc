@@ -86,40 +86,70 @@
         <field name="name">risk.dashboard.kanban</field>
         <field name="model">risk.risk</field>
         <field name="arch" type="xml">
-            <kanban>
+            <kanban class="o_risk_kanban" default_group_by="inherent_level" records_draggable="false">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="inherent_level"/>
                 <field name="inherent_score"/>
+                <field name="residual_level"/>
                 <field name="category_id"/>
                 <field name="owner_id"/>
                 <field name="state"/>
+                <field name="priority_id"/>
+                <field name="incident_count"/>
+
+                <progressbar field="inherent_level"
+                             colors='{"low": "success", "medium": "warning", "high": "danger"}'/>
 
                 <templates>
                     <t t-name="card">
-                        <div class="oe_kanban_global_click">
-                            <div class="oe_kanban_details">
-                                <strong class="o_kanban_record_title">
-                                    <field name="code"/> - <field name="name"/>
-                                </strong>
-                                <div class="text-muted">
-                                    <field name="category_id"/>
+                        <div t-attf-class="o_risk_card oe_kanban_global_click border-start border-4 border-{{record.inherent_level.raw_value == 'high' ? 'danger' : record.inherent_level.raw_value == 'medium' ? 'warning' : 'success'}}"
+                             style="padding: 10px 12px; border-radius: 4px;">
+
+                            <!-- En-tête : code/nom + statut -->
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <div class="o_kanban_record_title" style="line-height: 1.2;">
+                                    <span class="text-muted small fw-normal"><field name="code"/></span><br/>
+                                    <strong><field name="name"/></strong>
                                 </div>
-                                <div>
-                                    <span class="badge">
-                                        <field name="inherent_level"/>
-                                    </span>
-                                    <span class="badge">
-                                        Score: <field name="inherent_score"/>
-                                    </span>
-                                    <span class="badge">
-                                        <field name="state"/>
-                                    </span>
+                                <span t-attf-class="badge rounded-pill flex-shrink-0 ms-2 text-bg-{{record.state.raw_value == 'validated' ? 'success' : record.state.raw_value == 'obsolete' ? 'secondary' : 'warning'}}"
+                                      t-att-title="record.state.value">
+                                    <field name="state"/>
+                                </span>
+                            </div>
+
+                            <!-- Catégorie + priorité -->
+                            <div class="d-flex align-items-center text-muted small mb-2">
+                                <i class="fa fa-folder-o me-1"/>
+                                <field name="category_id"/>
+                                <t t-if="record.priority_id.raw_value">
+                                    <i class="fa fa-flag ms-2 me-1 text-danger"/>
+                                    <field name="priority_id"/>
+                                </t>
+                            </div>
+
+                            <!-- Niveaux de risque -->
+                            <div class="d-flex gap-1 flex-wrap mb-2">
+                                <span t-attf-class="badge text-bg-{{record.inherent_level.raw_value == 'high' ? 'danger' : record.inherent_level.raw_value == 'medium' ? 'warning' : 'success'}}"
+                                      title="Niveau inhérent">
+                                    <i class="fa fa-fire me-1"/>Inhérent · <field name="inherent_score"/>
+                                </span>
+                                <span t-attf-class="badge text-bg-{{record.residual_level.raw_value == 'high' ? 'danger' : record.residual_level.raw_value == 'medium' ? 'warning' : 'success'}} bg-opacity-75"
+                                      title="Niveau résiduel après contrôles">
+                                    <i class="fa fa-shield me-1"/>Résiduel: <field name="residual_level"/>
+                                </span>
+                            </div>
+
+                            <!-- Pied : propriétaire + incidents -->
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div class="d-flex align-items-center">
+                                    <field name="owner_id" widget="many2one_avatar_employee"/>
+                                    <span class="text-muted small ms-1"><field name="owner_id"/></span>
                                 </div>
-                                <div>
-                                    <i class="fa fa-user" title="Propriétaire"/>
-                                    <field name="owner_id"/>
-                                </div>
+                                <span t-if="record.incident_count.raw_value" class="text-danger small fw-bold"
+                                      title="Incidents liés">
+                                    <i class="fa fa-exclamation-circle me-1"/><field name="incident_count"/>
+                                </span>
                             </div>
                         </div>
                     </t>

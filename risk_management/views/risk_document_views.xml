@@ -73,10 +73,10 @@
                     <!-- Informations principales -->
                     <group>
                         <group string="Informations générales">
-                            <field name="document_type" widget="badge"/>
+                            <field name="document_type"/>
                             <field name="category_id" required="1"/>
                             <field name="process_id"/>
-                            <field name="confidentiality" widget="badge"/>
+                            <field name="confidentiality"/>
                             <field name="language"/>
                             <field name="keywords"/>
                             <field name="tags" widget="many2many_tags"/>

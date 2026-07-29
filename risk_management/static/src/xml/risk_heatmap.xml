@@ -99,7 +99,7 @@
                             <h5 class="chart-title">🚨 Risques Hors Appétit</h5>
                             <div t-if="state.outOfAppetite.length > 0">
                                 <div class="risk-item" t-foreach="state.outOfAppetite" t-as="risk" t-key="risk.id">
-                                    <div class="risk-row" t-on-click="() => openRiskById(risk.id)">
+                                    <div class="risk-row" t-on-click="() => this.openRiskById(risk.id)">
                                         <span class="risk-level" t-attf-class="badge #{getLevelBadge(risk.level)}">
                                             <t t-esc="getLevelLabel(risk.level)"/>
                                         </span>
@@ -125,7 +125,7 @@
                             <h5 class="chart-title">🏆 Top 5 Risques Matériels</h5>
                             <div t-if="state.topRisks.length > 0">
                                 <div class="risk-item" t-foreach="state.topRisks" t-as="risk" t-key="risk.id">
-                                    <div class="risk-row top-risk" t-on-click="() => openRiskById(risk.id)">
+                                    <div class="risk-row top-risk" t-on-click="() => this.openRiskById(risk.id)">
                                         <span class="rank-badge">#<t t-esc="risk.rank"/></span>
                                         <span class="risk-level" t-attf-class="badge #{getLevelBadge(risk.level)}">
                                             <t t-esc="getLevelLabel(risk.level)"/>

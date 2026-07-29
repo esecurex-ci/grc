@@ -97,7 +97,7 @@
 <!-- GRAPHIQUE - MATRICE EN BARRES EMPILÉES                     -->
 <!-- ========================================================== -->
 
-    <record id="view_risk_dashboard_kanban" model="ir.ui.view">
+    <record id="view_risk_dashboard_correct_kanban" model="ir.ui.view">
         <field name="name">risk.dashboard.kanban</field>
         <field name="model">risk.risk</field>
         <field name="arch" type="xml">

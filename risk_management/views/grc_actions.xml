@@ -88,7 +88,7 @@
         <field name="view_ids" eval="[
             (5, 0, 0),
             (0, 0, {'view_mode': 'list', 'view_id': ref('view_risk_hierarchical_list')}),
-            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_risk_kri_kanban')}),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_risk_dashboard_kanban')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_risk_form')})
         ]"/>
     </record>

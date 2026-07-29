@@ -92,7 +92,8 @@ class RiskRisk(models.Model):
         selection='_get_level_selection',
         compute='_compute_scores',
         store=True,
-        string='Niveau résiduel'
+        string='Niveau résiduel',
+        default=0
     )
 
     review_frequency = fields.Selection([
@@ -654,14 +655,14 @@ class RiskRisk(models.Model):
             rec.inherent_score = inherent
 
             # Score résiduel
-            residual_prob = int(rec.residual_probability or 3)
-            residual_imp = int(rec.residual_impact or 3)
-            residual = residual_prob * residual_imp
-            rec.residual_score = residual
+            inherent_level = rec.inherent_level or 'low'
+            control_level = rec.control_effectiveness_level or 'ineffective'
+            residual_level = rec._get_residual_level_from_matrix(inherent_level, control_level)
+            rec.residual_level = residual_level
 
             # Déterminer les niveaux avec l'échelle configurée
             rec.inherent_level = rec._get_level_from_score(inherent)
-            rec.residual_level = rec._get_level_from_score(residual)
+            rec.residual_score = 0
 
     def _get_level_from_score(self, score):
         """Détermine le niveau à partir du score selon l'échelle configurée"""
@@ -676,12 +677,12 @@ class RiskRisk(models.Model):
 
         # Fallback selon votre échelle
         if score <= 5:
-            return 'low'
+            return 'low'  # Faible
         elif score <= 15:
-            return 'medium'
+            return 'medium'  # Modéré
         elif score <= 25:
-            return 'high'
-        return 'critical'
+            return 'high'  # Élevé
+        return 'high'
 
 
     # Méthode de fallback pour la compatibilité
@@ -856,16 +857,8 @@ class RiskRisk(models.Model):
             record.impact_value = impact_map.get(record.inherent_impact, 1)
             record.probability_value = prob_map.get(record.inherent_probability, 1)
 
-    @api.depends(
-        'inherent_impact',
-        'inherent_probability',
-        'inherent_score',
-        'inherent_level',
-        'residual_impact',
-        'residual_probability',
-        'residual_score',
-        'residual_level'
-    )
+    @api.depends('inherent_impact', 'inherent_probability', 'inherent_score', 'inherent_level',
+                 'residual_impact', 'residual_probability', 'residual_score', 'residual_level')
     def _compute_matrix_html(self):
         for record in self:
             try:
@@ -905,22 +898,20 @@ class RiskRisk(models.Model):
                         html += f'<td style="background-color:{color};color:{text_color};border:1px solid #dee2e6;padding:14px 18px;text-align:center;font-weight:{"800" if is_active else "600"};font-size:16px;cursor:default;transition:all 0.2s ease;{active_style}">{score_cell}</td>'
                     html += '</tr>'
 
+                # ⚠️ LÉGENDE CORRECTE : UNIQUEMENT POUR LE RISQUE INHÉRENT
                 html += f'''
                         </tbody>
                     </table>
 
                     <div style="display:flex;justify-content:center;gap:20px;margin:15px 0;flex-wrap:wrap;padding:12px 20px;background:#f8f9fa;border-radius:8px;">
                         <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#37474f;">
-                            <span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#28a745;border:1px solid #dee2e6;"></span> Faible (1-4)
+                            <span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#28a745;border:1px solid #dee2e6;"></span> Faible
                         </span>
                         <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#37474f;">
-                            <span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#ffc107;border:1px solid #dee2e6;"></span> Moyen (5-9)
+                            <span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#ffc107;border:1px solid #dee2e6;"></span> Modéré
                         </span>
                         <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#37474f;">
-                            <span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#fd7e14;border:1px solid #dee2e6;"></span> Élevé (10-16)
-                        </span>
-                        <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#37474f;">
-                            <span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#dc3545;border:1px solid #dee2e6;"></span> Critique (17-25)
+                            <span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#dc3545;border:1px solid #dee2e6;"></span> Élevé
                         </span>
                     </div>
 
@@ -934,10 +925,7 @@ class RiskRisk(models.Model):
                                 <span class="badge-{level.lower() if level else 'non-defini'}">{level.capitalize() if level else 'Non défini'}</span>
                             </div>
                             <div>
-                                <strong>Score résiduel :</strong>
-                                <span style="font-size:20px;font-weight:700;color:#1a237e;">{residual_score}</span>
-                                &nbsp;|&nbsp;
-                                <strong>Niveau :</strong>
+                                <strong>Niveau résiduel :</strong>
                                 <span class="badge-{residual_level.lower() if residual_level else 'non-defini'}">{residual_level.capitalize() if residual_level else 'Non défini'}</span>
                             </div>
                         </div>
@@ -947,7 +935,7 @@ class RiskRisk(models.Model):
                 <style>
                     .badge-low {{ display:inline-block;padding:4px 14px;border-radius:20px;font-weight:600;font-size:14px;background:#d4edda;color:#155724; }}
                     .badge-medium {{ display:inline-block;padding:4px 14px;border-radius:20px;font-weight:600;font-size:14px;background:#fff3cd;color:#856404; }}
-                    .badge-high {{ display:inline-block;padding:4px 14px;border-radius:20px;font-weight:600;font-size:14px;background:#ffe5cc;color:#853d04; }}
+                    .badge-high {{ display:inline-block;padding:4px 14px;border-radius:20px;font-weight:600;font-size:14px;background:#f8d7da;color:#721c24; }}
                     .badge-critical {{ display:inline-block;padding:4px 14px;border-radius:20px;font-weight:600;font-size:14px;background:#f8d7da;color:#721c24; }}
                     .badge-non-defini {{ display:inline-block;padding:4px 14px;border-radius:20px;font-weight:600;font-size:14px;background:#e2e3e5;color:#383d41; }}
                 </style>
@@ -959,14 +947,14 @@ class RiskRisk(models.Model):
                 record.matrix_html = f'<div style="color:red;padding:20px;text-align:center;background:#fff5f5;border-radius:8px;">❌ Erreur: {str(e)}</div>'
 
     def _get_matrix_color(self, score):
-        if score <= 4:
-            return '#28a745'
-        elif score <= 9:
-            return '#ffc107'
-        elif score <= 16:
-            return '#fd7e14'
-        else:
-            return '#dc3545'
+        """Retourne la couleur pour la matrice en fonction du score"""
+        if score <= 5:
+            return '#28a745'  # Vert - Faible (1-5)
+        elif score <= 15:
+            return '#ffc107'  # Jaune - Modéré (6-15)
+        elif score <= 25:
+            return '#dc3545'  # Rouge - Élevé (16-25)
+        return '#dc3545'
 
     # Dans rm_risk_risk.py
     graph_impact = fields.Integer(
@@ -1500,10 +1488,12 @@ class RiskRisk(models.Model):
                         <div class="kpi-value">""" + str(total_risks) + """</div>
                         <div class="kpi-label">Total Risques</div>
                     </div>
+                    <!--
                     <div class="kpi-box critical">
                         <div class="kpi-value">""" + str(critical) + """</div>
                         <div class="kpi-label">🔴 Critiques</div>
                     </div>
+                    -->
                     <div class="kpi-box high">
                         <div class="kpi-value">""" + str(high) + """</div>
                         <div class="kpi-label">🟠 Élevés</div>
@@ -1553,7 +1543,7 @@ class RiskRisk(models.Model):
         html += """
                         </div>
                         <div class="legend">
-                            <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
+                            <!--span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span-->
                             <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
                             <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
                             <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
@@ -1617,7 +1607,7 @@ class RiskRisk(models.Model):
         html += """
                         </div>
                         <div class="legend">
-                            <span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span>
+                            <!--span class="legend-item"><span class="color-box" style="background:#dc3545;"></span> Critical</span-->
                             <span class="legend-item"><span class="color-box" style="background:#fd7e14;"></span> High</span>
                             <span class="legend-item"><span class="color-box" style="background:#ffc107;"></span> Medium</span>
                             <span class="legend-item"><span class="color-box" style="background:#28a745;"></span> Low</span>
@@ -1711,13 +1701,10 @@ class RiskRisk(models.Model):
                                 <span class="color-box" style="background:#28a745;"></span> Faible
                             </span>
                             <span class="legend-item">
-                                <span class="color-box" style="background:#ffc107;"></span> Moyen
+                                <span class="color-box" style="background:#ffc107;"></span> Modéré
                             </span>
                             <span class="legend-item">
-                                <span class="color-box" style="background:#fd7e14;"></span> Élevé
-                            </span>
-                            <span class="legend-item">
-                                <span class="color-box" style="background:#dc3545;"></span> Critique
+                                <span class="color-box" style="background:#dc3545;"></span> Élevé
                             </span>
                         </div>
                         <div class="heatmap-total">Total: """ + str(total_risks) + """ risques</div>
@@ -1765,9 +1752,9 @@ class RiskRisk(models.Model):
                             <span class="legend-item">
                                 <span class="color-box" style="background:#fd7e14;"></span> Élevé
                             </span>
-                            <span class="legend-item">
+                            <!--span class="legend-item">
                                 <span class="color-box" style="background:#dc3545;"></span> Critique
-                            </span>
+                            </span-->
                         </div>
                         <div class="heatmap-total">Résiduels: """ + str(
             len([r for r in risks if r.residual_level in ['critical', 'high', 'medium', 'low']])) + """ risques</div>
@@ -1934,14 +1921,13 @@ class RiskRisk(models.Model):
 
     def _get_heatmap_color(self, score):
         """Retourne la couleur pour la heatmap en fonction du score"""
-        if score <= 4:
+        if score <= 5:
             return '#28a745'  # Vert - Faible
-        elif score <= 9:
-            return '#ffc107'  # Jaune - Moyen
-        elif score <= 16:
-            return '#fd7e14'  # Orange - Élevé
-        else:
-            return '#dc3545'  # Rouge - Critique
+        elif score <= 15:
+            return '#ffc107'  # Jaune - Modéré
+        elif score <= 25:
+            return '#dc3545'  # Rouge - Élevé
+        return '#dc3545'
 
     @api.depends('activity_id', 'activity_id.process_id', 'activity_id.process_id.macro_process_id')
     def _compute_hierarchy_display(self):
@@ -2039,38 +2025,31 @@ class RiskRisk(models.Model):
     def _get_max_score_for_level(self, level):
         """Retourne le score maximum pour un niveau donné selon votre échelle"""
         mapping = {
-            'critical': 25,
-            'high': 25,
-            'medium': 15,
-            'low': 5,
+            'low': 5,  # Faible : 1-5
+            'medium': 15,  # Modéré : 6-15
+            'high': 25,  # Élevé : 16-25
         }
-        return mapping.get(level, 4)
+        return mapping.get(level, 5)
 
     def _get_residual_level_from_matrix(self, inherent_level, control_level):
         """
-        Détermine le niveau résiduel selon la matrice
+        Détermine le niveau résiduel selon la matrice Excel
 
-        Échelle :
-        - Faible : 1 à 5
-        - Modéré : 6 à 15
-        - Élevé : 16 à 25
-
-        Matrice :
-        ┌──────────────────┬─────────────────────┬──────────────────┐
-        │ Niveau inhérent  │ Efficacité contrôles │ Niveau résiduel  │
-        ├──────────────────┼─────────────────────┼──────────────────┤
-        │ Élevé (16-25)    │ Inefficace          │ Élevé (16-25)    │
-        │ Modéré (6-15)    │ Inefficace          │ Modéré (6-15)    │
-        │ Faible (1-5)     │ Inefficace          │ Faible (1-5)     │
-        │ Élevé (16-25)    │ Partiellement       │ Élevé (16-25)    │
-        │ Modéré (6-15)    │ Partiellement       │ Modéré (6-15)    │
-        │ Faible (1-5)     │ Partiellement       │ Faible (1-5)     │
-        │ Élevé (16-25)    │ Efficace            │ Modéré (6-15)    │
-        │ Modéré (6-15)    │ Efficace            │ Faible (1-5)     │
-        │ Faible (1-5)     │ Efficace            │ Faible (1-5)     │
-        └──────────────────┴─────────────────────┴──────────────────┘
+        ═══════════════════════════════════════════════════════════════════
+        │ Niveau inhérent │ Efficacité des contrôles │ Niveau résiduel │
+        ├─────────────────┼──────────────────────────┼─────────────────┤
+        │ Élevé           │ Inefficace ou informel   │ Élevé           │
+        │ Modéré          │ Inefficace ou informel   │ Modéré          │
+        │ Faible          │ Inefficace ou informel   │ Faible          │
+        │ Élevé           │ Partiellement efficace   │ Élevé           │
+        │ Modéré          │ Partiellement efficace   │ Modéré          │
+        │ Faible          │ Partiellement efficace   │ Faible          │
+        │ Élevé           │ Efficace                 │ Modéré          │
+        │ Modéré          │ Efficace                 │ Faible          │
+        │ Faible          │ Efficace                 │ Faible          │
+        ═══════════════════════════════════════════════════════════════════
         """
-        # Mapping des niveaux Odoo vers les niveaux de la matrice
+        # Normalisation des niveaux
         level_mapping = {
             'critical': 'high',
             'high': 'high',
@@ -2078,37 +2057,33 @@ class RiskRisk(models.Model):
             'low': 'low'
         }
 
-        # Normaliser le niveau inhérent
         norm_inherent = level_mapping.get(inherent_level, 'low')
 
-        # Cas 1 : Contrôle inefficace ou partiellement efficace
+        # 🔴 Cas 1 : Contrôle inefficace ou partiellement efficace
         # → Le niveau résiduel reste le même que le niveau inhérent
         if control_level in ['ineffective', 'partially_effective']:
             return norm_inherent
 
-        # Cas 2 : Contrôle efficace
-        # → Le niveau résiduel est réduit
+        # 🟢 Cas 2 : Contrôle efficace → Réduction d'un niveau
         if control_level == 'effective':
             if norm_inherent == 'high':
-                return 'medium'
+                return 'medium'  # Élevé → Modéré
             elif norm_inherent == 'medium':
-                return 'low'
+                return 'low'  # Modéré → Faible
             else:  # low
-                return 'low'
+                return 'low'  # Faible → Faible
 
-        # Par défaut (fallback)
         return norm_inherent
 
 
     def _get_score_from_level(self, level):
         """Retourne un score approximatif basé sur le niveau"""
         mapping = {
-            'critical': 20,
-            'high': 16,
-            'medium': 9,
-            'low': 4,
+            'high': 25,
+            'medium': 16,
+            'low': 5,
         }
-        return mapping.get(level, 4)
+        return mapping.get(level, 5)
 
 
     # ============================================================
@@ -2221,9 +2196,9 @@ class RiskRisk(models.Model):
             <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #1a237e;">
                 <p style="margin: 0; font-size: 13px; color: #333;">
                     <strong>📌 Légende :</strong>
-                    <span style="display: inline-block; margin: 0 10px;">
+                    <!--span style="display: inline-block; margin: 0 10px;">
                         <span style="background-color: #dc3545; color: white; padding: 2px 8px; border-radius: 10px;">🔴</span> Critique
-                    </span>
+                    </span-->
                     <span style="display: inline-block; margin: 0 10px;">
                         <span style="background-color: #fd7e14; color: white; padding: 2px 8px; border-radius: 10px;">🟠</span> Élevé
                     </span>

@@ -155,7 +155,7 @@
         <field name="arch" type="xml">
             <list
                 string="Sous-processus"
-                default_group_by="macro_process_id,category"
+                default_group_by="category,macro_process_id"
                 expand="0"
                 decoration-success="risk_level in ('1', '2')"
                 decoration-info="risk_level == '3'"
