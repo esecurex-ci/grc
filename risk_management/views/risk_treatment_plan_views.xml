@@ -11,14 +11,19 @@
         <field name="arch" type="xml">
             <list
                   decoration-info="state == 'draft'"
-                  decoration-warning="state == 'in_progress'"
+                  decoration-warning="state == 'in_progress' and not is_overdue"
+                  decoration-danger="is_overdue"
                   decoration-success="state == 'completed'"
-                  decoration-danger="state == 'cancelled'">
+                  decoration-muted="state == 'cancelled'">
 
+                <field name="code"/>
                 <field name="name"/>
                 <field name="risk_id"/>
                 <field name="owner_id"/>
+                <field name="owner_employee_id"/>
                 <field name="target_date"/>
+                <field name="days_remaining"/>
+                <field name="is_overdue" widget="boolean" string="En retard"/>
                 <field name="budget" widget="monetary"/>
                 <field name="progress" widget="progressbar"/>
                 <field name="state" widget="badge"/>
@@ -38,8 +43,10 @@
             <search>
 
                 <field name="name"/>
+                <field name="code"/>
                 <field name="risk_id"/>
                 <field name="owner_id"/>
+                <field name="owner_employee_id"/>
 
                 <separator/>
 
@@ -61,6 +68,19 @@
 
                 <separator/>
 
+                <filter name="overdue"
+                        string="En retard"
+                        domain="[('is_overdue','=',True)]"/>
+
+                <filter name="my_plans"
+                        string="Mes plans"
+                        domain="['|', ('owner_employee_id.user_id','=',uid), ('notification_user_ids','in',[uid])]"/>
+
+                <separator/>
+
+                <filter name="group_by_state" string="Grouper par statut" context="{'group_by':'state'}"/>
+                <filter name="group_by_owner" string="Grouper par responsable" context="{'group_by':'owner_id'}"/>
+                <filter name="group_by_risk" string="Grouper par risque" context="{'group_by':'risk_id'}"/>
 
             </search>
         </field>
@@ -101,8 +121,13 @@
                 </header>
 
                 <sheet>
+                    <div class="alert alert-danger" role="alert" invisible="not is_overdue" style="margin-bottom:10px;">
+                        <i class="fa fa-exclamation-triangle" title="En retard"/>
+                        <strong>Ce plan est en retard</strong> — échéance dépassée.
+                    </div>
                     <div class="oe_title">
                         <h1>
+                            <field name="code" class="text-muted" readonly="1" placeholder="Code..."/>
                             <field name="name" placeholder="Nom du plan de traitement..."/>
                         </h1>
                     </div>
@@ -112,9 +137,12 @@
                             <field name="assessment_id" required="1"/>
                             <field name="risk_id" readonly="1"/>
                             <field name="owner_id" placeholder="Fonction propriétaire"/>
+                            <field name="owner_employee_id" placeholder="Employé responsable"/>
                         </group>
                         <group string="Dates">
                             <field name="target_date" required="1"/>
+                            <field name="days_remaining" readonly="1"/>
+                            <field name="is_overdue" readonly="1" widget="boolean"/>
                             <field name="completion_date" readonly="1"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -169,28 +197,39 @@
             <kanban default_group_by="state">
 
                 <field name="name"/>
+                <field name="code"/>
+                <field name="risk_id"/>
                 <field name="owner_id"/>
                 <field name="target_date"/>
                 <field name="progress"/>
+                <field name="state"/>
+                <field name="is_overdue"/>
 
                 <templates>
 
                     <t t-name="card">
 
-                        <div class="oe_kanban_global_click">
+                        <div class="oe_kanban_global_click" t-attf-class="border-start border-4 #{record.is_overdue.raw_value ? 'border-danger' : 'border-transparent'}" style="padding:6px 10px;">
 
-                            <div>
+                            <div class="d-flex justify-content-between align-items-start">
                                 <strong>
                                     <field name="name"/>
                                 </strong>
+                                <span t-if="record.is_overdue.raw_value" class="badge text-bg-danger" title="En retard">
+                                    ⏰ En retard
+                                </span>
+                            </div>
+
+                            <div class="text-muted small">
+                                <field name="risk_id"/>
                             </div>
 
                             <div class="mt-2">
-                                <field name="owner_id"/>
+                                <i class="fa fa-user" title="Responsable"/> <field name="owner_id"/>
                             </div>
 
                             <div class="mt-2">
-                                Echéance :
+                                <i class="fa fa-calendar" title="Échéance"/> Echéance :
                                 <field name="target_date"/>
                             </div>
 

@@ -116,7 +116,7 @@ class RiskTreatmentPlan(models.Model):
             ('completed', 'Clôturé'),
             ('cancelled', 'Annulé')
         ],
-        string='Status',
+        string='Statut',
         default='draft',
         tracking=True
     )
@@ -163,14 +163,14 @@ class RiskTreatmentPlan(models.Model):
     def _check_progress(self):
         for record in self:
             if record.progress < 0 or record.progress > 100:
-                raise ValidationError("Progress must be between 0 and 100.")
+                raise ValidationError(_("La progression doit être comprise entre 0 et 100."))
 
     @api.constrains('target_date', 'completion_date')
     def _check_dates(self):
         for record in self:
             if record.target_date and record.completion_date:
                 if record.completion_date < record.target_date:
-                    raise ValidationError("Completion date cannot be before target date.")
+                    raise ValidationError(_("La date de fin ne peut pas être antérieure à la date cible."))
 
     # =====================================================
     # COMPUTE METHODS
@@ -192,35 +192,6 @@ class RiskTreatmentPlan(models.Model):
     # ACTION METHODS
     # =====================================================
 
-    def action_start(self):
-        """Démarrer le plan de traitement"""
-        for record in self:
-            if record.state != 'draft':
-                raise ValidationError("Only draft plans can be started.")
-            record.write({
-                'state': 'in_progress'
-            })
-
-    def action_complete(self):
-        """Terminer le plan de traitement"""
-        for record in self:
-            if record.state != 'in_progress':
-                raise ValidationError("Only in-progress plans can be completed.")
-            record.write({
-                'state': 'completed',
-                'progress': 100,
-                'completion_date': fields.Date.today()
-            })
-
-    def action_cancel(self):
-        """Annuler le plan de traitement"""
-        for record in self:
-            if record.state in ['completed', 'cancelled']:
-                raise ValidationError("Completed or cancelled plans cannot be cancelled.")
-            record.write({
-                'state': 'cancelled'
-            })
-
     def action_reset_to_draft(self):
         """Remettre en brouillon"""
         for record in self:
@@ -234,7 +205,7 @@ class RiskTreatmentPlan(models.Model):
         """Définir la progression manuellement"""
         for record in self:
             if record.state == 'completed':
-                raise ValidationError("Cannot update progress of completed plans.")
+                raise ValidationError(_("Impossible de modifier la progression d'un plan terminé."))
             if 0 <= value <= 100:
                 record.progress = value
                 if value == 100:
@@ -249,7 +220,7 @@ class RiskTreatmentPlan(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Risk',
+            'name': 'Risque',
             'res_model': 'risk.risk',
             'view_mode': 'form',
             'res_id': self.risk_id.id,
@@ -260,7 +231,7 @@ class RiskTreatmentPlan(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Assessment',
+            'name': 'Évaluation',
             'res_model': 'risk.assessment',
             'view_mode': 'form',
             'res_id': self.assessment_id.id,
@@ -275,19 +246,28 @@ class RiskTreatmentPlan(models.Model):
         self.ensure_one()
         users = self.env['res.users']
 
-        # 1. Utilisateurs sélectionnés manuellement
+        # 1. Le responsable réel du plan (priorité : employé assigné, puis fonction)
+        if self.owner_employee_id and self.owner_employee_id.user_id:
+            users |= self.owner_employee_id.user_id
+        elif self.owner_id and hasattr(self.owner_id, 'user_id') and self.owner_id.user_id:
+            users |= self.owner_id.user_id
+
+        # 2. Utilisateurs sélectionnés manuellement
         if self.notification_user_ids:
             users |= self.notification_user_ids
 
-        # 2. Utilisateurs du groupe "Risk Manager"
-        risk_manager_group = self.env.ref('risk_management.group_risk_manager', raise_if_not_found=False)
-        if risk_manager_group:
-            manager_users = self.env['res.users'].search([
-                ('groups_id', 'in', risk_manager_group.id)
-            ])
-            users |= manager_users
+        # 3. Groupe "Risk Manager" — uniquement si personne d'autre n'est identifié,
+        #    pour éviter de notifier tous les risk managers de l'organisation
+        #    à chaque plan de traitement, sans rapport avec leurs propres dossiers.
+        if not users:
+            risk_manager_group = self.env.ref('risk_management.group_risk_manager', raise_if_not_found=False)
+            if risk_manager_group:
+                manager_users = self.env['res.users'].search([
+                    ('groups_id', 'in', risk_manager_group.id)
+                ])
+                users |= manager_users
 
-        # 3. Si aucun utilisateur, utiliser l'utilisateur courant
+        # 4. Si toujours personne, utiliser l'utilisateur courant
         if not users:
             users |= self.env.user
 
@@ -425,7 +405,11 @@ class RiskTreatmentPlan(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Surcharge de create pour notifier à la création"""
+        """Surcharge de create pour générer le code et notifier à la création"""
+        for vals in vals_list:
+            if vals.get('code', 'New') == 'New':
+                vals['code'] = self.env['ir.sequence'].next_by_code('risk.treatment.plan') or 'New'
+
         records = super().create(vals_list)
 
         # Notifier les utilisateurs concernés
