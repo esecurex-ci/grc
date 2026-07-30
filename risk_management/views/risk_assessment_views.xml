@@ -10,17 +10,15 @@
         <field name="arch" type="xml">
             <list
                 decoration-success="risk_level == 'low'"
-                decoration-info="risk_level == 'moderate'"
-                decoration-warning="risk_level in ['important', 'high']"
-                decoration-danger="risk_level == 'critical'"
+                decoration-warning="risk_level == 'medium'"
+                decoration-danger="risk_level == 'high'"
                 decoration-muted="state == 'closed'">
 
                 <field name="name" string="Évaluation"/>
                 <field name="assessment_date" string="Date"/>
                 <field name="risk_id" string="Risque"/>
                 <field name="inherent_score" string="Score inhérent" sum="Total"/>
-                <field name="residual_score" string="Score résiduel" sum="Total"/>
-                <field name="risk_level" string="Niveau" widget="badge"/>
+                <field name="risk_level" string="Niveau résiduel" widget="badge"/>
                 <field name="over_appetite" string="Hors appétit" widget="boolean"/>
                 <field name="state" string="Statut" widget="badge"/>
                 <field name="assessor_id" string="Évaluateur"/>
@@ -42,7 +40,6 @@
                 <field name="assessment_date"/>
                 <field name="risk_id"/>
                 <field name="inherent_score"/>
-                <field name="residual_score"/>
                 <field name="risk_level"/>
                 <field name="state"/>
                 <field name="assessor_id"/>
@@ -52,7 +49,7 @@
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click">
                             <div class="o_kanban_image">
-                                <span class="fa fa-clipboard" style="font-size:32px;"/>
+                                <span class="fa fa-clipboard" style="font-size:32px;" title="Évaluation"/>
                             </div>
                             <div class="oe_kanban_details">
                                 <strong class="o_kanban_record_title">
@@ -67,15 +64,12 @@
                                             <span style="font-weight:bold;">🔴 Inhérent:</span>
                                             <span t-esc="record.inherent_score.raw_value"/>
                                         </div>
-                                        <div style="background:#28a745;padding:2px 10px;border-radius:4px;color:white;font-size:11px;">
-                                            <span style="font-weight:bold;">🟢 Résiduel:</span>
-                                            <span t-esc="record.residual_score.raw_value"/>
+                                        <div t-attf-style="background:#{record.risk_level.raw_value == 'high' ? '#dc3545' : record.risk_level.raw_value == 'medium' ? '#ffc107' : '#28a745'};padding:2px 10px;border-radius:4px;color:white;font-size:11px;">
+                                            <span style="font-weight:bold;">🛡️ Résiduel:</span>
+                                            <t t-esc="record.risk_level.raw_value == 'high' ? 'Élevé' : record.risk_level.raw_value == 'medium' ? 'Modéré' : 'Faible'"/>
                                         </div>
                                     </div>
                                     <div class="o_kanban_tags">
-                                        <span class="badge" t-attf-class="badge badge-light">
-                                            <t t-esc="record.risk_level.raw_value"/>
-                                        </span>
                                         <span class="badge" t-attf-class="badge badge-secondary">
                                             <field name="state"/>
                                         </span>
@@ -84,8 +78,8 @@
                                         </t>
                                     </div>
                                     <div class="text-muted small">
-                                        <i class="fa fa-user"/> <field name="assessor_id"/>
-                                        <i class="fa fa-calendar" style="margin-left:10px;"/> <field name="assessment_date"/>
+                                        <i class="fa fa-user" title="Évaluateur"/> <field name="assessor_id"/>
+                                        <i class="fa fa-calendar" style="margin-left:10px;" title="Date"/> <field name="assessment_date"/>
                                     </div>
                                 </div>
                             </div>
@@ -147,7 +141,7 @@
                         <page string="📊 Évaluation" name="evaluation">
                             <group string="🔴 Évaluation inhérente">
                                 <div class="alert alert-danger" role="alert" style="margin-bottom:10px;">
-                                    <i class="fa fa-exclamation-triangle"/>
+                                    <i class="fa fa-exclamation-triangle" title="Attention"/>
                                     <strong>Évaluation avant contrôles</strong>
                                     <span class="text-muted"> - Score maximum possible</span>
                                 </div>
@@ -155,6 +149,7 @@
                                     <group>
                                         <field name="inherent_probability"/>
                                         <field name="inherent_impact"/>
+                                        <field name="inherent_level" widget="badge" readonly="1"/>
                                     </group>
                                     <group>
                                         <div style="background:#dc3545;border-radius:8px;padding:15px;color:white;text-align:center;">
@@ -169,7 +164,7 @@
 
                             <group string="🔒 Contrôles">
                                 <div class="alert alert-info" role="alert" style="margin-bottom:10px;">
-                                    <i class="fa fa-shield"/>
+                                    <i class="fa fa-shield" title="Contrôles"/>
                                     <strong>Efficacité des contrôles</strong>
                                     <span class="text-muted"> - Impact sur le risque résiduel</span>
                                 </div>
@@ -189,31 +184,40 @@
 
                             <group string="🟢 Évaluation résiduelle">
                                 <div class="alert alert-success" role="alert" style="margin-bottom:10px;">
-                                    <i class="fa fa-check-circle"/>
+                                    <i class="fa fa-check-circle" title="Validé"/>
                                     <strong>Évaluation après contrôles</strong>
-                                    <span class="text-muted"> - Score résiduel</span>
+                                    <span class="text-muted"> - Niveau déterminé par la matrice (pas de score numérique)</span>
                                 </div>
                                 <group>
                                     <group>
-                                        <field name="residual_probability" readonly="1"/>
-                                        <field name="residual_impact"/>
+                                        <field name="control_effectiveness_level" readonly="1"/>
                                     </group>
                                     <group>
-                                        <div style="background:#28a745;border-radius:8px;padding:15px;color:white;text-align:center;">
-                                            <strong>Score résiduel</strong>
-                                            <div style="font-size:28px;font-weight:800;">
-                                                <field name="residual_score" readonly="1"/>
+                                        <div invisible="risk_level != 'high'" style="background:#dc3545;border-radius:8px;padding:15px;color:white;text-align:center;">
+                                            <strong>Niveau résiduel</strong>
+                                            <div style="font-size:22px;font-weight:800;">
+                                                <field name="risk_level" readonly="1"/>
+                                            </div>
+                                        </div>
+                                        <div invisible="risk_level != 'medium'" style="background:#ffc107;border-radius:8px;padding:15px;color:#212529;text-align:center;">
+                                            <strong>Niveau résiduel</strong>
+                                            <div style="font-size:22px;font-weight:800;">
+                                                <field name="risk_level" readonly="1"/>
+                                            </div>
+                                        </div>
+                                        <div invisible="risk_level != 'low'" style="background:#28a745;border-radius:8px;padding:15px;color:white;text-align:center;">
+                                            <strong>Niveau résiduel</strong>
+                                            <div style="font-size:22px;font-weight:800;">
+                                                <field name="risk_level" readonly="1"/>
                                             </div>
                                         </div>
                                     </group>
                                 </group>
                                 <div style="margin-top:10px;padding:10px;background:#fff;border-radius:8px;text-align:center;border:1px solid #dee2e6;">
                                     <span style="font-size:14px;">
-                                        <span style="color:#dc3545;">🔴 Inhérent: <strong><field name="inherent_score" readonly="1"/></strong></span>
+                                        <span style="color:#dc3545;">🔴 Inhérent: <strong><field name="inherent_level" widget="badge"/></strong></span>
                                         <span style="margin:0 15px;">➡️</span>
-                                        <span style="color:#28a745;">🟢 Résiduel: <strong><field name="residual_score" readonly="1"/></strong></span>
-                                        <span style="margin:0 15px;">➡️</span>
-                                        <span style="color:#6f42c1;">📊 Niveau: <strong><field name="risk_level" widget="badge"/></strong></span>
+                                        <span style="color:#28a745;">🛡️ Résiduel: <strong><field name="risk_level" widget="badge"/></strong></span>
                                     </span>
                                 </div>
                             </group>
@@ -245,7 +249,7 @@
                             </group>
                             <group string="Plans d'action" name="treatment_plans">
                                 <div style="margin-bottom:10px;padding:10px;background:#e8f4fd;border-radius:6px;">
-                                    <i class="fa fa-info-circle"/>
+                                    <i class="fa fa-info-circle" title="Information"/>
                                     <strong><field name="treatment_plan_count"/></strong> plan(s) d'action associé(s)
                                 </div>
                                 <field name="treatment_plan_ids" context="{'default_assessment_id': id}">
@@ -302,7 +306,6 @@
                 <field name="risk_level" type="col"/>
                 <field name="assessment_date" type="row" interval="month"/>
                 <field name="inherent_score" type="measure"/>
-                <field name="residual_score" type="measure"/>
                 <field name="risk_id" type="measure" operator="count"/>
             </pivot>
         </field>
@@ -318,7 +321,7 @@
             <graph>
                 <field name="assessment_date" type="row"/>
                 <field name="inherent_score" type="measure"/>
-                <field name="residual_score" type="measure"/>
+                <field name="risk_id" type="measure" operator="count"/>
             </graph>
         </field>
     </record>

@@ -63,12 +63,14 @@ class RiskRisk(models.Model):
     inherent_probability = fields.Selection(
         selection='_get_probability_selection',
         string='Probabilité inhérente',
-        default='3'
+        default='3',
+        tracking=True
     )
     inherent_impact = fields.Selection(
         selection='_get_impact_selection',
         string='Impact inhérent',
-        default='3'
+        default='3',
+        tracking=True
     )
     inherent_score = fields.Integer(compute='_compute_scores', store=True, string='Score inhérent')
     inherent_level = fields.Selection(
@@ -172,8 +174,6 @@ class RiskRisk(models.Model):
                                        string='Date de la dernière évaluation')
     last_inherent_score = fields.Integer(compute='_compute_last_assessment', compute_sudo=True, store=True,
                                          string='Score inhérent (dernière éval.)')
-    last_residual_score = fields.Integer(compute='_compute_last_assessment', compute_sudo=True, store=True,
-                                         string='Score résiduel (dernière éval.)')
     process_category = fields.Selection([
         ('pilotage', 'Processus de Pilotage'),
         ('operational', 'Processus Opérationnels'),
@@ -797,10 +797,8 @@ class RiskRisk(models.Model):
     def get_risk_distribution(self):
         levels = {
             'low': 0,
-            'moderate': 0,
-            'important': 0,
+            'medium': 0,
             'high': 0,
-            'critical': 0
         }
         for risk in self.search([('active', '=', True)]):
             level = risk.last_risk_level or 'low'
@@ -823,7 +821,6 @@ class RiskRisk(models.Model):
                 risk.last_assessment_id = last.id
                 risk.last_assessment_date = last.assessment_date
                 risk.last_inherent_score = last.inherent_score
-                risk.last_residual_score = last.residual_score
                 risk.last_risk_level = last.risk_level
                 risk.last_over_appetite = last.over_appetite
                 risk.last_inherent_probability = last.inherent_probability
@@ -832,7 +829,6 @@ class RiskRisk(models.Model):
                 risk.last_assessment_id = False
                 risk.last_assessment_date = False
                 risk.last_inherent_score = 0
-                risk.last_residual_score = 0
                 risk.last_risk_level = False
                 risk.last_over_appetite = False
                 risk.last_inherent_probability = 0
