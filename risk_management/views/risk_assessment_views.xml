@@ -247,21 +247,39 @@
                                 <field name="treatment_strategy" widget="selection"/>
                                 <field name="comment" placeholder="Commentaires sur le traitement..."/>
                             </group>
-                            <group string="Plans d'action" name="treatment_plans">
+                            <group string="Plans d'action" name="action_plans">
                                 <div style="margin-bottom:10px;padding:10px;background:#e8f4fd;border-radius:6px;">
                                     <i class="fa fa-info-circle" title="Information"/>
-                                    <strong><field name="treatment_plan_count"/></strong> plan(s) d'action associé(s)
+                                    Plans d'action liés à ce risque (avec suivi détaillé des tâches).
                                 </div>
-                                <field name="treatment_plan_ids" context="{'default_assessment_id': id}">
+                                <field name="action_plan_ids">
                                     <list>
+                                        <field name="code"/>
                                         <field name="name" string="Plan"/>
                                         <field name="owner_id" string="Responsable"/>
-                                        <field name="target_date" string="Date limite"/>
+                                        <field name="deadline" string="Date limite"/>
                                         <field name="state" widget="badge"/>
-                                        <field name="progress" string="Avancement" widget="progressbar"/>
+                                        <field name="task_progress" string="Avancement" widget="progressbar"/>
                                     </list>
                                 </field>
                             </group>
+                        </page>
+
+                        <page string="🗄️ Anciens plans (obsolète)" name="legacy_treatment">
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fa fa-exclamation-triangle" title="Attention"/>
+                                <strong>Mécanisme obsolète</strong> — conservé uniquement pour l'historique.
+                                Utilise l'onglet "Traitement" (plans d'action) pour tout nouveau suivi.
+                            </div>
+                            <field name="treatment_plan_ids" context="{'default_assessment_id': id}">
+                                <list>
+                                    <field name="name" string="Plan"/>
+                                    <field name="owner_id" string="Responsable"/>
+                                    <field name="target_date" string="Date limite"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="progress" string="Avancement" widget="progressbar"/>
+                                </list>
+                            </field>
                         </page>
 
                         <page string="💬 Historique" name="history">

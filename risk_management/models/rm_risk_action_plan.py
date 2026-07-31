@@ -38,6 +38,15 @@ class RiskActionPlan(models.Model):
         tracking=True
     )
 
+    assessment_id = fields.Many2one(
+        'risk.assessment',
+        string="Évaluation d'origine",
+        tracking=True,
+        help="Évaluation périodique à l'origine de ce plan d'action, si applicable "
+             "(un plan d'action peut aussi être créé directement depuis un risque, "
+             "un incident ou un contrôle, sans passer par une évaluation)."
+    )
+
     incident_id = fields.Many2one(
         'risk.incident',
         string='Incident associé',
@@ -90,6 +99,22 @@ class RiskActionPlan(models.Model):
     )
 
     # ============================================================
+    # BUDGET
+    # ============================================================
+
+    budget = fields.Monetary(
+        string='Budget',
+        currency_field='currency_id',
+        tracking=True
+    )
+
+    currency_id = fields.Many2one(
+        'res.currency',
+        string='Devise',
+        default=lambda self: self.env.company.currency_id
+    )
+
+    # ============================================================
     # TÂCHES DU PLAN
     # ============================================================
 
@@ -132,14 +157,6 @@ class RiskActionPlan(models.Model):
         ('cancelled', '❌ Annulé'),
     ], string='Statut', default='draft', tracking=True, index=True)
 
-    risk_ids = fields.Many2many(
-        'risk.risk',
-        'risk_risk_action_plan_rel',
-        'action_plan_id',
-        'risk_id',
-        string='Risques associés'
-    )
-
     # ============================================================
     # COMPUTES
     # ============================================================
@@ -156,15 +173,6 @@ class RiskActionPlan(models.Model):
                 record.task_progress = (record.task_completed_count / record.task_count) * 100
             else:
                 record.task_progress = 0
-
-    @api.depends('task_ids', 'task_ids.state')
-    def _compute_completion_rate(self):
-        for record in self:
-            if record.task_count > 0:
-                completed = len(record.task_ids.filtered(lambda t: t.state == 'done'))
-                record.completion_rate = (completed / record.task_count) * 100
-            else:
-                record.completion_rate = 0
 
     # ============================================================
     # CONTRAINTES

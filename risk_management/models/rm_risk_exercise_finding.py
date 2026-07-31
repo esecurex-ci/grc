@@ -22,4 +22,4 @@ class RiskExerciseFinding(models.Model):
         ]
     )
 
-    recommendation = fields.Html()
+    recommendation = fields.Html(string='Recommendation')

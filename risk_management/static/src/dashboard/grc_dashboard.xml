@@ -3,7 +3,7 @@
 <t t-name="risk_management.GrcDashboard">
 <div class="o_grc_dashboard">
     <h1>
-        Executive GRC Cockpit
+        Cockpit Exécutif GRC
     </h1>
     <div class="row">
         <div class="col-3">
@@ -12,7 +12,7 @@
                     <h2>
                         <t t-esc="state.overall_score"/>
                     </h2>
-                    <span>GRC Score</span>
+                    <span>Score GRC</span>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
                     <h2>
                         <t t-esc="state.total_risks"/>
                     </h2>
-                    <span>Risks</span>
+                    <span>Risques</span>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
                     <h2>
                         <t t-esc="state.critical_risks"/>
                     </h2>
-                    <span>Critical Risks</span>
+                    <span>Risques Élevés</span>
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@
                     <h2>
                         <t t-esc="state.open_incidents"/>
                     </h2>
-                    <span>Open Incidents</span>
+                    <span>Incidents Ouverts</span>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
         <div class="col-6">
             <div class="card">
                 <div class="card-header">
-                    Compliance Rate
+                    Taux de Conformité
                 </div>
                 <div class="card-body">
                     <h1>
@@ -67,15 +67,17 @@
         <div class="col-6">
             <div class="card">
                 <div class="card-header">
-                    Top Critical Risks
+                    Top Risques Élevés (Résiduel)
                 </div>
                 <div class="card-body">
                     <ul>
                         <t t-foreach="state.top_risks" t-as="risk" t-key="risk.id">
                             <li>
+                                <strong><t t-esc="risk.code"/></strong> —
                                 <t t-esc="risk.name"/>
-                                -
-                                <t t-esc="risk.residual_score"/>
+                                <span class="badge" style="background:#dc3545;color:white;margin-left:6px;">
+                                    Score inhérent: <t t-esc="risk.inherent_score"/>
+                                </span>
                             </li>
                         </t>
                     </ul>

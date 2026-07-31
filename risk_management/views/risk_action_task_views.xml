@@ -64,7 +64,7 @@
 
                     <group>
                         <group>
-                            <field name="plan_id" required="1"/>
+                            <field name="plan_id"/>
                             <field name="owner_id" required="1"/>
                             <field name="deadline" required="1"/>
                             <field name="start_date"/>
@@ -174,8 +174,8 @@
                                         </span>
                                     </div>
                                     <div style="margin-top:5px;">
-                                        <i class="fa fa-user"/> <field name="owner_id"/>
-                                        <i class="fa fa-calendar"/> <field name="deadline"/>
+                                        <i class="fa fa-user" title="Responsable"/> <field name="owner_id"/>
+                                        <i class="fa fa-calendar" title="Échéance"/> <field name="deadline"/>
                                     </div>
                                 </div>
                             </div>

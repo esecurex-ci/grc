@@ -52,25 +52,21 @@ class RiskDocumentReview(models.Model):
 
     comments = fields.Html(
         string='Commentaires',
-        tracking=True,
         help="Commentaires détaillés sur la revue"
     )
 
     findings = fields.Html(
         string='Constatations',
-        tracking=True,
         help="Constats et observations lors de la revue"
     )
 
     recommendations = fields.Html(
         string='Recommandations',
-        tracking=True,
         help="Recommandations issues de la revue"
     )
 
     action_plan = fields.Html(
         string="Plan d'action",
-        tracking=True,
         help="Actions à mener suite à la revue"
     )
 

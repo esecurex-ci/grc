@@ -37,12 +37,10 @@ class RiskDocumentAudit(models.Model):
 
     findings = fields.Html(
         string='Constatations',
-        tracking=True
     )
 
     recommendations = fields.Html(
         string='Recommandations',
-        tracking=True
     )
 
     compliance_score = fields.Float(

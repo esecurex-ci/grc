@@ -82,7 +82,6 @@ class RiskDocumentDistribution(models.Model):
 
     comments = fields.Html(
         string='Commentaires',
-        tracking=True
     )
 
     # =====================================================

@@ -169,6 +169,17 @@ class RiskKriFormulaTestWizard(models.TransientModel):
         finally:
             self.execution_time = round((time.time() - start_time) * 1000, 2)
 
+        # ⚠️ Sans ce retour explicite, Odoo referme la fenêtre modale après l'appel
+        # du bouton (aucune action de suite = fermeture par défaut). On rouvre donc
+        # le même assistant, rafraîchi avec le résultat du test.
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
 
 class RiskKriFormulaTestParameter(models.TransientModel):
     _name = 'risk.kri.formula.test.parameter'

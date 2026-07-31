@@ -656,6 +656,12 @@ class RiskExportWizard(models.TransientModel):
         worksheet.write(row, 1, round(avg_score, 2), number_format)
         row += 1
 
+        total_residual = sum(risks.mapped('residual_score') or [0])
+        avg_residual = total_residual / len(risks) if risks else 0
+        worksheet.write(row, 0, 'Score résiduel moyen', cell_format)
+        worksheet.write(row, 1, round(avg_residual, 2), number_format)
+        row += 1
+
         stats = [
             ('Contrôles', len(risks.mapped('control_ids'))),
             ('Incidents', len(risks.mapped('incident_ids'))),
@@ -1113,7 +1119,9 @@ class RiskImportWizard(models.TransientModel):
     ], string='Statut', default='draft')
 
     def action_import(self):
-        """Exécute l'import"""
+        """Exécute l'import. Si dry_run est coché, toutes les écritures sont annulées
+        à la fin (via un savepoint SQL) : le journal reflète ce qui SE SERAIT passé,
+        sans qu'aucune donnée ne soit réellement enregistrée."""
         self.ensure_one()
 
         if not self.file_data:
@@ -1122,17 +1130,27 @@ class RiskImportWizard(models.TransientModel):
         try:
             file_content = base64.b64decode(self.file_data).decode('utf-8')
 
-            if self.import_type == 'json':
-                result = self._import_json(file_content)
-            elif self.import_type == 'xml':
-                result = self._import_xml(file_content)
-            elif self.import_type == 'csv':
-                result = self._import_csv(file_content)
+            with self.env.cr.savepoint() as sp:
+                if self.import_type == 'json':
+                    result = self._import_json(file_content)
+                elif self.import_type == 'xml':
+                    result = self._import_xml(file_content)
+                elif self.import_type == 'csv':
+                    result = self._import_csv(file_content)
+                else:
+                    raise UserError("Type d'import non supporté.")
+
+                if self.dry_run:
+                    # Annule tout ce qui vient d'être créé/modifié dans ce bloc.
+                    sp.rollback()
+
+            if self.dry_run:
+                log_prefix = "🔍 SIMULATION — aucune donnée n'a été enregistrée.\n\n"
             else:
-                raise UserError("Type d'import non supporté.")
+                log_prefix = "✅ Import terminé avec succès !\n\n"
 
             self.write({
-                'import_log': f"✅ Import terminé avec succès !\n\n{result}",
+                'import_log': f"{log_prefix}{result}",
                 'state': 'done'
             })
 
@@ -1174,12 +1192,9 @@ class RiskImportWizard(models.TransientModel):
                     'active': item.get('active', True),
                 }
 
-                # Hiérarchie
-                if item.get('process'):
-                    process = self.env['risk.process'].search([('name', '=', item.get('process'))], limit=1)
-                    if process:
-                        vals['process_id'] = process.id
-
+                # Hiérarchie : seul activity_id est assignable (process_id/macro_process_id
+                # sont calculés automatiquement à partir de lui sur risk.risk — les écrire
+                # directement ici n'aurait aucun effet).
                 if item.get('activity'):
                     activity = self.env['risk.activity'].search([('name', '=', item.get('activity'))], limit=1)
                     if activity:
@@ -1215,7 +1230,6 @@ class RiskImportWizard(models.TransientModel):
                 code = risk_elem.get('code', '')
                 name_elem = risk_elem.find('nom')
                 state_elem = risk_elem.find('statut')
-                process_elem = risk_elem.find('processus')
                 activity_elem = risk_elem.find('activite')
 
                 vals = {
@@ -1224,11 +1238,8 @@ class RiskImportWizard(models.TransientModel):
                     'state': state_elem.text if state_elem is not None else 'draft',
                 }
 
-                if process_elem is not None and process_elem.text:
-                    process = self.env['risk.process'].search([('name', '=', process_elem.text)], limit=1)
-                    if process:
-                        vals['process_id'] = process.id
-
+                # Seul activity_id est assignable (process_id/macro_process_id sont
+                # calculés automatiquement à partir de lui sur risk.risk).
                 if activity_elem is not None and activity_elem.text:
                     activity = self.env['risk.activity'].search([('name', '=', activity_elem.text)], limit=1)
                     if activity:
@@ -1269,14 +1280,13 @@ class RiskImportWizard(models.TransientModel):
                     'state': row.get('Statut', 'draft'),
                 }
 
-                if row.get('Score inhérent'):
-                    vals['inherent_score'] = int(row.get('Score inhérent'))
+                # ⚠️ 'Score inhérent' n'est pas importé directement : inherent_score
+                # est un champ calculé (probabilité × impact) sur risk.risk, l'écrire
+                # ici n'aurait aucun effet. Si tu veux piloter le score depuis le CSV,
+                # il faudrait fournir la probabilité et l'impact séparément.
 
-                if row.get('Processus'):
-                    process = self.env['risk.process'].search([('name', '=', row.get('Processus'))], limit=1)
-                    if process:
-                        vals['process_id'] = process.id
-
+                # Seul activity_id est assignable (process_id/macro_process_id sont
+                # calculés automatiquement à partir de lui sur risk.risk).
                 if row.get('Activité'):
                     activity = self.env['risk.activity'].search([('name', '=', row.get('Activité'))], limit=1)
                     if activity:

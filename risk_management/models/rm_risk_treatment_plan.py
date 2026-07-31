@@ -55,7 +55,6 @@ class RiskTreatmentPlan(models.Model):
 
     description = fields.Html(
         string='Description',
-        tracking=True
     )
 
     # =====================================================

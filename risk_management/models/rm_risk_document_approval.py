@@ -58,13 +58,11 @@ class RiskDocumentApproval(models.Model):
 
     comments = fields.Html(
         string='Commentaires',
-        tracking=True,
         help="Commentaires de l'approbateur"
     )
 
     conditions = fields.Html(
         string='Conditions',
-        tracking=True,
         help="Conditions à remplir pour l'approbation"
     )
 

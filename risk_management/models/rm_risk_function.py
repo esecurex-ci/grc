@@ -15,7 +15,7 @@ class RiskFunction(models.Model):
 
     name = fields.Char(string='Nom de la fonction', required=True, tracking=True)
     code = fields.Char(string='Code', readonly=True, default='New', tracking=True)
-    description = fields.Html(string='Description', tracking=True)
+    description = fields.Html(string='Description')
 
     # Hiérarchie
     parent_id = fields.Many2one('risk.function', string='Fonction parente', tracking=True, index=True)

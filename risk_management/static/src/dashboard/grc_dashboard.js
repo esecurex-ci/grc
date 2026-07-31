@@ -70,12 +70,14 @@ export class GrcDashboard extends Component {
                 "risk.risk",
 
                 [
-                    ["residual_level", "=", "critical"]
+                    ["residual_level", "=", "high"]
                 ],
 
                 [
+                    "code",
                     "name",
-                    "residual_score"
+                    "inherent_score",
+                    "residual_level"
                 ],
 
                 {
@@ -92,7 +94,7 @@ export class GrcDashboard extends Component {
 
             type: "ir.actions.act_window",
 
-            name: "Risks",
+            name: "Risques",
 
             res_model: "risk.risk",
 

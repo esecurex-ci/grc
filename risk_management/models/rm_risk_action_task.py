@@ -46,9 +46,11 @@ class RiskActionTask(models.Model):
     plan_id = fields.Many2one(
         'risk.action.plan',
         string='Plan d\'action',
-        required=True,
         ondelete='cascade',
-        tracking=True
+        tracking=True,
+        help="Non obligatoire à la saisie : lorsqu'une tâche est ajoutée directement "
+             "depuis la liste des tâches d'un plan d'action (même pas encore enregistré), "
+             "ce champ est rempli automatiquement."
     )
 
     # ============================================================
