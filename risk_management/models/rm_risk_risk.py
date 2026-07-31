@@ -375,9 +375,11 @@ class RiskRisk(models.Model):
         ('partially_effective', 'Partiellement efficace'),
         ('effective', 'Efficace'),
     ], string='Niveau d\'efficacité des contrôles',
-        compute='_compute_control_effectiveness_level',
-        store=True,
-        help="Niveau d'efficacité des contrôles en place")
+        default='ineffective',
+        tracking=True,
+        help="Niveau d'efficacité des contrôles en place. Suggéré automatiquement à partir "
+             "des contrôles liés (modifiable manuellement) ; devient définitif dès qu'une "
+             "évaluation périodique portant sur ce niveau est approuvée.")
 
 
     # ============================================================
@@ -1941,32 +1943,28 @@ class RiskRisk(models.Model):
     # CALCUL DU RISQUE RÉSIDUEL AVEC MATRICE
     # ============================================================
 
-    @api.depends('inherent_probability', 'inherent_impact', 'inherent_level', 'control_ids')
-    def _compute_control_effectiveness_level(self):
-        """Calcule le niveau d'efficacité des contrôles"""
-        for record in self:
-            if not record.control_ids:
-                record.control_effectiveness_level = 'ineffective'
-                continue
+    def _suggest_control_effectiveness_level(self):
+        """Calcule le niveau d'efficacité suggéré à partir des contrôles liés
+        (le niveau le plus défavorable parmi eux fait foi)."""
+        self.ensure_one()
+        if not self.control_ids:
+            return 'ineffective'
 
-            # Récupérer le niveau d'efficacité des contrôles
-            # On prend le niveau le plus bas (le plus critique)
-            effectiveness_values = []
-            for control in record.control_ids:
-                if control.effectiveness == 'high':
-                    effectiveness_values.append('effective')
-                elif control.effectiveness == 'medium':
-                    effectiveness_values.append('partially_effective')
-                else:
-                    effectiveness_values.append('ineffective')
-
-            # Si au moins un contrôle est inefficace, le niveau est inefficace
-            if 'ineffective' in effectiveness_values:
-                record.control_effectiveness_level = 'ineffective'
-            elif 'partially_effective' in effectiveness_values:
-                record.control_effectiveness_level = 'partially_effective'
+        effectiveness_values = []
+        for control in self.control_ids:
+            if control.effectiveness == 'high':
+                effectiveness_values.append('effective')
+            elif control.effectiveness == 'medium':
+                effectiveness_values.append('partially_effective')
             else:
-                record.control_effectiveness_level = 'effective'
+                effectiveness_values.append('ineffective')
+
+        if 'ineffective' in effectiveness_values:
+            return 'ineffective'
+        elif 'partially_effective' in effectiveness_values:
+            return 'partially_effective'
+        else:
+            return 'effective'
 
     # ============================================================
     # CALCUL DES SCORES AVEC MATRICE RÉSIDUELLE (VERSION CORRIGÉE)
@@ -2088,8 +2086,10 @@ class RiskRisk(models.Model):
 
     @api.onchange('control_ids')
     def _onchange_control_ids(self):
-        """Met à jour le niveau d'efficacité des contrôles quand les contrôles changent"""
-        self._compute_control_effectiveness_level()
+        """Suggère un niveau d'efficacité des contrôles quand les contrôles changent
+        (l'utilisateur peut ensuite ajuster manuellement la suggestion)."""
+        for record in self:
+            record.control_effectiveness_level = record._suggest_control_effectiveness_level()
         self._compute_scores()
 
     # ============================================================
@@ -2100,11 +2100,15 @@ class RiskRisk(models.Model):
         """
         Action pour recalculer manuellement tous les niveaux de risque.
         À appeler depuis un bouton ou une action.
+
+        ⚠️ Ceci écrase le niveau d'efficacité des contrôles de TOUS les risques
+        avec la suggestion automatique, y compris ceux déjà validés par une
+        évaluation approuvée. À n'utiliser qu'en connaissance de cause.
         """
         risks = self.search([])
         count = 0
         for risk in risks:
-            risk._compute_control_effectiveness_level()
+            risk.control_effectiveness_level = risk._suggest_control_effectiveness_level()
             risk._compute_scores()
             count += 1
 

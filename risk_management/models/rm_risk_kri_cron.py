@@ -49,5 +49,19 @@ class RiskKriCron(models.Model):
 
                 _logger.info(f"KRI {kri.code} calculé: {value}")
 
+                # ✅ Génération automatique d'une alerte si le KRI vient de passer
+                # en orange/rouge — sans créer de doublon si une alerte du même
+                # niveau est déjà ouverte (non résolue) pour ce KRI.
+                if kri.status in ('amber', 'red'):
+                    existing_open_alert = self.env['risk.kri.alert'].search([
+                        ('kri_id', '=', kri.id),
+                        ('resolved', '=', False),
+                        ('status', '=', kri.status),
+                    ], limit=1)
+
+                    if not existing_open_alert:
+                        kri.action_generate_alert()
+                        _logger.info(f"Alerte {kri.status.upper()} générée automatiquement pour le KRI {kri.code}")
+
             except Exception as e:
                 _logger.error(f"Erreur pour KRI {kri.code}: {str(e)}")

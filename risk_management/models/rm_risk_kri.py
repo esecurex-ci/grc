@@ -140,18 +140,6 @@ class RiskKri(models.Model):
         help="Valeur de tolérance (ex: <3, <2%)"
     )
 
-    threshold_warning = fields.Float(
-        string='Seuil d\'alerte',
-        default=50,
-        help="Seuil déclenchant une alerte"
-    )
-
-    threshold_critical = fields.Float(
-        string='Seuil critique',
-        default=80,
-        help="Seuil déclenchant une alerte critique"
-    )
-
     threshold_green = fields.Float(
         string='🟢 Seuil Vert (OK)',
         default=0,
@@ -464,15 +452,39 @@ class RiskKri(models.Model):
             latest = record.alert_ids.sorted('create_date', reverse=True)[:1]
             record.last_alert_date = latest.create_date.date() if latest else False
 
-    @api.depends('current_value', 'threshold_warning', 'threshold_critical')
+    @api.depends('current_value', 'threshold_green', 'threshold_amber', 'threshold_red')
     def _compute_status(self):
+        """
+        Calcule le statut à partir des seuils réellement configurés et visibles
+        dans le formulaire (threshold_green/amber/red), en détectant automatiquement
+        le sens de l'échelle à partir de leur ordre :
+        - Si le seuil rouge est supérieur au seuil orange : échelle croissante
+          (plus la valeur est haute, plus c'est grave — ex: taux d'incidents).
+        - Sinon : échelle décroissante (plus la valeur est basse, plus c'est
+          grave — ex: taux de transformation, où l'on veut une valeur haute).
+        """
         for record in self:
-            if record.current_value >= record.threshold_critical:
-                record.status = 'red'
-            elif record.current_value >= record.threshold_warning:
-                record.status = 'amber'
+            value = record.current_value
+            green = record.threshold_green
+            amber = record.threshold_amber
+            red = record.threshold_red
+
+            if red >= amber:
+                # Échelle croissante
+                if value >= red:
+                    record.status = 'red'
+                elif value >= amber:
+                    record.status = 'amber'
+                else:
+                    record.status = 'green'
             else:
-                record.status = 'green'
+                # Échelle décroissante
+                if value <= red:
+                    record.status = 'red'
+                elif value <= amber:
+                    record.status = 'amber'
+                else:
+                    record.status = 'green'
 
     @api.depends('current_value', 'previous_value')
     def _compute_trend(self):

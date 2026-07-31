@@ -47,8 +47,9 @@
                 <field name="alert_count" string="Alertes" widget="badge" optional="hide"/>
 
                 <!-- Seuils -->
-                <field name="threshold_warning" string="Seuil alerte" optional="hide"/>
-                <field name="threshold_critical" string="Seuil critique" optional="hide"/>
+                <field name="threshold_green" string="🟢 Seuil vert" optional="hide"/>
+                <field name="threshold_amber" string="🟡 Seuil orange" optional="hide"/>
+                <field name="threshold_red" string="🔴 Seuil rouge" optional="hide"/>
 
                 <!-- Actif -->
                 <field name="active" string="Actif" widget="boolean" optional="hide"/>
@@ -100,9 +101,10 @@
                 <!-- Alertes -->
                 <field name="alert_count" string="Alertes" widget="badge" optional="hide"/>
 
-                <!-- ✅ Seuils corrigés (uniquement ceux qui existent) -->
-                <field name="threshold_warning" string="Seuil alerte" optional="hide"/>
-                <field name="threshold_critical" string="Seuil critique" optional="hide"/>
+                <!-- Seuils réellement utilisés par le calcul du statut -->
+                <field name="threshold_green" string="🟢 Seuil vert" optional="hide"/>
+                <field name="threshold_amber" string="🟡 Seuil orange" optional="hide"/>
+                <field name="threshold_red" string="🔴 Seuil rouge" optional="hide"/>
 
                 <!-- Actif -->
                 <field name="active" string="Actif" widget="boolean" optional="hide"/>
@@ -250,7 +252,7 @@
                                 </div>
                             </group>
                         </page>
-                        
+
                     </notebook>
                 </sheet>
             </form>

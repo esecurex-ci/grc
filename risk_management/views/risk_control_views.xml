@@ -6,9 +6,9 @@
         <field name="model">risk.control</field>
         <field name="arch" type="xml">
             <list
-                  decoration-success="effectiveness &gt;= 80"
-                  decoration-warning="effectiveness &gt;= 50 and effectiveness &lt; 80"
-                  decoration-danger="effectiveness &lt; 50">
+                  decoration-success="effectiveness == 'high'"
+                  decoration-warning="effectiveness == 'medium'"
+                  decoration-danger="effectiveness in ('low', 'not_tested')">
 
                 <field name="code"/>
                 <field name="name"/>
@@ -16,9 +16,11 @@
                 <field name="owner_id"/>
                 <field name="frequency"/>
                 <field name="automation_level"/>
-                <field name="effectiveness" widget="progressbar"/>
+                <field name="effectiveness" widget="badge"
+                       decoration-success="effectiveness == 'high'"
+                       decoration-warning="effectiveness == 'medium'"
+                       decoration-danger="effectiveness in ('low', 'not_tested')"/>
                 <field name="active"/>
-                <field name="effectiveness_level" widget="radio"/>
 
             </list>
         </field>

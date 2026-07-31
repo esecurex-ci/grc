@@ -169,16 +169,7 @@
                                     <span class="text-muted"> - Impact sur le risque résiduel</span>
                                 </div>
                                 <group>
-                                    <group>
-                                        <field name="control_effectiveness" readonly="1"/>
-                                    </group>
-                                    <group>
-                                        <div style="background:#f0f0f0;border-radius:10px;padding:10px;text-align:center;">
-                                            <span style="font-weight:bold;">
-                                                Efficacité: <field name="control_effectiveness" readonly="1"/>%
-                                            </span>
-                                        </div>
-                                    </group>
+                                    <field name="control_effectiveness_level" widget="radio"/>
                                 </group>
                             </group>
 

@@ -7,12 +7,6 @@ class RiskAssessment(models.Model):
     _order = 'assessment_date desc'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    # Seuils de conversion de l'efficacité moyenne des contrôles (%) vers un niveau qualitatif.
-    # ⚠️ Valeurs par défaut proposées, à valider/ajuster selon ton contexte métier
-    # (idéalement à terme configurables via un écran de paramétrage, comme l'échelle de risque).
-    CONTROL_EFFECTIVENESS_INEFFECTIVE_MAX = 40
-    CONTROL_EFFECTIVENESS_PARTIAL_MAX = 70
-
     _sql_constraints = [
         (
             'unique_risk_period',
@@ -63,14 +57,16 @@ class RiskAssessment(models.Model):
     # RISQUE BRUT
     ##################################################################
 
-    inherent_probability = fields.Integer(
-        string=' Probabilité Inhérente',
-        default=1
+    inherent_probability = fields.Selection(
+        selection='_get_probability_selection',
+        string='Probabilité Inhérente',
+        default='3'
     )
 
-    inherent_impact = fields.Integer(
-        string='Impact Inhérent ',
-        default=1
+    inherent_impact = fields.Selection(
+        selection='_get_impact_selection',
+        string='Impact Inhérent',
+        default='3'
     )
 
     inherent_score = fields.Integer(
@@ -79,14 +75,31 @@ class RiskAssessment(models.Model):
         string='Score Inhérent',
     )
 
+    def _get_probability_selection(self):
+        """Réutilise directement la même échelle que risk.risk — une seule source de vérité."""
+        return self.env['risk.risk']._get_probability_selection()
+
+    def _get_impact_selection(self):
+        """Réutilise directement la même échelle que risk.risk — une seule source de vérité."""
+        return self.env['risk.risk']._get_impact_selection()
+
     ##################################################################
     # CONTROLES
+    # ⚠️ Ce niveau est choisi manuellement par l'évaluateur (pré-rempli
+    # par défaut avec le niveau actuel du risque), et non plus calculé
+    # automatiquement — cohérent avec le fait que risk.control.effectiveness
+    # est traité de façon incohérente selon les endroits du système
+    # (réserve documentée dans le cahier des charges, EXG-KRI-13).
     ##################################################################
 
-    control_effectiveness = fields.Float(
-        compute='_compute_control_effectiveness',
-        store=True,
-        string='Effectivité des Contrôles',
+    control_effectiveness_level = fields.Selection(
+        [
+            ('ineffective', 'Inefficace ou informel'),
+            ('partially_effective', 'Partiellement efficace'),
+            ('effective', 'Efficace'),
+        ],
+        string="Niveau d'efficacité des contrôles",
+        tracking=True,
     )
 
     ##################################################################
@@ -106,17 +119,6 @@ class RiskAssessment(models.Model):
         compute='_compute_inherent_level',
         store=True,
         string='Niveau Inhérent',
-    )
-
-    control_effectiveness_level = fields.Selection(
-        [
-            ('ineffective', 'Inefficace'),
-            ('partially_effective', 'Partiellement efficace'),
-            ('effective', 'Efficace'),
-        ],
-        compute='_compute_control_effectiveness_level',
-        store=True,
-        string='Niveau d\'efficacité des contrôles',
     )
 
     ##################################################################
@@ -195,50 +197,20 @@ class RiskAssessment(models.Model):
 
     @api.onchange('risk_id')
     def _onchange_risk_id(self):
-        """Pré-remplit la probabilité/impact inhérents avec les valeurs actuelles du risque,
-        pour éviter à l'évaluateur de tout ressaisir de mémoire. Il peut ensuite ajuster
-        s'il estime que le risque a évolué depuis la dernière évaluation.
-
-        ⚠️ risk.risk stocke ces champs en Selection (texte '1'-'5'), alors qu'ici ce sont
-        des Integer : conversion explicite nécessaire.
-        """
+        """Pré-remplit la probabilité/impact inhérents et le niveau d'efficacité des
+        contrôles avec les valeurs actuelles du risque, pour éviter à l'évaluateur de
+        tout ressaisir de mémoire. Il peut ensuite ajuster chaque valeur s'il estime
+        que la situation a évolué depuis la dernière évaluation."""
         for rec in self:
             if rec.risk_id:
-                try:
-                    rec.inherent_probability = int(rec.risk_id.inherent_probability or 1)
-                except (ValueError, TypeError):
-                    rec.inherent_probability = 1
-                try:
-                    rec.inherent_impact = int(rec.risk_id.inherent_impact or 1)
-                except (ValueError, TypeError):
-                    rec.inherent_impact = 1
-
-    @api.depends('risk_id.control_ids.effectiveness')
-    def _compute_control_effectiveness(self):
-
-        for rec in self:
-
-            controls = rec.risk_id.control_ids
-
-            if controls:
-
-                rec.control_effectiveness = (
-                        sum(
-                            controls.mapped(
-                                'effectiveness'
-                            )
-                        )
-                        /
-                        len(controls)
-                )
-
-            else:
-                rec.control_effectiveness = 0
+                rec.inherent_probability = rec.risk_id.inherent_probability or '3'
+                rec.inherent_impact = rec.risk_id.inherent_impact or '3'
+                rec.control_effectiveness_level = rec.risk_id.control_effectiveness_level or 'ineffective'
 
     @api.depends('inherent_probability', 'inherent_impact')
     def _compute_scores(self):
         for rec in self:
-            rec.inherent_score = rec.inherent_probability * rec.inherent_impact
+            rec.inherent_score = int(rec.inherent_probability or 1) * int(rec.inherent_impact or 1)
 
     @api.depends('inherent_score')
     def _compute_inherent_level(self):
@@ -251,18 +223,6 @@ class RiskAssessment(models.Model):
                 rec.inherent_level = 'medium'
             else:
                 rec.inherent_level = 'high'
-
-    @api.depends('control_effectiveness')
-    def _compute_control_effectiveness_level(self):
-        """Convertit l'efficacité moyenne des contrôles (%) en niveau qualitatif à 3 valeurs"""
-        for rec in self:
-            effectiveness = rec.control_effectiveness or 0
-            if effectiveness < self.CONTROL_EFFECTIVENESS_INEFFECTIVE_MAX:
-                rec.control_effectiveness_level = 'ineffective'
-            elif effectiveness < self.CONTROL_EFFECTIVENESS_PARTIAL_MAX:
-                rec.control_effectiveness_level = 'partially_effective'
-            else:
-                rec.control_effectiveness_level = 'effective'
 
     @api.depends('inherent_level', 'control_effectiveness_level')
     def _compute_risk_level(self):
@@ -356,18 +316,21 @@ class RiskAssessment(models.Model):
         (risk.risk). C'est le point d'entrée qui fait autorité : tant qu'une évaluation
         n'est pas approuvée, elle n'affecte jamais le registre des risques ni les
         tableaux de bord — seule une évaluation validée (donc passée par la gouvernance)
-        met à jour la probabilité/impact inhérents du risque.
+        met à jour la probabilité/impact inhérents et le niveau d'efficacité des
+        contrôles du risque.
 
-        Note : control_effectiveness_level n'est pas répercuté ici, car il est déjà
-        calculé automatiquement sur risk.risk à partir des mêmes control_ids — les deux
-        modèles restent donc cohérents sans synchronisation manuelle nécessaire.
+        Ceci suppose que risk.risk.control_effectiveness_level n'est plus un champ
+        recalculé en continu, mais un champ simple (suggéré automatiquement depuis les
+        contrôles liés, modifiable manuellement) — l'approbation peut donc l'écraser
+        directement, exactement comme pour la probabilité/impact inhérents.
         """
         self.write({'state': 'approved'})
         for rec in self:
             if rec.risk_id:
                 rec.risk_id.write({
-                    'inherent_probability': str(rec.inherent_probability),
-                    'inherent_impact': str(rec.inherent_impact),
+                    'inherent_probability': rec.inherent_probability,
+                    'inherent_impact': rec.inherent_impact,
+                    'control_effectiveness_level': rec.control_effectiveness_level,
                 })
 
     def action_close(self):
