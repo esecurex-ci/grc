@@ -81,7 +81,6 @@
         <field name="risk_source">internal</field>
         <field name="inherent_probability">5</field>
         <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
         <field name="state">validated</field>
         <field name="description">Insuffisance du dispositif de contrôle interne</field>
         <field name="consequence">Décisions stratégiques mal informées</field>
@@ -301,7 +300,6 @@
         <field name="risk_source">internal</field>
         <field name="inherent_probability">5</field>
         <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
         <field name="state">validated</field>
         <field name="description">Non-mise en œuvre du processus d'évaluation</field>
         <field name="consequence">Impact sur la réputation, sanctions</field>
@@ -335,7 +333,6 @@
         <field name="risk_source">internal</field>
         <field name="inherent_probability">5</field>
         <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
         <field name="state">validated</field>
         <field name="description">Mauvaise comptabilisation des opérations</field>
         <field name="consequence">Erreur dans les états financiers</field>
@@ -351,7 +348,6 @@
         <field name="risk_source">internal</field>
         <field name="inherent_probability">5</field>
         <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
         <field name="state">validated</field>
         <field name="description">Non prise en compte par le logiciel de toutes les opérations</field>
         <field name="consequence">Faux calcul de la VL, fausser les états financiers</field>
@@ -739,7 +735,6 @@
         <field name="risk_source">internal</field>
         <field name="inherent_probability">5</field>
         <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
         <field name="state">validated</field>
         <field name="description">Non respect du délai de validation de la VL</field>
         <field name="consequence">Retards, amendes et sanctions</field>
@@ -1201,7 +1196,6 @@
         <field name="risk_source">internal</field>
         <field name="inherent_probability">5</field>
         <field name="inherent_impact">5</field>
-        <field name="inherent_level">critical</field>
         <field name="state">validated</field>
         <field name="description">Non-mise à jour des listes GAFI</field>
         <field name="consequence">Amendes, atteinte à l'image</field>

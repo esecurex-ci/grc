@@ -71,6 +71,14 @@ class RiskActivity(models.Model):
         string='Risques'
     )
 
+    control_ids = fields.Many2many(
+        'risk.control',
+        string='Contrôles',
+        help="Contrôles rattachés à cette activité. Un même contrôle peut être "
+             "partagé par plusieurs activités (géré depuis la fiche du contrôle "
+             "ou directement ici)."
+    )
+
     date_deadline = fields.Date(
         string='Date limite',
         help='Date limite de réalisation de l\'activité'
@@ -136,39 +144,6 @@ class RiskActivity(models.Model):
         help="Événement calendrier lié à cette activité",
         tracking=True,
         copy=False
-    )
-
-    name = fields.Char(
-        string='Activité',
-        required=True,
-        tracking=True
-    )
-
-    code = fields.Char(
-        string='Code',
-        help='Code unique de l\'activité',
-        tracking=True
-    )
-
-    sequence = fields.Integer(
-        string='Séquence',
-        default=10
-    )
-
-    description = fields.Html(
-        string='Description'
-    )
-
-    summary = fields.Char(
-        string='Résumé'
-    )
-
-    icon = fields.Char(string='Icône', default='fa-tasks')
-
-    user_id = fields.Many2one(
-        'res.users',
-        string='Utilisateur responsable',
-        tracking=True
     )
 
     macro_process_id = fields.Many2one(

@@ -161,6 +161,18 @@ class RiskKri(models.Model):
         tracking=True
     )
 
+    threshold_appetite = fields.Float(
+        string="🎯 Seuil d'appétit",
+        default=80,
+        help="Seuil de tolérance au risque pour ce KRI, indépendant des seuils "
+             "vert/orange/rouge de pilotage opérationnel : au-delà, le KRI est "
+             "considéré hors appétit au risque (vision comité des risques / "
+             "gouvernance), même si le pilotage courant reste sur les seuils "
+             "vert/orange/rouge. À définir explicitement par KRI, pas déduit du "
+             "seuil rouge.",
+        tracking=True
+    )
+
     # ============================================================
     # VALEURS CALCULÉES
     # ============================================================
@@ -189,6 +201,14 @@ class RiskKri(models.Model):
         ('amber', '🟡 Orange'),
         ('red', '🔴 Rouge')
     ], compute='_compute_status', store=True, string='Statut')
+
+    over_appetite = fields.Boolean(
+        compute='_compute_over_appetite',
+        store=True,
+        string='Hors appétit',
+        help="Vrai si la valeur actuelle dépasse le seuil d'appétit défini pour ce KRI "
+             "(indépendant du statut vert/orange/rouge de pilotage opérationnel)."
+    )
 
     trend = fields.Selection([
         ('up', '📈 En hausse'),
@@ -485,6 +505,21 @@ class RiskKri(models.Model):
                     record.status = 'amber'
                 else:
                     record.status = 'green'
+
+    @api.depends('current_value', 'threshold_appetite', 'threshold_amber', 'threshold_red')
+    def _compute_over_appetite(self):
+        """
+        Réutilise la même détection de sens d'échelle que _compute_status
+        (à partir de l'ordre seuil rouge / seuil orange), mais compare la
+        valeur actuelle au seuil d'appétit — distinct du seuil rouge — pour
+        déterminer si ce KRI est hors appétit au risque.
+        """
+        for record in self:
+            increasing_scale = record.threshold_red >= record.threshold_amber
+            if increasing_scale:
+                record.over_appetite = record.current_value >= record.threshold_appetite
+            else:
+                record.over_appetite = record.current_value <= record.threshold_appetite
 
     @api.depends('current_value', 'previous_value')
     def _compute_trend(self):

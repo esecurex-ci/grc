@@ -33,8 +33,8 @@ export class RiskHeatMap extends Component {
             residualData: [],
             categoryData: [],
             controls: { effective: 0, partial: 0, ineffective: 0 },
-            outOfAppetite: [],
-            topRisks: [],
+            highInherentRisks: [],
+            highResidualRisks: [],
             actions: {
                 overdue: 0,
                 in_progress: 0,
@@ -174,14 +174,12 @@ export class RiskHeatMap extends Component {
         });
 
         // ============================================================
-        // 4. RISQUES HORS APPÉTIT
+        // 4. TOUS LES RISQUES INHÉRENTS ÉLEVÉS (sans limite)
         // ============================================================
         const activeRisks = data.filter(r => r.active !== false);
-        const outOfAppetite = activeRisks
+        const highInherentRisks = activeRisks
             .filter(r => r.inherent_level === 'high')
-            .filter(r => (r.inherent_score || 0) >= 15)
             .sort((a, b) => (b.inherent_score || 0) - (a.inherent_score || 0))
-            .slice(0, 5)
             .map(r => ({
                 id: r.id,
                 name: r.name,
@@ -192,16 +190,24 @@ export class RiskHeatMap extends Component {
             }));
 
         // ============================================================
-        // 5. TOP 5 RISQUES
+        // 5. TOP 5 RISQUES RÉSIDUELS ÉLEVÉS NÉCESSITANT UNE ACTION
+        // (le résiduel n'a pas de score numérique : on trie par score
+        // inhérent, en indicateur de sévérité de départ, à titre de
+        // priorisation secondaire au sein du groupe "résiduel élevé")
         // ============================================================
-        const topRisks = activeRisks
+        // ============================================================
+        // 5. TOUS LES RISQUES RÉSIDUELS ÉLEVÉS NÉCESSITANT UNE ACTION
+        // (le résiduel n'a pas de score numérique : le tri utilise le
+        // score inhérent comme simple indicateur de priorisation)
+        // ============================================================
+        const highResidualRisks = activeRisks
+            .filter(r => r.residual_level === 'high')
             .sort((a, b) => (b.inherent_score || 0) - (a.inherent_score || 0))
-            .slice(0, 5)
             .map((r, index) => ({
                 id: r.id,
                 name: r.name,
                 code: r.code || 'N/A',
-                level: r.inherent_level,
+                level: r.residual_level,
                 score: r.inherent_score || 0,
                 rank: index + 1,
                 category: r.category_id ? r.category_id[1] : 'Non catégorisé',
@@ -268,8 +274,8 @@ export class RiskHeatMap extends Component {
         }));
 
         // Autres données
-        this.state.outOfAppetite = outOfAppetite;
-        this.state.topRisks = topRisks;
+        this.state.highInherentRisks = highInherentRisks;
+        this.state.highResidualRisks = highResidualRisks;
         this.state.actions = actions;
         this.state.categoryEvolution = categoryEvolution;
         this.state.narratives = narratives;
@@ -443,12 +449,12 @@ export class RiskHeatMap extends Component {
             { label: 'Risque financier', value: 2 },
         ];
 
-        this.state.outOfAppetite = [
+        this.state.highInherentRisks = [
             { id: 1, name: 'Non respect de la réglementation', code: 'RISK-00001', level: 'high', score: 20, category: 'Risque de non-conformité' },
             { id: 2, name: 'Impossibilité de vendre le titre', code: 'RISK-00002', level: 'high', score: 16, category: 'Risque opératoire' },
         ];
 
-        this.state.topRisks = [
+        this.state.highResidualRisks = [
             { id: 1, name: 'Non respect de la réglementation', code: 'RISK-00001', level: 'high', score: 20, rank: 1, category: 'Risque de non-conformité' },
             { id: 2, name: 'Impossibilité de vendre le titre', code: 'RISK-00002', level: 'high', score: 16, rank: 2, category: 'Risque opératoire' },
         ];
@@ -811,19 +817,6 @@ export class RiskHeatMap extends Component {
             res_model: "risk.risk",
             views: [[false, "list"], [false, "form"]],
             domain: [["inherent_level", "=", "high"]],
-            target: "current",
-        });
-    }
-
-    openOutOfAppetite() {
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: "Risques hors appétit",
-            res_model: "risk.risk",
-            views: [[false, "list"], [false, "form"]],
-            domain: [
-                ["inherent_level", "=", "high"]
-            ],
             target: "current",
         });
     }

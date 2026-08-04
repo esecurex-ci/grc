@@ -95,4 +95,38 @@
         <field name="company_id" eval="False"/>
     </record>
 
+    <!-- ✅ Séquences manquantes ajoutées (modèles créés/modifiés) -->
+
+    <record id="seq_risk_action_plan" model="ir.sequence">
+        <field name="name">Plan d'action</field>
+        <field name="code">risk.action.plan</field>
+        <field name="prefix">PA-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_risk_action_task" model="ir.sequence">
+        <field name="name">Tâche du plan d'action</field>
+        <field name="code">risk.action.task</field>
+        <field name="prefix">TSK-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_risk_treatment_plan" model="ir.sequence">
+        <field name="name">Plan de traitement (obsolète)</field>
+        <field name="code">risk.treatment.plan</field>
+        <field name="prefix">TP-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_risk_assessment" model="ir.sequence">
+        <field name="name">Évaluation de risque</field>
+        <field name="code">risk.assessment</field>
+        <field name="prefix">EVAL-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
 </odoo>

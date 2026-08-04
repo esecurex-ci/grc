@@ -120,7 +120,7 @@
                                 <tr t-foreach="doc.control_ids" t-as="control">
                                     <td><t t-out="control.name"/></td>
                                     <td><t t-out="control.owner_id.name or '-'"/></td>
-                                    <td><t t-out="control.effectiveness"/>%</td>
+                                    <td><span t-field="control.effectiveness"/></td>
                                 </tr>
                             </tbody>
                         </table>

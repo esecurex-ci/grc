@@ -50,6 +50,8 @@
                 <field name="threshold_green" string="🟢 Seuil vert" optional="hide"/>
                 <field name="threshold_amber" string="🟡 Seuil orange" optional="hide"/>
                 <field name="threshold_red" string="🔴 Seuil rouge" optional="hide"/>
+                <field name="threshold_appetite" string="🎯 Seuil d'appétit" optional="hide"/>
+                <field name="over_appetite" string="Hors appétit" widget="boolean" optional="hide"/>
 
                 <!-- Actif -->
                 <field name="active" string="Actif" widget="boolean" optional="hide"/>
@@ -105,6 +107,8 @@
                 <field name="threshold_green" string="🟢 Seuil vert" optional="hide"/>
                 <field name="threshold_amber" string="🟡 Seuil orange" optional="hide"/>
                 <field name="threshold_red" string="🔴 Seuil rouge" optional="hide"/>
+                <field name="threshold_appetite" string="🎯 Seuil d'appétit" optional="hide"/>
+                <field name="over_appetite" string="Hors appétit" widget="boolean" optional="hide"/>
 
                 <!-- Actif -->
                 <field name="active" string="Actif" widget="boolean" optional="hide"/>
@@ -168,6 +172,21 @@
                                 🟢 Vert : Seuil bas ≤ Valeur &lt; Seuil orange<br/>
                                 🟡 Orange : Seuil orange ≤ Valeur &lt; Seuil rouge<br/>
                                 🔴 Rouge : Valeur ≥ Seuil rouge
+                            </div>
+                        </group>
+                    </group>
+
+                    <group string="🎯 Appétit au risque">
+                        <group>
+                            <field name="threshold_appetite"/>
+                            <field name="over_appetite" widget="boolean" readonly="1"/>
+                        </group>
+                        <group>
+                            <div class="alert alert-warning">
+                                <strong>📌 Distinct du pilotage vert/orange/rouge :</strong><br/>
+                                Ce seuil représente la tolérance réelle du comité des risques,
+                                pas l'alerte opérationnelle. Un KRI peut être 🟡 Orange sans être
+                                hors appétit, ou l'inverse selon le seuil défini ici.
                             </div>
                         </group>
                     </group>

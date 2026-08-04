@@ -171,7 +171,7 @@ class RiskExportWizard(models.TransientModel):
     def _write_risks_sheet(self, worksheet, workbook, risks, header_format, cell_format, number_format, date_format):
         """Écrit la feuille des risques avec couleurs et processus"""
         headers = [
-            'Code', 'Nom du risque', 'Catégorie', 'Sous-catégorie',
+            'Code', 'Nom du risque', 'Catégorie',
             'Type', 'Source', 'Statut', 'Propriétaire',
             # Hiérarchie
             'Processus', 'Sous Processus', 'Activité',
@@ -210,10 +210,6 @@ class RiskExportWizard(models.TransientModel):
 
             # Catégorie
             worksheet.write(row, col, risk.category_id.name or '', cell_format)
-            col += 1
-
-            # Sous-catégorie
-            worksheet.write(row, col, risk.subcategory_id.name or '', cell_format)
             col += 1
 
             # Type

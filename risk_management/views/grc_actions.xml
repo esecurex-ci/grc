@@ -176,6 +176,11 @@
         </field>
     </record>
 
+    <record id="action_risk_control_test" model="ir.actions.act_window">
+        <field name="name">Tests de contrôle</field>
+        <field name="res_model">risk.control.test</field>
+        <field name="view_mode">list,form</field>
+    </record>
     <!-- ===================================================== -->
     <!-- PROCESSUS                                             -->
     <!-- ===================================================== -->

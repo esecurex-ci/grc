@@ -92,6 +92,16 @@ class RiskAssessment(models.Model):
     # (réserve documentée dans le cahier des charges, EXG-KRI-13).
     ##################################################################
 
+    control_ids_preview = fields.Many2many(
+        'risk.control',
+        related='risk_id.control_ids',
+        string='Contrôles du risque',
+        help="Affiché pour référence uniquement : les contrôles déjà enregistrés "
+             "pour ce risque, afin que l'évaluateur les voie avant de juger de "
+             "leur efficacité. Ne modifie rien ici — pour ajouter/modifier un "
+             "contrôle, passe par la fiche du risque lui-même."
+    )
+
     control_effectiveness_level = fields.Selection(
         [
             ('ineffective', 'Inefficace ou informel'),

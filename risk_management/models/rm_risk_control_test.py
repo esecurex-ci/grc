@@ -123,11 +123,11 @@ class RiskControlTest(models.Model):
     # ============================================================
 
     action_ids = fields.Many2many(
-        'risk.corrective.action',
+        'risk.action.plan',
         'risk_test_action_rel',
         'test_id',
         'action_id',
-        string='Actions correctives'
+        string="Plans d'action"
     )
 
     corrective_action_taken = fields.Boolean(
@@ -240,12 +240,12 @@ class RiskControlTest(models.Model):
         return True
 
     def action_create_corrective_action(self):
-        """Crée une action corrective pour ce test"""
+        """Crée un plan d'action pour ce test"""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Créer une action corrective',
-            'res_model': 'risk.corrective.action',
+            'name': "Créer un plan d'action",
+            'res_model': 'risk.action.plan',
             'view_mode': 'form',
             'target': 'new',
             'context': {
@@ -253,6 +253,8 @@ class RiskControlTest(models.Model):
                 'default_description': f'Action suite au test du {self.test_date}',
                 'default_control_test_id': self.id,
                 'default_control_id': self.control_id.id,
+                'default_risk_id': self.control_id.activity_ids[:1].risk_ids[:1].id,
+                'default_action_type': 'corrective',
             },
         }
 

@@ -30,11 +30,13 @@ export class KriDashboard extends Component {
             amber: 0,
             red: 0,
             overdue: 0,
+            overAppetite: 0,
             kris: [],
             statusDistribution: [],
             categoryDistribution: [],
             recentAlerts: [],
             topWorst: [],
+            overAppetiteKris: [],
             trends: [],
             narratives: [],
         });
@@ -58,6 +60,7 @@ export class KriDashboard extends Component {
                     'id', 'name', 'code', 'category', 'owner_id',
                     'current_value', 'unit', 'status', 'trend', 'variation',
                     'threshold_green', 'threshold_amber', 'threshold_red',
+                    'threshold_appetite', 'over_appetite',
                     'last_measure_date', 'next_measure_date', 'overdue',
                     'alert_count', 'last_alert_date',
                     'measure_ids', 'risk_ids'
@@ -90,6 +93,7 @@ export class KriDashboard extends Component {
         const amber = kris.filter(k => k.status === 'amber').length;
         const red = kris.filter(k => k.status === 'red').length;
         const overdue = kris.filter(k => k.overdue === true).length;
+        const overAppetite = kris.filter(k => k.over_appetite === true).length;
 
         const statusDistribution = [
             { label: '🟢 Vert', value: green, color: '#28a745' },
@@ -142,6 +146,21 @@ export class KriDashboard extends Component {
                 owner: k.owner_id ? k.owner_id[1] : 'N/A',
             }));
 
+        const overAppetiteKris = kris
+            .filter(k => k.over_appetite === true)
+            .sort((a, b) => b.current_value - a.current_value)
+            .slice(0, 5)
+            .map(k => ({
+                id: k.id,
+                name: k.name,
+                code: k.code,
+                value: k.current_value,
+                unit: k.unit,
+                threshold: k.threshold_appetite,
+                status: k.status,
+                owner: k.owner_id ? k.owner_id[1] : 'N/A',
+            }));
+
         const trends = {
             'up': kris.filter(k => k.trend === 'up').length,
             'down': kris.filter(k => k.trend === 'down').length,
@@ -153,11 +172,13 @@ export class KriDashboard extends Component {
         this.state.amber = amber;
         this.state.red = red;
         this.state.overdue = overdue;
+        this.state.overAppetite = overAppetite;
         this.state.kris = kris;
         this.state.statusDistribution = statusDistribution;
         this.state.categoryDistribution = categoryDistribution;
         this.state.recentAlerts = recentAlerts;
         this.state.topWorst = topWorst;
+        this.state.overAppetiteKris = overAppetiteKris;
         this.state.trends = trends;
         this.state.narratives = this.generateNarratives();
 
@@ -188,6 +209,13 @@ export class KriDashboard extends Component {
             narratives.push({
                 icon: '⏰',
                 text: `${this.state.overdue} KRI n'ont pas été mesurés dans les délais.`
+            });
+        }
+
+        if (this.state.overAppetite > 0) {
+            narratives.push({
+                icon: '🎯',
+                text: `${this.state.overAppetite} KRI dépassent le seuil d'appétit au risque défini.`
             });
         }
 
@@ -232,6 +260,7 @@ export class KriDashboard extends Component {
         this.state.amber = 3;
         this.state.red = 3;
         this.state.overdue = 2;
+        this.state.overAppetite = 2;
 
         this.state.statusDistribution = [
             { label: '🟢 Vert', value: 6, color: '#28a745' },
@@ -260,6 +289,11 @@ export class KriDashboard extends Component {
             { id: 3, name: 'Taux de rotation du personnel', code: 'KRI-005', value: 18, unit: '%', status: 'red', owner: 'Luc Dubois' },
             { id: 4, name: 'Taux de conformité réglementaire', code: 'KRI-002', value: 65, unit: '%', status: 'amber', owner: 'Marie Martin' },
             { id: 5, name: 'Temps moyen de résolution', code: 'KRI-004', value: 8, unit: 'jrs', status: 'amber', owner: 'Sophie Bernard' },
+        ];
+
+        this.state.overAppetiteKris = [
+            { id: 1, name: 'Taux d\'incidents Cyber', code: 'KRI-001', value: 85, unit: '%', threshold: 80, status: 'red', owner: 'Jean Dupont' },
+            { id: 5, name: 'Taux de rotation du personnel', code: 'KRI-005', value: 18, unit: '%', threshold: 15, status: 'red', owner: 'Luc Dubois' },
         ];
 
         this.state.trends = { up: 4, down: 3, stable: 5 };
@@ -405,6 +439,18 @@ export class KriDashboard extends Component {
                 res_model: 'risk.kri',
                 views: [[false, 'list'], [false, 'form']],
                 domain: [['overdue', '=', true]],
+            });
+        }
+    }
+
+    openOverAppetiteKris = () => {
+        if (this.action) {
+            this.action.doAction({
+                type: 'ir.actions.act_window',
+                name: 'KRI hors appétit',
+                res_model: 'risk.kri',
+                views: [[false, 'list'], [false, 'form']],
+                domain: [['over_appetite', '=', true]],
             });
         }
     }

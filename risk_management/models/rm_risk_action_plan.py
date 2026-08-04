@@ -59,6 +59,20 @@ class RiskActionPlan(models.Model):
         tracking=True
     )
 
+    control_test_id = fields.Many2one(
+        'risk.control.test',
+        string='Test de contrôle associé',
+        tracking=True,
+        help="Test de contrôle ayant révélé le besoin de ce plan d'action, le cas échéant "
+             "(ex : un test en échec déclenche la création d'un plan correctif)."
+    )
+
+    action_type = fields.Selection([
+        ('corrective', '🔧 Corrective'),
+        ('preventive', '🛡️ Préventive'),
+        ('improvement', '📈 Amélioration'),
+    ], string="Type d'action", default='corrective', tracking=True)
+
     # ============================================================
     # RESPONSABLES
     # ============================================================
@@ -158,6 +172,21 @@ class RiskActionPlan(models.Model):
     ], string='Statut', default='draft', tracking=True, index=True)
 
     # ============================================================
+    # RAPPELS AUTOMATIQUES
+    # (capacité reprise de l'ancien modèle risk.corrective.action,
+    # désormais obsolète — voir cron dédié ci-dessous)
+    # ============================================================
+
+    reminder_sent = fields.Boolean(
+        string='Rappel envoyé',
+        default=False
+    )
+
+    last_reminder_date = fields.Date(
+        string='Date du dernier rappel'
+    )
+
+    # ============================================================
     # COMPUTES
     # ============================================================
 
@@ -249,3 +278,96 @@ class RiskActionPlan(models.Model):
             if not vals.get('code'):
                 vals['code'] = self.env['ir.sequence'].next_by_code('risk.action.plan') or 'New'
         return super().create(vals_list)
+
+    # ============================================================
+    # RAPPELS AUTOMATIQUES (repris de l'ancien risk.corrective.action)
+    # ============================================================
+
+    @api.model
+    def _cron_send_reminders(self):
+        """
+        Cron quotidien envoyant des rappels automatiques :
+        - Plans en retard (échéance dépassée, non terminés/annulés)
+        - Plans à échéance dans 7 jours, peu avancés (< 80%)
+        """
+        today = fields.Date.today()
+        from datetime import timedelta
+
+        overdue_plans = self.search([
+            ('deadline', '<', today),
+            ('state', 'not in', ['completed', 'cancelled']),
+        ])
+        for plan in overdue_plans:
+            if plan.owner_id and plan.owner_id.user_id:
+                plan._send_reminder('overdue')
+
+        soon_plans = self.search([
+            ('deadline', '=', today + timedelta(days=7)),
+            ('state', 'not in', ['completed', 'cancelled']),
+            ('task_progress', '<', 80),
+        ])
+        for plan in soon_plans:
+            if plan.owner_id and plan.owner_id.user_id:
+                plan._send_reminder('soon')
+
+        return True
+
+    def _send_reminder(self, reminder_type):
+        """Envoie un rappel (chatter) pour ce plan d'action au responsable."""
+        self.ensure_one()
+        if not self.owner_id or not self.owner_id.user_id:
+            return
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        action_url = f"{base_url}/web#id={self.id}&model=risk.action.plan&view_type=form"
+
+        if reminder_type == 'overdue':
+            subject = f"⏰ RAPPEL : Plan d'action en retard - {self.name}"
+            color = '#dc3545'
+            title = '⏰ PLAN D\'ACTION EN RETARD'
+            message = "⚠️ Ce plan d'action est en retard ! Veuillez prendre des mesures immédiates."
+        else:  # 'soon'
+            subject = f"⏰ Échéance dans 7 jours - {self.name}"
+            color = '#fd7e14'
+            title = '⏰ ÉCHÉANCE DANS 7 JOURS'
+            message = "⚠️ Ce plan d'action arrive bientôt à échéance. Veuillez accélérer la progression."
+
+        body = f"""
+            <div style="font-family: Arial, sans-serif; padding: 15px; border: 1px solid {color}; border-radius: 8px;">
+                <h3 style="color: {color};">{title}</h3>
+                <hr/>
+                <p><strong>Plan :</strong> {self.name}</p>
+                <p><strong>Code :</strong> {self.code}</p>
+                <p><strong>Responsable :</strong> {self.owner_id.name}</p>
+                <p><strong>Date limite :</strong> {self.deadline}</p>
+                <p><strong>Progression :</strong> {self.task_progress:.0f}%</p>
+                <p style="color: {color};">{message}</p>
+                <br/>
+                <a href="{action_url}" style="background:{color};color:white;padding:10px 20px;border-radius:5px;text-decoration:none;">
+                    🔗 Voir le plan d'action
+                </a>
+            </div>
+        """
+
+        self.message_post(
+            body=body,
+            subject=subject,
+            partner_ids=[(4, self.owner_id.user_id.partner_id.id)],
+            message_type='notification',
+            subtype_xmlid='mail.mt_comment',
+        )
+        self.reminder_sent = True
+        self.last_reminder_date = fields.Date.today()
+
+    def action_send_reminder(self):
+        """Envoie un rappel manuel pour ce plan d'action."""
+        self.ensure_one()
+        self._send_reminder('overdue')
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Rappel envoyé',
+            'res_model': 'risk.action.plan',
+            'view_mode': 'form',
+            'res_id': self.id,
+            'target': 'current',
+        }

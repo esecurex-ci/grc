@@ -40,7 +40,7 @@
                             class="btn-danger" invisible="state != 'in_progress'"/>
                     <button name="action_partial" string="⚠️ Partiel" type="object"
                             class="btn-warning" invisible="state != 'in_progress'"/>
-                    <button name="action_create_corrective_action" string="🔧 Créer action corrective" type="object"
+                    <button name="action_create_corrective_action" string="🔧 Créer un plan d'action" type="object"
                             class="btn-secondary" invisible="result not in ['fail', 'partial']"/>
                     <button name="action_cancel" string="❌ Annuler" type="object"
                             class="btn-danger" invisible="state in ['done', 'cancelled']"/>
@@ -82,7 +82,7 @@
                             <field name="deviation" widget="html"/>
                             <field name="recommendation" widget="html"/>
                         </page>
-                        <page string="🔧 Actions correctives" invisible="not action_ids">
+                        <page string="🔧 Plans d'action" invisible="not action_ids">
                             <field name="action_ids" context="{'default_control_test_id': id}">
                                 <list>
                                     <field name="code"/>
@@ -90,7 +90,7 @@
                                     <field name="state" widget="badge"/>
                                     <field name="deadline"/>
                                     <field name="owner_id"/>
-                                    <field name="progress" widget="progressbar"/>
+                                    <field name="task_progress" widget="progressbar"/>
                                 </list>
                             </field>
                         </page>
@@ -101,13 +101,6 @@
                 </sheet>
             </form>
         </field>
-    </record>
-
-    <!-- ACTION -->
-    <record id="action_risk_control_test" model="ir.actions.act_window">
-        <field name="name">Tests de contrôle</field>
-        <field name="res_model">risk.control.test</field>
-        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

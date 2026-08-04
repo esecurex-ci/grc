@@ -45,9 +45,8 @@
         <field name="arch" type="xml">
             <list
                 decoration-success="inherent_level == 'low'"
-                decoration-info="inherent_level == 'medium'"
-                decoration-warning="inherent_level == 'high'"
-                decoration-danger="inherent_level == 'critical'">
+                decoration-warning="inherent_level == 'medium'"
+                decoration-danger="inherent_level == 'high'">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="category_id"/>
@@ -56,9 +55,8 @@
                 <field name="inherent_level" widget="badge"
                    class="badge"
                    decoration-success="inherent_level == 'low'"
-                   decoration-info="inherent_level == 'medium'"
-                   decoration-warning="inherent_level == 'high'"
-                   decoration-danger="inherent_level == 'critical'"/>
+                   decoration-warning="inherent_level == 'medium'"
+                   decoration-danger="inherent_level == 'high'"/>
                 <field name="state" widget="badge"
                    class="badge"
                    decoration-success="state == 'validated'"

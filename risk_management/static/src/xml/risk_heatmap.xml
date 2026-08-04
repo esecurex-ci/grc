@@ -85,14 +85,14 @@
                 </div>
 
                 <!-- ========================================= -->
-                <!-- DEUX COLONNES : Hors Appétit + Top 5     -->
+                <!-- DEUX COLONNES : Risques Inhérents Élevés + Priorités d'action -->
                 <!-- ========================================= -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <div class="chart-card scrollable-card">
-                            <h5 class="chart-title">🚨 Risques Hors Appétit</h5>
-                            <div t-if="state.outOfAppetite.length > 0">
-                                <div class="risk-item" t-foreach="state.outOfAppetite" t-as="risk" t-key="risk.id">
+                            <h5 class="chart-title">🚨 Risques Inhérents élévés — Vigilance Requise</h5>
+                            <div t-if="state.highInherentRisks.length > 0">
+                                <div class="risk-item" t-foreach="state.highInherentRisks" t-as="risk" t-key="risk.id">
                                     <div class="risk-row" t-on-click="() => this.openRiskById(risk.id)">
                                         <span class="risk-level" t-attf-class="badge #{getLevelBadge(risk.level)}">
                                             <t t-esc="getLevelLabel(risk.level)"/>
@@ -104,21 +104,21 @@
                                         </span>
                                     </div>
                                 </div>
-                                <a href="#" class="view-all-link" t-on-click.prevent="openOutOfAppetite">
-                                    Voir tous les risques hors appétit →
+                                <a href="#" class="view-all-link" t-on-click.prevent="openHighRisks">
+                                    Voir tous les risques majeurs →
                                 </a>
                             </div>
                             <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
-                                ✅ Aucun risque hors appétit
+                                ✅ Aucun risque inhérent élevé
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="chart-card scrollable-card">
-                            <h5 class="chart-title">🏆 Top 5 Risques Matériels</h5>
-                            <div t-if="state.topRisks.length > 0">
-                                <div class="risk-item" t-foreach="state.topRisks" t-as="risk" t-key="risk.id">
+                            <h5 class="chart-title">🚨 Risques Résiduels Élevés - Requières plan d'action immédiat</h5>
+                            <div t-if="state.highResidualRisks.length > 0">
+                                <div class="risk-item" t-foreach="state.highResidualRisks" t-as="risk" t-key="risk.id">
                                     <div class="risk-row top-risk" t-on-click="() => this.openRiskById(risk.id)">
                                         <span class="rank-badge">#<t t-esc="risk.rank"/></span>
                                         <span class="risk-level" t-attf-class="badge #{getLevelBadge(risk.level)}">
@@ -126,7 +126,7 @@
                                         </span>
                                         <span class="risk-name"><t t-esc="risk.name"/></span>
                                         <span class="risk-code"><t t-esc="risk.code"/></span>
-                                        <span class="risk-score" t-attf-style="background:#{getScoreColor(risk.score)};">
+                                        <span class="risk-score" t-attf-style="background:#{getScoreColor(risk.score)};" title="Score inhérent (le résiduel n'a pas de score)">
                                             <t t-esc="risk.score"/>
                                         </span>
                                     </div>
@@ -148,7 +148,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">📈 Risque Inhérent par Période</h5>
+                            <h5 class="chart-title">📈 Risque Inhérent par Période d'évaluation</h5>
                             <t t-if="state.inherentData and state.inherentData.length">
                                 <t t-call="rm_risk.BarChart">
                                     <t t-set="data" t-value="state.inherentData"/>
@@ -167,7 +167,7 @@
 
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">📉 Risque Résiduel par Période</h5>
+                            <h5 class="chart-title">📉 Risque Résiduel par Période d'évaluation</h5>
                             <t t-if="state.residualData and state.residualData.length">
                                 <t t-call="rm_risk.BarChart">
                                     <t t-set="data" t-value="state.residualData"/>

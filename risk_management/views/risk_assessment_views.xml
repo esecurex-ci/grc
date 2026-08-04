@@ -165,8 +165,23 @@
                             <group string="🔒 Contrôles">
                                 <div class="alert alert-info" role="alert" style="margin-bottom:10px;">
                                     <i class="fa fa-shield" title="Contrôles"/>
-                                    <strong>Efficacité des contrôles</strong>
-                                    <span class="text-muted"> - Impact sur le risque résiduel</span>
+                                    <strong>Contrôles en place pour ce risque</strong>
+                                    <span class="text-muted"> - Pour référence, avant de juger leur efficacité</span>
+                                </div>
+                                <field name="control_ids_preview" nolabel="1" readonly="1">
+                                    <list>
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                        <field name="control_type" widget="badge"/>
+                                        <field name="owner_id"/>
+                                        <field name="frequency"/>
+                                        <field name="automation_level"/>
+                                        <field name="effectiveness" widget="badge"/>
+                                        <field name="active"/>
+                                    </list>
+                                </field>
+                                <div class="alert alert-info" role="alert" style="margin-top:10px;margin-bottom:10px;">
+                                    <strong>Ton appréciation, en tenant compte de ce qui précède :</strong>
                                 </div>
                                 <group>
                                     <field name="control_effectiveness_level" widget="radio"/>

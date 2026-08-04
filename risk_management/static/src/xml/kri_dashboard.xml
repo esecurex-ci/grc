@@ -60,6 +60,12 @@
                         </div>
                     </div>
                     <div class="col-2">
+                        <div class="kpi-card kpi-over-appetite" t-on-click="openOverAppetiteKris">
+                            <div class="kpi-label">🎯 Hors appétit</div>
+                            <div class="kpi-value"><t t-esc="state.overAppetite"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
                         <div class="kpi-card kpi-health">
                             <div class="kpi-label">📊 Santé globale</div>
                             <div class="kpi-value" style="font-size:18px;">
@@ -156,6 +162,39 @@
                 </div>
 
                 <!-- ========================================= -->
+                <!-- HORS APPÉTIT                              -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🎯 KRI Hors appétit au risque</h5>
+                            <div t-if="state.overAppetiteKris.length > 0">
+                                <div class="top-item" t-foreach="state.overAppetiteKris" t-as="kri" t-key="kri.id">
+                                    <div class="top-row" t-on-click="() => openKriById(kri.id)">
+                                        <span class="top-status" t-attf-class="badge #{getStatusClass(kri.status)}">
+                                            <t t-esc="getStatusBadge(kri.status)"/>
+                                        </span>
+                                        <span class="top-name"><t t-esc="kri.name"/></span>
+                                        <span class="top-code"><t t-esc="kri.code"/></span>
+                                        <span class="top-value">
+                                            <strong><t t-esc="kri.value"/></strong> <t t-esc="kri.unit"/>
+                                            <span class="text-muted">(appétit: <t t-esc="kri.threshold"/>)</span>
+                                        </span>
+                                        <span class="top-owner"><i class="fa fa-user"/> <t t-esc="kri.owner"/></span>
+                                    </div>
+                                </div>
+                                <a href="#" class="view-all-link" t-on-click.prevent="openOverAppetiteKris">
+                                    Voir tous les KRI hors appétit →
+                                </a>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucun KRI hors appétit
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
                 <!-- TENDANCES                                 -->
                 <!-- ========================================= -->
                 <div class="row g-3 mb-4">
@@ -209,6 +248,8 @@
                             <span><span class="legend-color" style="background:#28a745;"></span> Vert (OK)</span>
                             <span><span class="legend-color" style="background:#ffc107;"></span> Orange (Alerte)</span>
                             <span><span class="legend-color" style="background:#dc3545;"></span> Rouge (Critique)</span>
+                            <span class="legend-separator">|</span>
+                            <span><span class="legend-color" style="background:#6f42c1;"></span> 🎯 Hors appétit (seuil distinct du rouge, défini par KRI)</span>
                             <span class="legend-separator">|</span>
                             <span><i class="fa fa-user"/> Propriétaire</span>
                             <span><i class="fa fa-calendar"/> Date de mesure</span>

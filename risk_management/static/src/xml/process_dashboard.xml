@@ -30,7 +30,7 @@
                 <div class="row g-2 mb-4">
                     <div class="col-2">
                         <div class="kpi-card" t-on-click="openAllProcesses">
-                            <div class="kpi-label">Total Processus</div>
+                            <div class="kpi-label">Total Sous Processus</div>
                             <div class="kpi-value"><t t-esc="state.totalProcesses"/></div>
                         </div>
                     </div>
@@ -73,7 +73,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-12">
                         <div class="chart-card">
-                            <h5 class="chart-title">📊 Répartition des Processus par Niveau de Risque</h5>
+                            <h5 class="chart-title">📊 Répartition des Sous Processus par Niveau de Risque</h5>
                             <div t-out="renderDonutChart(state.riskDistribution, state.totalProcesses)"/>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-12">
                         <div class="chart-card">
-                            <h5 class="chart-title">🔥 Matrice des Processus par Catégorie</h5>
+                            <h5 class="chart-title">🔥 Matrice des Sous Processus par Macro-Processus</h5>
                             <div class="table-responsive">
                                 <table class="matrix-table">
                                     <thead>
@@ -147,11 +147,11 @@
                                     </div>
                                 </div>
                                 <a href="#" class="view-all-link" t-on-click.prevent="openHighRiskProcesses">
-                                    Voir tous les processus à risque élevé →
+                                    Voir tous les sous processus à risque élevé →
                                 </a>
                             </div>
                             <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
-                                ✅ Aucun processus à risque élevé
+                                ✅ Aucun sous processus à risque élevé
                             </div>
                         </div>
                     </div>
@@ -205,7 +205,7 @@
 
                     <div class="col-md-6">
                         <div class="chart-card">
-                            <h5 class="chart-title">📈 Répartition par Catégorie</h5>
+                            <h5 class="chart-title">📈 Répartition par Macro-Processus</h5>
                             <div class="category-bars">
                                 <div class="category-row" t-foreach="Object.entries(state.categoryStats)" t-as="item" t-key="item[0]">
                                     <span class="cat-label"><t t-esc="item[0]"/></span>
@@ -228,7 +228,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-12">
                         <div class="chart-card">
-                            <h5 class="chart-title">⬜ Processus sans risque identifié</h5>
+                            <h5 class="chart-title">⬜ Sous Processus sans risque identifié</h5>
                             <div t-if="state.processesWithoutRisk.length > 0">
                                 <div class="no-risk-grid">
                                     <div class="no-risk-item" t-foreach="state.processesWithoutRisk" t-as="process" t-key="process.id">
@@ -239,7 +239,7 @@
                                 </div>
                             </div>
                             <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
-                                ✅ Tous les processus ont des risques identifiés
+                                ✅ Tous les sous processus ont des risques identifiés
                             </div>
                         </div>
                     </div>

@@ -72,7 +72,9 @@ class RiskMetricEngine(models.Model):
         if not controls:
             return 0
 
-        return round(sum(controls.mapped('effectiveness')) / len(controls), 2)
+        # effectiveness est catégoriel ('high'/'medium'/'low'/'not_tested') :
+        # on utilise effectiveness_score, sa contrepartie numérique déjà calculée.
+        return round(sum(controls.mapped('effectiveness_score')) / len(controls), 2)
 
     def _calculate_audit_score(self):
 
@@ -239,6 +241,27 @@ class RiskMetricEngine(models.Model):
 
         return history
 
+    def _calculate_risk_stats(self):
+        """Statistiques de la section RISQUES du snapshot exécutif.
+
+        Échelle réelle à 3 niveaux (pas de niveau 'Critique') :
+        - critical_risks reprend les risques INHÉRENTS de niveau Élevé
+          (mêmes "Risques Majeurs" que la heatmap : sommet réel de l'échelle).
+        - high_risks reprend les risques RÉSIDUELS de niveau Élevé
+          (mêmes "Priorités d'Action" que la heatmap : encore élevés après contrôles).
+        - risks_over_appetite réutilise last_over_appetite, déjà calculé sur
+          risk.risk à partir de la dernière évaluation approuvée (comparaison
+          recalibrée sur l'échelle d'appétit à 5 niveaux, cf. risk.assessment).
+        """
+        risks = self.env['risk.risk'].search([('active', '=', True)])
+
+        return {
+            'total_risks': len(risks),
+            'critical_risks': len(risks.filtered(lambda r: r.inherent_level == 'high')),
+            'high_risks': len(risks.filtered(lambda r: r.residual_level == 'high')),
+            'risks_over_appetite': len(risks.filtered('last_over_appetite')),
+        }
+
     def action_generate_dashboard_snapshot(self):
 
         latest_grc = self.env[
@@ -256,6 +279,8 @@ class RiskMetricEngine(models.Model):
             limit=1,
             order='period_date desc'
         )
+
+        risk_stats = self._calculate_risk_stats()
 
         snapshot = self.env[
             'risk.executive.dashboard.snapshot'
@@ -293,6 +318,18 @@ class RiskMetricEngine(models.Model):
 
             'maturity_level':
                 latest_grc.maturity_level,
+
+            'total_risks':
+                risk_stats['total_risks'],
+
+            'critical_risks':
+                risk_stats['critical_risks'],
+
+            'high_risks':
+                risk_stats['high_risks'],
+
+            'risks_over_appetite':
+                risk_stats['risks_over_appetite'],
 
         })
 

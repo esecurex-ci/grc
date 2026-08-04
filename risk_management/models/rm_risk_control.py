@@ -65,21 +65,19 @@ class RiskControl(models.Model):
     # CONTEXTE
     # ============================================================
 
+    activity_ids = fields.Many2many(
+        'risk.activity',
+        string='Activités concernées',
+        help="Les activités auxquelles ce contrôle s'applique. Un même contrôle "
+             "peut couvrir plusieurs activités (ex : une réunion de comité qui "
+             "adresse plusieurs activités à la fois). Les risques héritent "
+             "automatiquement des contrôles de leur activité."
+    )
+
     process_id = fields.Many2one(
         'risk.process',
         string='Sous Processus',
         tracking=True
-    )
-
-    activity_id = fields.Many2one(
-        'risk.activity',
-        string='Activité',
-        tracking=True
-    )
-
-    risk_ids = fields.Many2many(
-        'risk.risk',
-        string='Risques couverts'
     )
 
     # ============================================================

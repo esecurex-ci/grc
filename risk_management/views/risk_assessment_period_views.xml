@@ -41,14 +41,57 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Evaluations">
-                            <field name="assessment_ids">
-                                <list>
+                        <page string="Mes risques à évaluer">
+                            <div class="alert alert-warning" role="alert" invisible="my_risk_ids">
+                                <i class="fa fa-exclamation-triangle" title="Attention"/>
+                                Aucun risque ne vous est assigné comme propriétaire — rapprochez-vous de votre
+                                administrateur GRC si ce n'est pas normal.
+                            </div>
+                            <field name="my_risk_ids" context="{'period_id': id}" readonly="1">
+                                <kanban>
+                                    <field name="code"/>
                                     <field name="name"/>
-                                    <field name="risk_id"/>
-                                    <field name="assessment_date"/>
-                                    <field name="risk_level"/>
-                                    <field name="state"/>
+                                    <field name="inherent_level"/>
+                                    <field name="assessment_state_for_period"/>
+                                    <templates>
+                                        <t t-name="card">
+                                            <div t-attf-class="border-start border-4 #{record.inherent_level.raw_value == 'high' ? 'border-danger' : record.inherent_level.raw_value == 'medium' ? 'border-warning' : 'border-success'}"
+                                                 style="padding:10px 14px;margin-bottom:8px;">
+                                                <div class="d-flex justify-content-between">
+                                                    <strong><field name="name"/></strong>
+                                                    <span class="text-muted"><field name="code"/></span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <span class="badge text-bg-secondary"><field name="assessment_state_for_period"/></span>
+                                                    <button name="action_start_assessment" type="object"
+                                                            string="Évaluer" class="btn btn-primary btn-sm"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </page>
+
+                        <!-- Suivi gestionnaire : toutes les évaluations déjà créées sur cette
+                             campagne (tous propriétaires confondus), en lecture seule. Complète
+                             l'onglet self-service ci-dessus sans le remplacer. -->
+                        <page string="Evaluations">
+                            <field name="assessment_ids" readonly="1">
+                                <list
+                                    decoration-success="risk_level == 'low'"
+                                    decoration-warning="risk_level == 'medium'"
+                                    decoration-danger="risk_level == 'high'"
+                                    decoration-muted="state == 'closed'">
+                                    <field name="name" string="Évaluation"/>
+                                    <field name="assessment_date" string="Date"/>
+                                    <field name="risk_id" string="Risque"/>
+                                    <field name="inherent_score" string="Score inhérent" sum="Total"/>
+                                    <field name="risk_level" string="Niveau résiduel" widget="badge"/>
+                                    <field name="over_appetite" string="Hors appétit" widget="boolean"/>
+                                    <field name="state" string="Statut" widget="badge"/>
+                                    <field name="assessor_id" string="Évaluateur"/>
+                                    <field name="treatment_plan_count" string="Plans" widget="statinfo"/>
                                 </list>
                             </field>
                         </page>

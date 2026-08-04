@@ -46,7 +46,21 @@ class RiskRisk(models.Model):
     asset_ids = fields.Many2many('risk.asset', string='Actifs')
     organization_ids = fields.Many2many('risk.organization', string='Unités organisationnelles')
     active = fields.Boolean(string='Actif', default=True)
-    control_ids = fields.Many2many('risk.control', string='Contrôles')
+    control_ids = fields.Many2many(
+        'risk.control',
+        compute='_compute_control_ids',
+        store=True,
+        string='Contrôles (via l\'activité)',
+        help="Contrôles rattachés à l'activité de ce risque. Calculé automatiquement : "
+             "pour ajouter/retirer un contrôle, passe par la fiche de l'activité ou "
+             "du contrôle lui-même — le changement se répercute alors sur tous les "
+             "risques de cette activité."
+    )
+
+    @api.depends('activity_id', 'activity_id.control_ids')
+    def _compute_control_ids(self):
+        for risk in self:
+            risk.control_ids = risk.activity_id.control_ids if risk.activity_id else False
     kri_ids = fields.Many2many('risk.kri', string='KRI')
     incident_ids = fields.One2many('risk.incident', 'risk_id', string='Incidents')
     incident_count = fields.Integer(compute='_compute_incident_count', string="Nombre d'incidents")
@@ -1174,13 +1188,15 @@ class RiskRisk(models.Model):
                 residual_matrix[key] += 1
 
         # Données des contrôles
+        # effectiveness est catégoriel ('high'/'medium'/'low'/'not_tested') :
+        # on compare son score numérique (effectiveness_score) aux seuils, pas la chaîne elle-même.
         control_stats = {'effective': 0, 'partial': 0, 'ineffective': 0}
         for risk in risks:
             for control in risk.control_ids:
-                effectiveness = control.effectiveness or 0
-                if effectiveness >= 80:
+                effectiveness_score = control.effectiveness_score or 0
+                if effectiveness_score >= 80:
                     control_stats['effective'] += 1
-                elif effectiveness >= 50:
+                elif effectiveness_score >= 50:
                     control_stats['partial'] += 1
                 else:
                     control_stats['ineffective'] += 1
@@ -1915,6 +1931,67 @@ class RiskRisk(models.Model):
             'res_model': 'risk.action.plan',
             'view_mode': 'list,form,kanban',
             'domain': [('id', 'in', self.action_plan_ids.ids)],
+        }
+
+    ##################################################################
+    # AUTO-ÉVALUATION DEPUIS UNE CAMPAGNE (risk.assessment.period)
+    # ⚠️ Champ et méthode dépendants du contexte ('period_id'), utilisés
+    # uniquement depuis la liste "Mes risques à évaluer" de la fiche
+    # risk.assessment.period — jamais affichés/appelés hors de ce contexte.
+    ##################################################################
+
+    assessment_state_for_period = fields.Char(
+        compute='_compute_assessment_state_for_period',
+        string="Statut d'évaluation (période)",
+    )
+
+    @api.depends()
+    def _compute_assessment_state_for_period(self):
+        period_id = self.env.context.get('period_id')
+        state_labels = dict(self.env['risk.assessment']._fields['state'].selection)
+        for record in self:
+            label = False
+            if period_id:
+                assessment = self.env['risk.assessment'].search([
+                    ('risk_id', '=', record.id),
+                    ('period_id', '=', period_id),
+                ], limit=1)
+                if assessment:
+                    label = state_labels.get(assessment.state)
+            record.assessment_state_for_period = label or 'Non évalué'
+
+    def action_start_assessment(self):
+        """Depuis l'onglet "Mes risques à évaluer" d'une campagne (risk.assessment.period,
+        contexte 'period_id') : ouvre l'évaluation déjà existante pour ce risque sur cette
+        période, ou en crée une nouvelle (pré-remplie avec les valeurs actuelles du risque,
+        comme le fait déjà l'onchange sur risk.assessment) si aucune n'existe encore."""
+        self.ensure_one()
+        period_id = self.env.context.get('period_id')
+        if not period_id:
+            return False
+
+        assessment = self.env['risk.assessment'].search([
+            ('risk_id', '=', self.id),
+            ('period_id', '=', period_id),
+        ], limit=1)
+
+        if not assessment:
+            assessment = self.env['risk.assessment'].create({
+                'risk_id': self.id,
+                'period_id': period_id,
+                'assessor_id': self.env.user.employee_id.id,
+                'inherent_probability': self.inherent_probability or '3',
+                'inherent_impact': self.inherent_impact or '3',
+                'control_effectiveness_level': self.control_effectiveness_level or 'ineffective',
+            })
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Évaluation du risque',
+            'res_model': 'risk.assessment',
+            'res_id': assessment.id,
+            'view_mode': 'form',
+            'target': 'current',
         }
 
     def _get_heatmap_color(self, score):
