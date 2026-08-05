@@ -120,7 +120,7 @@
                                 <div class="alert alert-info" role="alert" style="margin-bottom: 10px;">
                                     <i class="fa fa-shield" title="Protection"/>
                                     <strong>Contrôles mis en place pour réduire le risque</strong>
-                                    <span class="text-muted"> - Hérités de l'activité <field name="activity_id" readonly="1" nolabel="1"/> (modifiable depuis la fiche de l'activité ou du contrôle)</span>
+                                    <span class="text-muted"> - Hérités de l'activité <field name="activity_id" readonly="1" nolabel="1"/>, plus les contrôles ajoutés directement ci-dessous</span>
                                 </div>
 
                                 <group col="2">
@@ -161,6 +161,11 @@
                                                 </templates>
                                             </kanban>
                                         </field>
+
+                                        <field name="additional_control_ids" nolabel="1" colspan="2"
+                                               widget="many2many_tags"
+                                               placeholder="Ajouter un contrôle supplémentaire, propre à ce risque..."
+                                               options="{'no_create': True}"/>
                                     </group>
 
                                     <group string="Ton appréciation">

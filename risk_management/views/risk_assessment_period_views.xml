@@ -22,80 +22,97 @@
         <field name="model">risk.assessment.period</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="action_close" string="Clôturer" type="object"
+                            class="btn-primary" invisible="state != 'open'"
+                            confirm="Clôturer cette campagne ? Les évaluations en cours resteront inchangées."/>
+                    <button name="action_export" string="Exporter" type="object" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open,closed"/>
+                </header>
                 <sheet>
+                    <!-- ============================================ -->
+                    <!-- EN-TÊTE : Campagne + Période                -->
+                    <!-- ============================================ -->
                     <div class="oe_title">
                         <h1>
-                            <field name="name"/>
+                            <field name="name" placeholder="Nom de la campagne..."/>
                         </h1>
+                        <span class="oe_subtitle">
+                            <field name="code" placeholder="Code"/> —
+                            <field name="date_start" nolabel="1"/> → <field name="date_end" nolabel="1"/>
+                        </span>
                     </div>
                     <group>
                         <group>
-                            <field name="code"/>
-                            <field name="date_start"/>
-                            <field name="date_end"/>
-                        </group>
-                        <group>
-                            <field name="state"/>
                             <field name="active"/>
-                            <field name="assessment_count" readonly="1"/>
                         </group>
                     </group>
-                    <notebook>
-                        <page string="Mes risques à évaluer">
-                            <div class="alert alert-warning" role="alert" invisible="my_risk_ids">
-                                <i class="fa fa-exclamation-triangle" title="Attention"/>
-                                Aucun risque ne vous est assigné comme propriétaire — rapprochez-vous de votre
-                                administrateur GRC si ce n'est pas normal.
-                            </div>
-                            <field name="my_risk_ids" context="{'period_id': id}" readonly="1">
-                                <kanban>
-                                    <field name="code"/>
-                                    <field name="name"/>
-                                    <field name="inherent_level"/>
-                                    <field name="assessment_state_for_period"/>
-                                    <templates>
-                                        <t t-name="card">
-                                            <div t-attf-class="border-start border-4 #{record.inherent_level.raw_value == 'high' ? 'border-danger' : record.inherent_level.raw_value == 'medium' ? 'border-warning' : 'border-success'}"
-                                                 style="padding:10px 14px;margin-bottom:8px;">
-                                                <div class="d-flex justify-content-between">
-                                                    <strong><field name="name"/></strong>
-                                                    <span class="text-muted"><field name="code"/></span>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                                    <span class="badge text-bg-secondary"><field name="assessment_state_for_period"/></span>
-                                                    <button name="action_start_assessment" type="object"
-                                                            string="Évaluer" class="btn btn-primary btn-sm"/>
-                                                </div>
-                                            </div>
-                                        </t>
-                                    </templates>
-                                </kanban>
-                            </field>
-                        </page>
 
-                        <!-- Suivi gestionnaire : toutes les évaluations déjà créées sur cette
-                             campagne (tous propriétaires confondus), en lecture seule. Complète
-                             l'onglet self-service ci-dessus sans le remplacer. -->
-                        <page string="Evaluations">
-                            <field name="assessment_ids" readonly="1">
-                                <list
-                                    decoration-success="risk_level == 'low'"
-                                    decoration-warning="risk_level == 'medium'"
-                                    decoration-danger="risk_level == 'high'"
-                                    decoration-muted="state == 'closed'">
-                                    <field name="name" string="Évaluation"/>
-                                    <field name="assessment_date" string="Date"/>
-                                    <field name="risk_id" string="Risque"/>
-                                    <field name="inherent_score" string="Score inhérent" sum="Total"/>
-                                    <field name="risk_level" string="Niveau résiduel" widget="badge"/>
-                                    <field name="over_appetite" string="Hors appétit" widget="boolean"/>
-                                    <field name="state" string="Statut" widget="badge"/>
-                                    <field name="assessor_id" string="Évaluateur"/>
-                                    <field name="treatment_plan_count" string="Plans" widget="statinfo"/>
-                                </list>
-                            </field>
-                        </page>
-                    </notebook>
+                    <!-- ============================================ -->
+                    <!-- ZONE RÉCAPITULATIVE (KPI)                    -->
+                    <!-- ============================================ -->
+                    <div class="row g-2 mt-2 mb-3">
+                        <div class="col-3">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <h2 class="mb-0"><field name="total_risk_count" nolabel="1"/></h2>
+                                    <span class="text-muted">Nb risques total</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card text-center h-100" style="border-color:#dc3545;">
+                                <div class="card-body">
+                                    <h2 class="mb-0" style="color:#dc3545;"><field name="high_risk_count" nolabel="1"/></h2>
+                                    <span class="text-muted">Élevés</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <h2 class="mb-0"><field name="assessment_count" nolabel="1"/></h2>
+                                    <span class="text-muted">Nb évaluations</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card text-center h-100" style="border-color:#6f42c1;">
+                                <div class="card-body">
+                                    <h2 class="mb-0" style="color:#6f42c1;"><field name="pending_risk_count" nolabel="1"/></h2>
+                                    <span class="text-muted">Restant à évaluer</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================================ -->
+                    <!-- TABLEAU PRINCIPAL (risques + évaluations)    -->
+                    <!-- ============================================ -->
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <field name="only_my_risks" widget="boolean_toggle"/>
+                        <span>Filtrer : afficher uniquement mes risques (mon/mes macro-processus)</span>
+                    </div>
+
+                    <field name="campaign_risk_ids" context="{'period_id': id}" readonly="1">
+                        <list decoration-success="inherent_level == 'low'"
+                              decoration-warning="inherent_level == 'medium'"
+                              decoration-danger="inherent_level == 'high'"
+                              default_order="inherent_level desc">
+                            <field name="code"/>
+                            <field name="name" string="Risque"/>
+                            <field name="inherent_level" string="Niv. inhérent" widget="badge"/>
+                            <field name="assessment_residual_level_for_period" string="Niv. résiduel" widget="badge"/>
+                            <field name="assessment_gap_for_period" string="Écart"/>
+                            <field name="assessment_assessor_for_period" string="Évaluateur"/>
+                            <field name="assessment_state_for_period" string="Statut"/>
+                            <button name="action_start_assessment" type="object"
+                                    string="Évaluer" class="btn-sm btn-primary"/>
+                        </list>
+                    </field>
+                    <p class="text-muted small mt-1">
+                        Astuce : cliquez sur l'en-tête "Niv. inhérent" pour trier par niveau de risque.
+                    </p>
                 </sheet>
             </form>
         </field>

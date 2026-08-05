@@ -46,21 +46,43 @@ class RiskRisk(models.Model):
     asset_ids = fields.Many2many('risk.asset', string='Actifs')
     organization_ids = fields.Many2many('risk.organization', string='Unités organisationnelles')
     active = fields.Boolean(string='Actif', default=True)
+    # ⚠️ Retour d'architecture (décision revue) : control_ids reste calculé et
+    # combine désormais DEUX sources — les contrôles hérités de l'activité
+    # (partagés par tous les risques de cette activité, comme avant) ET les
+    # contrôles ajoutés directement sur ce risque via additional_control_ids
+    # ci-dessous (propres à ce risque, pas partagés). On écrit sur
+    # additional_control_ids, jamais directement sur control_ids (toujours
+    # readonly dans les vues, pour ne pas perdre la partie héritée de
+    # l'activité au prochain recalcul).
     control_ids = fields.Many2many(
         'risk.control',
         compute='_compute_control_ids',
         store=True,
-        string='Contrôles (via l\'activité)',
-        help="Contrôles rattachés à l'activité de ce risque. Calculé automatiquement : "
-             "pour ajouter/retirer un contrôle, passe par la fiche de l'activité ou "
-             "du contrôle lui-même — le changement se répercute alors sur tous les "
-             "risques de cette activité."
+        string='Contrôles',
+        help="Tous les contrôles de ce risque : ceux hérités de l'activité "
+             "(partagés avec les autres risques de la même activité) et ceux "
+             "ajoutés directement sur ce risque (additional_control_ids). "
+             "Champ calculé, en lecture seule — pour ajouter un contrôle, "
+             "utilise le champ 'Contrôles supplémentaires' ci-dessous, ou "
+             "passe par la fiche de l'activité pour un contrôle partagé."
     )
 
-    @api.depends('activity_id', 'activity_id.control_ids')
+    additional_control_ids = fields.Many2many(
+        'risk.control',
+        'risk_risk_additional_control_rel',
+        'risk_id',
+        'control_id',
+        string='Contrôles supplémentaires',
+        help="Contrôles ajoutés directement sur ce risque, en plus de ceux "
+             "hérités de son activité — propres à ce risque, non partagés "
+             "avec les autres risques de la même activité."
+    )
+
+    @api.depends('activity_id', 'activity_id.control_ids', 'additional_control_ids')
     def _compute_control_ids(self):
         for risk in self:
-            risk.control_ids = risk.activity_id.control_ids if risk.activity_id else False
+            from_activity = risk.activity_id.control_ids if risk.activity_id else risk.env['risk.control']
+            risk.control_ids = from_activity | risk.additional_control_ids
     kri_ids = fields.Many2many('risk.kri', string='KRI')
     incident_ids = fields.One2many('risk.incident', 'risk_id', string='Incidents')
     incident_count = fields.Integer(compute='_compute_incident_count', string="Nombre d'incidents")
@@ -1935,30 +1957,65 @@ class RiskRisk(models.Model):
 
     ##################################################################
     # AUTO-ÉVALUATION DEPUIS UNE CAMPAGNE (risk.assessment.period)
-    # ⚠️ Champ et méthode dépendants du contexte ('period_id'), utilisés
-    # uniquement depuis la liste "Mes risques à évaluer" de la fiche
-    # risk.assessment.period — jamais affichés/appelés hors de ce contexte.
+    # ⚠️ Champs et méthode dépendants du contexte ('period_id'), utilisés
+    # uniquement depuis le tableau de la fiche risk.assessment.period —
+    # jamais affichés/appelés hors de ce contexte.
     ##################################################################
 
     assessment_state_for_period = fields.Char(
-        compute='_compute_assessment_state_for_period',
+        compute='_compute_assessment_for_period',
         string="Statut d'évaluation (période)",
     )
 
+    assessment_residual_level_for_period = fields.Selection(
+        [('low', 'Faible'), ('medium', 'Modéré'), ('high', 'Élevé')],
+        compute='_compute_assessment_for_period',
+        string='Niveau résiduel (période)',
+    )
+
+    assessment_assessor_for_period = fields.Char(
+        compute='_compute_assessment_for_period',
+        string='Évaluateur (période)',
+    )
+
+    assessment_gap_for_period = fields.Char(
+        compute='_compute_assessment_for_period',
+        string='Écart (période)',
+        help="Écart entre le niveau inhérent et le niveau résiduel de cette évaluation, "
+             "en nombre de niveaux (négatif = risque réduit par les contrôles). "
+             "Vide si aucune évaluation n'existe encore pour cette période."
+    )
+
     @api.depends()
-    def _compute_assessment_state_for_period(self):
+    def _compute_assessment_for_period(self):
         period_id = self.env.context.get('period_id')
+        level_rank = {'low': 1, 'medium': 2, 'high': 3}
         state_labels = dict(self.env['risk.assessment']._fields['state'].selection)
+
         for record in self:
-            label = False
+            assessment = False
             if period_id:
                 assessment = self.env['risk.assessment'].search([
                     ('risk_id', '=', record.id),
                     ('period_id', '=', period_id),
                 ], limit=1)
-                if assessment:
-                    label = state_labels.get(assessment.state)
-            record.assessment_state_for_period = label or 'Non évalué'
+
+            if assessment:
+                record.assessment_state_for_period = state_labels.get(assessment.state) or 'Non évalué'
+                record.assessment_residual_level_for_period = assessment.risk_level
+                record.assessment_assessor_for_period = assessment.assessor_id.name or ''
+
+                inherent_rank = level_rank.get(record.inherent_level, 0)
+                residual_rank = level_rank.get(assessment.risk_level, 0)
+                if inherent_rank and residual_rank:
+                    record.assessment_gap_for_period = f"{residual_rank - inherent_rank:+d}"
+                else:
+                    record.assessment_gap_for_period = ''
+            else:
+                record.assessment_state_for_period = 'Non évalué'
+                record.assessment_residual_level_for_period = False
+                record.assessment_assessor_for_period = ''
+                record.assessment_gap_for_period = ''
 
     def action_start_assessment(self):
         """Depuis l'onglet "Mes risques à évaluer" d'une campagne (risk.assessment.period,
