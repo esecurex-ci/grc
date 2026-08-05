@@ -67,7 +67,7 @@ export class ExecutiveDashboard extends Component {
                     "state", "category_id"
                 ],
                 1000,
-                "inherent_score desc"
+                "residual_score desc"
             );
 
             console.log("🏛️ Données brutes :", data);
@@ -99,41 +99,41 @@ export class ExecutiveDashboard extends Component {
         let notStarted = 0, inProgress = 0, completed = 0, delayed = 0;
 
         data.forEach(risk => {
-            // --- Matrice ---
-            const impact = parseInt(risk.inherent_impact) || 1;
-            const prob = parseInt(risk.inherent_probability) || 1;
+            // --- Matrice (niveau résiduel : exposition actuelle après contrôles) ---
+            const impact = parseInt(risk.residual_impact) || 1;
+            const prob = parseInt(risk.residual_probability) || 1;
             if (matrix[impact]) {
                 matrix[impact][prob] = matrix[impact][prob] || [];
                 matrix[impact][prob].push({
                     id: risk.id,
                     name: risk.name,
                     code: risk.code,
-                    level: risk.inherent_level,
-                    score: risk.inherent_score,
+                    level: risk.residual_level,
+                    score: risk.residual_score,
                 });
             }
 
-            // --- Niveaux (échelle réelle à 3 niveaux : Faible/Modéré/Élevé) ---
-            const level = risk.inherent_level || 'low';
+            // --- Niveaux résiduels (échelle réelle à 3 niveaux : Faible/Modéré/Élevé) ---
+            const level = risk.residual_level || 'low';
             if (level === 'high') high++;
             else if (level === 'medium') medium++;
             else low++;
 
-            // --- Score total ---
-            totalScore += risk.inherent_score || 0;
+            // --- Score total (résiduel) ---
+            totalScore += risk.residual_score || 0;
 
             // --- Catégories ---
             const catName = risk.category_id ? risk.category_id[1] || 'Non catégorisé' : 'Non catégorisé';
             categoryMap[catName] = (categoryMap[catName] || 0) + 1;
 
-            // --- Risques de niveau élevé (sommet réel de l'échelle) ---
+            // --- Risques de niveau résiduel élevé (sommet réel de l'échelle) ---
             if (level === 'high') {
                 highRisks.push({
                     id: risk.id,
                     name: risk.name,
                     code: risk.code,
                     level: level,
-                    score: risk.inherent_score,
+                    score: risk.residual_score,
                     state: risk.state,
                 });
             }
@@ -144,21 +144,21 @@ export class ExecutiveDashboard extends Component {
             else if (risk.state === 'obsolete') completed++;
         });
 
-        // ✅ Top risques
+        // ✅ Top risques résiduels — le titre "Top 5" borne explicitement ce nombre
         const topRisks = data.slice(0, 5).map(r => ({
             id: r.id,
             name: r.name,
             code: r.code,
-            level: r.inherent_level,
-            score: r.inherent_score,
+            level: r.residual_level,
+            score: r.residual_score,
             state: r.state,
         }));
 
-        // ✅ Risques de niveau élevé (top 5)
-        highRisks = highRisks.slice(0, 5);
+        // ✅ Risques de niveau résiduel élevé : pas de troncature, le titre du
+        // panneau ("Risques de Niveau Résiduel Élevé") n'annonce aucune limite.
 
-        // ✅ Posture globale (basée sur le nombre de risques de niveau Élevé,
-        // sommet réel de l'échelle à 3 niveaux — pas de notion d'appétit ici)
+        // ✅ Posture globale (basée sur le nombre de risques de niveau résiduel
+        // Élevé, sommet réel de l'échelle à 3 niveaux — pas de notion d'appétit ici)
         let posture;
         if (high <= 2) posture = '✅ Maîtrisé';
         else if (high <= 4) posture = '⚠️ À surveiller';
@@ -181,15 +181,50 @@ export class ExecutiveDashboard extends Component {
             completed: completed,
             delayed: delayed,
         };
-        this.state.narratives = [
-            { icon: '🔺', text: 'Nouveau risque identifié : Risque de réputation' },
-            { icon: '📈', text: 'Augmentation du risque Cyber (score: 16 → 20)' },
-            { icon: '✅', text: 'Mise en place du plan de continuité fournisseur' },
-            { icon: '⚠️', text: 'Retard dans le plan d\'action RGPD (report T4 2024)' },
-        ];
+        this.state.narratives = this.generateNarratives(high, medium, low, highRisks);
 
         console.log("🏛️ Dashboard chargé !", this.state);
         console.log("🏛️ Matrice :", this.state.matrix);
+    }
+
+    /**
+     * Génère le rapport narratif à partir du niveau résiduel (exposition
+     * actuelle après contrôles), en faisant ressortir les risques Élevés,
+     * Modérés et Faibles — remplace le texte statique précédent.
+     */
+    generateNarratives(high, medium, low, highRisksList) {
+        const narratives = [];
+
+        if (high > 0) {
+            narratives.push({
+                icon: '🔴',
+                text: `${high} risque${high > 1 ? 's' : ''} de niveau résiduel Élevé à traiter en priorité`,
+            });
+            highRisksList.slice(0, 3).forEach(risk => {
+                narratives.push({
+                    icon: '⚠️',
+                    text: `Risque résiduel élevé persistant : ${risk.name} (${risk.code})`,
+                });
+            });
+        } else {
+            narratives.push({ icon: '✅', text: 'Aucun risque de niveau résiduel Élevé' });
+        }
+
+        if (medium > 0) {
+            narratives.push({
+                icon: '🟡',
+                text: `${medium} risque${medium > 1 ? 's' : ''} de niveau résiduel Modéré à surveiller`,
+            });
+        }
+
+        if (low > 0) {
+            narratives.push({
+                icon: '🟢',
+                text: `${low} risque${low > 1 ? 's' : ''} de niveau résiduel Faible, sous contrôle`,
+            });
+        }
+
+        return narratives;
     }
 
     loadTestData() {
@@ -224,11 +259,7 @@ export class ExecutiveDashboard extends Component {
             completed: 0,
             delayed: 0,
         };
-        this.state.narratives = [
-            { icon: '🔺', text: 'Nouveau risque identifié : Risque de réputation' },
-            { icon: '📈', text: 'Augmentation du risque Cyber' },
-            { icon: '✅', text: 'Mise en place du plan de continuité' },
-        ];
+        this.state.narratives = this.generateNarratives(2, 1, 0, this.state.highRisks);
         this.state.loading = false;
     }
 
@@ -288,7 +319,7 @@ export class ExecutiveDashboard extends Component {
         if (riskIds.length > 0) {
             this.action.doAction({
                 type: "ir.actions.act_window",
-                name: `Risques (Impact: ${impact}, Probabilité: ${likelihood})`,
+                name: `Risques (Impact résiduel: ${impact}, Probabilité résiduelle: ${likelihood})`,
                 res_model: "risk.risk",
                 views: [[false, "list"], [false, "form"]],
                 domain: [["id", "in", riskIds]],
@@ -310,10 +341,10 @@ export class ExecutiveDashboard extends Component {
     openHighRisks() {
         this.action.doAction({
             type: "ir.actions.act_window",
-            name: "Risques de niveau élevé",
+            name: "Risques de niveau résiduel élevé",
             res_model: "risk.risk",
             views: [[false, "list"], [false, "form"]],
-            domain: [["inherent_level", "=", "high"]],
+            domain: [["residual_level", "=", "high"]],
             target: "current",
         });
     }

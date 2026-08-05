@@ -62,7 +62,7 @@
                     <div class="row g-3 mb-4">
                         <div class="col-12">
                             <div class="chart-card">
-                                <h5 class="chart-title">🔥 Matrice des Risques Stratégiques</h5>
+                                <h5 class="chart-title">🔥 Matrice des Risques Stratégiques (Niveau résiduel)</h5>
                                 <div style="display:flex;justify-content:center;overflow-x:auto;">
                                     <div style="display:flex;flex-direction:column;align-items:center;">
                                         <div style="display:flex;">
@@ -109,7 +109,7 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <div class="chart-card">
-                                <h5 class="chart-title">⚠️ Risques de Niveau Élevé</h5>
+                                <h5 class="chart-title">⚠️ Risques de Niveau Résiduel Élevé</h5>
                                 <div t-if="state.highRisks.length > 0">
                                     <div style="max-height:200px;overflow-y:auto;">
                                         <div class="risk-item" t-foreach="state.highRisks" t-as="risk" t-key="risk.id">
@@ -126,18 +126,18 @@
                                         </div>
                                     </div>
                                     <a href="#" class="view-all-link" t-on-click.prevent="openHighRisks">
-                                        Voir tous les risques de niveau élevé →
+                                        Voir tous les risques de niveau résiduel élevé →
                                     </a>
                                 </div>
                                 <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
-                                    ✅ Aucun risque de niveau élevé
+                                    ✅ Aucun risque de niveau résiduel élevé
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="chart-card">
-                                <h5 class="chart-title">📋 Top 5 Risques Matériels</h5>
+                                <h5 class="chart-title">📋 Top 5 Risques Matériels (Résiduels)</h5>
                                 <div style="max-height:200px;overflow-y:auto;">
                                     <div class="risk-item" t-foreach="state.topRisks" t-as="risk" t-key="risk.id">
                                         <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;">
@@ -207,7 +207,7 @@
                             <div class="chart-card">
                                 <h5 class="chart-title">📝 Rapport Narratif - Principaux changements</h5>
                                 <div style="max-height:120px;overflow-y:auto;">
-                                    <div t-foreach="state.narratives" t-as="item" t-key="item.icon">
+                                    <div t-foreach="state.narratives" t-as="item" t-key="item_index">
                                         <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f5f5f5;">
                                             <span style="font-size:16px;"><t t-esc="item.icon"/></span>
                                             <span style="font-size:13px;color:#495057;"><t t-esc="item.text"/></span>

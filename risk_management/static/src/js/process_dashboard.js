@@ -98,15 +98,24 @@ export class ProcessDashboard extends Component {
         processes.forEach(process => {
             const processRisks = riskMap[process.id] || [];
 
-            // ✅ Échelle à 3 niveaux : Élevé (16-25) / Modéré (6-15) / Faible (1-5)
+            // ✅ Échelle à 3 niveaux : Élevé / Modéré / Faible — niveau INHÉRENT
             const highCount = processRisks.filter(r => r.inherent_level === 'high').length;
             const mediumCount = processRisks.filter(r => r.inherent_level === 'medium').length;
             const lowCount = processRisks.filter(r => r.inherent_level === 'low').length;
 
-            // Déterminer le niveau global du processus
+            // ✅ Même échelle, niveau RÉSIDUEL (exposition actuelle après contrôles)
+            const residualHighCount = processRisks.filter(r => r.residual_level === 'high').length;
+            const residualMediumCount = processRisks.filter(r => r.residual_level === 'medium').length;
+            const residualLowCount = processRisks.filter(r => r.residual_level === 'low').length;
+
+            // Déterminer le niveau global du processus, en inhérent ET en résiduel
             let level = 'low';
             if (highCount > 0) level = 'high';
             else if (mediumCount > 0) level = 'medium';
+
+            let residualLevel = 'low';
+            if (residualHighCount > 0) residualLevel = 'high';
+            else if (residualMediumCount > 0) residualLevel = 'medium';
 
             // ✅ CORRIGÉ : utiliser le champ 'category' (Selection) directement
             const category = process.category || 'operational';
@@ -119,27 +128,32 @@ export class ProcessDashboard extends Component {
                 mediumCount,
                 lowCount,
                 level,
+                residualHighCount,
+                residualMediumCount,
+                residualLowCount,
+                residualLevel,
                 categoryLabel
             };
 
-            // Statistiques par catégorie
+            // Statistiques par catégorie (basées sur le niveau résiduel : c'est
+            // l'exposition actuelle, après contrôles, qui pilote le dashboard)
             if (!categories[categoryLabel]) {
                 categories[categoryLabel] = { high: 0, medium: 0, low: 0, total: 0 };
             }
-            categories[categoryLabel][level]++;
+            categories[categoryLabel][residualLevel]++;
             categories[categoryLabel].total++;
         });
 
         // ============================================================
-        // 1. KPI CARDS
+        // 1. KPI CARDS (niveau résiduel : exposition actuelle après contrôles)
         // ============================================================
         this.state.totalProcesses = processes.length;
-        this.state.high = Object.values(processLevels).filter(p => p.level === 'high').length;
-        this.state.medium = Object.values(processLevels).filter(p => p.level === 'medium').length;
-        this.state.low = Object.values(processLevels).filter(p => p.level === 'low').length;
+        this.state.high = Object.values(processLevels).filter(p => p.residualLevel === 'high').length;
+        this.state.medium = Object.values(processLevels).filter(p => p.residualLevel === 'medium').length;
+        this.state.low = Object.values(processLevels).filter(p => p.residualLevel === 'low').length;
 
         // ============================================================
-        // 2. RISK DISTRIBUTION (pour les Donuts) - Échelle à 3 niveaux
+        // 2. RISK DISTRIBUTION (pour les Donuts) - niveau résiduel
         // ============================================================
         this.state.riskDistribution = [
             { label: 'Élevé', value: this.state.high, color: '#dc3545' },
@@ -148,7 +162,8 @@ export class ProcessDashboard extends Component {
         ];
 
         // ============================================================
-        // 3. PROCESSUS À RISQUE ÉLEVÉ
+        // 3. SOUS PROCESSUS À RISQUE INHÉRENT ÉLEVÉ — pas de limite,
+        //    le titre du panneau n'annonce aucun nombre maximum.
         // ============================================================
         this.state.highRiskProcesses = Object.values(processLevels)
             .filter(p => p.level === 'high')
@@ -158,21 +173,22 @@ export class ProcessDashboard extends Component {
                 code: p.code || 'N/A',
                 count: p.riskCount,
                 owner: p.owner_id ? p.owner_id[1] : 'Non assigné'
-            }))
-            .slice(0, 10);
+            }));
 
         // ============================================================
-        // 4. TOP 5 PROCESSUS À RISQUE
+        // 4. SOUS PROCESSUS À RISQUE RÉSIDUEL ÉLEVÉ — filtré sur le
+        //    niveau résiduel (et non plus un simple "top 5 par volume"),
+        //    sans limite non plus.
         // ============================================================
         this.state.topProcesses = Object.values(processLevels)
+            .filter(p => p.residualLevel === 'high')
             .sort((a, b) => b.riskCount - a.riskCount)
-            .slice(0, 5)
             .map(p => ({
                 id: p.id,
                 name: p.name,
                 code: p.code || 'N/A',
                 count: p.riskCount,
-                level: p.level,
+                level: p.residualLevel,
                 owner: p.owner_id ? p.owner_id[1] : 'Non assigné'
             }));
 
@@ -218,34 +234,33 @@ export class ProcessDashboard extends Component {
         if (this.state.high > 0) {
             narratives.push({
                 icon: '🔴',
-                text: `${this.state.high} processus présentent un niveau de risque élevé : une attention prioritaire est requise.`
+                text: `${this.state.high} sous processus présentent un niveau de risque résiduel Élevé : attention prioritaire requise.`
+            });
+        } else {
+            narratives.push({
+                icon: '✅',
+                text: 'Aucun sous processus à risque résiduel Élevé.'
             });
         }
 
-        const totalRisky = this.state.high;
-        if (totalRisky === 0) {
+        if (this.state.medium > 0) {
             narratives.push({
-                icon: '✅',
-                text: 'Aucun processus à risque élevé. Bonne maîtrise des risques !'
+                icon: '🟡',
+                text: `${this.state.medium} sous processus présentent un niveau de risque résiduel Modéré à surveiller.`
             });
-        } else if (totalRisky > this.state.totalProcesses * 0.5) {
+        }
+
+        if (this.state.low > 0) {
             narratives.push({
-                icon: '⚠️',
-                text: `Plus de 50% des processus (${totalRisky}/${this.state.totalProcesses}) présentent un risque élevé.`
+                icon: '🟢',
+                text: `${this.state.low} sous processus présentent un niveau de risque résiduel Faible, sous contrôle.`
             });
         }
 
         if (this.state.processesWithoutRisk.length > 0) {
             narratives.push({
                 icon: '📋',
-                text: `${this.state.processesWithoutRisk.length} processus n'ont aucun risque identifié. Vérification recommandée.`
-            });
-        }
-
-        if (narratives.length === 0) {
-            narratives.push({
-                icon: '📊',
-                text: 'Aucun changement significatif détecté. Les processus sont sous contrôle.'
+                text: `${this.state.processesWithoutRisk.length} sous processus n'ont aucun risque identifié. Vérification recommandée.`
             });
         }
 

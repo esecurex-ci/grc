@@ -398,7 +398,7 @@
                     <div class="col-12">
                         <div class="chart-card narrative-card">
                             <h5 class="chart-title">📝 Rapport Narratif - Principaux changements</h5>
-                            <div t-foreach="state.narratives" t-as="item" t-key="item.icon">
+                            <div t-foreach="state.narratives" t-as="item" t-key="item_index">
                                 <div class="narrative-item">
                                     <span class="narr-icon"><t t-esc="item.icon"/></span>
                                     <span class="narr-text"><t t-esc="item.text"/></span>

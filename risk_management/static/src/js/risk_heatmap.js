@@ -377,11 +377,28 @@ export class RiskHeatMap extends Component {
             });
         }
 
-        const highRisks = risks.filter(r => r.inherent_level === 'high');
+        // Niveau résiduel (exposition actuelle après contrôles), en faisant
+        // ressortir les trois niveaux : Élevé, Modéré et Faible.
+        const highRisks = risks.filter(r => r.residual_level === 'high');
+        const mediumRisks = risks.filter(r => r.residual_level === 'medium');
+        const lowRisks = risks.filter(r => r.residual_level === 'low');
+
         if (highRisks.length > 0) {
             narratives.push({
                 icon: '🔴',
-                text: `${highRisks.length} risque(s) à niveau élevé nécessitent une attention immédiate.`
+                text: `${highRisks.length} risque(s) de niveau résiduel Élevé nécessitent une attention immédiate.`
+            });
+        }
+        if (mediumRisks.length > 0) {
+            narratives.push({
+                icon: '🟡',
+                text: `${mediumRisks.length} risque(s) de niveau résiduel Modéré à surveiller.`
+            });
+        }
+        if (lowRisks.length > 0) {
+            narratives.push({
+                icon: '🟢',
+                text: `${lowRisks.length} risque(s) de niveau résiduel Faible, sous contrôle.`
             });
         }
 

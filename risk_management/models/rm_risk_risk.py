@@ -1961,7 +1961,12 @@ class RiskRisk(models.Model):
     assessment_residual_level_for_period = fields.Selection(
         [('low', 'Faible'), ('medium', 'Modéré'), ('high', 'Élevé')],
         compute='_compute_assessment_for_period',
-        string='Niveau résiduel (période)',
+        string='Niveau résiduel',
+        help="Niveau résiduel issu de l'évaluation de CETTE campagne si elle "
+             "existe déjà ; sinon, niveau résiduel actuellement enregistré "
+             "sur la fiche du risque (calculé à partir du niveau inhérent et "
+             "de l'efficacité des contrôles), en attendant que le risque "
+             "soit évalué sur cette campagne."
     )
 
     assessment_assessor_for_period = fields.Char(
@@ -1977,7 +1982,7 @@ class RiskRisk(models.Model):
              "Vide si aucune évaluation n'existe encore pour cette période."
     )
 
-    @api.depends()
+    @api.depends('residual_level')
     def _compute_assessment_for_period(self):
         period_id = self.env.context.get('period_id')
         level_rank = {'low': 1, 'medium': 2, 'high': 3}
@@ -2004,7 +2009,9 @@ class RiskRisk(models.Model):
                     record.assessment_gap_for_period = ''
             else:
                 record.assessment_state_for_period = 'Non évalué'
-                record.assessment_residual_level_for_period = False
+                # Pas encore évalué sur cette campagne : on retombe sur le
+                # niveau résiduel déjà connu de la fiche du risque.
+                record.assessment_residual_level_for_period = record.residual_level
                 record.assessment_assessor_for_period = ''
                 record.assessment_gap_for_period = ''
 
@@ -2012,7 +2019,14 @@ class RiskRisk(models.Model):
         """Depuis l'onglet "Mes risques à évaluer" d'une campagne (risk.assessment.period,
         contexte 'period_id') : ouvre l'évaluation déjà existante pour ce risque sur cette
         période, ou en crée une nouvelle (pré-remplie avec les valeurs actuelles du risque,
-        comme le fait déjà l'onchange sur risk.assessment) si aucune n'existe encore."""
+        comme le fait déjà l'onchange sur risk.assessment) si aucune n'existe encore.
+
+        Ouvre en navigation complète (target='current') plutôt qu'en popup : couplé au
+        bouton "Retour à la campagne" sur la fiche d'évaluation (qui renvoie via une
+        action fraîche, pas via le fil d'Ariane), cela garantit que le tableau de la
+        campagne est bien rechargé depuis le serveur au retour — les popups ne
+        déclenchent pas toujours ce rechargement pour les champs calculés non stockés
+        qui dépendent du contexte 'period_id'."""
         self.ensure_one()
         period_id = self.env.context.get('period_id')
         if not period_id:
@@ -2039,7 +2053,7 @@ class RiskRisk(models.Model):
             'res_model': 'risk.assessment',
             'res_id': assessment.id,
             'view_mode': 'form',
-            'target': 'new',
+            'target': 'current',
         }
 
     def _get_heatmap_color(self, score):

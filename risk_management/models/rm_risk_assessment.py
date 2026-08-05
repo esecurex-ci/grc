@@ -348,3 +348,21 @@ class RiskAssessment(models.Model):
 
     def action_reset(self):
         self.write({'state': 'draft'})
+
+    def action_back_to_period(self):
+        """Retourne à la fiche de la campagne (risk.assessment.period) via une
+        action fraîche du serveur, PAS via le fil d'Ariane (breadcrumb) : cliquer
+        sur le fil d'Ariane réutilise l'ancienne vue déjà en cache côté client, ce
+        qui peut laisser le tableau de la campagne affiché avec des données
+        obsolètes (statut, niveau résiduel...). Redispatcher une action provoque
+        un rechargement complet et garantit que le tableau reflète bien
+        l'évaluation qui vient d'être faite."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.period_id.name,
+            'res_model': 'risk.assessment.period',
+            'res_id': self.period_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }

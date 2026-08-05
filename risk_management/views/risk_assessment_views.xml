@@ -99,6 +99,8 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <button name="action_back_to_period" string="↩ Retour à la campagne" type="object"
+                            class="btn-secondary" invisible="not period_id"/>
                     <button name="action_submit" string="Soumettre" type="object" class="btn-primary"
                             invisible="state not in ['draft']"/>
                     <button name="action_review" string="Réviser" type="object" class="btn-info"
