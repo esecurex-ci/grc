@@ -2039,7 +2039,7 @@ class RiskRisk(models.Model):
             'res_model': 'risk.assessment',
             'res_id': assessment.id,
             'view_mode': 'form',
-            'target': 'current',
+            'target': 'new',
         }
 
     def _get_heatmap_color(self, score):
