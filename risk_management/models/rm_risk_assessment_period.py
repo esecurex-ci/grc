@@ -1,6 +1,7 @@
 import base64
-import csv
 import io
+
+import xlsxwriter
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
@@ -60,7 +61,7 @@ class RiskAssessmentPeriod(models.Model):
     only_my_risks = fields.Boolean(
         string='Filtrer sur mes risques',
         help="Limite le tableau ci-dessous aux risques rattachés au(x) "
-             "macro-processus dont l'utilisateur connecté est responsable "
+             "processus dont l'utilisateur connecté est responsable "
              "(risk.macro.process.owner_id), au lieu de tout le registre."
     )
 
@@ -83,10 +84,18 @@ class RiskAssessmentPeriod(models.Model):
         string='Risques élevés'
     )
 
+    progress_percent = fields.Float(
+        compute='_compute_register_stats',
+        string='Progression de la campagne',
+        help="Pourcentage de risques du registre déjà évalués sur cette période."
+    )
+
     pending_risk_count = fields.Integer(
         compute='_compute_register_stats',
         string='Restant à évaluer',
-        help="Risques actifs du registre qui n'ont pas encore d'évaluation sur cette période."
+        help="La cartographie ne comporte pas de notion de risque hors "
+             "appétit : ce KPI indique simplement combien de risques du "
+             "registre n'ont pas encore été évalués sur cette période."
     )
 
     @api.depends('assessment_ids')
@@ -109,11 +118,13 @@ class RiskAssessmentPeriod(models.Model):
     @api.depends('assessment_ids')
     def _compute_register_stats(self):
         all_risks = self.env['risk.risk'].search([('active', '=', True)])
+        total = len(all_risks)
         high_count = len(all_risks.filtered(lambda r: r.inherent_level == 'high'))
         for rec in self:
-            rec.total_risk_count = len(all_risks)
+            rec.total_risk_count = total
             rec.high_risk_count = high_count
-            rec.pending_risk_count = max(0, len(all_risks) - len(rec.assessment_ids))
+            rec.progress_percent = (len(rec.assessment_ids) / total * 100) if total else 0.0
+            rec.pending_risk_count = max(0, total - len(rec.assessment_ids))
 
     @api.constrains('date_start', 'date_end')
     def _check_dates(self):
@@ -131,31 +142,66 @@ class RiskAssessmentPeriod(models.Model):
         self.write({'state': 'closed'})
 
     def action_export(self):
-        """Exporte en CSV le tableau de la campagne : chaque risque actif du
-        registre avec son évaluation sur CETTE période (si elle existe)."""
+        """Exporte en XLSX (mise en forme, couleurs par niveau) le tableau de
+        la campagne : chaque risque actif du registre avec son évaluation sur
+        CETTE période (si elle existe)."""
         self.ensure_one()
 
         risks = self.env['risk.risk'].search([('active', '=', True)])
 
-        buffer = io.StringIO()
-        writer = csv.writer(buffer, delimiter=';')
-        writer.writerow([
+        buffer = io.BytesIO()
+        workbook = xlsxwriter.Workbook(buffer, {'in_memory': True})
+        sheet = workbook.add_worksheet('Campagne')
+
+        header_format = workbook.add_format({
+            'bold': True,
+            'bg_color': '#1a237e',
+            'font_color': '#ffffff',
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter',
+        })
+        base_format = workbook.add_format({'border': 1, 'valign': 'vcenter'})
+        center_format = workbook.add_format({'border': 1, 'valign': 'vcenter', 'align': 'center'})
+
+        level_formats = {
+            'low': workbook.add_format({
+                'border': 1, 'valign': 'vcenter', 'align': 'center',
+                'bg_color': '#d4edda', 'font_color': '#155724',
+            }),
+            'medium': workbook.add_format({
+                'border': 1, 'valign': 'vcenter', 'align': 'center',
+                'bg_color': '#fff3cd', 'font_color': '#856404',
+            }),
+            'high': workbook.add_format({
+                'border': 1, 'valign': 'vcenter', 'align': 'center',
+                'bg_color': '#f8d7da', 'font_color': '#721c24',
+            }),
+            False: center_format,
+        }
+
+        headers = [
             'Code', 'Risque', 'Niveau inhérent', 'Niveau résiduel',
             'Écart', 'Évaluateur', 'Statut',
-        ])
+        ]
+        for col, title in enumerate(headers):
+            sheet.write(0, col, title, header_format)
 
+        row = 1
         for risk in risks:
             assessment = self.env['risk.assessment'].search([
                 ('risk_id', '=', risk.id),
                 ('period_id', '=', self.id),
             ], limit=1)
 
+            residual_level_key = False
             residual_label = ''
             assessor_name = ''
             gap_label = ''
             state_label = 'Non évalué'
 
             if assessment:
+                residual_level_key = assessment.risk_level
                 residual_label = LEVEL_LABELS.get(assessment.risk_level, '')
                 assessor_name = assessment.assessor_id.name or ''
                 state_label = dict(
@@ -167,20 +213,31 @@ class RiskAssessmentPeriod(models.Model):
                 if inherent_rank and residual_rank:
                     gap_label = f"{residual_rank - inherent_rank:+d}"
 
-            writer.writerow([
-                risk.code or '',
-                risk.name or '',
-                LEVEL_LABELS.get(risk.inherent_level, ''),
-                residual_label,
-                gap_label,
-                assessor_name,
-                state_label,
-            ])
+            sheet.write(row, 0, risk.code or '', base_format)
+            sheet.write(row, 1, risk.name or '', base_format)
+            sheet.write(row, 2, LEVEL_LABELS.get(risk.inherent_level, ''), level_formats.get(risk.inherent_level, center_format))
+            sheet.write(row, 3, residual_label, level_formats.get(residual_level_key, center_format))
+            sheet.write(row, 4, gap_label, center_format)
+            sheet.write(row, 5, assessor_name, base_format)
+            sheet.write(row, 6, state_label, base_format)
+            row += 1
+
+        sheet.set_column(0, 0, 12)
+        sheet.set_column(1, 1, 45)
+        sheet.set_column(2, 3, 16)
+        sheet.set_column(4, 4, 10)
+        sheet.set_column(5, 5, 22)
+        sheet.set_column(6, 6, 16)
+        sheet.freeze_panes(1, 0)
+        sheet.autofilter(0, 0, row - 1, len(headers) - 1)
+
+        workbook.close()
+        buffer.seek(0)
 
         attachment = self.env['ir.attachment'].create({
-            'name': f"Campagne_{self.code or self.name}.csv",
+            'name': f"Campagne_{self.code or self.name}.xlsx",
             'type': 'binary',
-            'datas': base64.b64encode(buffer.getvalue().encode('utf-8-sig')),
+            'datas': base64.b64encode(buffer.getvalue()),
             'res_model': self._name,
             'res_id': self.id,
         })

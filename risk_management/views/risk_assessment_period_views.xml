@@ -26,7 +26,7 @@
                     <button name="action_close" string="Clôturer" type="object"
                             class="btn-primary" invisible="state != 'open'"
                             confirm="Clôturer cette campagne ? Les évaluations en cours resteront inchangées."/>
-                    <button name="action_export" string="Exporter" type="object" class="btn-secondary"/>
+                    <button name="action_export" string="Exporter (Excel)" type="object" class="btn-secondary"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,open,closed"/>
                 </header>
                 <sheet>
@@ -53,9 +53,9 @@
                     <!-- ============================================ -->
                     <div class="row g-2 mt-2 mb-3">
                         <div class="col-3">
-                            <div class="card text-center h-100">
+                            <div class="card text-center h-100" style="border-color:#1a237e;">
                                 <div class="card-body">
-                                    <h2 class="mb-0"><field name="total_risk_count" nolabel="1"/></h2>
+                                    <h2 class="mb-0" style="color:#1a237e;"><field name="total_risk_count" nolabel="1"/></h2>
                                     <span class="text-muted">Nb risques total</span>
                                 </div>
                             </div>
@@ -69,9 +69,9 @@
                             </div>
                         </div>
                         <div class="col-3">
-                            <div class="card text-center h-100">
+                            <div class="card text-center h-100" style="border-color:#28a745;">
                                 <div class="card-body">
-                                    <h2 class="mb-0"><field name="assessment_count" nolabel="1"/></h2>
+                                    <h2 class="mb-0" style="color:#28a745;"><field name="assessment_count" nolabel="1"/></h2>
                                     <span class="text-muted">Nb évaluations</span>
                                 </div>
                             </div>
@@ -87,11 +87,19 @@
                     </div>
 
                     <!-- ============================================ -->
+                    <!-- PROGRESSION DE LA CAMPAGNE                   -->
+                    <!-- ============================================ -->
+                    <div class="mb-3">
+                        <label for="progress_percent" string="Progression de l'évaluation" class="text-muted small mb-1"/>
+                        <field name="progress_percent" widget="progressbar" readonly="1" nolabel="1"/>
+                    </div>
+
+                    <!-- ============================================ -->
                     <!-- TABLEAU PRINCIPAL (risques + évaluations)    -->
                     <!-- ============================================ -->
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <field name="only_my_risks" widget="boolean_toggle"/>
-                        <span>Filtrer : afficher uniquement mes risques (mon/mes macro-processus)</span>
+                        <span>Filtrer : afficher uniquement mes risques (mon/mes processus)</span>
                     </div>
 
                     <field name="campaign_risk_ids" context="{'period_id': id}" readonly="1">

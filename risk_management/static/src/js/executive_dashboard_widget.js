@@ -18,7 +18,6 @@ export class ExecutiveDashboard extends Component {
 
         this.state = useState({
             totalRisks: 0,
-            critical: 0,
             high: 0,
             medium: 0,
             low: 0,
@@ -26,7 +25,7 @@ export class ExecutiveDashboard extends Component {
             postureStatus: 'Chargement...',
             matrix: this.initializeMatrix(),
             topRisks: [],
-            overAppetite: [],
+            highRisks: [],
             categoryStats: {},
             actionStats: {
                 not_started: 0,
@@ -93,10 +92,10 @@ export class ExecutiveDashboard extends Component {
         const matrix = this.initializeMatrix();
 
         let total = data.length;
-        let critical = 0, high = 0, medium = 0, low = 0;
+        let high = 0, medium = 0, low = 0;
         let totalScore = 0;
         let categoryMap = {};
-        let overAppetite = [];
+        let highRisks = [];
         let notStarted = 0, inProgress = 0, completed = 0, delayed = 0;
 
         data.forEach(risk => {
@@ -114,10 +113,9 @@ export class ExecutiveDashboard extends Component {
                 });
             }
 
-            // --- Niveaux ---
+            // --- Niveaux (échelle réelle à 3 niveaux : Faible/Modéré/Élevé) ---
             const level = risk.inherent_level || 'low';
-            if (level === 'critical') critical++;
-            else if (level === 'high') high++;
+            if (level === 'high') high++;
             else if (level === 'medium') medium++;
             else low++;
 
@@ -128,9 +126,9 @@ export class ExecutiveDashboard extends Component {
             const catName = risk.category_id ? risk.category_id[1] || 'Non catégorisé' : 'Non catégorisé';
             categoryMap[catName] = (categoryMap[catName] || 0) + 1;
 
-            // --- Hors appétit ---
-            if (level === 'critical' || level === 'high') {
-                overAppetite.push({
+            // --- Risques de niveau élevé (sommet réel de l'échelle) ---
+            if (level === 'high') {
+                highRisks.push({
                     id: risk.id,
                     name: risk.name,
                     code: risk.code,
@@ -156,25 +154,25 @@ export class ExecutiveDashboard extends Component {
             state: r.state,
         }));
 
-        // ✅ Hors appétit (top 5)
-        overAppetite = overAppetite.slice(0, 5);
+        // ✅ Risques de niveau élevé (top 5)
+        highRisks = highRisks.slice(0, 5);
 
-        // ✅ Posture globale
+        // ✅ Posture globale (basée sur le nombre de risques de niveau Élevé,
+        // sommet réel de l'échelle à 3 niveaux — pas de notion d'appétit ici)
         let posture;
-        if (critical <= 2) posture = '✅ Dans appétit';
-        else if (critical <= 4) posture = '⚠️ À surveiller';
-        else posture = '🔴 Hors appétit';
+        if (high <= 2) posture = '✅ Maîtrisé';
+        else if (high <= 4) posture = '⚠️ À surveiller';
+        else posture = '🔴 Vigilance requise';
 
         // ✅ Mise à jour de l'état
         this.state.matrix = matrix;
         this.state.totalRisks = total;
-        this.state.critical = critical;
         this.state.high = high;
         this.state.medium = medium;
         this.state.low = low;
         this.state.avgScore = total > 0 ? (totalScore / total).toFixed(1) : 0;
         this.state.postureStatus = posture;
-        this.state.overAppetite = overAppetite;
+        this.state.highRisks = highRisks;
         this.state.topRisks = topRisks;
         this.state.categoryStats = categoryMap;
         this.state.actionStats = {
@@ -197,24 +195,24 @@ export class ExecutiveDashboard extends Component {
     loadTestData() {
         console.log("🏛️ loadTestData !");
         const matrix = this.initializeMatrix();
-        matrix[5][5] = [{ id: 1, name: 'Test Critique', code: 'TEST-001', level: 'critical', score: 25 }];
-        matrix[4][4] = [{ id: 2, name: 'Test Élevé', code: 'TEST-002', level: 'high', score: 16 }];
+        matrix[5][5] = [{ id: 1, name: 'Test Élevé A', code: 'TEST-001', level: 'high', score: 25 }];
+        matrix[4][4] = [{ id: 2, name: 'Test Élevé B', code: 'TEST-002', level: 'high', score: 16 }];
         matrix[3][3] = [{ id: 3, name: 'Test Moyen', code: 'TEST-003', level: 'medium', score: 9 }];
 
         this.state.matrix = matrix;
         this.state.totalRisks = 3;
-        this.state.critical = 1;
-        this.state.high = 1;
+        this.state.high = 2;
         this.state.medium = 1;
         this.state.low = 0;
         this.state.avgScore = "16.7";
         this.state.postureStatus = '⚠️ À surveiller';
-        this.state.overAppetite = [
-            { id: 1, name: 'Test Critique', code: 'TEST-001', level: 'critical', score: 25, state: 'draft' },
+        this.state.highRisks = [
+            { id: 1, name: 'Test Élevé A', code: 'TEST-001', level: 'high', score: 25, state: 'draft' },
+            { id: 2, name: 'Test Élevé B', code: 'TEST-002', level: 'high', score: 16, state: 'validated' },
         ];
         this.state.topRisks = [
-            { id: 1, name: 'Test Critique', code: 'TEST-001', level: 'critical', score: 25, state: 'draft' },
-            { id: 2, name: 'Test Élevé', code: 'TEST-002', level: 'high', score: 16, state: 'validated' },
+            { id: 1, name: 'Test Élevé A', code: 'TEST-001', level: 'high', score: 25, state: 'draft' },
+            { id: 2, name: 'Test Élevé B', code: 'TEST-002', level: 'high', score: 16, state: 'validated' },
             { id: 3, name: 'Test Moyen', code: 'TEST-003', level: 'medium', score: 9, state: 'draft' },
         ];
         this.state.categoryStats = {
@@ -309,13 +307,13 @@ export class ExecutiveDashboard extends Component {
         });
     }
 
-    openOverAppetiteRisks() {
+    openHighRisks() {
         this.action.doAction({
             type: "ir.actions.act_window",
-            name: "Risques hors appétit",
+            name: "Risques de niveau élevé",
             res_model: "risk.risk",
             views: [[false, "list"], [false, "form"]],
-            domain: [["inherent_level", "in", ["critical", "high"]]],
+            domain: [["inherent_level", "=", "high"]],
             target: "current",
         });
     }

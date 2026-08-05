@@ -128,9 +128,11 @@ class RiskMacroProcess(models.Model):
                 process_risks = process.risk_ids
                 risk_count += len(process_risks)
 
-                # Compter les risques critiques (niveau 5)
+                # Compter les risques critiques : échelle réelle à 3 niveaux
+                # (Faible/Modéré/Élevé, pas de niveau "Critique") → on compte
+                # les risques de niveau inhérent Élevé, sommet réel de l'échelle.
                 for risk in process_risks:
-                    if risk.risk_level == '5' or risk.inherent_level == 'critical':
+                    if risk.inherent_level == 'high':
                         critical_count += 1
 
                 # Compter les activités (si le champ existe)

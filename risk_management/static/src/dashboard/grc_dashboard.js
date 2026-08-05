@@ -34,6 +34,19 @@ export class GrcDashboard extends Component {
 
     async loadDashboard() {
 
+        // Le Cockpit dépendait d'un snapshot jamais généré automatiquement
+        // (KPI figés à zéro). On s'assure qu'un snapshot du jour existe
+        // avant de le charger, sans action manuelle de l'utilisateur.
+        try {
+            await this.orm.call(
+                "risk.metric.engine",
+                "action_ensure_dashboard_snapshot",
+                [[]]
+            );
+        } catch (error) {
+            console.error("🏛️ Erreur génération snapshot GRC :", error);
+        }
+
         const dashboard =
             await this.orm.searchRead(
 

@@ -335,3 +335,31 @@ class RiskMetricEngine(models.Model):
 
         return snapshot
 
+    def action_ensure_dashboard_snapshot(self):
+        """Retourne le snapshot exécutif du jour, en le (re)générant si besoin.
+
+        Le Cockpit Exécutif GRC affichait des KPI figés à zéro car le
+        snapshot n'était jamais créé automatiquement (il fallait déclencher
+        manuellement 'action_generate_dashboard_snapshot'). Cette méthode est
+        appelée par le widget à chaque ouverture du tableau de bord : si un
+        snapshot existe déjà pour aujourd'hui, on le réutilise ; sinon on
+        recalcule un score GRC du jour (si nécessaire) puis on génère un
+        nouveau snapshot, afin que le Cockpit reste à jour sans action
+        manuelle de l'utilisateur.
+        """
+        today = fields.Date.today()
+
+        snapshot = self.env['risk.executive.dashboard.snapshot'].search(
+            [('snapshot_date', '=', today)], limit=1, order='id desc'
+        )
+        if snapshot:
+            return snapshot
+
+        latest_grc = self.env['risk.grc.score'].search(
+            [], limit=1, order='assessment_date desc'
+        )
+        if not latest_grc or latest_grc.assessment_date != today:
+            self.action_calculate_grc_score()
+
+        return self.action_generate_dashboard_snapshot()
+

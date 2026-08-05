@@ -334,15 +334,6 @@ class RiskRisk(models.Model):
         help="Actions correctives associées à ce risque"
     )
 
-    # ✅ Champs DMR complets
-    dmr_control_ids = fields.Many2many(
-        'risk.control',
-        'risk_risk_dmr_control_rel',
-        'risk_id',
-        'control_id',
-        string='Contrôles du DMR'
-    )
-
     dmr_action_count = fields.Integer(
         compute='_compute_dmr_stats',
         string="Nombre de plans d'action"

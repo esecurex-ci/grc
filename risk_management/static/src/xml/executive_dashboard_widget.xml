@@ -24,37 +24,31 @@
                     <!-- KPI CARDS                                -->
                     <!-- ========================================= -->
                     <div class="row g-2 mb-4">
-                        <div class="col-2">
+                        <div class="col">
                             <div class="kpi-card" t-on-click="openAllRisks">
                                 <div class="kpi-label">Total Risques</div>
                                 <div class="kpi-value"><t t-esc="state.totalRisks"/></div>
                             </div>
                         </div>
-                        <div class="col-2">
-                            <div class="kpi-card kpi-critical">
-                                <div class="kpi-label">🔴 Critiques</div>
-                                <div class="kpi-value"><t t-esc="state.critical"/></div>
-                            </div>
-                        </div>
-                        <div class="col-2">
+                        <div class="col">
                             <div class="kpi-card kpi-high">
                                 <div class="kpi-label">🟠 Élevés</div>
                                 <div class="kpi-value"><t t-esc="state.high"/></div>
                             </div>
                         </div>
-                        <div class="col-2">
+                        <div class="col">
                             <div class="kpi-card kpi-medium">
-                                <div class="kpi-label">🟡 Moyens</div>
+                                <div class="kpi-label">🟡 Modérés</div>
                                 <div class="kpi-value"><t t-esc="state.medium"/></div>
                             </div>
                         </div>
-                        <div class="col-2">
+                        <div class="col">
                             <div class="kpi-card kpi-low">
                                 <div class="kpi-label">🟢 Faibles</div>
                                 <div class="kpi-value"><t t-esc="state.low"/></div>
                             </div>
                         </div>
-                        <div class="col-2">
+                        <div class="col">
                             <div class="kpi-card kpi-avg">
                                 <div class="kpi-label">📊 Score moyen</div>
                                 <div class="kpi-value"><t t-esc="state.avgScore"/></div>
@@ -115,10 +109,10 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <div class="chart-card">
-                                <h5 class="chart-title">🎯 Risques Hors Appétit</h5>
-                                <div t-if="state.overAppetite.length > 0">
+                                <h5 class="chart-title">⚠️ Risques de Niveau Élevé</h5>
+                                <div t-if="state.highRisks.length > 0">
                                     <div style="max-height:200px;overflow-y:auto;">
-                                        <div class="risk-item" t-foreach="state.overAppetite" t-as="risk" t-key="risk.id">
+                                        <div class="risk-item" t-foreach="state.highRisks" t-as="risk" t-key="risk.id">
                                             <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;">
                                                 <div>
                                                     <span class="risk-level-badge" t-attf-class="risk-level-badge #{risk.level}">
@@ -131,12 +125,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="#" class="view-all-link" t-on-click.prevent="openOverAppetiteRisks">
-                                        Voir tous les risques hors appétit →
+                                    <a href="#" class="view-all-link" t-on-click.prevent="openHighRisks">
+                                        Voir tous les risques de niveau élevé →
                                     </a>
                                 </div>
                                 <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
-                                    ✅ Aucun risque hors appétit
+                                    ✅ Aucun risque de niveau élevé
                                 </div>
                             </div>
                         </div>
@@ -231,13 +225,13 @@
                         <div class="col-12">
                             <div style="display:flex;justify-content:center;gap:20px;padding:8px;background:#f8f9fa;border-radius:6px;flex-wrap:wrap;">
                                 <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
-                                    <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#dc3545;"></span> Critique
+                                    <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#dc3545;"></span> Très élevé
                                 </span>
                                 <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
                                     <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#fd7e14;"></span> Élevé
                                 </span>
                                 <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
-                                    <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#f0ad4e;"></span> Moyen
+                                    <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#f0ad4e;"></span> Modéré
                                 </span>
                                 <span style="display:flex;align-items:center;gap:6px;font-size:12px;">
                                     <span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:#28a745;"></span> Faible
