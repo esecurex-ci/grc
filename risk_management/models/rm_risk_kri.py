@@ -342,6 +342,13 @@ class RiskKri(models.Model):
         help='Liste des activités des risques associés'
     )
 
+    macro_process_list = fields.Text(
+        compute='_compute_process_list',
+        string='Macro-processus',
+        store=False,
+        help='Liste des macro-processus des risques associés'
+    )
+
     risk_count = fields.Integer(
         compute='_compute_risk_count',
         string='Nombre de risques liés',
@@ -533,11 +540,16 @@ class RiskKri(models.Model):
             else:
                 record.trend = 'stable'
 
-    @api.depends('risk_ids', 'risk_ids.activity_id', 'risk_ids.activity_id.process_id', 'risk_ids.process_id')
+    @api.depends(
+        'risk_ids', 'risk_ids.activity_id', 'risk_ids.activity_id.process_id',
+        'risk_ids.activity_id.process_id.macro_process_id', 'risk_ids.process_id',
+        'risk_ids.process_id.macro_process_id', 'risk_ids.macro_process_id',
+    )
     def _compute_process_list(self):
         for record in self:
             processes = set()
             activities = set()
+            macro_processes = set()
 
             for risk in record.risk_ids:
                 if risk.activity_id:
@@ -545,11 +557,18 @@ class RiskKri(models.Model):
                         activities.add(risk.activity_id.name)
                     if risk.activity_id.process_id and risk.activity_id.process_id.name:
                         processes.add(risk.activity_id.process_id.name)
+                        if risk.activity_id.process_id.macro_process_id and risk.activity_id.process_id.macro_process_id.name:
+                            macro_processes.add(risk.activity_id.process_id.macro_process_id.name)
                 if risk.process_id and risk.process_id.name:
                     processes.add(risk.process_id.name)
+                    if risk.process_id.macro_process_id and risk.process_id.macro_process_id.name:
+                        macro_processes.add(risk.process_id.macro_process_id.name)
+                if risk.macro_process_id and risk.macro_process_id.name:
+                    macro_processes.add(risk.macro_process_id.name)
 
             record.process_list = ', '.join(sorted(processes)) if processes else ''
             record.activity_list = ', '.join(sorted(activities)) if activities else ''
+            record.macro_process_list = ', '.join(sorted(macro_processes)) if macro_processes else ''
 
     @api.depends('risk_ids')
     def _compute_risk_count(self):
