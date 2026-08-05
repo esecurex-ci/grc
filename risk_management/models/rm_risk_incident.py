@@ -3,7 +3,7 @@ from odoo import models, fields, api
 
 class RiskIncident(models.Model):
     _name = 'risk.incident'
-    _description = 'Risk Incident'
+    _description = 'Incident de risque'
     _inherit = [
         'mail.thread',
         'mail.activity.mixin'
@@ -11,122 +11,137 @@ class RiskIncident(models.Model):
     _order = 'incident_date desc'
 
     name = fields.Char(
+        string='Référence',
         readonly=True,
         default='New'
     )
 
     title = fields.Char(
+        string='Titre',
         required=True,
         tracking=True
     )
 
-    description = fields.Html()
+    description = fields.Html(string='Description')
 
     incident_date = fields.Datetime(
+        string="Date de l'incident",
         required=True,
         tracking=True
     )
 
-    detection_date = fields.Datetime()
+    detection_date = fields.Datetime(string='Date de détection')
 
     declaration_date = fields.Datetime(
+        string='Date de déclaration',
         default=fields.Datetime.now
     )
 
     category_id = fields.Many2one(
-        'risk.incident.category'
+        'risk.incident.category',
+        string='Catégorie'
     )
 
     type_id = fields.Many2one(
-        'risk.incident.type'
+        'risk.incident.type',
+        string="Type d'incident"
     )
 
     risk_id = fields.Many2one(
         'risk.risk',
+        string='Risque',
         required=True,
         tracking=True
     )
 
     owner_id = fields.Many2one(
         'hr.employee',
-        string='Incident Owner'
+        string='Responsable'
     )
 
     reporter_id = fields.Many2one(
         'hr.employee',
-        string='Reporter'
+        string='Déclarant'
     )
 
     company_id = fields.Many2one(
         'res.company',
+        string='Société',
         default=lambda self:
         self.env.company
     )
 
     severity = fields.Selection(
         [
-            ('low', 'Low'),
-            ('moderate', 'Moderate'),
-            ('high', 'High'),
-            ('critical', 'Critical')
+            ('low', 'Faible'),
+            ('moderate', 'Modérée'),
+            ('high', 'Élevée'),
+            ('critical', 'Critique')
         ],
+        string='Gravité',
         default='moderate'
     )
 
     status = fields.Selection(
         [
-            ('draft', 'Draft'),
-            ('declared', 'Declared'),
-            ('investigation', 'Investigation'),
-            ('action_plan', 'Action Plan'),
-            ('closed', 'Closed')
+            ('draft', 'Brouillon'),
+            ('declared', 'Déclaré'),
+            ('investigation', 'En investigation'),
+            ('action_plan', "Plan d'action"),
+            ('closed', 'Clôturé')
         ],
+        string='Statut',
         default='draft',
         tracking=True
     )
 
     root_cause_ids = fields.One2many(
         'risk.root.cause',
-        'incident_id'
+        'incident_id',
+        string='Causes racines'
     )
 
     loss_ids = fields.One2many(
         'risk.loss',
-        'incident_id'
+        'incident_id',
+        string='Pertes'
     )
 
     corrective_action_ids = fields.One2many(
         'risk.corrective.action',
-        'incident_id'
+        'incident_id',
+        string='Actions correctives'
     )
 
     total_loss = fields.Monetary(
+        string='Perte totale',
         compute='_compute_total_loss',
         store=True
     )
 
     currency_id = fields.Many2one(
         'res.currency',
+        string='Devise',
         default=lambda self:
         self.env.company.currency_id
     )
-    market_impact = fields.Boolean()
+    market_impact = fields.Boolean(string='Impact sur le marché')
 
-    regulatory_notification = fields.Boolean()
+    regulatory_notification = fields.Boolean(string='Notification réglementaire')
 
-    regulator_notified_date = fields.Date()
+    regulator_notified_date = fields.Date(string='Date de notification au régulateur')
     root_cause_count = fields.Integer(
-        string='Root Causes',
+        string='Nombre de causes racines',
         compute='_compute_statistics'
     )
 
     loss_count = fields.Integer(
-        string='Losses',
+        string='Nombre de pertes',
         compute='_compute_statistics'
     )
 
     corrective_action_count = fields.Integer(
-        string='Corrective Actions',
+        string="Nombre d'actions correctives",
         compute='_compute_statistics'
     )
 
@@ -220,7 +235,7 @@ class RiskIncident(models.Model):
 
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Root Causes',
+            'name': 'Causes racines',
             'res_model': 'risk.root.cause',
             'view_mode': 'list,form',
             'domain': [('incident_id', '=', self.id)],
@@ -235,7 +250,7 @@ class RiskIncident(models.Model):
 
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Losses',
+            'name': 'Pertes',
             'res_model': 'risk.loss',
             'view_mode': 'list,form',
             'domain': [('incident_id', '=', self.id)],
@@ -250,7 +265,7 @@ class RiskIncident(models.Model):
 
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Corrective Actions',
+            'name': 'Actions correctives',
             'res_model': 'risk.corrective.action',
             'view_mode': 'list,form',
             'domain': [('incident_id', '=', self.id)],

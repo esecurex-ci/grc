@@ -2,21 +2,21 @@ from odoo import models, fields
 
 class RiskAsset(models.Model):
     _name = 'risk.asset'
-    _description = 'Asset'
+    _description = 'Actif'
 
-    name = fields.Char(required=True)
+    name = fields.Char(string='Nom', required=True)
 
-    code = fields.Char()
+    code = fields.Char(string='Code')
 
     asset_type = fields.Selection([
         ('application', 'Application'),
-        ('server', 'Server'),
-        ('database', 'Database'),
-        ('network', 'Network'),
+        ('server', 'Serveur'),
+        ('database', 'Base de données'),
+        ('network', 'Réseau'),
         ('cloud', 'Cloud'),
-        ('other', 'Other'),
-    ])
+        ('other', 'Autre'),
+    ], string='Type d\'actif')
 
-    description = fields.Text()
+    description = fields.Text(string='Description')
 
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Actif', default=True)

@@ -2,16 +2,17 @@ from odoo import models, fields
 
 class RiskOrganization(models.Model):
     _name = 'risk.organization'
-    _description = 'Organization Unit'
+    _description = 'Unité organisationnelle'
 
-    name = fields.Char(required=True)
+    name = fields.Char(string='Nom', required=True)
 
-    code = fields.Char()
+    code = fields.Char(string='Code')
 
     manager_id = fields.Many2one(
-        'hr.employee'
+        'hr.employee',
+        string='Responsable'
     )
 
-    description = fields.Text()
+    description = fields.Text(string='Description')
 
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(string='Actif', default=True)

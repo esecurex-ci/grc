@@ -19,7 +19,7 @@ class RiskDocument(models.Model):
 
     name = fields.Char(string="Titre", required=True, tracking=True, translate=True, index=True)
     code = fields.Char(string="Code", required=True, copy=False, tracking=True, index=True)
-    reference = fields.Char(string="Reference", tracking=True, index=True)
+    reference = fields.Char(string="Référence", tracking=True, index=True)
 
     category_id = fields.Many2one(
         "risk.document.category",
@@ -37,11 +37,11 @@ class RiskDocument(models.Model):
         ("guideline", "Ligne directrice"),
         ("manual", "Manuel"),
         ("instruction", "Instruction"),
-        ("template", "Template"),
-        ("form", "Form"),
-        ("register", "Régistre"),
-        ("record", "Record"),
-    ], string="Type Document", default="policy", required=True, tracking=True, index=True)
+        ("template", "Modèle"),
+        ("form", "Formulaire"),
+        ("register", "Registre"),
+        ("record", "Enregistrement"),
+    ], string="Type de document", default="policy", required=True, tracking=True, index=True)
 
     process_id = fields.Many2one("risk.process", string="Sous Processus", tracking=True, index=True,
                                  ondelete="restrict")
@@ -270,7 +270,7 @@ class RiskDocument(models.Model):
             ("approval", "En Validation"),
             ("approved", "Validé"),
             ("published", "Publié"),
-            ("obsolete", "Obsolete"),
+            ("obsolete", "Obsolète"),
             ("archived", "Archivé"),
         ],
         default="draft",

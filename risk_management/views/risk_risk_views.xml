@@ -306,8 +306,6 @@
                             <group name="assets_group">
                                 <field name="asset_ids"/>
                                 <field name="organization_ids"/>
-                                <field name="cause_ids"/>
-                                <field name="impact_ids"/>
                             </group>
                         </page>
 
