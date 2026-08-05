@@ -901,7 +901,10 @@ class RiskRisk(models.Model):
                     <table style="width:100%;border-collapse:collapse;margin:10px 0;border:1px solid #dee2e6;">
                         <thead>
                             <tr>
-                                <th style="background:#f5f5f5;font-weight:700;color:#37474f;border:1px solid #dee2e6;padding:12px 16px;text-align:center;min-width:80px;">Probabilité ↓</th>
+                                <th rowspan="2" style="background:#f5f5f5;font-weight:700;color:#37474f;border:1px solid #dee2e6;padding:12px 16px;text-align:center;min-width:80px;">Probabilité ↓ / Impact →</th>
+                                <th colspan="5" style="background:#f5f5f5;font-weight:700;color:#37474f;border:1px solid #dee2e6;padding:8px 16px;text-align:center;">Impact →</th>
+                            </tr>
+                            <tr>
                 '''
 
                 for i in range(1, 6):

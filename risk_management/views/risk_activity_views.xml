@@ -141,9 +141,6 @@
                        decoration-success="state == 'active'"
                        decoration-warning="state == 'draft'"
                        decoration-danger="state == 'archived'"/>
-                <field name="date_deadline" string="Date limite"/>
-                <field name="date_start" string="Date début"/>
-                <field name="date_end" string="Date fin"/>
 
             </list>
         </field>

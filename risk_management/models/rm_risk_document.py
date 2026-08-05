@@ -142,7 +142,13 @@ class RiskDocument(models.Model):
         ("en", "English"),
     ], default="fr", required=True, srting="Langue")
 
-    keywords = fields.Char()
+    keywords = fields.Char(
+        string='Mots-clés',
+        help="Mots-clés libres (séparés par des virgules) pour faciliter la "
+             "recherche de ce document — utile pour retrouver un document via "
+             "un terme métier qui n'apparaît pas forcément dans le titre, le "
+             "code ou le résumé (ex. \"RGPD, continuité, LCB-FT\")."
+    )
     tags = fields.Many2many("risk.tag", string="Tags")
 
     # =====================================================

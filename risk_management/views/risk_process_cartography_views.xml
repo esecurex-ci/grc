@@ -12,7 +12,6 @@
             <list>
                 <field name="code" string="Code"/>
                 <field name="name" string="Processus"/>
-                <field name="category" string="Catégorie"/>
                 <field name="macro_process_id" string="Famille"/>
                 <field name="owner_id" string="Propriétaire"/>
                 <field name="count_risk" string="Risques" sum="Total"/>
