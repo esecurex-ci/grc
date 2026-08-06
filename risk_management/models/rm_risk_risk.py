@@ -10,7 +10,13 @@ class RiskRisk(models.Model):
     _rec_name = 'name'
 
     name = fields.Char(string='Risque', tracking=True)
-    code = fields.Char(string='Code', readonly=True, default='New', tracking=True)
+    code = fields.Char(
+        string='Code',
+        default='New',
+        tracking=True,
+        help="Code du risque, pré-rempli automatiquement à la création (séquence) "
+             "mais modifiable pour respecter la politique de nomenclature des risques."
+    )
     description = fields.Html(string='Description')
     cause_description = fields.Html(string='Cause')
     consequence_description = fields.Html(string='Conséquence')
