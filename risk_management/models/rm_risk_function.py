@@ -11,7 +11,7 @@ class RiskFunction(models.Model):
     _order = 'name'
     _parent_name = 'parent_id'
     _parent_store = True
-    _rec_name = 'complete_name'
+    _rec_name = 'name'
 
     name = fields.Char(string='Nom de la fonction', required=True, tracking=True)
     code = fields.Char(string='Code', readonly=True, default='New', tracking=True)
@@ -220,20 +220,18 @@ class RiskFunction(models.Model):
         return super().create(vals_list)
 
     def name_get(self):
-        """Par défaut, affiche le chemin hiérarchique complet (complete_name),
-        utile pour distinguer des fonctions de même nom dans des branches
-        différentes de l'organigramme. Certains écrans (ex. Gouvernance
-        documentaire) préfèrent n'afficher que le titre de la fonction elle-même,
-        sans le chemin parent — ils passent 'function_short_name' dans le
-        contexte pour obtenir ce format plus court."""
-        show_short_name = self.env.context.get('function_short_name')
+        """Affiche uniquement le titre de la fonction (record.name), pas le
+        chemin hiérarchique complet (complete_name) — le contexte 'field-level'
+        d'un <field context="..."/> dans une vue ne s'applique qu'aux
+        opérations de recherche/création sur la relation, pas à l'affichage
+        de la valeur déjà sélectionnée dans un formulaire : on ne peut donc
+        pas se contenter d'un rendu conditionnel par écran ici. Le chemin
+        hiérarchique complet reste disponible via le champ 'complete_name'
+        lui-même (affiché explicitement sur la fiche et la liste de
+        risk.function), qui n'est pas affecté par ce changement."""
         result = []
         for record in self:
-            if show_short_name:
-                name = record.name
-            else:
-                name = record.complete_name or record.name
-            result.append((record.id, name))
+            result.append((record.id, record.name))
         return result
 
     # ============================================================
