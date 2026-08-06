@@ -220,9 +220,19 @@ class RiskFunction(models.Model):
         return super().create(vals_list)
 
     def name_get(self):
+        """Par défaut, affiche le chemin hiérarchique complet (complete_name),
+        utile pour distinguer des fonctions de même nom dans des branches
+        différentes de l'organigramme. Certains écrans (ex. Gouvernance
+        documentaire) préfèrent n'afficher que le titre de la fonction elle-même,
+        sans le chemin parent — ils passent 'function_short_name' dans le
+        contexte pour obtenir ce format plus court."""
+        show_short_name = self.env.context.get('function_short_name')
         result = []
         for record in self:
-            name = record.complete_name or record.name
+            if show_short_name:
+                name = record.name
+            else:
+                name = record.complete_name or record.name
             result.append((record.id, name))
         return result
 

@@ -21,7 +21,7 @@
                 <field name="version_label"/>
                 <field name="version_count" widget="badge" string="📋"/>
                 <!-- ✅ REMPLACÉ : owner_id pointe maintenant vers risk.function -->
-                <field name="owner_id" string="Propriétaire"/>
+                <field name="owner_id" string="Propriétaire" context="{'function_short_name': 1}"/>
                 <field name="review_status" widget="badge"/>
                 <field name="review_due" widget="boolean" string="⚠️"/>
                 <field name="active" widget="boolean"/>
@@ -83,18 +83,23 @@
                         </group>
                         <group string="Responsables (Fonctions)">
                             <!-- ✅ REMPLACÉ : risk.function au lieu de hr.employee -->
+                            <!-- context function_short_name : affiche le titre de la fonction seul, sans le chemin hiérarchique complet -->
                             <field name="owner_id" widget="many2one_avatar"
                                    placeholder="Fonction propriétaire"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True}"
+                                   context="{'function_short_name': 1}"/>
                             <field name="author_id" widget="many2one_avatar"
                                    placeholder="Fonction auteur"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True}"
+                                   context="{'function_short_name': 1}"/>
                             <field name="reviewer_id" widget="many2one_avatar"
                                    placeholder="Fonction relecteur"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True}"
+                                   context="{'function_short_name': 1}"/>
                             <field name="approver_id" widget="many2one_avatar"
                                    placeholder="Fonction approbateur"
-                                   options="{'no_create': True}"/>
+                                   options="{'no_create': True}"
+                                   context="{'function_short_name': 1}"/>
                         </group>
                     </group>
 
@@ -267,7 +272,7 @@
                 <field name="state"/>
                 <field name="version_label"/>
                 <field name="category_id"/>
-                <field name="owner_id"/>
+                <field name="owner_id" context="{'function_short_name': 1}"/>
                 <field name="attachment_count"/>
                 <field name="review_status"/>
                 <field name="active"/>
@@ -336,10 +341,10 @@
                 <field name="keywords"/>
                 <field name="summary"/>
                 <!-- ✅ REMPLACÉ : owner_id pointe vers risk.function -->
-                <field name="owner_id" string="Propriétaire"/>
-                <field name="author_id" string="Auteur"/>
-                <field name="reviewer_id" string="Relecteur"/>
-                <field name="approver_id" string="Approbateur"/>
+                <field name="owner_id" string="Propriétaire" context="{'function_short_name': 1}"/>
+                <field name="author_id" string="Auteur" context="{'function_short_name': 1}"/>
+                <field name="reviewer_id" string="Relecteur" context="{'function_short_name': 1}"/>
+                <field name="approver_id" string="Approbateur" context="{'function_short_name': 1}"/>
                 <field name="category_id" string="Catégorie"/>
 
                 <filter name="state_draft" string="Brouillon" domain="[('state', '=', 'draft')]"/>
@@ -371,8 +376,8 @@
                 <filter name="group_category" string="Par catégorie" context="{'group_by': 'category_id'}"/>
                 <filter name="group_type" string="Par type" context="{'group_by': 'document_type'}"/>
                 <filter name="group_state" string="Par statut" context="{'group_by': 'state'}"/>
-                <filter name="group_owner" string="Par propriétaire" context="{'group_by': 'owner_id'}"/>
-                <filter name="group_author" string="Par auteur" context="{'group_by': 'author_id'}"/>
+                <filter name="group_owner" string="Par propriétaire" context="{'group_by': 'owner_id', 'function_short_name': 1}"/>
+                <filter name="group_author" string="Par auteur" context="{'group_by': 'author_id', 'function_short_name': 1}"/>
             </search>
         </field>
     </record>
