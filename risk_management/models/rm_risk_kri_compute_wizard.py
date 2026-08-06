@@ -105,7 +105,8 @@ class RiskKriComputeWizard(models.TransientModel):
             }
             safe_dict.update(params)
 
-            result = eval(self.formula_expression, {"__builtins__": {}}, safe_dict)
+            formula_expression = self.env['risk.kri']._normalize_formula_expression(self.formula_expression)
+            result = eval(formula_expression, {"__builtins__": {}}, safe_dict)
             self.computed_value = float(result)
 
         except Exception as e:

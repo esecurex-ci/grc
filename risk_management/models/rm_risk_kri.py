@@ -606,6 +606,27 @@ class RiskKri(models.Model):
     # CALCUL AUTOMATIQUE
     # ============================================================
 
+    @api.model
+    def _normalize_formula_expression(self, expression):
+        """Remplace les symboles mathématiques usuels (souvent copiés-collés depuis
+        un document ou tapés au clavier avec les symboles "naturels" ×/÷/−) qui ne
+        sont pas des opérateurs Python valides, pour éviter des erreurs de syntaxe
+        cryptiques comme "invalid character '×'" lors du test ou du calcul d'une
+        formule de KRI."""
+        if not expression:
+            return expression
+        replacements = {
+            '×': '*',
+            '÷': '/',
+            '−': '-',
+            '–': '-',  # tiret demi-cadratin
+            '—': '-',  # tiret cadratin
+            '\xa0': ' ',    # espace insécable
+        }
+        for bad, good in replacements.items():
+            expression = expression.replace(bad, good)
+        return expression
+
     def compute_value_from_formula(self, **kwargs):
         self.ensure_one()
 
@@ -623,7 +644,8 @@ class RiskKri(models.Model):
             }
             safe_dict.update(kwargs)
 
-            result = eval(self.formula_expression, {"__builtins__": {}}, safe_dict)
+            formula_expression = self._normalize_formula_expression(self.formula_expression)
+            result = eval(formula_expression, {"__builtins__": {}}, safe_dict)
             return float(result)
         except Exception as e:
             raise ValidationError(_("Erreur de calcul: %s") % str(e))
