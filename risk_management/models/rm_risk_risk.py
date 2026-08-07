@@ -1968,14 +1968,15 @@ class RiskRisk(models.Model):
     )
 
     assessment_residual_level_for_period = fields.Selection(
-        [('low', 'Faible'), ('medium', 'Modéré'), ('high', 'Élevé')],
+        [
+            ('low', 'Faible'), ('medium', 'Modéré'), ('high', 'Élevé'),
+            ('none', 'Non évalué'),
+        ],
         compute='_compute_assessment_for_period',
-        string='Niveau résiduel',
+        string='Niveau résiduel actuel',
         help="Niveau résiduel issu de l'évaluation de CETTE campagne si elle "
-             "existe déjà ; sinon, niveau résiduel actuellement enregistré "
-             "sur la fiche du risque (calculé à partir du niveau inhérent et "
-             "de l'efficacité des contrôles), en attendant que le risque "
-             "soit évalué sur cette campagne."
+             "existe déjà ; 'Non évalué' si ce risque n'a pas encore été "
+             "évalué sur cette campagne."
     )
 
     assessment_assessor_for_period = fields.Char(
@@ -1991,23 +1992,32 @@ class RiskRisk(models.Model):
              "Vide si aucune évaluation n'existe encore pour cette période."
     )
 
+    assessment_previous_residual_level_for_period = fields.Selection(
+        [('low', 'Faible'), ('medium', 'Modéré'), ('high', 'Élevé')],
+        compute='_compute_assessment_for_period',
+        string='Niveau résiduel précédent',
+        help="Niveau résiduel actuellement enregistré sur la fiche du risque "
+             "(risk.risk.residual_level). Ce champ n'est modifié que lorsqu'une "
+             "évaluation est APPROUVÉE (voir risk.assessment.action_approve) : "
+             "tant que l'évaluation de la campagne en cours n'est pas encore "
+             "approuvée, il reflète donc bien le résultat de la dernière "
+             "évaluation validée, c'est-à-dire 'l'évaluation précédente'."
+    )
+
     assessment_residual_variation_for_period = fields.Char(
         compute='_compute_assessment_for_period',
         string='Écart vs évaluation précédente',
-        help="Variation du niveau résiduel entre l'évaluation précédente de ce "
-             "risque (campagne antérieure la plus récente) et celle de la "
-             "campagne actuelle, avec l'ampleur réelle du changement : par "
-             "exemple 'Élevé → Faible' (2 niveaux) n'affiche pas la même chose "
-             "que 'Élevé → Modéré' (1 niveau). Vide si ce risque n'a pas "
-             "encore été évalué sur cette campagne, ou n'a jamais été évalué "
-             "auparavant sur une autre campagne."
+        help="Ampleur de la variation entre le niveau résiduel précédent et "
+             "celui de la campagne actuelle : par exemple un écart de 2 "
+             "niveaux (Élevé → Faible) n'affiche pas la même chose qu'un "
+             "écart de 1 niveau (Élevé → Modéré). Vide si ce risque n'a pas "
+             "encore été évalué sur cette campagne."
     )
 
     @api.depends('residual_level')
     def _compute_assessment_for_period(self):
         period_id = self.env.context.get('period_id')
         level_rank = {'low': 1, 'medium': 2, 'high': 3}
-        level_labels = {'low': 'Faible', 'medium': 'Modéré', 'high': 'Élevé'}
         state_labels = dict(self.env['risk.assessment']._fields['state'].selection)
 
         for record in self:
@@ -2017,6 +2027,15 @@ class RiskRisk(models.Model):
                     ('risk_id', '=', record.id),
                     ('period_id', '=', period_id),
                 ], limit=1)
+
+            # Le niveau résiduel de la fiche du risque n'est mis à jour que
+            # lors de l'APPROBATION d'une évaluation (action_approve) : tant
+            # que celle de la campagne actuelle n'est pas approuvée, il
+            # reflète donc toujours le résultat de la dernière évaluation
+            # validée. C'est une référence "précédente" fiable, sans avoir à
+            # rechercher une autre campagne.
+            record.assessment_previous_residual_level_for_period = record.residual_level
+            previous_rank = level_rank.get(record.residual_level, 0)
 
             if assessment:
                 record.assessment_state_for_period = state_labels.get(assessment.state) or 'Non évalué'
@@ -2030,41 +2049,22 @@ class RiskRisk(models.Model):
                 else:
                     record.assessment_gap_for_period = ''
 
-                # Variation vs la campagne antérieure la plus récente pour ce
-                # même risque (si elle existe). On exclut volontairement
-                # l'évaluation de la période courante elle-même.
-                previous_assessment = self.env['risk.assessment'].search([
-                    ('risk_id', '=', record.id),
-                    ('period_id', '!=', period_id),
-                ], order='assessment_date desc', limit=1)
-
-                if previous_assessment:
-                    previous_rank = level_rank.get(previous_assessment.risk_level, 0)
-                    if previous_rank and residual_rank:
-                        previous_label = level_labels.get(previous_assessment.risk_level, '')
-                        current_label = level_labels.get(assessment.risk_level, '')
-                        gap = residual_rank - previous_rank
-                        if gap == 0:
-                            record.assessment_residual_variation_for_period = (
-                                f"➡️ Stable ({current_label})"
-                            )
-                        else:
-                            emoji = '🔺' if gap > 0 else '🔻'
-                            n = abs(gap)
-                            unit = 'niveau' if n == 1 else 'niveaux'
-                            record.assessment_residual_variation_for_period = (
-                                f"{emoji} {previous_label} → {current_label} "
-                                f"({n} {unit})"
-                            )
+                if previous_rank and residual_rank:
+                    gap = residual_rank - previous_rank
+                    if gap == 0:
+                        record.assessment_residual_variation_for_period = '➡️ Stable'
                     else:
-                        record.assessment_residual_variation_for_period = ''
+                        emoji = '🔺' if gap > 0 else '🔻'
+                        n = abs(gap)
+                        unit = 'niveau' if n == 1 else 'niveaux'
+                        record.assessment_residual_variation_for_period = (
+                            f"{emoji} {gap:+d} ({n} {unit})"
+                        )
                 else:
                     record.assessment_residual_variation_for_period = ''
             else:
                 record.assessment_state_for_period = 'Non évalué'
-                # Pas encore évalué sur cette campagne : on retombe sur le
-                # niveau résiduel déjà connu de la fiche du risque.
-                record.assessment_residual_level_for_period = record.residual_level
+                record.assessment_residual_level_for_period = 'none'
                 record.assessment_assessor_for_period = ''
                 record.assessment_gap_for_period = ''
                 record.assessment_residual_variation_for_period = ''

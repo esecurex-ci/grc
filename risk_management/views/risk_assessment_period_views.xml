@@ -110,8 +110,16 @@
                             <field name="code"/>
                             <field name="name" string="Risque"/>
                             <field name="inherent_level" string="Niv. inhérent" widget="badge"/>
-                            <field name="assessment_residual_level_for_period" string="Niv. résiduel" widget="badge"/>
-                            <field name="assessment_residual_variation_for_period" string="Écart vs évaluation précédente"/>
+                            <field name="assessment_previous_residual_level_for_period" string="Niv. résiduel précédent" widget="badge"
+                                   decoration-success="assessment_previous_residual_level_for_period == 'low'"
+                                   decoration-warning="assessment_previous_residual_level_for_period == 'medium'"
+                                   decoration-danger="assessment_previous_residual_level_for_period == 'high'"/>
+                            <field name="assessment_residual_level_for_period" string="Niv. résiduel actuel" widget="badge"
+                                   decoration-success="assessment_residual_level_for_period == 'low'"
+                                   decoration-warning="assessment_residual_level_for_period == 'medium'"
+                                   decoration-danger="assessment_residual_level_for_period == 'high'"
+                                   decoration-muted="assessment_residual_level_for_period == 'none'"/>
+                            <field name="assessment_residual_variation_for_period" string="Écart"/>
                             <field name="assessment_state_for_period" string="Statut"/>
                             <button name="action_start_assessment" type="object"
                                     string="Évaluer" class="btn-sm btn-primary"/>

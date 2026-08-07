@@ -181,7 +181,8 @@ class RiskAssessmentPeriod(models.Model):
         }
 
         headers = [
-            'Code', 'Risque', 'Niveau inhérent', 'Niveau résiduel',
+            'Code', 'Risque', 'Niveau inhérent',
+            'Niveau résiduel précédent', 'Niveau résiduel actuel',
             'Écart', 'Écart vs éval. précédente', 'Évaluateur', 'Statut',
         ]
         for col, title in enumerate(headers):
@@ -194,8 +195,18 @@ class RiskAssessmentPeriod(models.Model):
                 ('period_id', '=', self.id),
             ], limit=1)
 
+            # Le niveau résiduel de la fiche du risque (risk.residual_level)
+            # n'est mis à jour que lors de l'APPROBATION d'une évaluation
+            # (action_approve) : tant que celle de cette campagne n'est pas
+            # approuvée, il reflète donc le résultat de la dernière évaluation
+            # validée — une référence "précédente" fiable, sans recherche
+            # d'une autre campagne.
+            previous_level_key = risk.residual_level
+            previous_label = LEVEL_LABELS.get(previous_level_key, '')
+            previous_rank = LEVEL_RANK.get(previous_level_key, 0)
+
             residual_level_key = False
-            residual_label = ''
+            residual_label = 'Non évalué'
             assessor_name = ''
             gap_label = ''
             variation_label = ''
@@ -214,48 +225,34 @@ class RiskAssessmentPeriod(models.Model):
                 if inherent_rank and residual_rank:
                     gap_label = f"{residual_rank - inherent_rank:+d}"
 
-                # Variation vs la campagne antérieure la plus récente pour ce
-                # même risque (même logique que assessment_residual_variation_for_period
-                # sur risk.risk, exclusion de l'évaluation de cette période).
-                previous_assessment = self.env['risk.assessment'].search([
-                    ('risk_id', '=', risk.id),
-                    ('period_id', '!=', self.id),
-                ], order='assessment_date desc', limit=1)
-
-                if previous_assessment:
-                    previous_rank = LEVEL_RANK.get(previous_assessment.risk_level, 0)
-                    if previous_rank and residual_rank:
-                        previous_label = LEVEL_LABELS.get(previous_assessment.risk_level, '')
-                        current_label = LEVEL_LABELS.get(assessment.risk_level, '')
-                        gap = residual_rank - previous_rank
-                        if gap == 0:
-                            variation_label = f"Stable ({current_label})"
-                        else:
-                            n = abs(gap)
-                            unit = 'niveau' if n == 1 else 'niveaux'
-                            direction = 'Dégradé' if gap > 0 else 'Amélioré'
-                            variation_label = (
-                                f"{direction} : {previous_label} → {current_label} "
-                                f"({n} {unit})"
-                            )
+                if previous_rank and residual_rank:
+                    gap = residual_rank - previous_rank
+                    if gap == 0:
+                        variation_label = 'Stable'
+                    else:
+                        n = abs(gap)
+                        unit = 'niveau' if n == 1 else 'niveaux'
+                        direction = 'Dégradé' if gap > 0 else 'Amélioré'
+                        variation_label = f"{direction} ({n} {unit})"
 
             sheet.write(row, 0, risk.code or '', base_format)
             sheet.write(row, 1, risk.name or '', base_format)
             sheet.write(row, 2, LEVEL_LABELS.get(risk.inherent_level, ''), level_formats.get(risk.inherent_level, center_format))
-            sheet.write(row, 3, residual_label, level_formats.get(residual_level_key, center_format))
-            sheet.write(row, 4, gap_label, center_format)
-            sheet.write(row, 5, variation_label, center_format)
-            sheet.write(row, 6, assessor_name, base_format)
-            sheet.write(row, 7, state_label, base_format)
+            sheet.write(row, 3, previous_label, level_formats.get(previous_level_key, center_format))
+            sheet.write(row, 4, residual_label, level_formats.get(residual_level_key, center_format))
+            sheet.write(row, 5, gap_label, center_format)
+            sheet.write(row, 6, variation_label, center_format)
+            sheet.write(row, 7, assessor_name, base_format)
+            sheet.write(row, 8, state_label, base_format)
             row += 1
 
         sheet.set_column(0, 0, 12)
         sheet.set_column(1, 1, 45)
-        sheet.set_column(2, 3, 16)
-        sheet.set_column(4, 4, 10)
-        sheet.set_column(5, 5, 34)
+        sheet.set_column(2, 4, 18)
+        sheet.set_column(5, 5, 10)
         sheet.set_column(6, 6, 22)
-        sheet.set_column(7, 7, 16)
+        sheet.set_column(7, 7, 22)
+        sheet.set_column(8, 8, 16)
         sheet.freeze_panes(1, 0)
         sheet.autofilter(0, 0, row - 1, len(headers) - 1)
 
