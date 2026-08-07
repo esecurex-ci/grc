@@ -486,6 +486,38 @@
 }
 
 /* ========================================================== */
+/* SCROLL PERSONNALISÉ POUR LES CARTES INTERNES                */
+/* ========================================================== */
+
+.scrollable-card {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.scrollable-card::-webkit-scrollbar {
+    width: 4px;
+}
+
+.scrollable-card::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 2px;
+}
+
+.scrollable-card::-webkit-scrollbar-thumb {
+    background: #c1c7cd;
+    border-radius: 2px;
+}
+
+.scrollable-card::-webkit-scrollbar-thumb:hover {
+    background: #a8aeb5;
+}
+
+.scrollable-card {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c7cd #f0f0f0;
+}
+
+/* ========================================================== */
 /* RESPONSIVE                                                  */
 /* ========================================================== */
 

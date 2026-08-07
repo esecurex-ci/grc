@@ -17,7 +17,7 @@
                 <!-- HEADER                                    -->
                 <!-- ========================================= -->
                 <div class="dashboard-header">
-                    <h2>📋 Tableau de Bord Sous Processus</h2>
+                    <h2>📋 Tableau de Bord des Sous Processus</h2>
                     <div class="dashboard-date">
                         <i class="fa fa-calendar" title="Date de mise à jour"/>
                         Généré le <t t-esc="new Date().toLocaleDateString('fr-FR')"/>
@@ -172,7 +172,7 @@
                 <!-- ========================================= -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
-                        <div class="chart-card">
+                        <div class="chart-card scrollable-card">
                             <h5 class="chart-title">🎯 Sous Processus à Risque Inhérent Élevé</h5>
                             <div t-if="state.highRiskProcesses.length > 0">
                                 <div class="risk-item" t-foreach="state.highRiskProcesses" t-as="process" t-key="process.id">
@@ -200,7 +200,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="chart-card">
+                        <div class="chart-card scrollable-card">
                             <h5 class="chart-title">📊 Sous Processus à Risque Résiduel Élevé</h5>
                             <div t-if="state.topProcesses.length > 0">
                                 <div class="risk-item" t-foreach="state.topProcesses" t-as="process" t-key="process.id">

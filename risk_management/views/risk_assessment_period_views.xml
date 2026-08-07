@@ -111,6 +111,7 @@
                             <field name="name" string="Risque"/>
                             <field name="inherent_level" string="Niv. inhérent" widget="badge"/>
                             <field name="assessment_residual_level_for_period" string="Niv. résiduel" widget="badge"/>
+                            <field name="assessment_residual_variation_for_period" string="Écart vs évaluation précédente"/>
                             <field name="assessment_state_for_period" string="Statut"/>
                             <button name="action_start_assessment" type="object"
                                     string="Évaluer" class="btn-sm btn-primary"/>

@@ -182,7 +182,7 @@ class RiskAssessmentPeriod(models.Model):
 
         headers = [
             'Code', 'Risque', 'Niveau inhérent', 'Niveau résiduel',
-            'Écart', 'Évaluateur', 'Statut',
+            'Écart', 'Écart vs éval. précédente', 'Évaluateur', 'Statut',
         ]
         for col, title in enumerate(headers):
             sheet.write(0, col, title, header_format)
@@ -198,6 +198,7 @@ class RiskAssessmentPeriod(models.Model):
             residual_label = ''
             assessor_name = ''
             gap_label = ''
+            variation_label = ''
             state_label = 'Non évalué'
 
             if assessment:
@@ -213,21 +214,48 @@ class RiskAssessmentPeriod(models.Model):
                 if inherent_rank and residual_rank:
                     gap_label = f"{residual_rank - inherent_rank:+d}"
 
+                # Variation vs la campagne antérieure la plus récente pour ce
+                # même risque (même logique que assessment_residual_variation_for_period
+                # sur risk.risk, exclusion de l'évaluation de cette période).
+                previous_assessment = self.env['risk.assessment'].search([
+                    ('risk_id', '=', risk.id),
+                    ('period_id', '!=', self.id),
+                ], order='assessment_date desc', limit=1)
+
+                if previous_assessment:
+                    previous_rank = LEVEL_RANK.get(previous_assessment.risk_level, 0)
+                    if previous_rank and residual_rank:
+                        previous_label = LEVEL_LABELS.get(previous_assessment.risk_level, '')
+                        current_label = LEVEL_LABELS.get(assessment.risk_level, '')
+                        gap = residual_rank - previous_rank
+                        if gap == 0:
+                            variation_label = f"Stable ({current_label})"
+                        else:
+                            n = abs(gap)
+                            unit = 'niveau' if n == 1 else 'niveaux'
+                            direction = 'Dégradé' if gap > 0 else 'Amélioré'
+                            variation_label = (
+                                f"{direction} : {previous_label} → {current_label} "
+                                f"({n} {unit})"
+                            )
+
             sheet.write(row, 0, risk.code or '', base_format)
             sheet.write(row, 1, risk.name or '', base_format)
             sheet.write(row, 2, LEVEL_LABELS.get(risk.inherent_level, ''), level_formats.get(risk.inherent_level, center_format))
             sheet.write(row, 3, residual_label, level_formats.get(residual_level_key, center_format))
             sheet.write(row, 4, gap_label, center_format)
-            sheet.write(row, 5, assessor_name, base_format)
-            sheet.write(row, 6, state_label, base_format)
+            sheet.write(row, 5, variation_label, center_format)
+            sheet.write(row, 6, assessor_name, base_format)
+            sheet.write(row, 7, state_label, base_format)
             row += 1
 
         sheet.set_column(0, 0, 12)
         sheet.set_column(1, 1, 45)
         sheet.set_column(2, 3, 16)
         sheet.set_column(4, 4, 10)
-        sheet.set_column(5, 5, 22)
-        sheet.set_column(6, 6, 16)
+        sheet.set_column(5, 5, 34)
+        sheet.set_column(6, 6, 22)
+        sheet.set_column(7, 7, 16)
         sheet.freeze_panes(1, 0)
         sheet.autofilter(0, 0, row - 1, len(headers) - 1)
 
