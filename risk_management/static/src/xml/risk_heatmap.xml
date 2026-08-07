@@ -65,13 +65,13 @@
                         </div>
                     </div>
                     <div class="col-3">
-                        <div class="kpi-card kpi-medium">
+                        <div class="kpi-card kpi-medium" t-on-click="() => this.openRiskLevelList('inherent_level', 'medium', 'Risques à niveau inhérent modéré')">
                             <div class="kpi-label">🟡 Modérés</div>
                             <div class="kpi-value"><t t-esc="state.mediumCount"/></div>
                         </div>
                     </div>
                     <div class="col-3">
-                        <div class="kpi-card kpi-low">
+                        <div class="kpi-card kpi-low" t-on-click="() => this.openRiskLevelList('inherent_level', 'low', 'Risques à niveau inhérent faible')">
                             <div class="kpi-label">🟢 Faibles</div>
                             <div class="kpi-value"><t t-esc="state.lowCount"/></div>
                         </div>
@@ -131,8 +131,8 @@
                                         </span>
                                     </div>
                                 </div>
-                                <a href="#" class="view-all-link" t-on-click.prevent="openRisks">
-                                    Voir tous les risques →
+                                <a href="#" class="view-all-link" t-on-click.prevent="() => this.openRiskLevelList('residual_level', 'high', 'Risques à niveau résiduel élevé')">
+                                    Voir tous les risques résiduels élevés →
                                 </a>
                             </div>
                             <div t-else="" style="text-align:center;padding:20px;color:#6c757d;">
@@ -152,6 +152,7 @@
                             <t t-if="state.inherentData and state.inherentData.length">
                                 <t t-call="rm_risk.BarChart">
                                     <t t-set="data" t-value="state.inherentData"/>
+                                    <t t-set="field" t-value="'inherent_level'"/>
                                 </t>
                             </t>
                             <t t-else="">
@@ -171,6 +172,7 @@
                             <t t-if="state.residualData and state.residualData.length">
                                 <t t-call="rm_risk.BarChart">
                                     <t t-set="data" t-value="state.residualData"/>
+                                    <t t-set="field" t-value="'residual_level'"/>
                                 </t>
                             </t>
                             <t t-else="">
@@ -206,20 +208,24 @@
                     <div class="col-md-6">
                         <div class="chart-card">
                             <h5 class="chart-title">📋 Avancement des Actions Correctives</h5>
-                            <div class="actions-grid" t-on-click="openActions">
-                                <div class="action-item" style="border-left:4px solid #dc3545;">
+                            <div class="actions-grid">
+                                <div class="action-item" style="border-left:4px solid #dc3545;cursor:pointer;"
+                                     t-on-click="() => this.openActionsByIds(state.actionIds.overdue, 'Actions en retard')">
                                     <span class="action-label">🔴 En retard</span>
                                     <span class="action-value"><t t-esc="state.actions.overdue"/></span>
                                 </div>
-                                <div class="action-item" style="border-left:4px solid #ffc107;">
+                                <div class="action-item" style="border-left:4px solid #ffc107;cursor:pointer;"
+                                     t-on-click="() => this.openActionsByIds(state.actionIds.in_progress, 'Actions en cours')">
                                     <span class="action-label">🟡 En cours</span>
                                     <span class="action-value"><t t-esc="state.actions.in_progress"/></span>
                                 </div>
-                                <div class="action-item" style="border-left:4px solid #28a745;">
+                                <div class="action-item" style="border-left:4px solid #28a745;cursor:pointer;"
+                                     t-on-click="() => this.openActionsByIds(state.actionIds.completed, 'Actions terminées')">
                                     <span class="action-label">🟢 Terminé</span>
                                     <span class="action-value"><t t-esc="state.actions.completed"/></span>
                                 </div>
-                                <div class="action-item" style="border-left:4px solid #6c757d;">
+                                <div class="action-item" style="border-left:4px solid #6c757d;cursor:pointer;"
+                                     t-on-click="() => this.openActionsByIds(state.actionIds.not_started, 'Actions non commencées')">
                                     <span class="action-label">⚪ Non commencé</span>
                                     <span class="action-value"><t t-esc="state.actions.not_started"/></span>
                                 </div>
@@ -334,7 +340,8 @@
                                                 <div style="display:flex;gap:2px;">
                                                     <t t-foreach="[1, 2, 3, 4, 5]" t-as="likelihood" t-key="likelihood">
                                                         <div t-att-class="'heatmap-cell d-flex justify-content-center align-items-center text-white fw-bold ' + getCellClass(impact, likelihood)"
-                                                             style="width:40px;height:40px;border-radius:4px;transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-size:14px;font-weight:700;cursor:default;">
+                                                             t-on-click="() => this.openResidualCellRisks(impact, likelihood)"
+                                                             t-attf-style="width:40px;height:40px;border-radius:4px;transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-size:14px;font-weight:700;cursor:#{getResidualCellLevel(impact, likelihood) ? 'pointer' : 'default'};">
                                                             <t t-esc="state.residualMatrix[impact] ? state.residualMatrix[impact][likelihood] || 0 : 0"/>
                                                         </div>
                                                     </t>
@@ -398,7 +405,7 @@
                     <div class="col-12">
                         <div class="chart-card narrative-card">
                             <h5 class="chart-title">📝 Rapport Narratif - Principaux changements</h5>
-                            <div t-foreach="state.narratives" t-as="item" t-key="item_index">
+                            <div t-foreach="state.narratives" t-as="item" t-key="item.icon">
                                 <div class="narrative-item">
                                     <span class="narr-icon"><t t-esc="item.icon"/></span>
                                     <span class="narr-text"><t t-esc="item.text"/></span>
@@ -434,7 +441,8 @@
     <t t-name="rm_risk.BarChart" owl="1">
         <div style="padding:5px 0;">
             <t t-foreach="data" t-as="item" t-key="item.label">
-                <div style="display:flex;align-items:center;margin-bottom:6px;gap:10px;">
+                <div style="display:flex;align-items:center;margin-bottom:6px;gap:10px;cursor:pointer;"
+                     t-on-click="() => this.openRiskLevelList(field, item.level, item.label)">
                     <span style="width:60px;font-size:11px;color:#495057;text-align:right;flex-shrink:0;"><t t-esc="item.label"/></span>
                     <div style="flex:1;height:20px;background:#f0f0f0;border-radius:10px;overflow:hidden;">
                         <div t-att-style="'width: ' + getBarWidth(item.value, getMaxValue(data)) + '%;background:' + item.color + ';height:100%;border-radius:10px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:11px;font-weight:600;color:white;transition:width 0.5s ease;min-width:30px;'">
@@ -452,7 +460,8 @@
     <t t-name="rm_risk.CategoryChart" owl="1">
         <div style="padding:5px 0;">
             <t t-foreach="data" t-as="item" t-key="item.label">
-                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;"
+                     t-on-click="() => this.openCategoryRisks(item.id, item.label)">
                     <span style="font-size:13px;color:#495057;"><t t-esc="item.label"/></span>
                     <span style="font-weight:bold;font-size:14px;color:#1a237e;background:#e8eaf6;padding:0 12px;border-radius:12px;"><t t-esc="item.value"/></span>
                 </div>

@@ -157,10 +157,9 @@
                 string="Sous-processus"
                 default_group_by="category,macro_process_id"
                 expand="0"
-                decoration-success="risk_level in ('1', '2')"
-                decoration-info="risk_level == '3'"
-                decoration-warning="risk_level == '4'"
-                decoration-danger="risk_level == '5'"
+                decoration-success="residual_level == 'low'"
+                decoration-warning="residual_level == 'medium'"
+                decoration-danger="residual_level == 'high'"
                 decoration-muted="state == 'obsolete'">
 
                 <!-- Champs de regroupement -->
@@ -173,7 +172,10 @@
                 <field name="owner_id" string="Propriétaire"/>
                 <field name="activity_count" string="Activités" sum="Total" widget="statinfo"/>
                 <field name="count_risk" string="Risques" sum="Total" widget="statinfo"/>
-                <field name="risk_level" string="Niveau" widget="badge"/>
+                <field name="residual_level" string="Niveau" widget="badge"
+                       decoration-success="residual_level == 'low'"
+                       decoration-warning="residual_level == 'medium'"
+                       decoration-danger="residual_level == 'high'"/>
                 <field name="state" string="Statut" widget="badge"/>
                 <field name="maturity_level" string="Maturité" widget="badge"/>
                 <field name="active" string="Actif" widget="boolean" optional="hide"/>

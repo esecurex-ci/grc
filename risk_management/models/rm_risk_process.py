@@ -26,7 +26,12 @@ class RiskProcess(models.Model):
     # Relation inverse vers les risques
     risk_ids = fields.One2many('risk.risk', 'process_id', string='Risques associés')
 
-    # ✅ Même échelle que risk.risk
+    # ⚠️ Champ historique (échelle 1-5, basée sur risk.risk.risk_level, lui
+    # même hérité d'une ancienne échelle non utilisée par le reste de
+    # l'application). Conservé pour compatibilité mais NE PAS s'y fier pour
+    # l'affichage : utiliser residual_level ci-dessous, basé sur la vraie
+    # échelle métier (Faible/Modéré/Élevé) et cohérent avec les tableaux de
+    # bord (Sous Processus, Risques).
     risk_level = fields.Selection([
         ('1', 'Très faible'),
         ('2', 'Faible'),
@@ -36,7 +41,23 @@ class RiskProcess(models.Model):
     ],
         compute='_compute_risk_stats',
         store=True,
-        string='Niveau de risque')
+        string='Niveau de risque (ancienne échelle)')
+
+    # ✅ Niveau de risque résiduel du sous-processus, sur l'échelle métier
+    # à 3 niveaux (Faible/Modéré/Élevé) : c'est le niveau résiduel le plus
+    # élevé parmi les risques actifs du sous-processus. C'est cette échelle
+    # qui est utilisée par les tableaux de bord pour classer les
+    # sous-processus (voir process_dashboard.js) — ce champ garantit que
+    # les listes ouvertes depuis un clic sur un indicateur du tableau de
+    # bord affichent bien le MÊME niveau que celui qui a servi au filtrage.
+    residual_level = fields.Selection([
+        ('low', 'Faible'),
+        ('medium', 'Modéré'),
+        ('high', 'Élevé'),
+    ],
+        compute='_compute_residual_level',
+        store=True,
+        string='Niveau de risque résiduel')
 
     count_risk = fields.Integer(
         compute='_compute_risk_stats',
@@ -174,6 +195,18 @@ class RiskProcess(models.Model):
                 if level > max_level:
                     max_level = level
             record.risk_level = str(max_level)
+
+    @api.depends('activity_ids', 'activity_ids.risk_ids', 'activity_ids.risk_ids.residual_level',
+                 'activity_ids.risk_ids.active')
+    def _compute_residual_level(self):
+        for record in self:
+            risks = record.activity_ids.mapped('risk_ids').filtered(lambda r: r.active)
+            if any(r.residual_level == 'high' for r in risks):
+                record.residual_level = 'high'
+            elif any(r.residual_level == 'medium' for r in risks):
+                record.residual_level = 'medium'
+            else:
+                record.residual_level = 'low'
 
     def action_view_risks(self):
         """Ouvre la liste complète des risques associés"""

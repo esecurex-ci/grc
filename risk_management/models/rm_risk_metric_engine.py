@@ -42,26 +42,34 @@ class RiskMetricEngine(models.Model):
         return score
 
     def _calculate_risk_score(self):
+        """Score GRC du volet Risques : moyenne, sur les évaluations
+        existantes, d'un score dérivé du NIVEAU DE RISQUE RÉSIDUEL qualitatif
+        (Faible/Modéré/Élevé) de chaque évaluation.
 
-        risks = self.env['risk.assessment'].search([])
+        ⚠️ Corrigé : cette méthode plantait avec
+        "'risk.assessment' object has no attribute 'residual_score'" — ce
+        champ n'a jamais existé sur risk.assessment, qui n'a volontairement
+        PAS de score résiduel numérique (voir le champ 'risk_level' de ce
+        modèle et son commentaire "Pas de score numérique pour le résiduel,
+        conforme à l'échelle métier réelle"). C'est ce qui empêchait
+        action_calculate_grc_score (et donc tout le Cockpit Exécutif, dont
+        action_ensure_dashboard_snapshot qui l'appelle) de s'exécuter sans
+        erreur, laissant tous les indicateurs à zéro.
+        """
+        assessments = self.env['risk.assessment'].search([])
 
-        if not risks:
+        if not assessments:
             return 100
 
-        total = 0
+        level_scores = {'low': 100, 'medium': 60, 'high': 20}
 
-        for risk in risks:
-            score = max(
-                0,
-                100 - (
-                        risk.residual_score * 4
-                )
-            )
-
-            total += score
+        total = sum(
+            level_scores.get(assessment.risk_level, 60)
+            for assessment in assessments
+        )
 
         return round(
-            total / len(risks),
+            total / len(assessments),
             2
         )
 
@@ -262,8 +270,162 @@ class RiskMetricEngine(models.Model):
             'risks_over_appetite': len(risks.filtered('last_over_appetite')),
         }
 
-    def action_generate_dashboard_snapshot(self):
+    def _calculate_incident_stats(self):
+        """Statistiques de la section INCIDENTS du snapshot exécutif."""
+        incidents = self.env['risk.incident'].search([])
 
+        return {
+            'total_incidents': len(incidents),
+            'open_incidents': len(incidents.filtered(lambda i: i.status != 'closed')),
+            'critical_incidents': len(incidents.filtered(lambda i: i.severity == 'critical')),
+            'operational_losses': sum(incidents.mapped('total_loss')),
+        }
+
+    def _calculate_audit_stats(self):
+        """Statistiques de la section AUDIT du snapshot exécutif."""
+        today = fields.Date.today()
+
+        findings = self.env['risk.audit.finding'].search([])
+
+        overdue_recommendations = self.env['risk.audit.recommendation'].search([
+            ('target_date', '<', today),
+            ('state', 'not in', ['verified', 'closed']),
+        ])
+
+        return {
+            'total_findings': len(findings),
+            'open_findings': len(findings.filtered(lambda f: f.state != 'closed')),
+            'critical_findings': len(findings.filtered(lambda f: f.severity == 'critical')),
+            'overdue_audit_actions': len(overdue_recommendations),
+        }
+
+    def _calculate_compliance_stats(self):
+        """Statistiques de la section COMPLIANCE du snapshot exécutif.
+
+        compliance_rate reprend le même calcul que _calculate_compliance_score
+        (moyenne des compliance_percentage des évaluations) : c'est ce champ
+        'compliance_rate' — et non 'compliance_score' — que le widget du
+        Cockpit affiche dans "Taux de Conformité", d'où son 0% persistant
+        tant qu'il n'était jamais renseigné lors de la génération du snapshot.
+        """
+        today = fields.Date.today()
+
+        assessments = self.env['risk.compliance.assessment'].search([])
+
+        non_compliant_requirements = len(
+            assessments.filtered(lambda a: a.compliance_level == 'non_compliant').mapped('requirement_id')
+        )
+
+        overdue_plans = self.env['risk.compliance.action.plan'].search([
+            ('target_date', '<', today),
+            ('state', 'not in', ['completed', 'validated']),
+        ])
+
+        return {
+            'compliance_rate': self._calculate_compliance_score(),
+            'non_compliant_requirements': non_compliant_requirements,
+            'overdue_compliance_actions': len(overdue_plans),
+        }
+
+    def _calculate_resilience_stats(self):
+        """Statistiques de la section BCM/DRP du snapshot exécutif."""
+        process_count = self.env['risk.process'].search_count([])
+        bcp_count = self.env['risk.bcp.plan'].search_count([])
+        drp_count = self.env['risk.drp.plan'].search_count([])
+
+        bcp_coverage_rate = round((bcp_count / process_count) * 100, 2) if process_count else 0
+        drp_coverage_rate = round((drp_count / process_count) * 100, 2) if process_count else 0
+
+        completed_exercises = self.env['risk.exercise'].search([('state', '=', 'completed')])
+        if completed_exercises:
+            successful = completed_exercises.filtered(
+                lambda e: not e.finding_ids.filtered(lambda f: f.severity in ('high', 'critical'))
+            )
+            exercise_success_rate = round((len(successful) / len(completed_exercises)) * 100, 2)
+        else:
+            exercise_success_rate = 0
+
+        return {
+            'bcp_coverage_rate': bcp_coverage_rate,
+            'drp_coverage_rate': drp_coverage_rate,
+            'exercise_success_rate': exercise_success_rate,
+        }
+
+    def _calculate_crisis_stats(self):
+        """Statistiques de la section GESTION DE CRISE du snapshot exécutif."""
+        crises = self.env['risk.crisis'].search([])
+
+        def _avg_hours(pairs):
+            durations = [
+                (end - start).total_seconds() / 3600.0
+                for start, end in pairs
+                if start and end and end > start
+            ]
+            return round(sum(durations) / len(durations), 2) if durations else 0
+
+        return {
+            'crisis_count': len(crises),
+            'average_detection_time': _avg_hours([(c.declaration_date, c.start_date) for c in crises]),
+            'average_recovery_time': _avg_hours([(c.start_date, c.resolution_date) for c in crises]),
+            'average_closure_time': _avg_hours([(c.declaration_date, c.end_date) for c in crises]),
+        }
+
+    def _calculate_control_kri_stats(self):
+        """Statistiques de la section CONTRÔLES & KRI du snapshot exécutif."""
+        controls = self.env['risk.control'].search([])
+
+        alerts = self.env['risk.kri.alert'].search_count([
+            ('resolved', '=', False),
+        ])
+
+        kris = self.env['risk.kri'].search([])
+
+        return {
+            'control_score': self._calculate_control_score(),
+            'total_controls': len(controls),
+            'ineffective_controls': len(controls.filtered(lambda c: c.effectiveness == 'low')),
+            'active_kri_alerts': alerts,
+            'kri_over_appetite_count': len(kris.filtered('over_appetite')),
+        }
+
+    def _calculate_governance_stats(self):
+        """Statistiques de la section GOUVERNANCE (documents & politiques)."""
+        today = fields.Date.today()
+
+        documents = self.env['risk.document'].search([])
+
+        overdue_policies = self.env['risk.policy'].search_count([
+            ('next_review_date', '<', today),
+            ('state', 'not in', ['archived']),
+        ])
+
+        return {
+            'total_documents': len(documents),
+            'documents_review_overdue': len(documents.filtered(lambda d: d.review_status == 'overdue')),
+            'expired_documents': len(documents.filtered('expired')),
+            'policies_review_overdue': overdue_policies,
+        }
+
+    def _calculate_reporting_stats(self):
+        """Statistiques de la section REPORTING (rapports réglementaires et conseil)."""
+        reports = self.env['risk.regulatory.report'].search([])
+
+        return {
+            'total_regulatory_reports': len(reports),
+            'pending_regulatory_reports': len(reports.filtered(lambda r: r.state == 'draft')),
+            'total_board_reports': self.env['risk.board.report'].search_count([]),
+        }
+
+    def _compute_snapshot_vals(self):
+        """Calcule l'ensemble des valeurs (vals dict) du snapshot exécutif du
+        jour, à partir des données ACTUELLES de tous les modules du GRC.
+
+        Isolé dans sa propre méthode pour pouvoir être appelé aussi bien
+        pour CRÉER un nouveau snapshot que pour RAFRAÎCHIR (write) le
+        snapshot du jour déjà existant — voir action_ensure_dashboard_snapshot,
+        qui a besoin de recalculer les valeurs à chaque ouverture du Cockpit
+        et non de se contenter de renvoyer un snapshot figé.
+        """
         latest_grc = self.env[
             'risk.grc.score'
         ].search(
@@ -281,10 +443,16 @@ class RiskMetricEngine(models.Model):
         )
 
         risk_stats = self._calculate_risk_stats()
+        incident_stats = self._calculate_incident_stats()
+        audit_stats = self._calculate_audit_stats()
+        compliance_stats = self._calculate_compliance_stats()
+        resilience_stats = self._calculate_resilience_stats()
+        crisis_stats = self._calculate_crisis_stats()
+        control_kri_stats = self._calculate_control_kri_stats()
+        governance_stats = self._calculate_governance_stats()
+        reporting_stats = self._calculate_reporting_stats()
 
-        snapshot = self.env[
-            'risk.executive.dashboard.snapshot'
-        ].create({
+        return {
 
             'name':
                 f"Dashboard {fields.Date.today()}",
@@ -331,29 +499,113 @@ class RiskMetricEngine(models.Model):
             'risks_over_appetite':
                 risk_stats['risks_over_appetite'],
 
-        })
+            # ---- Incidents ----
+            'total_incidents':
+                incident_stats['total_incidents'],
+            'open_incidents':
+                incident_stats['open_incidents'],
+            'critical_incidents':
+                incident_stats['critical_incidents'],
+            'operational_losses':
+                incident_stats['operational_losses'],
 
-        return snapshot
+            # ---- Audit ----
+            'total_findings':
+                audit_stats['total_findings'],
+            'open_findings':
+                audit_stats['open_findings'],
+            'critical_findings':
+                audit_stats['critical_findings'],
+            'overdue_audit_actions':
+                audit_stats['overdue_audit_actions'],
+
+            # ---- Conformité ----
+            'compliance_rate':
+                compliance_stats['compliance_rate'],
+            'non_compliant_requirements':
+                compliance_stats['non_compliant_requirements'],
+            'overdue_compliance_actions':
+                compliance_stats['overdue_compliance_actions'],
+
+            # ---- Résilience (BCM/DRP) ----
+            'bcp_coverage_rate':
+                resilience_stats['bcp_coverage_rate'],
+            'drp_coverage_rate':
+                resilience_stats['drp_coverage_rate'],
+            'exercise_success_rate':
+                resilience_stats['exercise_success_rate'],
+
+            # ---- Gestion de Crise ----
+            'crisis_count':
+                crisis_stats['crisis_count'],
+            'average_detection_time':
+                crisis_stats['average_detection_time'],
+            'average_recovery_time':
+                crisis_stats['average_recovery_time'],
+            'average_closure_time':
+                crisis_stats['average_closure_time'],
+
+            # ---- Contrôles & KRI ----
+            'control_score':
+                control_kri_stats['control_score'],
+            'total_controls':
+                control_kri_stats['total_controls'],
+            'ineffective_controls':
+                control_kri_stats['ineffective_controls'],
+            'active_kri_alerts':
+                control_kri_stats['active_kri_alerts'],
+            'kri_over_appetite_count':
+                control_kri_stats['kri_over_appetite_count'],
+
+            # ---- Gouvernance ----
+            'total_documents':
+                governance_stats['total_documents'],
+            'documents_review_overdue':
+                governance_stats['documents_review_overdue'],
+            'expired_documents':
+                governance_stats['expired_documents'],
+            'policies_review_overdue':
+                governance_stats['policies_review_overdue'],
+
+            # ---- Reporting ----
+            'total_regulatory_reports':
+                reporting_stats['total_regulatory_reports'],
+            'pending_regulatory_reports':
+                reporting_stats['pending_regulatory_reports'],
+            'total_board_reports':
+                reporting_stats['total_board_reports'],
+
+        }
+
+    def action_generate_dashboard_snapshot(self):
+        """Crée un NOUVEAU snapshot exécutif (utilisé notamment pour garder
+        un historique explicite, par ex. depuis un bouton manuel)."""
+        return self.env['risk.executive.dashboard.snapshot'].create(
+            self._compute_snapshot_vals()
+        )
 
     def action_ensure_dashboard_snapshot(self):
-        """Retourne le snapshot exécutif du jour, en le (re)générant si besoin.
+        """Retourne le snapshot exécutif du jour, en le rafraîchissant.
 
         Le Cockpit Exécutif GRC affichait des KPI figés à zéro car le
         snapshot n'était jamais créé automatiquement (il fallait déclencher
         manuellement 'action_generate_dashboard_snapshot'). Cette méthode est
-        appelée par le widget à chaque ouverture du tableau de bord : si un
-        snapshot existe déjà pour aujourd'hui, on le réutilise ; sinon on
-        recalcule un score GRC du jour (si nécessaire) puis on génère un
-        nouveau snapshot, afin que le Cockpit reste à jour sans action
-        manuelle de l'utilisateur.
+        appelée par le widget à chaque ouverture du tableau de bord.
+
+        ⚠️ Elle ne se contente PAS de réutiliser tel quel un snapshot déjà
+        existant pour aujourd'hui : elle recalcule systématiquement les
+        valeurs et les écrit (write) sur ce snapshot du jour. Sans ce
+        rafraîchissement, un snapshot créé tôt dans la journée (avant une
+        mise à jour de risques/incidents/contrôles, ou avant l'ajout d'un
+        nouveau calcul dans ce module) restait figé avec des valeurs
+        obsolètes pour le reste de la journée — c'est exactement ce qui
+        provoquait la réapparition d'indicateurs à 0 après une mise à jour.
         """
         today = fields.Date.today()
 
         snapshot = self.env['risk.executive.dashboard.snapshot'].search(
             [('snapshot_date', '=', today)], limit=1, order='id desc'
         )
-        if snapshot:
-            return snapshot
 
         latest_grc = self.env['risk.grc.score'].search(
             [], limit=1, order='assessment_date desc'
@@ -361,5 +613,11 @@ class RiskMetricEngine(models.Model):
         if not latest_grc or latest_grc.assessment_date != today:
             self.action_calculate_grc_score()
 
-        return self.action_generate_dashboard_snapshot()
+        vals = self._compute_snapshot_vals()
+
+        if snapshot:
+            snapshot.write(vals)
+            return snapshot
+
+        return self.env['risk.executive.dashboard.snapshot'].create(vals)
 

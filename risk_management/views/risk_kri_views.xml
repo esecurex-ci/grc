@@ -162,8 +162,8 @@
 
                     <group string="🗂️ Rattachement (via les risques associés)">
                         <group colspan="2">
-                            <field name="macro_process_list" string="Macro-processus" readonly="1"/>
-                            <field name="process_list" string="Processus" readonly="1"/>
+                            <field name="macro_process_list" string="Processus" readonly="1"/>
+                            <field name="process_list" string="Sous-Processus" readonly="1"/>
                             <field name="activity_list" string="Activités" readonly="1"/>
                         </group>
                     </group>

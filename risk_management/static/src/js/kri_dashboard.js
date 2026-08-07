@@ -29,7 +29,6 @@ export class KriDashboard extends Component {
             green: 0,
             amber: 0,
             red: 0,
-            overdue: 0,
             overAppetite: 0,
             kris: [],
             statusDistribution: [],
@@ -61,7 +60,7 @@ export class KriDashboard extends Component {
                     'current_value', 'unit', 'status', 'trend', 'variation',
                     'threshold_green', 'threshold_amber', 'threshold_red',
                     'threshold_appetite', 'over_appetite',
-                    'last_measure_date', 'next_measure_date', 'overdue',
+                    'last_measure_date', 'next_measure_date',
                     'alert_count', 'last_alert_date',
                     'measure_ids', 'risk_ids'
                 ],
@@ -92,7 +91,6 @@ export class KriDashboard extends Component {
         const green = kris.filter(k => k.status === 'green').length;
         const amber = kris.filter(k => k.status === 'amber').length;
         const red = kris.filter(k => k.status === 'red').length;
-        const overdue = kris.filter(k => k.overdue === true).length;
         const overAppetite = kris.filter(k => k.over_appetite === true).length;
 
         const statusDistribution = [
@@ -171,7 +169,6 @@ export class KriDashboard extends Component {
         this.state.green = green;
         this.state.amber = amber;
         this.state.red = red;
-        this.state.overdue = overdue;
         this.state.overAppetite = overAppetite;
         this.state.kris = kris;
         this.state.statusDistribution = statusDistribution;
@@ -202,13 +199,6 @@ export class KriDashboard extends Component {
             narratives.push({
                 icon: '🟡',
                 text: `${this.state.amber} KRI sont en alerte orange : surveillance renforcée.`
-            });
-        }
-
-        if (this.state.overdue > 0) {
-            narratives.push({
-                icon: '⏰',
-                text: `${this.state.overdue} KRI n'ont pas été mesurés dans les délais.`
             });
         }
 
@@ -259,7 +249,6 @@ export class KriDashboard extends Component {
         this.state.green = 6;
         this.state.amber = 3;
         this.state.red = 3;
-        this.state.overdue = 2;
         this.state.overAppetite = 2;
 
         this.state.statusDistribution = [
@@ -427,18 +416,6 @@ export class KriDashboard extends Component {
                 res_model: 'risk.kri',
                 views: [[false, 'list'], [false, 'form']],
                 domain: [['status', '=', 'amber']],
-            });
-        }
-    }
-
-    openOverdueKris = () => {
-        if (this.action) {
-            this.action.doAction({
-                type: 'ir.actions.act_window',
-                name: 'KRI en retard',
-                res_model: 'risk.kri',
-                views: [[false, 'list'], [false, 'form']],
-                domain: [['overdue', '=', true]],
             });
         }
     }

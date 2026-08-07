@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="col-3">
-            <div class="card grc-card-danger">
+            <div class="card grc-card-danger" t-on-click="openIncidents">
                 <div class="card-body">
                     <h2>
                         <t t-esc="state.open_incidents"/>
@@ -65,22 +65,172 @@
             </div>
         </div>
         <div class="col-6">
+            <div class="card" style="cursor:pointer;" t-on-click="openHighResidualRisks">
+                <div class="card-header">⚠️ Risques Résiduels Élevés</div>
+                <div class="card-body">
+                    <div class="grc-mini-stat"><span><t t-esc="state.high_risks"/></span> risque(s) à niveau résiduel élevé</div>
+                    <a href="#" class="view-all-link" t-on-click.prevent.stop="openHighResidualRisks">
+                        Voir tous les risques résiduels élevés →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- SCORES GRC PAR DOMAINE                    -->
+    <!-- ========================================= -->
+    <div class="row mt-4">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    Top Risques Élevés (Résiduel)
+                    Scores GRC par domaine
                 </div>
                 <div class="card-body">
-                    <ul>
-                        <t t-foreach="state.top_risks" t-as="risk" t-key="risk.id">
-                            <li>
-                                <strong><t t-esc="risk.code"/></strong> —
-                                <t t-esc="risk.name"/>
-                                <span class="badge" style="background:#dc3545;color:white;margin-left:6px;">
-                                    Score inhérent: <t t-esc="risk.inherent_score"/>
-                                </span>
-                            </li>
-                        </t>
-                    </ul>
+                    <div class="grc-score-row">
+                        <span class="grc-score-label">Risques</span>
+                        <div class="grc-score-bar"><div class="grc-score-fill" t-attf-style="width:#{state.risk_score}%;background:#43A047;"/></div>
+                        <span class="grc-score-value"><t t-esc="state.risk_score"/>%</span>
+                    </div>
+                    <div class="grc-score-row">
+                        <span class="grc-score-label">Conformité</span>
+                        <div class="grc-score-bar"><div class="grc-score-fill" t-attf-style="width:#{state.compliance_score}%;background:#00ACC1;"/></div>
+                        <span class="grc-score-value"><t t-esc="state.compliance_score"/>%</span>
+                    </div>
+                    <div class="grc-score-row">
+                        <span class="grc-score-label">Audit</span>
+                        <div class="grc-score-bar"><div class="grc-score-fill" t-attf-style="width:#{state.audit_score}%;background:#FB8C00;"/></div>
+                        <span class="grc-score-value"><t t-esc="state.audit_score"/>%</span>
+                    </div>
+                    <div class="grc-score-row">
+                        <span class="grc-score-label">Résilience</span>
+                        <div class="grc-score-bar"><div class="grc-score-fill" t-attf-style="width:#{state.resilience_score}%;background:#8E24AA;"/></div>
+                        <span class="grc-score-value"><t t-esc="state.resilience_score"/>%</span>
+                    </div>
+                    <div class="grc-score-row">
+                        <span class="grc-score-label">Cyber</span>
+                        <div class="grc-score-bar"><div class="grc-score-fill" t-attf-style="width:#{state.cyber_score}%;background:#3949AB;"/></div>
+                        <span class="grc-score-value"><t t-esc="state.cyber_score"/>%</span>
+                    </div>
+                    <div class="grc-score-row">
+                        <span class="grc-score-label">Contrôles</span>
+                        <div class="grc-score-bar"><div class="grc-score-fill" t-attf-style="width:#{state.control_score}%;background:#6D4C41;"/></div>
+                        <span class="grc-score-value"><t t-esc="state.control_score"/>%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- AUTRES MODULES : Incidents, Audit,        -->
+    <!-- Conformité, Résilience, Gestion de Crise  -->
+    <!-- ========================================= -->
+    <div class="row mt-4">
+        <div class="col-4">
+            <div class="card" style="cursor:pointer;" t-on-click="openIncidents">
+                <div class="card-header">📉 Incidents &amp; Pertes</div>
+                <div class="card-body">
+                    <div class="grc-mini-stat"><span><t t-esc="state.total_incidents"/></span> incidents au total</div>
+                    <div class="grc-mini-stat"><span><t t-esc="state.critical_incidents"/></span> incidents critiques</div>
+                    <div class="grc-mini-stat"><span><t t-esc="state.operational_losses"/> FCFA</span> de pertes opérationnelles</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card" style="cursor:pointer;" t-on-click="openAuditFindings">
+                <div class="card-header">🔍 Audit</div>
+                <div class="card-body">
+                    <div class="grc-mini-stat"><span><t t-esc="state.open_findings"/></span> constats ouverts / <t t-esc="state.total_findings"/> au total</div>
+                    <div class="grc-mini-stat"><span><t t-esc="state.critical_findings"/></span> constats critiques</div>
+                    <div class="grc-mini-stat"><span><t t-esc="state.overdue_audit_actions"/></span> recommandations en retard</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card" style="cursor:pointer;" t-on-click="openComplianceAssessments">
+                <div class="card-header">📋 Conformité</div>
+                <div class="card-body">
+                    <div class="grc-mini-stat"><span><t t-esc="state.non_compliant_requirements"/></span> exigences non conformes</div>
+                    <div class="grc-mini-stat"><span><t t-esc="state.overdue_compliance_actions"/></span> actions de conformité en retard</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-6">
+            <div class="card" style="cursor:pointer;" t-on-click="openBcpPlans">
+                <div class="card-header">🛡️ Résilience (BCM/DRP)</div>
+                <div class="card-body">
+                    <div class="grc-mini-stat">Couverture PCA : <span><t t-esc="state.bcp_coverage_rate"/>%</span></div>
+                    <div class="grc-mini-stat">Couverture PRI : <span><t t-esc="state.drp_coverage_rate"/>%</span></div>
+                    <div class="grc-mini-stat">Taux de réussite des exercices : <span><t t-esc="state.exercise_success_rate"/>%</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card" style="cursor:pointer;" t-on-click="openCrises">
+                <div class="card-header">🚨 Gestion de Crise</div>
+                <div class="card-body">
+                    <div class="grc-mini-stat"><span><t t-esc="state.crisis_count"/></span> crise(s) enregistrée(s)</div>
+                    <div class="grc-mini-stat">Temps moyen de détection : <span><t t-esc="state.average_detection_time"/> h</span></div>
+                    <div class="grc-mini-stat">Temps moyen de résolution : <span><t t-esc="state.average_recovery_time"/> h</span></div>
+                    <div class="grc-mini-stat">Temps moyen de clôture : <span><t t-esc="state.average_closure_time"/> h</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- AUTRES MODULES (suite) : Contrôles & KRI, -->
+    <!-- Gouvernance, Reporting                    -->
+    <!-- ========================================= -->
+    <div class="row mt-3">
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header">🎛️ Contrôles &amp; KRI</div>
+                <div class="card-body">
+                    <div class="grc-mini-stat" style="cursor:pointer;" t-on-click="openIneffectiveControls">
+                        <span><t t-esc="state.ineffective_controls"/></span> contrôles peu efficaces / <t t-esc="state.total_controls"/> au total (<a href="#" t-on-click.prevent.stop="openAllControls">tous</a>)
+                    </div>
+                    <div class="grc-mini-stat" style="cursor:pointer;" t-on-click="openKriAlerts">
+                        <span><t t-esc="state.active_kri_alerts"/></span> alertes KRI actives
+                    </div>
+                    <div class="grc-mini-stat" style="cursor:pointer;" t-on-click="openKriOverAppetite">
+                        <span><t t-esc="state.kri_over_appetite_count"/></span> KRI hors appétit
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header">🏛️ Gouvernance</div>
+                <div class="card-body">
+                    <div class="grc-mini-stat" style="cursor:pointer;" t-on-click="openAllDocuments">
+                        <span><t t-esc="state.total_documents"/></span> documents de gouvernance
+                    </div>
+                    <div class="grc-mini-stat" style="cursor:pointer;" t-on-click="openDocuments">
+                        <span><t t-esc="state.documents_review_overdue"/></span> révisions de documents en retard
+                    </div>
+                    <div class="grc-mini-stat" style="cursor:pointer;" t-on-click="openExpiredDocuments">
+                        <span><t t-esc="state.expired_documents"/></span> documents expirés
+                    </div>
+                    <div class="grc-mini-stat" style="cursor:pointer;" t-on-click="openPolicies">
+                        <span><t t-esc="state.policies_review_overdue"/></span> politiques à réviser
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header">📑 Reporting</div>
+                <div class="card-body">
+                    <div class="grc-mini-stat" style="cursor:pointer;" t-on-click="openPendingRegulatoryReports">
+                        <span><t t-esc="state.pending_regulatory_reports"/></span> rapports réglementaires en attente / <t t-esc="state.total_regulatory_reports"/> au total (<a href="#" t-on-click.prevent.stop="openRegulatoryReports">tous</a>)
+                    </div>
+                    <div class="grc-mini-stat" style="cursor:pointer;" t-on-click="openBoardReports">
+                        <span><t t-esc="state.total_board_reports"/></span> rapports au conseil
+                    </div>
                 </div>
             </div>
         </div>

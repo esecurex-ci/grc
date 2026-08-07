@@ -9,13 +9,18 @@
         <field name="name">risk.process.hierarchy</field>
         <field name="model">risk.process</field>
         <field name="arch" type="xml">
-            <list>
+            <list decoration-success="residual_level == 'low'"
+                  decoration-warning="residual_level == 'medium'"
+                  decoration-danger="residual_level == 'high'">
                 <field name="code" string="Code"/>
                 <field name="name" string="Processus"/>
                 <field name="macro_process_id" string="Famille"/>
                 <field name="owner_id" string="Propriétaire"/>
                 <field name="count_risk" string="Risques" sum="Total"/>
-                <field name="risk_level" widget="badge" string="Niveau"/>
+                <field name="residual_level" widget="badge" string="Niveau"
+                       decoration-success="residual_level == 'low'"
+                       decoration-warning="residual_level == 'medium'"
+                       decoration-danger="residual_level == 'high'"/>
                 <field name="active" widget="boolean_toggle"/>
             </list>
         </field>
@@ -36,7 +41,7 @@
                 <field name="macro_process_id"/>
                 <field name="owner_id"/>
                 <field name="count_risk"/>
-                <field name="risk_level"/>
+                <field name="residual_level"/>
 
                 <templates>
                     <t t-name="card">
@@ -51,7 +56,7 @@
                                 </div>
                                 <div>
                                     <span class="badge">
-                                        <field name="risk_level"/>
+                                        <field name="residual_level"/>
                                     </span>
                                     <span class="badge">
                                         <field name="count_risk"/> risques
@@ -91,12 +96,17 @@
         <field name="name">risk.process.board.report</field>
         <field name="model">risk.process</field>
         <field name="arch" type="xml">
-            <list>
+            <list decoration-success="residual_level == 'low'"
+                  decoration-warning="residual_level == 'medium'"
+                  decoration-danger="residual_level == 'high'">
                 <field name="code" string="Code"/>
                 <field name="name" string="Processus"/>
                 <field name="category" string="Catégorie"/>
                 <field name="count_risk" string="Risques"/>
-                <field name="risk_level" widget="badge" string="Niveau"/>
+                <field name="residual_level" widget="badge" string="Niveau"
+                       decoration-success="residual_level == 'low'"
+                       decoration-warning="residual_level == 'medium'"
+                       decoration-danger="residual_level == 'high'"/>
                 <field name="owner_id" string="Propriétaire"/>
             </list>
         </field>

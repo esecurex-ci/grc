@@ -41,6 +41,16 @@ export class RiskHeatMap extends Component {
                 completed: 0,
                 not_started: 0,
             },
+            // Listes d'IDs des actions correctives par statut affiché
+            // (permettent au clic sur chaque case du bloc "Avancement des
+            // Actions Correctives" d'ouvrir la liste EXACTEMENT filtrée,
+            // au lieu de rouvrir toutes les actions sans distinction).
+            actionIds: {
+                overdue: [],
+                in_progress: [],
+                completed: [],
+                not_started: [],
+            },
             categoryEvolution: [],
             narratives: [],
             // Export
@@ -91,11 +101,54 @@ export class RiskHeatMap extends Component {
                 this.loadTestData();
             }
 
+            // Statistiques RÉELLES des actions correctives (indépendantes
+            // des risques : chargées séparément pour ne pas bloquer
+            // l'affichage du reste du dashboard en cas d'échec).
+            await this.loadActionsData();
+
         } catch (error) {
             console.error("🔥 Erreur :", error);
             this.loadTestData();
+            await this.loadActionsData();
         } finally {
             this.state.loading = false;
+        }
+    }
+
+    async loadActionsData() {
+        console.log("🔥 loadActionsData !");
+        try {
+            const actionsData = await this.orm.searchRead(
+                "risk.corrective.action",
+                [],
+                ["id", "state"],
+                { limit: 5000 }
+            );
+
+            const ids = { overdue: [], in_progress: [], completed: [], not_started: [] };
+            actionsData.forEach(a => {
+                if (a.state === 'overdue') {
+                    ids.overdue.push(a.id);
+                } else if (a.state === 'in_progress' || a.state === 'review') {
+                    ids.in_progress.push(a.id);
+                } else if (a.state === 'done') {
+                    ids.completed.push(a.id);
+                } else if (a.state === 'draft') {
+                    ids.not_started.push(a.id);
+                }
+                // 'cancelled' : volontairement exclu des 4 compteurs affichés
+            });
+
+            this.state.actionIds = ids;
+            this.state.actions = {
+                overdue: ids.overdue.length,
+                in_progress: ids.in_progress.length,
+                completed: ids.completed.length,
+                not_started: ids.not_started.length,
+            };
+        } catch (error) {
+            console.error("🔥 Erreur chargement actions correctives :", error);
+            // On conserve les valeurs déjà en place (données de test ou zéros)
         }
     }
 
@@ -160,9 +213,10 @@ export class RiskHeatMap extends Component {
             totalScore += risk.inherent_score || 0;
 
             // ---- 3.6 Catégories ----
+            const catId = risk.category_id ? risk.category_id[0] : false;
             const catName = risk.category_id ? risk.category_id[1] || 'Non catégorisé' : 'Non catégorisé';
             if (!categoryMap[catName]) {
-                categoryMap[catName] = { count: 0, score: 0 };
+                categoryMap[catName] = { count: 0, score: 0, id: catId };
             }
             categoryMap[catName].count += 1;
             categoryMap[catName].score += risk.inherent_score || 0;
@@ -254,23 +308,26 @@ export class RiskHeatMap extends Component {
         this.state.risks = data;
 
         // Données pour les graphiques inhérents
+        // (le champ "level" sert au clic : ouvre risk.risk filtré sur inherent_level)
         this.state.inherentData = [
-            { label: 'Élevés', value: high, color: '#dc3545' },
-            { label: 'Modérés', value: medium, color: '#ffc107' },
-            { label: 'Faibles', value: low, color: '#28a745' },
+            { label: 'Élevés', value: high, color: '#dc3545', level: 'high' },
+            { label: 'Modérés', value: medium, color: '#ffc107', level: 'medium' },
+            { label: 'Faibles', value: low, color: '#28a745', level: 'low' },
         ];
 
         // Données pour les graphiques résiduels (basés sur la nouvelle logique)
+        // (le champ "level" sert au clic : ouvre risk.risk filtré sur residual_level)
         this.state.residualData = [
-            { label: 'Élevés', value: residualHigh, color: '#dc3545' },
-            { label: 'Modérés', value: residualMedium, color: '#ffc107' },
-            { label: 'Faibles', value: residualLow, color: '#28a745' },
+            { label: 'Élevés', value: residualHigh, color: '#dc3545', level: 'high' },
+            { label: 'Modérés', value: residualMedium, color: '#ffc107', level: 'medium' },
+            { label: 'Faibles', value: residualLow, color: '#28a745', level: 'low' },
         ];
 
-        // Données par catégorie
+        // Données par catégorie (id conservé pour permettre le clic -> liste filtrée)
         this.state.categoryData = Object.entries(categoryMap).map(([name, values]) => ({
             label: name,
             value: values.count,
+            id: values.id,
         }));
 
         // Autres données
@@ -377,28 +434,11 @@ export class RiskHeatMap extends Component {
             });
         }
 
-        // Niveau résiduel (exposition actuelle après contrôles), en faisant
-        // ressortir les trois niveaux : Élevé, Modéré et Faible.
-        const highRisks = risks.filter(r => r.residual_level === 'high');
-        const mediumRisks = risks.filter(r => r.residual_level === 'medium');
-        const lowRisks = risks.filter(r => r.residual_level === 'low');
-
+        const highRisks = risks.filter(r => r.inherent_level === 'high');
         if (highRisks.length > 0) {
             narratives.push({
                 icon: '🔴',
-                text: `${highRisks.length} risque(s) de niveau résiduel Élevé nécessitent une attention immédiate.`
-            });
-        }
-        if (mediumRisks.length > 0) {
-            narratives.push({
-                icon: '🟡',
-                text: `${mediumRisks.length} risque(s) de niveau résiduel Modéré à surveiller.`
-            });
-        }
-        if (lowRisks.length > 0) {
-            narratives.push({
-                icon: '🟢',
-                text: `${lowRisks.length} risque(s) de niveau résiduel Faible, sous contrôle.`
+                text: `${highRisks.length} risque(s) à niveau élevé nécessitent une attention immédiate.`
             });
         }
 
@@ -450,20 +490,20 @@ export class RiskHeatMap extends Component {
         this.state.lowCount = 3;
         this.state.avgScore = "15.7";
         this.state.inherentData = [
-            { label: 'Élevés', value: 7, color: '#dc3545' },
-            { label: 'Modérés', value: 5, color: '#ffc107' },
-            { label: 'Faibles', value: 3, color: '#28a745' },
+            { label: 'Élevés', value: 7, color: '#dc3545', level: 'high' },
+            { label: 'Modérés', value: 5, color: '#ffc107', level: 'medium' },
+            { label: 'Faibles', value: 3, color: '#28a745', level: 'low' },
         ];
         this.state.residualData = [
-            { label: 'Élevés', value: 0, color: '#dc3545' },
-            { label: 'Modérés', value: 3, color: '#ffc107' },
-            { label: 'Faibles', value: 12, color: '#28a745' },
+            { label: 'Élevés', value: 0, color: '#dc3545', level: 'high' },
+            { label: 'Modérés', value: 3, color: '#ffc107', level: 'medium' },
+            { label: 'Faibles', value: 12, color: '#28a745', level: 'low' },
         ];
         this.state.categoryData = [
-            { label: 'Risque de non-conformité', value: 3 },
-            { label: 'Risque opératoire', value: 8 },
-            { label: 'Risque stratégique', value: 2 },
-            { label: 'Risque financier', value: 2 },
+            { label: 'Risque de non-conformité', value: 3, id: false },
+            { label: 'Risque opératoire', value: 8, id: false },
+            { label: 'Risque stratégique', value: 2, id: false },
+            { label: 'Risque financier', value: 2, id: false },
         ];
 
         this.state.highInherentRisks = [
@@ -481,6 +521,15 @@ export class RiskHeatMap extends Component {
             in_progress: 3,
             completed: 2,
             not_started: 11,
+        };
+        // Pas d'IDs réels disponibles en mode données de test : les cases
+        // du bloc "Actions Correctives" restent alors non cliquables
+        // (voir openActionsByIds, qui ne fait rien si la liste est vide).
+        this.state.actionIds = {
+            overdue: [],
+            in_progress: [],
+            completed: [],
+            not_started: [],
         };
 
         this.state.categoryEvolution = [
@@ -802,8 +851,15 @@ export class RiskHeatMap extends Component {
 
     // ============================================================
     // ACTIONS / NAVIGATION
+    // ------------------------------------------------------------
+    // Toutes les méthodes appelées depuis un gestionnaire t-on-click
+    // du template sont déclarées comme des propriétés de classe en
+    // fonction fléchée (arrow function) : cela garantit que "this"
+    // reste bien lié à l'instance du composant, y compris lorsque la
+    // méthode est invoquée depuis une fonction fléchée écrite en ligne
+    // dans le template (ex: t-on-click="() => this.openRiskById(x)").
     // ============================================================
-    openRiskList(impact, likelihood) {
+    openRiskList = (impact, likelihood) => {
         this.action.doAction({
             type: "ir.actions.act_window",
             name: `Risques (Impact: ${impact}, Probabilité: ${likelihood})`,
@@ -817,7 +873,7 @@ export class RiskHeatMap extends Component {
         });
     }
 
-    openRisks() {
+    openRisks = () => {
         this.action.doAction({
             type: "ir.actions.act_window",
             name: "Tous les risques",
@@ -827,7 +883,7 @@ export class RiskHeatMap extends Component {
         });
     }
 
-    openHighRisks() {
+    openHighRisks = () => {
         this.action.doAction({
             type: "ir.actions.act_window",
             name: "Risques à niveau élevé",
@@ -838,7 +894,7 @@ export class RiskHeatMap extends Component {
         });
     }
 
-    openRiskById(riskId) {
+    openRiskById = (riskId) => {
         this.action.doAction({
             type: "ir.actions.act_window",
             name: "Détail du risque",
@@ -849,7 +905,7 @@ export class RiskHeatMap extends Component {
         });
     }
 
-    openActions() {
+    openActions = () => {
         this.action.doAction({
             type: "ir.actions.act_window",
             name: "Actions correctives",
@@ -857,6 +913,91 @@ export class RiskHeatMap extends Component {
             views: [[false, "list"], [false, "form"]],
             target: "current",
         });
+    }
+
+    /**
+     * Ouvre la liste des actions correctives filtrée sur les IDs exacts
+     * du bucket cliqué (En retard / En cours / Terminé / Non commencé),
+     * calculés par loadActionsData() à partir du champ "state" réel de
+     * risk.corrective.action — et non plus un simple clic générique sur
+     * toute la grille qui rouvrait TOUTES les actions sans distinction.
+     */
+    openActionsByIds = (ids, title) => {
+        if (!ids || !ids.length) {
+            return;
+        }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: title || "Actions correctives",
+            res_model: "risk.corrective.action",
+            views: [[false, "list"], [false, "form"]],
+            domain: [["id", "in", ids]],
+            target: "current",
+        });
+    }
+
+    /**
+     * Ouvre la liste des risques filtrée sur un niveau donné (Élevé /
+     * Modéré / Faible), en précisant le champ concerné : "inherent_level"
+     * pour les indicateurs/graphiques inhérents, "residual_level" pour
+     * les indicateurs/graphiques résiduels.
+     */
+    openRiskLevelList = (field, level, label) => {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: label || "Risques",
+            res_model: "risk.risk",
+            views: [[false, "list"], [false, "form"]],
+            domain: [[field, "=", level]],
+            target: "current",
+        });
+    }
+
+    /**
+     * Ouvre la liste des risques d'une catégorie donnée (utilisé par le
+     * graphique "Niveau de Risque par Catégorie"). categoryId peut être
+     * absent (ex: données de test) : on retombe alors sur un filtre par
+     * le nom de la catégorie, ou sur "sans catégorie" le cas échéant.
+     */
+    openCategoryRisks = (categoryId, categoryLabel) => {
+        let domain;
+        if (categoryId) {
+            domain = [["category_id", "=", categoryId]];
+        } else if (categoryLabel && categoryLabel !== "Non catégorisé") {
+            domain = [["category_id.name", "=", categoryLabel]];
+        } else {
+            domain = [["category_id", "=", false]];
+        }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: `Risques - ${categoryLabel}`,
+            res_model: "risk.risk",
+            views: [[false, "list"], [false, "form"]],
+            domain,
+            target: "current",
+        });
+    }
+
+    /**
+     * La matrice résiduelle positionne chaque risque à un emplacement
+     * FIXE selon son niveau résiduel (voir _getMatrixPositionFromLevel) :
+     * Élevé -> (4,4), Modéré -> (3,3), Faible -> (2,2). Une cellule de
+     * cette matrice n'est donc cliquable que si elle correspond à l'une
+     * de ces positions ; on ne peut pas réutiliser le domaine de
+     * openRiskList (impact/probabilité inhérents) qui ne s'applique
+     * qu'à la matrice inhérente.
+     */
+    getResidualCellLevel(impact, prob) {
+        const mapping = { 4: { 4: "high" }, 3: { 3: "medium" }, 2: { 2: "low" } };
+        return (mapping[impact] && mapping[impact][prob]) || null;
+    }
+
+    openResidualCellRisks = (impact, prob) => {
+        const level = this.getResidualCellLevel(impact, prob);
+        if (!level) {
+            return;
+        }
+        this.openRiskLevelList("residual_level", level, `Risques - Niveau résiduel ${this.getLevelLabel(level)}`);
     }
 
     // ============================================================

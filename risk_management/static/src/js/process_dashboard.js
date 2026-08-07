@@ -28,7 +28,19 @@ export class ProcessDashboard extends Component {
             processesWithoutRisk: [],
             matrix: {},
             categoryStats: {},
-            narratives: []
+            narratives: [],
+            // Listes d'IDs de processus, utilisées pour la navigation au clic —
+            // calculées à partir des mêmes données que l'affichage, ce qui
+            // garantit que le clic ouvre exactement ce qui est montré à l'écran
+            // (plutôt que de reconstruire un domaine serveur qui pourrait ne
+            // pas correspondre exactement, ex. sur un champ d'échelle différent).
+            residualHighProcessIds: [],
+            residualMediumProcessIds: [],
+            residualLowProcessIds: [],
+            inherentHighProcessIds: [],
+            noRiskProcessIds: [],
+            categoryProcessIds: {},
+            categoryLevelProcessIds: {}
         });
 
         onWillStart(async () => {
@@ -153,12 +165,39 @@ export class ProcessDashboard extends Component {
         this.state.low = Object.values(processLevels).filter(p => p.residualLevel === 'low').length;
 
         // ============================================================
+        // 1bis. LISTES D'IDS — pour que chaque indicateur, une fois cliqué,
+        // ouvre exactement les sous processus qu'il représente à l'écran.
+        // ============================================================
+        const allProcessValues = Object.values(processLevels);
+        this.state.residualHighProcessIds = allProcessValues.filter(p => p.residualLevel === 'high').map(p => p.id);
+        this.state.residualMediumProcessIds = allProcessValues.filter(p => p.residualLevel === 'medium').map(p => p.id);
+        this.state.residualLowProcessIds = allProcessValues.filter(p => p.residualLevel === 'low').map(p => p.id);
+        this.state.inherentHighProcessIds = allProcessValues.filter(p => p.level === 'high').map(p => p.id);
+        this.state.noRiskProcessIds = allProcessValues.filter(p => p.riskCount === 0).map(p => p.id);
+
+        // Par catégorie (pour les barres "Répartition par Macro-Processus")
+        const categoryProcessIds = {};
+        // Par catégorie x niveau résiduel (pour les cellules de la matrice)
+        const categoryLevelProcessIds = {};
+        allProcessValues.forEach(p => {
+            if (!categoryProcessIds[p.categoryLabel]) categoryProcessIds[p.categoryLabel] = [];
+            categoryProcessIds[p.categoryLabel].push(p.id);
+
+            if (!categoryLevelProcessIds[p.categoryLabel]) {
+                categoryLevelProcessIds[p.categoryLabel] = { high: [], medium: [], low: [] };
+            }
+            categoryLevelProcessIds[p.categoryLabel][p.residualLevel].push(p.id);
+        });
+        this.state.categoryProcessIds = categoryProcessIds;
+        this.state.categoryLevelProcessIds = categoryLevelProcessIds;
+
+        // ============================================================
         // 2. RISK DISTRIBUTION (pour les Donuts) - niveau résiduel
         // ============================================================
         this.state.riskDistribution = [
-            { label: 'Élevé', value: this.state.high, color: '#dc3545' },
-            { label: 'Modéré', value: this.state.medium, color: '#ffc107' },
-            { label: 'Faible', value: this.state.low, color: '#28a745' }
+            { key: 'high', label: 'Élevé', value: this.state.high, color: '#dc3545' },
+            { key: 'medium', label: 'Modéré', value: this.state.medium, color: '#ffc107' },
+            { key: 'low', label: 'Faible', value: this.state.low, color: '#28a745' }
         ];
 
         // ============================================================
@@ -279,9 +318,9 @@ export class ProcessDashboard extends Component {
         this.state.low = 0;
 
         this.state.riskDistribution = [
-            { label: 'Élevé', value: 7, color: '#dc3545' },
-            { label: 'Modéré', value: 0, color: '#ffc107' },
-            { label: 'Faible', value: 0, color: '#28a745' }
+            { key: 'high', label: 'Élevé', value: 7, color: '#dc3545' },
+            { key: 'medium', label: 'Modéré', value: 0, color: '#ffc107' },
+            { key: 'low', label: 'Faible', value: 0, color: '#28a745' }
         ];
 
         this.state.highRiskProcesses = [
@@ -309,11 +348,59 @@ export class ProcessDashboard extends Component {
         };
 
         this.state.processesWithoutRisk = [];
+
+        // Données de test : pas de vraie navigation possible (pas d'IDs réels
+        // en base), on vide donc les listes d'IDs pour désactiver les clics.
+        this.state.residualHighProcessIds = [];
+        this.state.residualMediumProcessIds = [];
+        this.state.residualLowProcessIds = [];
+        this.state.inherentHighProcessIds = [];
+        this.state.noRiskProcessIds = [];
+        this.state.categoryProcessIds = {};
+        this.state.categoryLevelProcessIds = {};
+
         this.state.narratives = this.generateNarratives();
     }
 
     // ============================================================
-    // RENDU DES DONUT CHARTS
+    // RENDU D'UN SEUL DONUT (utilisé par le template, qui gère lui-même
+    // le conteneur cliquable .donut-item — cette méthode ne rend que le
+    // SVG et son libellé, pour éviter d'imbriquer deux fois la même classe).
+    // ============================================================
+    renderSingleDonut(item, total) {
+        const circumference = 282.74;
+        const percent = total > 0 ? item.value / total : 0;
+        const offset = circumference * (1 - percent);
+
+        const html = `
+            <div class="donut-circle">
+                <svg viewBox="0 0 120 120" width="120" height="120">
+                    <circle cx="60" cy="60" r="45" fill="none" stroke="#f0f0f0" stroke-width="12"/>
+                    <circle cx="60" cy="60" r="45" fill="none"
+                            stroke="${item.color}" stroke-width="12"
+                            stroke-linecap="round"
+                            stroke-dasharray="${circumference}"
+                            stroke-dashoffset="${offset}"
+                            transform="rotate(-90 60 60)">
+                        <animate attributeName="stroke-dashoffset"
+                                 from="${circumference}" to="${offset}" dur="1s" fill="freeze"/>
+                    </circle>
+                    <text x="60" y="52" text-anchor="middle" font-size="20" font-weight="bold" fill="#1a237e">${item.value}</text>
+                    <text x="60" y="72" text-anchor="middle" font-size="10" fill="#6c757d">${item.label}</text>
+                </svg>
+            </div>
+            <div class="donut-label">
+                <span class="donut-color" style="background:${item.color};"></span>
+                ${item.label} (${item.value})
+            </div>
+        `;
+        return markup(html);
+    }
+
+    // ============================================================
+    // RENDU DES DONUT CHARTS (grille complète, conservé pour compatibilité
+    // — non cliquable ; utilisé nulle part dans le template actuel qui
+    // préfère renderSingleDonut par item pour permettre le clic)
     // ============================================================
     renderDonutChart(distribution, total) {
         if (!distribution || distribution.length === 0) {
@@ -400,6 +487,18 @@ export class ProcessDashboard extends Component {
         return map[category] || category || 'Non classé';
     }
 
+    // Renvoie la liste d'IDs de processus pour une catégorie + un niveau
+    // résiduel donnés (utilisé par les cellules cliquables de la matrice).
+    // ⚠️ Fonction fléchée (et non méthode de prototype) : elle est appelée
+    // depuis une lambda inline dans le template (t-on-click="() => ...
+    // getCategoryLevelIds(...)"), qui ne préserve pas le "this" d'une
+    // méthode classique — d'où l'erreur "Cannot read properties of
+    // undefined (reading 'state')" sans ce binding lexical.
+    getCategoryLevelIds = (categoryLabel, level) => {
+        const byCategory = this.state.categoryLevelProcessIds[categoryLabel];
+        return (byCategory && byCategory[level]) || [];
+    }
+
     // ============================================================
     // ACTIONS / NAVIGATION
     // ============================================================
@@ -407,7 +506,7 @@ export class ProcessDashboard extends Component {
         if (this.action) {
             this.action.doAction({
                 type: 'ir.actions.act_window',
-                name: 'Tous les processus',
+                name: 'Tous les sous processus',
                 res_model: 'risk.process',
                 views: [[false, 'list'], [false, 'form']],
                 domain: [],
@@ -417,21 +516,35 @@ export class ProcessDashboard extends Component {
         }
     }
 
-    openHighRiskProcesses = () => {
-        if (this.action) {
-            this.action.doAction({
-                type: 'ir.actions.act_window',
-                name: 'Processus à risque élevé',
-                res_model: 'risk.process',
-                views: [[false, 'list'], [false, 'form']],
-                // ⚠️ Ce domaine filtre sur risk.process.risk_level (échelle 1-5 propre au processus),
-                // distincte de l'échelle inherent_level (Faible/Modéré/Élevé) utilisée dans ce dashboard.
-                // À vérifier séparément si '5' correspond toujours à un niveau réel dans ton contexte.
-                domain: [['risk_level', '=', '5']],
-            });
-        } else {
+    // Ouvre une liste de sous processus filtrée sur une liste d'IDs précise —
+    // méthode générique utilisée par tous les indicateurs cliquables du
+    // dashboard, pour garantir que ce qui s'ouvre correspond exactement à ce
+    // qui est affiché (compté côté client à partir des mêmes données).
+    openProcessesByIds = (ids, title) => {
+        if (!this.action) {
             console.warn("📊 Action service non disponible");
+            return;
         }
+        if (!ids || ids.length === 0) {
+            // Rien à afficher (ex. 0 sous processus à risque élevé) : pas de
+            // navigation vers une liste vide.
+            return;
+        }
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: title,
+            res_model: 'risk.process',
+            views: [[false, 'list'], [false, 'form']],
+            domain: [['id', 'in', ids]],
+        });
+    }
+
+    // Conservée pour compatibilité, désormais basée sur la même liste d'IDs
+    // que la carte KPI "Élevés" (niveau résiduel), au lieu de reconstruire un
+    // domaine serveur sur un champ d'échelle différent (risk.process.risk_level,
+    // 1-5) qui ne correspondait pas à ce qui est réellement affiché ici.
+    openHighRiskProcesses = () => {
+        this.openProcessesByIds(this.state.residualHighProcessIds, 'Sous processus à risque résiduel élevé');
     }
 
     openProcessById = (processId) => {

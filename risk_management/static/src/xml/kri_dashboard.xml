@@ -54,12 +54,6 @@
                         </div>
                     </div>
                     <div class="col-2">
-                        <div class="kpi-card kpi-overdue" t-on-click="openOverdueKris">
-                            <div class="kpi-label">⏰ En retard</div>
-                            <div class="kpi-value"><t t-esc="state.overdue"/></div>
-                        </div>
-                    </div>
-                    <div class="col-2">
                         <div class="kpi-card kpi-over-appetite" t-on-click="openOverAppetiteKris">
                             <div class="kpi-label">🎯 Hors appétit</div>
                             <div class="kpi-value"><t t-esc="state.overAppetite"/></div>
@@ -134,43 +128,11 @@
                     <div class="col-md-6">
                         <!-- ✅ AJOUT : classe scrollable-card pour le scroll interne -->
                         <div class="chart-card scrollable-card">
-                            <h5 class="chart-title">📈 Top 5 KRI les plus critiques</h5>
-                            <div t-if="state.topWorst.length > 0">
-                                <div class="top-item" t-foreach="state.topWorst" t-as="kri" t-key="kri.id">
-                                    <div class="top-row" t-on-click="() => openKriById(kri.id)">
-                                        <span class="rank-badge">#<t t-esc="kri_index + 1"/></span>
-                                        <span class="top-status" t-attf-class="badge #{getStatusClass(kri.status)}">
-                                            <t t-esc="getStatusBadge(kri.status)"/>
-                                        </span>
-                                        <span class="top-name"><t t-esc="kri.name"/></span>
-                                        <span class="top-code"><t t-esc="kri.code"/></span>
-                                        <span class="top-value">
-                                            <strong><t t-esc="kri.value"/></strong> <t t-esc="kri.unit"/>
-                                        </span>
-                                        <span class="top-owner"><i class="fa fa-user"/> <t t-esc="kri.owner"/></span>
-                                    </div>
-                                </div>
-                                <a href="#" class="view-all-link" t-on-click.prevent="openAllKris">
-                                    Voir tous les KRI →
-                                </a>
-                            </div>
-                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
-                                ✅ Aucun KRI critique
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ========================================= -->
-                <!-- HORS APPÉTIT                              -->
-                <!-- ========================================= -->
-                <div class="row g-3 mb-4">
-                    <div class="col-12">
-                        <div class="chart-card scrollable-card">
                             <h5 class="chart-title">🎯 KRI Hors appétit au risque</h5>
                             <div t-if="state.overAppetiteKris.length > 0">
                                 <div class="top-item" t-foreach="state.overAppetiteKris" t-as="kri" t-key="kri.id">
                                     <div class="top-row" t-on-click="() => openKriById(kri.id)">
+                                        <span class="rank-badge">#<t t-esc="kri_index + 1"/></span>
                                         <span class="top-status" t-attf-class="badge #{getStatusClass(kri.status)}">
                                             <t t-esc="getStatusBadge(kri.status)"/>
                                         </span>

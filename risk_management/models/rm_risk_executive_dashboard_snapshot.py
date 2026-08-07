@@ -130,6 +130,42 @@ class RiskExecutiveDashboardSnapshot(models.Model):
     average_closure_time = fields.Float()
 
     ####################################################################
+    # CONTRÔLES & KRI
+    ####################################################################
+
+    control_score = fields.Float()
+
+    total_controls = fields.Integer()
+
+    ineffective_controls = fields.Integer()
+
+    active_kri_alerts = fields.Integer()
+
+    kri_over_appetite_count = fields.Integer()
+
+    ####################################################################
+    # GOUVERNANCE (documents & politiques)
+    ####################################################################
+
+    total_documents = fields.Integer()
+
+    documents_review_overdue = fields.Integer()
+
+    expired_documents = fields.Integer()
+
+    policies_review_overdue = fields.Integer()
+
+    ####################################################################
+    # REPORTING
+    ####################################################################
+
+    total_regulatory_reports = fields.Integer()
+
+    pending_regulatory_reports = fields.Integer()
+
+    total_board_reports = fields.Integer()
+
+    ####################################################################
     # HEATMAP
     ####################################################################
 
