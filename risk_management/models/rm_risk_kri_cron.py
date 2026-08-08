@@ -39,7 +39,11 @@ class RiskKriCron(models.Model):
 
                 value = kri.compute_value_from_formula(**params)
 
-                self.env['risk.kri.measure'].create({
+                # Contexte de contournement nécessaire : risk.kri.measure
+                # refuse toute mesure saisie manuellement pour un KRI ayant
+                # une formule définie ; ce cron calcule justement la valeur
+                # à partir de cette formule.
+                self.env['risk.kri.measure'].with_context(kri_formula_bypass=True).create({
                     'kri_id': kri.id,
                     'value': value,
                     'measure_date': fields.Date.today(),

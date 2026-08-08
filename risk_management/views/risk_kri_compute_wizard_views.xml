@@ -63,4 +63,76 @@
         </field>
     </record>
 
+    <record id="view_risk_kri_compute_wizard_form" model="ir.ui.view">
+        <field name="name">risk.kri.compute.wizard.form</field>
+        <field name="model">risk.kri.compute.wizard</field>
+        <field name="arch" type="xml">
+            <form string="🧮 Calculer la mesure">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>🧮 Calculer la mesure</h1>
+                        <p class="text-muted">
+                            Renseignez la valeur de chaque paramètre utilisé par la formule
+                            ci-dessous, cliquez sur "Calculer" pour obtenir la valeur du KRI,
+                            puis sur "Enregistrer la mesure" pour la valider définitivement.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="kri_id" readonly="1"/>
+                            <field name="formula_expression" readonly="1" string="Formule"/>
+                        </group>
+                        <group>
+                            <field name="measure_date"/>
+                            <field name="unit" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="📝 Paramètres de la formule" colspan="2">
+                        <!-- Pas de create="0"/delete="0" ici : ces attributs
+                             semblaient empêcher le client Odoo d'enregistrer
+                             les lignes générées automatiquement par l'onchange
+                             sur kri_id (parameter_ids arrivait vide côté
+                             serveur au moment de "Calculer", confirmé par
+                             logs), rendant tout calcul impossible. Le champ
+                             "Nom" reste en lecture seule et le create() de
+                             risk.kri.compute.parameter filtre déjà toute ligne
+                             sans nom exploitable : ces deux protections
+                             suffisent à empêcher les lignes vides sans avoir
+                             besoin de bloquer la création/suppression au
+                             niveau de la vue. -->
+                        <field name="parameter_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="name" string="Paramètre" readonly="1"/>
+                                <field name="value" string="Valeur"/>
+                            </list>
+                        </field>
+                    </group>
+
+                    <group string="📈 Résultat" colspan="2">
+                        <div style="background:#f0f2ff;border-radius:8px;padding:15px;text-align:center;border:1px solid #dee2e6;">
+                            <div style="font-size:14px;color:#6c757d;">Valeur calculée</div>
+                            <div style="font-size:32px;font-weight:800;color:#1a237e;">
+                                <field name="computed_value" readonly="1" nolabel="1" class="d-inline-block"/>
+                                <span> </span>
+                                <field name="unit" readonly="1" nolabel="1" class="d-inline-block"/>
+                            </div>
+                        </div>
+                    </group>
+
+                    <group>
+                        <field name="comment" placeholder="Commentaire (optionnel)..."/>
+                    </group>
+
+                    <footer>
+                        <button name="action_compute" string="🧮 Calculer" type="object" class="btn-secondary"/>
+                        <button name="action_save_measure" string="💾 Enregistrer la mesure" type="object" class="btn-primary"/>
+                        <button string="Annuler" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
 </odoo>

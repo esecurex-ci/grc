@@ -126,7 +126,16 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_add_measure" string="➕ Ajouter une mesure" type="object" class="btn-primary"/>
+                    <!-- Un KRI avec une formule définie DOIT voir ses mesures
+                         calculées via cette formule (contrôle exigé par la
+                         gouvernance des risques) : le bouton de saisie
+                         manuelle est masqué dans ce cas, seul "Calculer la
+                         mesure" reste disponible. Sans formule, la saisie
+                         manuelle reste le seul moyen possible. -->
+                    <button name="action_add_measure" string="➕ Ajouter une mesure" type="object" class="btn-primary"
+                            invisible="formula_expression"/>
+                    <button name="action_compute_measure" string="🧮 Calculer la mesure" type="object" class="btn-primary"
+                            invisible="not formula_expression"/>
                     <button name="action_view_measures" string="📊 Voir les mesures" type="object"/>
                     <button name="action_test_formula" string="🧪 Tester la formule" type="object" class="btn-secondary"/>
                     <button name="action_apply_formula_template" string="📋 Modèles de formules" type="object" class="btn-secondary"/>
@@ -162,8 +171,8 @@
 
                     <group string="🗂️ Rattachement (via les risques associés)">
                         <group colspan="2">
-                            <field name="macro_process_list" string="Processus" readonly="1"/>
-                            <field name="process_list" string="Sous-Processus" readonly="1"/>
+                            <field name="macro_process_list" string="Macro-processus" readonly="1"/>
+                            <field name="process_list" string="Processus" readonly="1"/>
                             <field name="activity_list" string="Activités" readonly="1"/>
                         </group>
                     </group>
@@ -204,6 +213,11 @@
                             <field name="description"/>
                         </page>
                         <page string="📊 Mesures">
+                            <div class="alert alert-info" invisible="not formula_expression">
+                                🧮 Ce KRI a une formule de calcul définie : les nouvelles mesures
+                                doivent être ajoutées via le bouton « Calculer la mesure » ci-dessus
+                                (la saisie manuelle d'une valeur ci-dessous sera refusée).
+                            </div>
                             <!-- ✅ CORRIGÉ : id au lieu de active_id -->
                             <field name="measure_ids" context="{'default_kri_id': id}">
                                 <list editable="bottom" decoration-success="kri_id.status == 'green'" decoration-warning="kri_id.status == 'amber'" decoration-danger="kri_id.status == 'red'">
@@ -397,6 +411,24 @@
                 <field name="inherent_score" type="measure"/>
             </graph>
         </field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- ACTION SERVEUR : AUDIT DES FORMULES KRI   -->
+    <!-- Accessible depuis le menu ⚙ Actions de la -->
+    <!-- liste des KRI, pour repérer d'un coup tous -->
+    <!-- les KRI dont la formule utilise une        -->
+    <!-- variable non déclarée dans "Champs         -->
+    <!-- nécessaires" (voir                         -->
+    <!-- risk.kri.action_audit_formulas).           -->
+    <!-- ========================================= -->
+    <record id="action_server_audit_kri_formulas" model="ir.actions.server">
+        <field name="name">🔍 Auditer les formules KRI</field>
+        <field name="model_id" ref="model_risk_kri"/>
+        <field name="binding_model_id" ref="model_risk_kri"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = model.action_audit_formulas()</field>
     </record>
 
 </odoo>

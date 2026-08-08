@@ -69,7 +69,7 @@
 
     <!-- ✅ Maintenant menu_process_dashboard peut utiliser menu_grc_risk -->
     <menuitem id="menu_process_dashboard"
-        name="📋 Tableau de bord Sous Processus"
+        name="📋 Tableau de bord sous Processus"
         parent="menu_grc_risk"
         action="action_process_dashboard"
         sequence="1"
@@ -154,6 +154,18 @@
         parent="menu_grc_controls"
         action="action_kri_dashboard"
         sequence="1"
+    />
+
+    <!-- Menu direct vers l'audit des formules KRI : accès garanti,
+         indépendant du mécanisme d'action contextuelle (⚙ Actions) sur la
+         vue liste des KRI, qui ne s'affichait pas correctement dans cet
+         environnement malgré une configuration correcte (binding_model_id,
+         binding_view_types, binding_type tous vérifiés en base). -->
+    <menuitem id="menu_kri_audit_formulas"
+        name="🔍 Auditer les formules KRI"
+        parent="menu_grc_controls"
+        action="action_server_audit_kri_formulas"
+        sequence="5"
     />
 
     <!-- ===================================================== -->

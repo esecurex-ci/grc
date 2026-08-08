@@ -2,6 +2,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
+import ast
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -627,6 +628,125 @@ class RiskKri(models.Model):
             expression = expression.replace(bad, good)
         return expression
 
+    _FORMULA_SAFE_BUILTINS = {'abs', 'round', 'sum', 'len', 'max', 'min'}
+
+    def _get_formula_undeclared_variables(self):
+        """Retourne l'ensemble des noms de variables utilisées par la formule
+        de ce KRI (analysée via ast, pas une simple recherche de texte) mais
+        absentes de 'Champs nécessaires'. Factorisé pour être utilisé à la
+        fois par la contrainte de sauvegarde (_check_formula_fields_
+        consistency, bloquante) et par l'audit global en lecture seule
+        (action_audit_formulas, pour les KRI déjà enregistrés avant l'ajout
+        de cette contrainte). Retourne un ensemble vide si la formule est
+        absente ou syntaxiquement invalide (la syntaxe est signalée
+        séparément par la contrainte)."""
+        self.ensure_one()
+        if not self.formula_expression:
+            return set()
+
+        expression = self._normalize_formula_expression(self.formula_expression)
+        try:
+            tree = ast.parse(expression, mode='eval')
+        except SyntaxError:
+            return set()
+
+        used_names = {
+            node.id for node in ast.walk(tree) if isinstance(node, ast.Name)
+        } - self._FORMULA_SAFE_BUILTINS
+
+        declared_fields = set()
+        if self.formula_fields:
+            declared_fields = {
+                f.strip() for f in self.formula_fields.split(',') if f.strip()
+            }
+
+        return used_names - declared_fields
+
+    @api.constrains('formula_expression', 'formula_fields')
+    def _check_formula_fields_consistency(self):
+        """Vérifie, dès l'enregistrement de la formule, que toute variable
+        utilisée dans 'Expression de calcul' est bien déclarée dans 'Champs
+        nécessaires'. Sans ce contrôle, une variable oubliée dans 'Champs
+        nécessaires' ne se révélait qu'au moment du calcul de la mesure
+        (l'assistant ne crée une ligne de saisie que pour les champs
+        déclarés) : l'évaluateur tombait alors sur "Erreur de calcul: name
+        'xxx' is not defined", sans lien évident avec la vraie cause."""
+        for record in self:
+            if not record.formula_expression:
+                continue
+
+            expression = record._normalize_formula_expression(record.formula_expression)
+            try:
+                ast.parse(expression, mode='eval')
+            except SyntaxError as e:
+                raise ValidationError(_(
+                    "La formule du KRI « %s » contient une erreur de syntaxe : %s"
+                ) % (record.name, str(e)))
+
+            missing = record._get_formula_undeclared_variables()
+            if missing:
+                raise ValidationError(_(
+                    "La formule du KRI « %s » utilise la ou les variable(s) « %s » "
+                    "qui ne sont pas déclarées dans « Champs nécessaires ». "
+                    "Ajoutez-les à ce champ (séparées par des virgules) avant "
+                    "d'enregistrer la formule, sinon l'assistant de calcul ne "
+                    "pourra jamais demander leur valeur."
+                ) % (record.name, ', '.join(sorted(missing))))
+
+    @api.model
+    def action_audit_formulas(self):
+        """Audit global (lecture seule) : passe en revue TOUS les KRI ayant
+        une formule et signale ceux dont la formule utilise une variable non
+        déclarée dans 'Champs nécessaires' — l'incohérence qui ne se révèle
+        sinon qu'au moment du calcul d'une mesure, sous la forme d'un
+        "Erreur de calcul: name 'xxx' is not defined" sans lien évident avec
+        sa vraie cause. Utile pour repérer d'un coup tous les KRI existants
+        (créés/importés avant l'ajout de _check_formula_fields_consistency)
+        qui ont ce problème, plutôt que de les découvrir un par un à l'usage.
+        Accessible depuis le menu ⚙ Actions de la liste des KRI.
+
+        with_context(active_test=False) : un KRI archivé reste normalement
+        exclu de tout search() par défaut (champ 'active'), mais son bouton
+        "Calculer la mesure" reste parfaitement utilisable une fois sa fiche
+        ouverte directement — sa formule doit donc être auditée comme
+        n'importe quel autre KRI, sous peine de rater silencieusement de
+        vraies incohérences (cas vécu : un KRI avec une variable non
+        déclarée, non détecté par une première version de cet audit)."""
+        kris = self.with_context(active_test=False).search([
+            ('formula_expression', '!=', False),
+            ('formula_expression', '!=', ''),
+        ])
+
+        broken_ids = []
+        for kri in kris:
+            if kri._get_formula_undeclared_variables():
+                broken_ids.append(kri.id)
+
+        if not broken_ids:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _("Audit des formules KRI"),
+                    'message': _(
+                        "Aucune incohérence détectée : tous les KRI ayant une "
+                        "formule ont bien déclaré toutes leurs variables dans "
+                        "« Champs nécessaires »."
+                    ),
+                    'type': 'success',
+                    'sticky': False,
+                },
+            }
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _("%d KRI avec une formule incohérente") % len(broken_ids),
+            'res_model': 'risk.kri',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', broken_ids)],
+            'target': 'current',
+        }
+
     def compute_value_from_formula(self, **kwargs):
         self.ensure_one()
 
@@ -655,7 +775,10 @@ class RiskKri(models.Model):
 
         value = self.compute_value_from_formula(**kwargs)
 
-        measure = self.env['risk.kri.measure'].create({
+        # Contexte de contournement nécessaire : risk.kri.measure refuse toute
+        # mesure saisie manuellement pour un KRI ayant une formule définie ;
+        # cette méthode calcule justement la valeur à partir de cette formule.
+        measure = self.env['risk.kri.measure'].with_context(kri_formula_bypass=True).create({
             'kri_id': self.id,
             'value': value,
             'measure_date': fields.Date.today(),
@@ -684,18 +807,28 @@ class RiskKri(models.Model):
         }
 
     def action_compute_measure(self):
+        """Ouvre l'assistant de calcul sur un wizard déjà créé côté serveur
+        (au lieu de laisser le client web créer un enregistrement "nouveau"
+        avec des lignes de paramètres générées par onchange). Les valeurs
+        saisies par l'utilisateur sur des lignes issues d'un onchange, sur un
+        enregistrement encore jamais sauvegardé, ne parviennent pas au
+        serveur (confirmé par logs : parameter_ids restait vide, puis restait
+        bloqué à 0.0 quoi que l'utilisateur tape). En créant le wizard ici,
+        l'utilisateur modifie dès l'ouverture une ligne qui existe déjà
+        réellement en base — un scénario standard qui fonctionne."""
         self.ensure_one()
+        wizard = self.env['risk.kri.compute.wizard'].create({
+            'kri_id': self.id,
+            'formula_expression': self.formula_expression,
+            'formula_fields': self.formula_fields,
+        })
         return {
             'type': 'ir.actions.act_window',
             'name': f'Calculer la mesure - {self.name}',
             'res_model': 'risk.kri.compute.wizard',
             'view_mode': 'form',
+            'res_id': wizard.id,
             'target': 'new',
-            'context': {
-                'default_kri_id': self.id,
-                'default_formula_expression': self.formula_expression,
-                'default_formula_fields': self.formula_fields,
-            },
         }
 
     def action_view_measures(self):
