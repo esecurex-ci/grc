@@ -129,4 +129,15 @@
         <field name="company_id" eval="False"/>
     </record>
 
+    <!-- ✅ Manquait : risk.audit.finding.name (Référence) restait bloqué à
+         'New' faute de séquence (voir create() ajouté dans
+         rm_risk_audit_finding.py). -->
+    <record id="seq_risk_audit_finding" model="ir.sequence">
+        <field name="name">Constat d'audit</field>
+        <field name="code">risk.audit.finding</field>
+        <field name="prefix">CST-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
 </odoo>

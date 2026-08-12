@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- ⚠️ Ce modèle avait un vrai cycle de vie (action_start/action_complete/
+         action_validate/action_cancel) mais ni vue formulaire, ni action
+         fenêtre, ni entrée de menu : impossible de créer/ouvrir un plan
+         d'action ou de faire avancer son statut depuis l'interface. -->
+
     <record id="view_risk_audit_action_plan_list" model="ir.ui.view">
         <field name="name">risk.audit.action.plan.list</field>
         <field name="model">risk.audit.action.plan</field>
@@ -9,15 +14,114 @@
             <list
                   decoration-info="state == 'draft'"
                   decoration-warning="state == 'in_progress'"
-                  decoration-success="state in ('completed','validated')">
+                  decoration-success="state in ('completed','validated')"
+                  decoration-muted="state == 'cancelled'">
 
                 <field name="name"/>
+                <field name="recommendation_id"/>
                 <field name="owner_id"/>
                 <field name="target_date"/>
                 <field name="progress" widget="progressbar"/>
                 <field name="state" widget="badge"/>
 
             </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_audit_action_plan_search" model="ir.ui.view">
+        <field name="name">risk.audit.action.plan.search</field>
+        <field name="model">risk.audit.action.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="recommendation_id"/>
+                <field name="owner_id"/>
+                <filter name="draft" string="Brouillon" domain="[('state','=','draft')]"/>
+                <filter name="in_progress" string="En cours" domain="[('state','=','in_progress')]"/>
+                <filter name="completed" string="Terminé" domain="[('state','=','completed')]"/>
+                <filter name="validated" string="Validé" domain="[('state','=','validated')]"/>
+                <separator/>
+                <filter name="overdue" string="En retard"
+                        domain="[('target_date','&lt;', context_today()), ('state','not in', ('completed','validated','cancelled'))]"/>
+                <separator/>
+                <filter name="group_state" string="Statut" context="{'group_by':'state'}"/>
+                <filter name="group_owner" string="Responsable" context="{'group_by':'owner_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_risk_audit_action_plan_form" model="ir.ui.view">
+        <field name="name">risk.audit.action.plan.form</field>
+        <field name="model">risk.audit.action.plan</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <header>
+                    <button name="action_start"
+                            string="Démarrer"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_complete"
+                            string="Marquer terminé"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_validate"
+                            string="Valider"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'completed'"/>
+                    <button name="action_cancel"
+                            string="Annuler"
+                            type="object"
+                            invisible="state in ('validated','cancelled')"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,in_progress,completed,validated"/>
+                </header>
+
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="recommendation_id"/>
+                            <field name="owner_id"/>
+                            <field name="progress" widget="progressbar"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="target_date"/>
+                            <field name="completion_date"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+
+                        <page string="Pièces Jointes">
+                            <field name="attachment_ids"
+                                   widget="many2many_binary"/>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
 
         </field>
     </record>

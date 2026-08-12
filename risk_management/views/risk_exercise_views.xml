@@ -1,26 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- ⚠️ Ce modèle n'avait qu'une vue formulaire : ni vue liste ni vue de
+         recherche, alors que action_risk_exercise déclare view_mode
+         "list,form,search". Odoo générait donc une vue liste/recherche par
+         défaut minimaliste (sans filtres Planifié/Réalisé ni regroupement
+         par type), sur le même schéma que le bug corrigé sur risk.bia. -->
+    <record id="view_risk_exercise_list" model="ir.ui.view">
+        <field name="name">risk.exercise.list</field>
+        <field name="model">risk.exercise</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="exercise_date"/>
+                <field name="exercise_type"/>
+                <field name="scenario_id"/>
+                <field name="finding_count"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_risk_exercise_search" model="ir.ui.view">
+        <field name="name">risk.exercise.search</field>
+        <field name="model">risk.exercise</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="scenario_id"/>
+                <filter name="planned" string="Planifié" domain="[('state','=','planned')]"/>
+                <filter name="completed" string="Réalisé" domain="[('state','=','completed')]"/>
+                <!-- ⚠️ Filtres de regroupement en <filter> directs, pas dans
+                     un <group> (voir le même correctif sur risk_bia_views.xml
+                     — un <group> contenant des <filter> est rejeté par le
+                     schéma RNG des vues de recherche de cette version d'Odoo). -->
+                <separator/>
+                <filter name="group_type" string="Type d'exercice" context="{'group_by':'exercise_type'}"/>
+                <filter name="group_state" string="Statut" context="{'group_by':'state'}"/>
+            </search>
+        </field>
+    </record>
+
     <record id="view_risk_exercise_form" model="ir.ui.view">
         <field name="name">risk.exercise.form</field>
         <field name="model">risk.exercise</field>
         <field name="arch" type="xml">
             <form>
 
+                <header>
+                    <!-- ⚠️ 'state' était un simple champ éditable dans le
+                         formulaire : le nombre d'exercices 'completed'
+                         alimente le taux de réussite des exercices affiché au
+                         tableau de bord Résilience, il passe donc désormais
+                         par une action explicite. -->
+                    <button name="action_complete"
+                            string="Marquer réalisé"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'planned'"/>
+                    <button name="action_reset_planned"
+                            string="Remettre en planification"
+                            type="object"
+                            invisible="state != 'completed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="planned,completed"/>
+                </header>
+
                 <sheet>
 
                     <group>
-
-                        <field name="name"/>
-
-                        <field name="exercise_date"/>
-
-                        <field name="exercise_type"/>
-
-                        <field name="scenario_id"/>
-
-                        <field name="state"/>
-
+                        <group>
+                            <field name="name"/>
+                            <field name="exercise_date"/>
+                            <field name="exercise_type"/>
+                            <field name="scenario_id"/>
+                        </group>
+                        <!-- ✅ Alignement ISO 22398 : plan(s) réellement testé(s)
+                             et performance mesurée pendant l'exercice — sert
+                             ensuite au calcul automatique du "dernier test" sur
+                             le PCA/PRA correspondant. -->
+                        <group>
+                            <field name="bcp_id"/>
+                            <field name="drp_id"/>
+                            <field name="tested_rto_hours"/>
+                            <field name="tested_rpo_hours"/>
+                            <field name="participant_ids" widget="many2many_tags"/>
+                        </group>
                     </group>
 
                     <notebook>
@@ -47,6 +111,12 @@
 
                                     <field name="recommendation"/>
 
+                                    <field name="responsible_id"/>
+
+                                    <field name="target_date"/>
+
+                                    <field name="state" widget="badge"/>
+
                                 </list>
 
                             </field>
@@ -56,6 +126,8 @@
                     </notebook>
 
                 </sheet>
+
+                <chatter/>
 
             </form>
 

@@ -19,6 +19,37 @@
         <field name="model">risk.bcp.plan</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <!-- ⚠️ 'state' était auparavant un simple champ éditable dans
+                         le corps du formulaire : n'importe qui pouvait passer un
+                         PCA à 'Approved' sans validation, alors que ce statut
+                         alimente directement le taux de couverture PCA du
+                         tableau de bord Résilience. -->
+                    <button name="action_approve"
+                            string="Valider"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft"
+                            string="Remettre en brouillon"
+                            type="object"
+                            invisible="state != 'approved'"/>
+                    <!-- ⚠️ "Le PCA a un caractère évolutif" : réviser un plan
+                         déjà approuvé ne doit pas écraser silencieusement ce
+                         qui a été approuvé (et potentiellement déjà testé) —
+                         ce bouton archive le contenu actuel dans l'historique
+                         des versions avant de rouvrir le plan en brouillon. -->
+                    <button name="action_revise"
+                            string="Réviser (nouvelle version)"
+                            type="object"
+                            class="btn-warning"
+                            invisible="state != 'approved'"/>
+                    <button name="action_obsolete"
+                            string="Marquer obsolète"
+                            type="object"
+                            invisible="state == 'obsolete'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,obsolete"/>
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_resources"
@@ -31,13 +62,45 @@
 
                         </button>
 
+                        <!-- ⚠️ Le lien risk.exercise.bcp_id existait déjà (utilisé
+                             pour calculer last_test_date/last_tested_rto_hours)
+                             mais n'était accessible depuis aucun écran du PCA. -->
+                        <button name="action_view_tests"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-flask">
+                            <field name="test_count"
+                                   widget="statinfo"
+                                   string="Tests"/>
+                        </button>
+
+                        <!-- ✅ Historique des versions (caractère évolutif du PCA) -->
+                        <button name="action_view_versions"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-history">
+                            <field name="version_count"
+                                   widget="statinfo"
+                                   string="Historique"/>
+                        </button>
+
                     </div>
 
                     <group>
-                        <field name="name"/>
-                        <field name="process_id"/>
-                        <field name="owner_id"/>
-                        <field name="state"/>
+                        <group>
+                            <field name="name"/>
+                            <field name="process_id"/>
+                            <field name="owner_id"/>
+                            <field name="version_number" readonly="1" string="Version actuelle"/>
+                        </group>
+                        <!-- ✅ Alignement ISO 22301 §8.4 -->
+                        <group>
+                            <field name="bia_id"/>
+                            <field name="drp_ids" widget="many2many_tags"/>
+                            <field name="target_rto_hours"/>
+                            <field name="last_tested_rto_hours"/>
+                            <field name="last_test_date"/>
+                        </group>
                     </group>
 
                     <notebook>
@@ -55,7 +118,7 @@
 
                         </page>
 
-                        <page string="Ressources">
+                        <page string="Ressources / Équipe de continuité">
 
                             <field name="resource_ids">
 
@@ -65,15 +128,38 @@
 
                                     <field name="resource_type"/>
 
+                                    <field name="role"/>
+
+                                    <field name="employee_id"/>
+
+                                    <field name="partner_id"/>
+
+                                    <field name="contact_info"/>
+
                                 </list>
 
                             </field>
 
                         </page>
 
+                        <page string="Revue &amp; Approbation">
+                            <group>
+                                <group string="Revue périodique">
+                                    <field name="last_review_date"/>
+                                    <field name="next_review_date"/>
+                                </group>
+                                <group string="Approbation">
+                                    <field name="approved_date" readonly="1"/>
+                                    <field name="approved_by" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+
                     </notebook>
 
                 </sheet>
+
+                <chatter/>
 
             </form>
 

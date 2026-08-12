@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="risk_management.audit_dashboard" owl="1">
+        <div class="process-dashboard-container audit-dashboard-container">
+
+            <!-- ========================================= -->
+            <!-- CHARGEMENT                               -->
+            <!-- ========================================= -->
+            <div t-if="state.loading" style="text-align:center;padding:50px;color:#6c757d;">
+                <i class="fa fa-spinner fa-spin fa-3x" style="color:#1a237e;"></i>
+                <p style="margin-top:15px;">Chargement du tableau de bord...</p>
+            </div>
+
+            <div t-else="">
+
+                <!-- ========================================= -->
+                <!-- HEADER                                    -->
+                <!-- ========================================= -->
+                <div class="dashboard-header">
+                    <h2>🔎 Tableau de Bord Audit — Missions / Constats / Recommandations / Plans d'Action</h2>
+                    <div class="dashboard-date">
+                        <i class="fa fa-calendar" title="Date de mise à jour"/>
+                        Généré le <t t-esc="new Date().toLocaleDateString('fr-FR')"/>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- KPI CARDS — VUE D'ENSEMBLE               -->
+                <!-- ========================================= -->
+                <div class="row g-2 mb-2">
+                    <div class="col-2">
+                        <div class="kpi-card" style="cursor:pointer;" title="Voir toutes les missions"
+                             t-on-click="() => openAll('risk.audit', 'Missions d\'audit')">
+                            <div class="kpi-label">Total Missions</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.total_audits"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-low" style="cursor:pointer;" title="Voir les missions clôturées"
+                             t-on-click="() => openAll('risk.audit', 'Missions clôturées', [['state','=','closed']])">
+                            <div class="kpi-label">Missions Clôturées</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.closed_audit_count"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-high" style="cursor:pointer;" title="Voir les missions en retard"
+                             t-on-click="() => openListByIds('risk.audit', state.kpis.overdue_audit_ids || [], 'Missions en retard')">
+                            <div class="kpi-label">🔴 Missions en Retard</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.overdue_audit_count"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card" style="cursor:pointer;" title="Voir tous les constats"
+                             t-on-click="() => openAll('risk.audit.finding', 'Constats d\'audit')">
+                            <div class="kpi-label">Total Constats</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.total_findings"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-avg" style="cursor:pointer;" title="Voir les constats clôturés"
+                             t-on-click="() => openListByIds('risk.audit.finding', (state.findingIdsByState &amp;&amp; state.findingIdsByState['closed']) || [], 'Constats clôturés')">
+                            <div class="kpi-label">✅ Taux de Clôture Constats</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.finding_closure_rate"/>%</div>
+                            <div class="kpi-progress">
+                                <div class="progress-track">
+                                    <div class="progress-fill" t-attf-style="width:#{state.kpis.finding_closure_rate}%;background:#1a237e;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- KPI CARDS — GOUVERNANCE (RECOMMANDATIONS) -->
+                <!-- ========================================= -->
+                <div class="row g-2 mb-4">
+                    <div class="col-3">
+                        <div class="kpi-card kpi-high" style="cursor:pointer;" title="Voir les constats sans recommandation"
+                             t-on-click="() => openListByIds('risk.audit.finding', state.findingsWithoutRecommendation.map(f =&gt; f.id), 'Constats sans recommandation')">
+                            <div class="kpi-label">⚠️ Constats Sans Recommandation</div>
+                            <div class="kpi-value"><t t-esc="state.findingsWithoutRecommendation.length"/></div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="kpi-card kpi-high" style="cursor:pointer;" title="Voir les recommandations en retard"
+                             t-on-click="() => openListByIds('risk.audit.recommendation', state.kpis.overdue_recommendation_ids || [], 'Recommandations en retard')">
+                            <div class="kpi-label">🔴 Recommandations en Retard</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.overdue_recommendation_count"/></div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="kpi-card kpi-high" style="cursor:pointer;" title="Voir les recommandations sans plan d'action"
+                             t-on-click="() => openListByIds('risk.audit.recommendation', state.kpis.recommendations_without_action_plan_ids || [], 'Recommandations sans plan d\'action')">
+                            <div class="kpi-label">⚠️ Recommandations Sans Plan d'Action</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.recommendations_without_action_plan_count"/></div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="kpi-card kpi-avg">
+                            <div class="kpi-label">🎯 Mise en Œuvre Recommandations</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.recommendation_implementation_rate"/>%</div>
+                            <div class="kpi-progress">
+                                <div class="progress-track">
+                                    <div class="progress-fill" t-attf-style="width:#{state.kpis.recommendation_implementation_rate}%;background:#1a237e;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DONUT : CONSTATS PAR SÉVÉRITÉ            -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📊 Répartition des Constats par Sévérité</h5>
+                            <div class="donut-grid">
+                                <div class="donut-item" t-foreach="state.findingBySeverity" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;"
+                                     t-att-title="'Voir les constats : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.audit.finding', state.findingIdsBySeverity[item.key], 'Constats — sévérité ' + item.label.toLowerCase())">
+                                    <div t-out="renderSingleDonut(item, state.findingBySeverity.reduce((s,i) =&gt; s+i.value, 0))"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- BARRES : MISSIONS / RECOS / PLANS D'ACTION -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📋 Missions par Statut</h5>
+                            <div class="bar-chart">
+                                <div class="bar-row" t-foreach="state.auditByState" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;" t-att-title="'Voir les missions : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.audit', state.auditIdsByState[item.key], 'Missions — ' + item.label)">
+                                    <span class="bar-label"><t t-esc="item.label"/></span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" t-attf-style="width:#{(item.value / getMax(state.auditByState)) * 100}%;background:#{item.color};">
+                                            <span class="bar-value-label"><t t-esc="item.value"/></span>
+                                        </div>
+                                    </div>
+                                    <span class="bar-value"><t t-esc="item.value"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📋 Recommandations par Statut</h5>
+                            <div class="bar-chart">
+                                <div class="bar-row" t-foreach="state.recommendationByState" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;" t-att-title="'Voir les recommandations : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.audit.recommendation', state.recommendationIdsByState[item.key], 'Recommandations — ' + item.label)">
+                                    <span class="bar-label"><t t-esc="item.label"/></span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" t-attf-style="width:#{(item.value / getMax(state.recommendationByState)) * 100}%;background:#{item.color};">
+                                            <span class="bar-value-label"><t t-esc="item.value"/></span>
+                                        </div>
+                                    </div>
+                                    <span class="bar-value"><t t-esc="item.value"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-card">
+                            <h5 class="chart-title">🛠️ Plans d'Action par Statut</h5>
+                            <div class="bar-chart">
+                                <div class="bar-row" t-foreach="state.actionPlanByState" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;" t-att-title="'Voir les plans d\'action : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.audit.action.plan', state.actionPlanIdsByState[item.key], 'Plans d\'action — ' + item.label)">
+                                    <span class="bar-label"><t t-esc="item.label"/></span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" t-attf-style="width:#{(item.value / getMax(state.actionPlanByState)) * 100}%;background:#{item.color};">
+                                            <span class="bar-value-label"><t t-esc="item.value"/></span>
+                                        </div>
+                                    </div>
+                                    <span class="bar-value"><t t-esc="item.value"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DEUX COLONNES : GAPS DE GOUVERNANCE       -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🚫 Missions en Retard de Clôture</h5>
+                            <div t-if="state.overdueAudits.length > 0">
+                                <div class="risk-item" t-foreach="state.overdueAudits" t-as="audit" t-key="audit.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord('risk.audit', audit.id, 'Mission')">
+                                        <div class="process-info">
+                                            <span class="risk-level-badge high">🔴 En retard</span>
+                                            <span class="process-name"><t t-esc="audit.name"/></span>
+                                            <span class="process-code" t-if="audit.endDate">Fin prévue : <t t-esc="audit.endDate"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucune mission en retard de clôture
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🚫 Constats Sans Recommandation</h5>
+                            <div t-if="state.findingsWithoutRecommendation.length > 0">
+                                <div class="risk-item" t-foreach="state.findingsWithoutRecommendation" t-as="finding" t-key="finding.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord('risk.audit.finding', finding.id, 'Constat')">
+                                        <div class="process-info">
+                                            <span t-attf-class="risk-level-badge #{finding.severity === 'critical' || finding.severity === 'high' ? 'high' : 'medium'}">
+                                                <t t-esc="finding.severity"/>
+                                            </span>
+                                            <span class="process-name"><t t-esc="finding.name"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Tous les constats ont au moins une recommandation
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">📋 Recommandations Sans Plan d'Action</h5>
+                            <div t-if="state.recommendationsWithoutActionPlan.length > 0">
+                                <div class="risk-item" t-foreach="state.recommendationsWithoutActionPlan" t-as="reco" t-key="reco.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord('risk.audit.recommendation', reco.id, 'Recommandation')">
+                                        <div class="process-info">
+                                            <span class="risk-level-badge medium"><t t-esc="reco.priority || 'N/A'"/></span>
+                                            <span class="process-name"><t t-esc="reco.findingName"/></span>
+                                            <span class="process-code" t-if="reco.targetDate">Échéance : <t t-esc="reco.targetDate"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Toutes les recommandations ouvertes ont un plan d'action
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🔴 Recommandations en Retard</h5>
+                            <div t-if="state.overdueRecommendations.length > 0">
+                                <div class="risk-item" t-foreach="state.overdueRecommendations" t-as="reco" t-key="reco.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord('risk.audit.recommendation', reco.id, 'Recommandation')">
+                                        <div class="process-info">
+                                            <span class="risk-level-badge high"><t t-esc="reco.priority || 'N/A'"/></span>
+                                            <span class="process-name"><t t-esc="reco.findingName"/></span>
+                                            <span class="process-code" t-if="reco.targetDate">Échéance : <t t-esc="reco.targetDate"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucune recommandation en retard
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DONUT + LISTE : CONSTATS PAR STATUT      -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-5">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📊 Constats par Statut</h5>
+                            <div class="donut-grid">
+                                <div class="donut-item" t-foreach="state.findingByState" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;"
+                                     t-att-title="'Voir les constats : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.audit.finding', state.findingIdsByState[item.key], 'Constats — ' + item.label.toLowerCase())">
+                                    <div t-out="renderSingleDonut(item, state.findingByState.reduce((s,i) =&gt; s+i.value, 0))"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🔴 Constats Ouverts — Élevé / Critique</h5>
+                            <div t-if="state.majorOpenFindings.length > 0">
+                                <div class="risk-item" t-foreach="state.majorOpenFindings" t-as="finding" t-key="finding.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord('risk.audit.finding', finding.id, 'Constat')">
+                                        <div class="process-info">
+                                            <span t-attf-class="risk-level-badge #{finding.severity === 'critical' ? 'high' : 'medium'}">
+                                                <t t-esc="finding.severity === 'critical' ? '🔴 Critique' : '🟠 Élevée'"/>
+                                            </span>
+                                            <span class="process-name"><t t-esc="finding.name"/></span>
+                                            <span class="process-code"><t t-esc="finding.auditName"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucun constat Élevé/Critique ouvert
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- RAPPORT NARRATIF                         -->
+                <!-- ========================================= -->
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="chart-card narrative-card">
+                            <h5 class="chart-title">📝 Rapport Narratif</h5>
+                            <div t-foreach="state.narratives" t-as="item" t-key="item_index">
+                                <div class="narrative-item">
+                                    <span class="narr-icon"><t t-esc="item.icon"/></span>
+                                    <span class="narr-text"><t t-esc="item.text"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- LÉGENDE                                  -->
+                <!-- ========================================= -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="dashboard-legend">
+                            <span><span class="legend-color" style="background:#dc3545;"></span> Critique / Ouvert</span>
+                            <span><span class="legend-color" style="background:#fd7e14;"></span> Élevée</span>
+                            <span><span class="legend-color" style="background:#ffc107;"></span> Modérée / En cours</span>
+                            <span><span class="legend-color" style="background:#28a745;"></span> Faible / Clôturé</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

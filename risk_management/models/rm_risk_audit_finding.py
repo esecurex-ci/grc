@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class RiskAuditFinding(models.Model):
@@ -6,6 +6,10 @@ class RiskAuditFinding(models.Model):
     _description = "Constat d'audit"
     _inherit = ['mail.thread']
 
+    # ⚠️ Champ 'readonly' avec default='New' mais sans séquence assignée à la
+    # création (contrairement à risk.audit, qui a un create() dédié) : la
+    # référence restait littéralement "New" pour toujours. Voir create()
+    # ci-dessous et seq_risk_audit_finding dans data/sequence.xml.
     name = fields.Char(
         string='Référence',
         readonly=True,
@@ -76,3 +80,12 @@ class RiskAuditFinding(models.Model):
         'risk.compliance.requirement',
         string='Exigences de conformité'
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code(
+                    'risk.audit.finding'
+                )
+        return super().create(vals_list)

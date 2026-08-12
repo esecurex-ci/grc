@@ -49,6 +49,13 @@ class RiskAudit(models.Model):
 
     scope = fields.Html()
 
+    # ⚠️ 'state' était un simple champ éditable dans le corps du formulaire :
+    # n'importe qui pouvait faire passer une mission directement de 'draft' à
+    # 'closed' en sautant les étapes de terrain/rédaction. Ajout de
+    # tracking=True + de méthodes action_* explicites (voir plus bas),
+    # utilisées désormais par un statusbar dans risk_audit_views.xml — même
+    # traitement que celui déjà appliqué à risk.audit.plan / risk.bcp.plan /
+    # risk.drp.plan / risk.exercise dans ce module.
     state = fields.Selection(
         [
             ('draft', 'Draft'),
@@ -57,7 +64,8 @@ class RiskAudit(models.Model):
             ('reporting', 'Reporting'),
             ('closed', 'Closed')
         ],
-        default='draft'
+        default='draft',
+        tracking=True
     )
 
     finding_ids = fields.One2many(
@@ -68,6 +76,20 @@ class RiskAudit(models.Model):
     finding_count = fields.Integer(
         compute='_compute_finding_count'
     )
+
+    # ✅ Périmètre d'audit structuré (risk.audit.scope) — le modèle et ses
+    # vues existaient déjà mais n'étaient reliés à aucune action/menu ni à la
+    # fiche Mission : impossible de les créer/consulter depuis l'interface.
+    scope_ids = fields.One2many(
+        'risk.audit.scope',
+        'audit_id',
+        string='Éléments du périmètre'
+    )
+
+    scope_count = fields.Integer(
+        compute='_compute_scope_count'
+    )
+
     attachment_ids = fields.Many2many(
         'ir.attachment'
     )
@@ -77,6 +99,13 @@ class RiskAudit(models.Model):
         for rec in self:
             rec.finding_count = len(
                 rec.finding_ids
+            )
+
+    @api.depends('scope_ids')
+    def _compute_scope_count(self):
+        for rec in self:
+            rec.scope_count = len(
+                rec.scope_ids
             )
 
     @api.model_create_multi
@@ -95,13 +124,64 @@ class RiskAudit(models.Model):
         return super().create(vals_list)
 
     def action_view_findings(self):
-        """Ouvre la vue des constats liés à cet audit"""
+        """Ouvre la vue des constats liés à cet audit.
+
+        ⚠️ Corrigé : pointait vers 'risk.finding' (modèle inexistant dans ce
+        module — le bon modèle est 'risk.audit.finding') avec un view_mode
+        'tree,form' (alias obsolète ; ce module utilise 'list,form' partout
+        ailleurs). Le bouton stat "Constats" de la fiche Mission provoquait
+        donc une erreur au clic."""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
             'name': 'Constats',
-            'res_model': 'risk.finding',  # ou le nom du modèle des constats
-            'view_mode': 'tree,form',
+            'res_model': 'risk.audit.finding',
+            'view_mode': 'list,form',
             'domain': [('audit_id', '=', self.id)],
             'context': {'default_audit_id': self.id},
         }
+
+    def action_view_scopes(self):
+        """Ouvre le périmètre structuré (risk.audit.scope) de cette mission."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Périmètre',
+            'res_model': 'risk.audit.scope',
+            'view_mode': 'list,form',
+            'domain': [('audit_id', '=', self.id)],
+            'context': {'default_audit_id': self.id},
+        }
+
+    # ------------------------------------------------------------------
+    # ✅ Workflow explicite de la Mission (voir commentaire sur le champ
+    # 'state' ci-dessus). Chaque transition ne fait avancer/reculer le
+    # statut que d'une étape, et 'action_reset_draft' permet de rouvrir une
+    # mission (correction d'une erreur de saisie) sans toucher aux constats/
+    # recommandations déjà enregistrés.
+    # ------------------------------------------------------------------
+
+    def action_start_planning(self):
+        for record in self:
+            record.state = 'planning'
+        return True
+
+    def action_start_fieldwork(self):
+        for record in self:
+            record.state = 'fieldwork'
+        return True
+
+    def action_start_reporting(self):
+        for record in self:
+            record.state = 'reporting'
+        return True
+
+    def action_close(self):
+        for record in self:
+            record.state = 'closed'
+        return True
+
+    def action_reset_draft(self):
+        for record in self:
+            record.state = 'draft'
+        return True

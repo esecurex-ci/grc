@@ -117,6 +117,8 @@ class RiskExecutiveDashboardSnapshot(models.Model):
 
     exercise_success_rate = fields.Float()
 
+    open_resilience_actions_count = fields.Integer()
+
     ####################################################################
     # CRISIS MANAGEMENT
     ####################################################################

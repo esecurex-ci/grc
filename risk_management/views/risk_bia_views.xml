@@ -25,7 +25,13 @@
 
     <!-- ===================================================== -->
     <!-- SEARCH -->
-    <!-- =====================================================  x
+    <!-- ===================================================== -->
+    <!-- ⚠️ Ce bloc était auparavant entièrement neutralisé : le commentaire
+         ci-dessus se terminait par un "x" au lieu de "-->", ce qui ouvrait un
+         commentaire XML qui n'était refermé que bien plus loin, avalant toute
+         la définition de cette vue de recherche (filtres Brouillon/Approuvé/
+         Archivé et regroupements Priorité/Impact). La vue liste des BIA
+         n'avait donc, dans les faits, aucun filtre ni regroupement. -->
 
     <record id="view_risk_bia_search" model="ir.ui.view">
         <field name="name">risk.bia.search</field>
@@ -48,23 +54,31 @@
                         string="Archivé"
                         domain="[('state','=','archived')]"/>
 
-                <group string="Regrouper par">
-                    <filter name="group_priority"
-                            string="Priorité"
-                            context="{'group_by':'priority'}"/>
-                    <filter name="group_operational"
-                            string="Impact Opérationnel"
-                            context="{'group_by':'impact_operational'}"/>
-                    <filter name="group_financial"
-                            string="Impact Financier"
-                            context="{'group_by':'impact_financial'}"/>
-                </group>
+                <!-- ⚠️ Les filtres de regroupement doivent être des <filter>
+                     directement enfants de <search> (pas enveloppés dans un
+                     <group>) : c'est la convention déjà utilisée ailleurs
+                     dans ce module (ex. risk_document_views.xml) et la seule
+                     acceptée par le schéma RNG des vues de recherche de
+                     cette version d'Odoo — un <group> avec des <filter> à
+                     l'intérieur y est rejeté ("Expecting an element field,
+                     got nothing"). -->
+                <separator/>
+
+                <filter name="group_priority"
+                        string="Priorité"
+                        context="{'group_by':'priority'}"/>
+                <filter name="group_operational"
+                        string="Impact Opérationnel"
+                        context="{'group_by':'impact_operational'}"/>
+                <filter name="group_financial"
+                        string="Impact Financier"
+                        context="{'group_by':'impact_financial'}"/>
 
             </search>
 
         </field>
     </record>
-    -->
+
     <!-- ===================================================== -->
     <!-- FORM -->
     <!-- ===================================================== -->
@@ -80,9 +94,50 @@
                             type="object"
                             class="btn-success"
                             invisible="state != 'draft'"/>
-                    <field name="state" widget="statusbar"/>
+                    <!-- ⚠️ action_draft et action_archive existaient déjà sur le
+                         modèle mais n'étaient reliés à aucun bouton : une BIA
+                         approuvée ne pouvait jamais être remise en brouillon ni
+                         archivée depuis l'interface. -->
+                    <button name="action_draft"
+                            string="Remettre en brouillon"
+                            type="object"
+                            invisible="state != 'approved'"/>
+                    <button name="action_archive"
+                            string="Archiver"
+                            type="object"
+                            invisible="state == 'archived'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,archived"/>
                 </header>
                 <sheet>
+                    <!-- ⚠️ process_id est un champ obligatoire du modèle qui
+                         n'apparaissait auparavant dans aucune vue formulaire :
+                         une BIA créée hors du contexte d'un processus
+                         (ex. directement depuis le menu BIA) ne pouvait pas
+                         être enregistrée. owner_id/assessment_date étaient
+                         dans le même cas. Ils sont exposés ici sans changer
+                         leur définition. -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_activities"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-list-ul">
+                            <field name="activity_count"
+                                   widget="statinfo"
+                                   string="Activités"/>
+                        </button>
+                        <!-- ✅ Rend visible depuis la BIA le(s) PCA qui s'appuient
+                             sur elle (risk.bcp.plan.bia_id) — relation qui
+                             n'était visible que du côté PCA jusqu'ici. -->
+                        <button name="action_view_bcp_plans"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shield">
+                            <field name="bcp_plan_count"
+                                   widget="statinfo"
+                                   string="PCA"/>
+                        </button>
+                    </div>
+
                     <div class="oe_title">
                         <h1>
                             <field name="name"/>
@@ -91,20 +146,50 @@
 
                     <group>
                         <group>
+                            <field name="process_id"/>
+                            <field name="owner_id"/>
+                            <field name="assessment_date"/>
+                        </group>
+                        <group>
                             <field name="priority"/>
                             <field name="impact_operational"/>
                             <field name="impact_financial"/>
                         </group>
-                        <group>
-                            <field name="mtd" string="MTD (heures)"/>
-                            <field name="rto" string="RTO (heures)"/>
-                            <field name="rpo" string="RPO (heures)"/>
-                        </group>
+                    </group>
+
+                    <group>
+                        <field name="mtd" string="MTD (heures)"/>
+                        <field name="rto" string="RTO (heures)"/>
+                        <field name="rpo" string="RPO (heures)"/>
                     </group>
 
                     <notebook>
                         <page string="Description">
                             <field name="description"/>
+                        </page>
+
+                        <!-- ✅ Alignement ISO/TS 22317 : MBCO, saisonnalité,
+                             traçabilité vers le registre des risques et suivi
+                             de la revue périodique. -->
+                        <page string="Continuité &amp; Révision">
+                            <group>
+                                <field name="mbco"/>
+                            </group>
+                            <group>
+                                <field name="peak_period_notes"/>
+                            </group>
+                            <group>
+                                <field name="risk_ids" widget="many2many_tags"/>
+                            </group>
+                            <group>
+                                <group string="Suivi de la revue">
+                                    <field name="next_review_date"/>
+                                </group>
+                                <group string="Approbation">
+                                    <field name="approved_date" readonly="1"/>
+                                    <field name="approved_by" readonly="1"/>
+                                </group>
+                            </group>
                         </page>
                     </notebook>
 

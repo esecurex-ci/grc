@@ -328,27 +328,30 @@ class RiskMetricEngine(models.Model):
         }
 
     def _calculate_resilience_stats(self):
-        """Statistiques de la section BCM/DRP du snapshot exécutif."""
-        process_count = self.env['risk.process'].search_count([])
-        bcp_count = self.env['risk.bcp.plan'].search_count([])
-        drp_count = self.env['risk.drp.plan'].search_count([])
+        """Statistiques de la section BCM/DRP du snapshot exécutif.
 
-        bcp_coverage_rate = round((bcp_count / process_count) * 100, 2) if process_count else 0
-        drp_coverage_rate = round((drp_count / process_count) * 100, 2) if process_count else 0
-
-        completed_exercises = self.env['risk.exercise'].search([('state', '=', 'completed')])
-        if completed_exercises:
-            successful = completed_exercises.filtered(
-                lambda e: not e.finding_ids.filtered(lambda f: f.severity in ('high', 'critical'))
-            )
-            exercise_success_rate = round((len(successful) / len(completed_exercises)) * 100, 2)
-        else:
-            exercise_success_rate = 0
+        Délègue entièrement à risk.continuity.dashboard.get_resilience_kpis()
+        au lieu de recalculer ces taux avec sa propre formule. Avant cette
+        correction, ce module comparait le nombre BRUT de risk.bcp.plan / de
+        risk.drp.plan (tous états confondus, y compris les brouillons) au
+        nombre de risk.process, sans aucun lien réel entre un PCA/PRA donné
+        et le processus qu'il est censé couvrir — une formule différente de
+        celle de risk.continuity.dashboard (qui, elle, ne comptait que les
+        plans 'approved' rapportés au nombre de BIA). Les deux affichaient
+        donc des pourcentages différents pour le même indicateur "Couverture
+        PCA/PRA", visible ici au Cockpit et là au tableau de bord Résilience.
+        """
+        kpis = self.env['risk.continuity.dashboard'].get_resilience_kpis()
 
         return {
-            'bcp_coverage_rate': bcp_coverage_rate,
-            'drp_coverage_rate': drp_coverage_rate,
-            'exercise_success_rate': exercise_success_rate,
+            'bcp_coverage_rate': kpis['bcp_coverage'],
+            'drp_coverage_rate': kpis['drp_coverage'],
+            'exercise_success_rate': kpis['exercise_success_rate'],
+            # ✅ Nouvelle clé (le dict retourné par get_resilience_kpis en
+            # porte plusieurs autres ; celle-ci est la plus pertinente pour
+            # une vue exécutive : des actions correctives d'exercice encore
+            # ouvertes, non closes).
+            'open_resilience_actions_count': kpis['open_corrective_actions_count'],
         }
 
     def _calculate_crisis_stats(self):
@@ -534,6 +537,8 @@ class RiskMetricEngine(models.Model):
                 resilience_stats['drp_coverage_rate'],
             'exercise_success_rate':
                 resilience_stats['exercise_success_rate'],
+            'open_resilience_actions_count':
+                resilience_stats['open_resilience_actions_count'],
 
             # ---- Gestion de Crise ----
             'crisis_count':

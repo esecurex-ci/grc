@@ -205,10 +205,20 @@
         sequence="50"
     />
 
+    <!-- ✅ Tableau de bord OWL Audit, sur le même modèle que
+         menu_grc_continuity_dashboard / menu_process_dashboard. -->
+    <menuitem id="menu_grc_audit_dashboard"
+        name="🔎 Tableau de bord Audit"
+        parent="menu_grc_audit"
+        action="action_audit_dashboard"
+        sequence="1"
+    />
+
     <menuitem id="menu_grc_audit_plan"
         name="Plan d'Audit"
         parent="menu_grc_audit"
         action="action_risk_audit_plan"
+        sequence="2"
     />
 
     <menuitem id="menu_grc_audit_mission"
@@ -227,6 +237,19 @@
         name="Recommandations"
         parent="menu_grc_audit"
         action="action_risk_audit_recommendation"
+    />
+
+    <!-- ✅ Manquaient : ni action ni menu (voir grc_actions.xml) -->
+    <menuitem id="menu_grc_audit_action_plan"
+        name="Plans d'Action"
+        parent="menu_grc_audit"
+        action="action_risk_audit_action_plan"
+    />
+
+    <menuitem id="menu_grc_audit_scope"
+        name="Périmètre"
+        parent="menu_grc_audit"
+        action="action_risk_audit_scope"
     />
 
     <!-- ===================================================== -->
@@ -271,10 +294,23 @@
         sequence="70"
     />
 
+    <!-- ✅ Repointé vers le nouveau tableau de bord OWL (action_resilience_
+         dashboard), sur le même modèle que menu_process_dashboard et
+         menu_risk_dashboard, au lieu du formulaire technique d'origine
+         (KPI en dur, sans lien réel BCP/BIA ni PRA/actif — voir le
+         commentaire de get_resilience_kpis côté serveur). -->
     <menuitem id="menu_grc_continuity_dashboard"
-        name="Tableau de bord Continuité"
+        name="🛡️ Tableau de bord Continuité"
+        parent="menu_grc_bcm"
+        action="action_resilience_dashboard"
+        sequence="1"
+    />
+
+    <menuitem id="menu_grc_continuity_dashboard_technical"
+        name="Tableau de bord Continuité (technique — pivot/graph)"
         parent="menu_grc_bcm"
         action="action_risk_continuity_dashboard"
+        sequence="2"
     />
 
     <menuitem id="menu_grc_bia"

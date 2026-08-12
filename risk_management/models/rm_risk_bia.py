@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from odoo import models, fields, api
 
 
@@ -65,10 +67,64 @@ class RiskBia(models.Model):
         help='Impact financier estimé'
     )
 
+    # ------------------------------------------------------------------
+    # ✅ Alignement ISO/TS 22317 (BIA) — champs ajoutés, aucun champ
+    # existant retiré ni renommé, pour ne pas casser les BIA déjà saisies.
+    # ------------------------------------------------------------------
+
+    mbco = fields.Html(
+        string='Niveau de service minimal (MBCO)',
+        help="Minimum Business Continuity Objective : le niveau de service "
+             "minimal acceptable pendant la période de reprise, distinct du "
+             "RTO (délai) — notion attendue par ISO/TS 22317."
+    )
+
+    peak_period_notes = fields.Html(
+        string='Périodes de pointe / saisonnalité',
+        help="ISO/TS 22317 recommande de documenter les variations "
+             "d'impact selon la période (ex. clôture mensuelle, fin "
+             "d'exercice) plutôt qu'un impact unique et constant dans le "
+             "temps."
+    )
+
+    next_review_date = fields.Date(
+        string='Prochaine révision',
+        help="Une BIA approuvée doit être revue périodiquement (ISO 22301) "
+             "— ce champ permet de détecter les BIA à revoir."
+    )
+
+    risk_ids = fields.Many2many(
+        'risk.risk',
+        string='Risques associés',
+        help="Traçabilité vers le registre des risques : une BIA identifie "
+             "des expositions (perte de processus critique) qui devraient "
+             "normalement correspondre à des risques déjà répertoriés."
+    )
+
+    approved_date = fields.Date(
+        string='Date d\'approbation',
+        readonly=True
+    )
+
+    approved_by = fields.Many2one(
+        'res.users',
+        string='Approuvé par',
+        readonly=True
+    )
+
     def action_approve(self):
-        """Approuver l'analyse BIA"""
+        """Approuver l'analyse BIA.
+
+        Renseigne également la date/l'auteur d'approbation et, si absente,
+        une prochaine date de révision à horizon 1 an (revue périodique
+        attendue par ISO 22301) — sans jamais écraser une valeur déjà
+        saisie manuellement."""
         for record in self:
             record.state = 'approved'
+            record.approved_date = fields.Date.today()
+            record.approved_by = self.env.user
+            if not record.next_review_date:
+                record.next_review_date = fields.Date.today() + timedelta(days=365)
         return True
 
     def action_draft(self):
@@ -87,6 +143,39 @@ class RiskBia(models.Model):
     def _compute_activity_count(self):
         for rec in self:
             rec.activity_count = len(rec.activity_ids)
+
+    # ------------------------------------------------------------------
+    # ✅ "Pourquoi on ne voit pas le PCA depuis une BIA ?" — risk.bcp.plan.
+    # bia_id référence la BIA depuis le PCA, mais la BIA elle-même ne
+    # montrait cette relation nulle part. Vue en lecture (le lien se crée
+    # côté PCA, via bia_id), sur le même principe que le bouton Activités.
+    # ------------------------------------------------------------------
+
+    bcp_plan_ids = fields.One2many(
+        'risk.bcp.plan',
+        'bia_id',
+        string='PCA associés'
+    )
+
+    bcp_plan_count = fields.Integer(
+        compute='_compute_bcp_plan_count'
+    )
+
+    @api.depends('bcp_plan_ids')
+    def _compute_bcp_plan_count(self):
+        for rec in self:
+            rec.bcp_plan_count = len(rec.bcp_plan_ids)
+
+    def action_view_bcp_plans(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'PCA associés',
+            'res_model': 'risk.bcp.plan',
+            'view_mode': 'list,form',
+            'domain': [('bia_id', '=', self.id)],
+            'context': {'default_bia_id': self.id}
+        }
 
     def action_view_activities(self):
         self.ensure_one()

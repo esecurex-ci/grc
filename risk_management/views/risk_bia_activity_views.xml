@@ -5,7 +5,10 @@
         <field name="name">risk.bia.activity.list</field>
         <field name="model">risk.bia.activity</field>
         <field name="arch" type="xml">
-            <list decoration-danger="criticality == 'critical'" decoration-warning="criticality == 'high'">
+            <!-- ⚠️ rto_exceeds_mtd ajouté aux décorations : signale une
+                 incohérence RTO/MTD sans jamais bloquer l'enregistrement
+                 (pas de contrainte @api.constrains, voir le modèle). -->
+            <list decoration-danger="criticality == 'critical' or rto_exceeds_mtd" decoration-warning="criticality == 'high'">
                 <field name="bia_id"/>
                 <field name="name"/>
                 <field name="criticality"/>
@@ -13,9 +16,61 @@
                 <field name="rpo_hours"/>
                 <field name="mtd_hours"/>
                 <field name="financial_impact"/>
+                <field name="rto_exceeds_mtd" invisible="1"/>
             </list>
         </field>
 
+    </record>
+
+    <!-- ✅ Vue formulaire ajoutée : ce modèle n'en avait aucune (les
+         activités s'ouvraient dans un formulaire générique auto-généré par
+         Odoo), ce qui ne permettait pas de bien exposer les nouveaux liens
+         de dépendance structurés (actifs/personnes/fournisseurs). -->
+    <record id="view_risk_bia_activity_form" model="ir.ui.view">
+        <field name="name">risk.bia.activity.form</field>
+        <field name="model">risk.bia.activity</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="alert alert-danger" role="alert" invisible="not rto_exceeds_mtd">
+                        ⚠️ Le RTO saisi dépasse le MTD : incohérence à corriger (le
+                        délai de reprise visé dépasse le délai maximal tolérable).
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="bia_id"/>
+                            <field name="criticality"/>
+                        </group>
+                        <group>
+                            <field name="rto_hours"/>
+                            <field name="rpo_hours"/>
+                            <field name="mtd_hours"/>
+                            <field name="financial_impact"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Dépendances (texte)">
+                            <field name="dependency"/>
+                        </page>
+                        <page string="Dépendances structurées">
+                            <group>
+                                <field name="asset_ids" widget="many2many_tags"/>
+                                <field name="employee_ids" widget="many2many_tags"/>
+                                <field name="supplier_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
     </record>
      <record id="view_risk_bia_activity_graph_rto" model="ir.ui.view">
         <field name="name">risk.bia.activity.graph.rto</field>

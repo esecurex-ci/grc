@@ -30,18 +30,56 @@
 
             <form>
 
+                <header>
+                    <!-- ⚠️ 'state' était un simple champ éditable dans le
+                         formulaire : ce statut alimente le taux de couverture
+                         PRA du tableau de bord Résilience, il passe donc
+                         désormais par une validation explicite. -->
+                    <button name="action_approve"
+                            string="Valider"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft"
+                            string="Remettre en brouillon"
+                            type="object"
+                            invisible="state != 'approved'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved"/>
+                </header>
+
                 <sheet>
 
+                    <div class="oe_button_box" name="button_box">
+                        <!-- ⚠️ Même correctif que sur le PCA : le lien
+                             risk.exercise.drp_id existait déjà mais n'était
+                             accessible depuis aucun écran du PRA. -->
+                        <button name="action_view_tests"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-flask">
+                            <field name="test_count"
+                                   widget="statinfo"
+                                   string="Tests"/>
+                        </button>
+                    </div>
+
                     <group>
-
-                        <field name="name"/>
-
-                        <field name="system_id"/>
-
-                        <field name="recovery_site_id"/>
-
-                        <field name="state"/>
-
+                        <group>
+                            <field name="name"/>
+                            <field name="system_id"/>
+                            <field name="recovery_site_id"/>
+                        </group>
+                        <!-- ✅ Alignement ISO/IEC 27031:2025 -->
+                        <group>
+                            <!-- ⚠️ "Pourquoi on ne voit pas le PCA dans un PRA ?" —
+                                 lien réciproque avec risk.bcp.plan.drp_ids. -->
+                            <field name="bcp_ids" widget="many2many_tags"/>
+                            <field name="target_rto_hours"/>
+                            <field name="target_rpo_hours"/>
+                            <field name="last_tested_rto_hours"/>
+                            <field name="last_tested_rpo_hours"/>
+                            <field name="last_test_date"/>
+                        </group>
                     </group>
 
                     <notebook>
@@ -55,12 +93,31 @@
                         <page string="Sauvegarde">
 
                             <field name="backup_strategy"/>
+                            <group>
+                                <field name="last_backup_test_date"/>
+                                <field name="last_restore_test_result"/>
+                            </group>
 
+                        </page>
+
+                        <page string="Revue &amp; Approbation">
+                            <group>
+                                <group string="Revue périodique">
+                                    <field name="last_review_date"/>
+                                    <field name="next_review_date"/>
+                                </group>
+                                <group string="Approbation">
+                                    <field name="approved_date" readonly="1"/>
+                                    <field name="approved_by" readonly="1"/>
+                                </group>
+                            </group>
                         </page>
 
                     </notebook>
 
                 </sheet>
+
+                <chatter/>
 
             </form>
 

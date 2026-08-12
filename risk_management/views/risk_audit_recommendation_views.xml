@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- ⚠️ Ce modèle n'avait qu'une vue liste alors que
+         action_risk_audit_recommendation déclare view_mode
+         "list,form,kanban" : Odoo générait un formulaire/kanban minimal par
+         défaut, et surtout la liste de recommandations intégrée sur la
+         fiche Constat (risk_audit_finding_views.xml) ne pouvait ni créer ni
+         ouvrir une recommandation faute de formulaire à afficher en boîte
+         de dialogue. -->
+
     <record id="view_risk_audit_recommendation_list" model="ir.ui.view">
         <field name="name">risk.audit.recommendation.list</field>
         <field name="model">risk.audit.recommendation</field>
         <field name="arch" type="xml">
 
-            <list>
+            <list decoration-danger="priority == 'critical'"
+                  decoration-warning="priority == 'high'">
 
                 <field name="finding_id"/>
                 <field name="owner_id"/>
@@ -15,6 +24,67 @@
                 <field name="state" widget="badge"/>
 
             </list>
+
+        </field>
+    </record>
+
+    <record id="view_risk_audit_recommendation_form" model="ir.ui.view">
+        <field name="name">risk.audit.recommendation.form</field>
+        <field name="model">risk.audit.recommendation</field>
+        <field name="arch" type="xml">
+
+            <form>
+
+                <header>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="open,implemented,verified,closed"/>
+                </header>
+
+                <sheet>
+
+                    <group>
+                        <group>
+                            <field name="finding_id"/>
+                            <field name="owner_id"/>
+                            <field name="priority"/>
+                        </group>
+                        <group>
+                            <field name="target_date"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+
+                        <page string="Plans d'action">
+                            <field name="action_plan_ids">
+                                <list editable="bottom"
+                                      decoration-info="state == 'draft'"
+                                      decoration-warning="state == 'in_progress'"
+                                      decoration-success="state in ('completed','validated')">
+                                    <field name="name"/>
+                                    <field name="owner_id"/>
+                                    <field name="target_date"/>
+                                    <field name="progress" widget="progressbar"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Réglementation">
+                            <field name="regulation_ids"
+                                   widget="many2many_tags"/>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+            </form>
 
         </field>
     </record>

@@ -78,6 +78,7 @@
         # 5. VUES BCP/DRP
         # ============================================================
         'views/risk_bcp_plan_views.xml',
+        'views/risk_bcp_plan_version_views.xml',
         'views/risk_bcp_resource_views.xml',
         'views/risk_drp_plan_views.xml',
         'views/risk_recovery_site_views.xml',
@@ -180,6 +181,12 @@
             'risk_management/static/src/js/process_dashboard.js',
             'risk_management/static/src/xml/process_dashboard.xml',
             'risk_management/static/src/scss/process_dashboard.scss',
+            'risk_management/static/src/js/resilience_dashboard.js',
+            'risk_management/static/src/xml/resilience_dashboard.xml',
+            'risk_management/static/src/scss/resilience_dashboard.scss',
+            'risk_management/static/src/js/audit_dashboard.js',
+            'risk_management/static/src/xml/audit_dashboard.xml',
+            'risk_management/static/src/scss/audit_dashboard.scss',
             'risk_management/static/src/scss/risk_risk_views.scss',
             'risk_management/static/src/js/kri_dashboard.js',
             'risk_management/static/src/xml/kri_dashboard.xml',

@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="risk_management.resilience_dashboard" owl="1">
+        <div class="process-dashboard-container resilience-dashboard-container">
+
+            <!-- ========================================= -->
+            <!-- CHARGEMENT                               -->
+            <!-- ========================================= -->
+            <div t-if="state.loading" style="text-align:center;padding:50px;color:#6c757d;">
+                <i class="fa fa-spinner fa-spin fa-3x" style="color:#1a237e;"></i>
+                <p style="margin-top:15px;">Chargement du tableau de bord...</p>
+            </div>
+
+            <div t-else="">
+
+                <!-- ========================================= -->
+                <!-- HEADER                                    -->
+                <!-- ========================================= -->
+                <div class="dashboard-header">
+                    <h2>🛡️ Tableau de Bord Résilience — PCA / PRA / BIA / Exercices</h2>
+                    <div class="dashboard-date">
+                        <i class="fa fa-calendar" title="Date de mise à jour"/>
+                        Généré le <t t-esc="new Date().toLocaleDateString('fr-FR')"/>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- KPI CARDS — VUE D'ENSEMBLE               -->
+                <!-- ========================================= -->
+                <div class="row g-2 mb-2">
+                    <div class="col-2">
+                        <div class="kpi-card" style="cursor:pointer;" title="Voir toutes les BIA"
+                             t-on-click="() => openAll('risk.bia', 'BIA')">
+                            <div class="kpi-label">Total BIA</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.total_bia"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-low" style="cursor:pointer;" title="Voir les BIA approuvées"
+                             t-on-click="() => openAll('risk.bia', 'BIA approuvées', [['state','=','approved']])">
+                            <div class="kpi-label">BIA Approuvées</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.approved_bia_count"/></div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-avg" style="cursor:pointer;" title="Voir les processus critiques sans PCA approuvé"
+                             t-on-click="() => openListByIds('risk.process', state.uncoveredProcesses.map(p =&gt; p.id), 'Processus critiques sans PCA')">
+                            <div class="kpi-label">🛡️ Couverture PCA</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.bcp_coverage"/>%</div>
+                            <div class="kpi-progress">
+                                <div class="progress-track">
+                                    <div class="progress-fill" t-attf-style="width:#{state.kpis.bcp_coverage}%;background:#1a237e;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-avg" style="cursor:pointer;" title="Voir les actifs sans PRA approuvé"
+                             t-on-click="() => openListByIds('risk.asset', state.uncoveredAssets.map(a =&gt; a.id), 'Actifs sans PRA')">
+                            <div class="kpi-label">🛡️ Couverture PRA</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.drp_coverage"/>%</div>
+                            <div class="kpi-progress">
+                                <div class="progress-track">
+                                    <div class="progress-fill" t-attf-style="width:#{state.kpis.drp_coverage}%;background:#1a237e;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="kpi-card kpi-low" style="cursor:pointer;" title="Voir les exercices réalisés"
+                             t-on-click="() => openAll('risk.exercise', 'Exercices réalisés', [['state','=','completed']])">
+                            <div class="kpi-label">Exercices Réalisés</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.exercise_count"/> / <t t-esc="state.kpis.total_exercise_count"/></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-4">
+                    <div class="col-3">
+                        <div class="kpi-card kpi-avg">
+                            <div class="kpi-label">RTO Moyen (h)</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.avg_rto"/></div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="kpi-card kpi-avg">
+                            <div class="kpi-label">RPO Moyen (h)</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.avg_rpo"/></div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="kpi-card kpi-avg">
+                            <div class="kpi-label">MTD Moyen (h)</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.avg_mtd"/></div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="kpi-card" style="cursor:pointer;" title="Voir les exercices avec constats majeurs"
+                             t-on-click="() => openListByIds('risk.exercise', Array.from(new Set(state.openMajorFindings.map(f =&gt; f.exerciseId).filter(Boolean))), 'Exercices avec constats majeurs')">
+                            <div class="kpi-label">Taux de Réussite Exercices</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.exercise_success_rate"/>%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- KPI CARDS — ALIGNEMENT ISO 22301 / 22398  -->
+                <!-- ========================================= -->
+                <div class="row g-2 mb-4">
+                    <div class="col-3">
+                        <!-- Non cliquable : la liste détaillée (PCA et PRA mélangés,
+                             deux modèles différents) est juste au-dessous. -->
+                        <div class="kpi-card kpi-high">
+                            <div class="kpi-label">⏰ Plans à retester (&gt;12 mois)</div>
+                            <div class="kpi-value"><t t-esc="state.stalePlans.length"/></div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="kpi-card kpi-high" style="cursor:pointer;" title="Voir les actions correctives ouvertes"
+                             t-on-click="() => openListByIds('risk.exercise.finding', state.openCorrectiveActions.map(a =&gt; a.id), 'Actions correctives ouvertes')">
+                            <div class="kpi-label">📋 Actions Correctives Ouvertes</div>
+                            <div class="kpi-value"><t t-esc="state.openCorrectiveActions.length"/></div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="kpi-card kpi-high" style="cursor:pointer;" title="Voir les actions correctives en retard"
+                             t-on-click="() => openListByIds('risk.exercise.finding', state.openCorrectiveActions.filter(a =&gt; a.overdue).map(a =&gt; a.id), 'Actions correctives en retard')">
+                            <div class="kpi-label">🔴 Actions en Retard</div>
+                            <div class="kpi-value"><t t-esc="state.openCorrectiveActions.filter(a =&gt; a.overdue).length"/></div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="kpi-card" style="cursor:pointer;" title="Activités BIA où le RTO dépasse le MTD (incohérence, non bloquante)"
+                             t-on-click="() => openListByIds('risk.bia.activity', state.kpis.rto_exceeds_mtd_ids || [], 'Activités RTO &gt; MTD')">
+                            <div class="kpi-label">⚠️ Activités RTO &gt; MTD</div>
+                            <div class="kpi-value"><t t-esc="state.kpis.rto_exceeds_mtd_count"/></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DONUT : ACTIVITÉS CRITIQUES PAR CRITICITÉ -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📊 Répartition des Activités Critiques (BIA) par Criticité</h5>
+                            <div class="donut-grid">
+                                <div class="donut-item" t-foreach="state.activityDistribution" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;"
+                                     t-att-title="'Voir les activités : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.bia.activity', state.activityIdsByCriticality[item.key], 'Activités — criticité ' + item.label.toLowerCase())">
+                                    <div t-out="renderSingleDonut(item, state.activityDistribution.reduce((s,i) =&gt; s+i.value, 0))"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- BARRES : PCA / PRA / EXERCICES PAR STATUT -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📋 PCA par Statut</h5>
+                            <div class="bar-chart">
+                                <div class="bar-row" t-foreach="state.bcpByState" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;" t-att-title="'Voir les PCA : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.bcp.plan', state.bcpIdsByState[item.key], 'PCA — ' + item.label)">
+                                    <span class="bar-label"><t t-esc="item.label"/></span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" t-attf-style="width:#{(item.value / getMax(state.bcpByState)) * 100}%;background:#{item.color};">
+                                            <span class="bar-value-label"><t t-esc="item.value"/></span>
+                                        </div>
+                                    </div>
+                                    <span class="bar-value"><t t-esc="item.value"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📋 PRA par Statut</h5>
+                            <div class="bar-chart">
+                                <div class="bar-row" t-foreach="state.drpByState" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;" t-att-title="'Voir les PRA : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.drp.plan', state.drpIdsByState[item.key], 'PRA — ' + item.label)">
+                                    <span class="bar-label"><t t-esc="item.label"/></span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" t-attf-style="width:#{(item.value / getMax(state.drpByState)) * 100}%;background:#{item.color};">
+                                            <span class="bar-value-label"><t t-esc="item.value"/></span>
+                                        </div>
+                                    </div>
+                                    <span class="bar-value"><t t-esc="item.value"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-card">
+                            <h5 class="chart-title">🎯 Exercices par Statut</h5>
+                            <div class="bar-chart">
+                                <div class="bar-row" t-foreach="state.exerciseByState" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;" t-att-title="'Voir les exercices : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.exercise', state.exerciseIdsByState[item.key], 'Exercices — ' + item.label)">
+                                    <span class="bar-label"><t t-esc="item.label"/></span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" t-attf-style="width:#{(item.value / getMax(state.exerciseByState)) * 100}%;background:#{item.color};">
+                                            <span class="bar-value-label"><t t-esc="item.value"/></span>
+                                        </div>
+                                    </div>
+                                    <span class="bar-value"><t t-esc="item.value"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DEUX COLONNES : GAPS DE COUVERTURE       -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🚫 Processus Critiques SANS PCA Approuvé</h5>
+                            <div t-if="state.uncoveredProcesses.length > 0">
+                                <div class="risk-item" t-foreach="state.uncoveredProcesses" t-as="process" t-key="process.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord('risk.process', process.id, 'Processus')">
+                                        <div class="process-info">
+                                            <span class="risk-level-badge high">🔴 Sans PCA</span>
+                                            <span class="process-name"><t t-esc="process.name"/></span>
+                                            <span class="process-code"><t t-esc="process.code"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Tous les processus critiques disposent d'un PCA approuvé
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🚫 Actifs Actifs SANS PRA Approuvé</h5>
+                            <div t-if="state.uncoveredAssets.length > 0">
+                                <div class="risk-item" t-foreach="state.uncoveredAssets" t-as="asset" t-key="asset.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord('risk.asset', asset.id, 'Actif')">
+                                        <div class="process-info">
+                                            <span class="risk-level-badge high">🔴 Sans PRA</span>
+                                            <span class="process-name"><t t-esc="asset.name"/></span>
+                                            <span class="process-code"><t t-esc="asset.code"/> — <t t-esc="asset.assetType"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Tous les actifs actifs disposent d'un PRA approuvé
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DEUX COLONNES : ISO 22301 (fraîcheur) /   -->
+                <!-- ISO 22398 (actions correctives)           -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">⏰ PCA/PRA Approuvés à Retester (&gt;12 mois ou jamais testés)</h5>
+                            <div t-if="state.stalePlans.length > 0">
+                                <div class="risk-item" t-foreach="state.stalePlans" t-as="plan" t-key="plan.model + '-' + plan.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord(plan.model, plan.id, plan.type)">
+                                        <div class="process-info">
+                                            <span class="risk-level-badge high"><t t-esc="plan.type"/></span>
+                                            <span class="process-name"><t t-esc="plan.name"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Tous les PCA/PRA approuvés ont été testés dans les 12 derniers mois
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">📋 Actions Correctives d'Exercice Ouvertes</h5>
+                            <div t-if="state.openCorrectiveActions.length > 0">
+                                <div class="risk-item" t-foreach="state.openCorrectiveActions" t-as="action" t-key="action.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord('risk.exercise', action.exerciseId, 'Exercice')">
+                                        <div class="process-info">
+                                            <span t-attf-class="risk-level-badge #{action.overdue ? 'high' : 'medium'}">
+                                                <t t-esc="action.overdue ? '🔴 En retard' : (action.state === 'in_progress' ? '🟡 En cours' : '⚪ Ouvert')"/>
+                                            </span>
+                                            <span class="process-name"><t t-esc="action.exerciseName"/></span>
+                                            <span class="process-code"><t t-esc="action.responsible"/></span>
+                                        </div>
+                                        <div class="process-stats">
+                                            <span class="process-owner" t-if="action.targetDate">Échéance : <t t-esc="action.targetDate"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucune action corrective ouverte
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- DONUT + LISTE : CONSTATS D'EXERCICE      -->
+                <!-- ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-5">
+                        <div class="chart-card">
+                            <h5 class="chart-title">📊 Constats d'Exercice par Sévérité</h5>
+                            <div class="donut-grid">
+                                <div class="donut-item" t-foreach="state.findingDistribution" t-as="item" t-key="item.key"
+                                     style="cursor:pointer;"
+                                     t-att-title="'Voir les constats : ' + item.label"
+                                     t-on-click="() => openListByIds('risk.exercise.finding', state.findingIdsBySeverity[item.key], 'Constats — sévérité ' + item.label.toLowerCase())">
+                                    <div t-out="renderSingleDonut(item, state.findingDistribution.reduce((s,i) =&gt; s+i.value, 0))"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="chart-card scrollable-card">
+                            <h5 class="chart-title">🔴 Constats Ouverts — Élevé / Critique</h5>
+                            <div t-if="state.openMajorFindings.length > 0">
+                                <div class="risk-item" t-foreach="state.openMajorFindings" t-as="finding" t-key="finding.id">
+                                    <div class="process-item" style="cursor:pointer;" t-on-click="() => openRecord('risk.exercise', finding.exerciseId, 'Exercice')">
+                                        <div class="process-info">
+                                            <span t-attf-class="risk-level-badge #{finding.severity === 'critical' ? 'high' : 'medium'}">
+                                                <t t-esc="finding.severity === 'critical' ? '🔴 Critique' : '🟠 Élevée'"/>
+                                            </span>
+                                            <span class="process-name"><t t-esc="finding.exerciseName"/></span>
+                                            <span class="process-code"><t t-esc="finding.recommendation"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div t-else="" style="text-align:center;padding:20px;color:#28a745;">
+                                ✅ Aucun constat Élevé/Critique ouvert
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- RAPPORT NARRATIF                         -->
+                <!-- ========================================= -->
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="chart-card narrative-card">
+                            <h5 class="chart-title">📝 Rapport Narratif</h5>
+                            <div t-foreach="state.narratives" t-as="item" t-key="item_index">
+                                <div class="narrative-item">
+                                    <span class="narr-icon"><t t-esc="item.icon"/></span>
+                                    <span class="narr-text"><t t-esc="item.text"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================= -->
+                <!-- LÉGENDE                                  -->
+                <!-- ========================================= -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="dashboard-legend">
+                            <span><span class="legend-color" style="background:#dc3545;"></span> Critique</span>
+                            <span><span class="legend-color" style="background:#fd7e14;"></span> Élevée</span>
+                            <span><span class="legend-color" style="background:#ffc107;"></span> Moyenne</span>
+                            <span><span class="legend-color" style="background:#28a745;"></span> Faible</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

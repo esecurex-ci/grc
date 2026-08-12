@@ -9,6 +9,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="asset_type" widget="badge"/>
+                <field name="criticality_tier" widget="badge"/>
                 <field name="active"/>
             </list>
         </field>
@@ -33,10 +34,12 @@
                         <group>
                             <field name="code"/>
                             <field name="asset_type"/>
+                            <field name="criticality_tier"/>
                         </group>
 
                         <group>
                             <field name="active"/>
+                            <field name="process_ids" widget="many2many_tags"/>
                         </group>
 
                     </group>
@@ -76,6 +79,15 @@
                         string="Bases de données"
                         domain="[('asset_type','=','database')]"/>
 
+                <filter name="tier1"
+                        string="Tier 1 - Critique"
+                        domain="[('criticality_tier','=','tier1')]"/>
+
+                <separator/>
+
+                <filter name="group_criticality"
+                        string="Niveau de criticité"
+                        context="{'group_by':'criticality_tier'}"/>
 
             </search>
         </field>

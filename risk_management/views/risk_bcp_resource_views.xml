@@ -9,6 +9,10 @@
                 <field name="bcp_id"/>
                 <field name="name"/>
                 <field name="resource_type"/>
+                <field name="role"/>
+                <field name="employee_id"/>
+                <field name="partner_id"/>
+                <field name="contact_info"/>
             </list>
         </field>
 

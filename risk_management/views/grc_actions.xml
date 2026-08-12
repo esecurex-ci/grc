@@ -355,6 +355,32 @@
         <field name="view_mode">list,form,kanban</field>
     </record>
 
+    <!-- ✅ Manquait : ni action ni menu pour risk.audit.action.plan (voir
+         commentaire dans risk_audit_action_plan_views.xml). -->
+    <record id="action_risk_audit_action_plan" model="ir.actions.act_window">
+        <field name="name">Plans d'Action d'Audit</field>
+        <field name="res_model">risk.audit.action.plan</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+
+    <!-- ✅ Manquait : ni action ni menu pour risk.audit.scope, alors que
+         les vues (liste/recherche/formulaire) existaient déjà. -->
+    <record id="action_risk_audit_scope" model="ir.actions.act_window">
+        <field name="name">Périmètres d'Audit</field>
+        <field name="res_model">risk.audit.scope</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ✅ ACTION CLIENT — Tableau de bord Audit, à l'image des tableaux de
+         bord Processus/Risques/Résilience (action_process_dashboard /
+         action_risk_heatmap_dashboard / action_resilience_dashboard) : KPI
+         cards cliquables, donuts, barres et listes de creusement. -->
+    <record id="action_audit_dashboard" model="ir.actions.client">
+        <field name="name">🔎 Tableau de bord Audit</field>
+        <field name="tag">risk_management.audit_dashboard</field>
+        <field name="target">current</field>
+    </record>
+
     <!-- ===================================================== -->
     <!-- COMPLIANCE                                            -->
     <!-- ===================================================== -->
@@ -382,9 +408,20 @@
     <!-- ===================================================== -->
 
     <record id="action_risk_continuity_dashboard" model="ir.actions.act_window">
-        <field name="name">Tableau de bord Continuité</field>
+        <field name="name">Tableau de bord Continuité (technique)</field>
         <field name="res_model">risk.continuity.dashboard</field>
         <field name="view_mode">list,form,pivot,graph</field>
+    </record>
+
+    <!-- ✅ ACTION CLIENT — Tableau de bord Résilience, à l'image des
+         tableaux de bord Processus (action_process_dashboard) et Risques
+         (action_risk_heatmap_dashboard) : mêmes KPI cards cliquables,
+         donuts, barres et listes de creusement, plutôt que le formulaire
+         technique ci-dessus (conservé pour l'accès pivot/graph). -->
+    <record id="action_resilience_dashboard" model="ir.actions.client">
+        <field name="name">🛡️ Tableau de bord Résilience</field>
+        <field name="tag">risk_management.resilience_dashboard</field>
+        <field name="target">current</field>
     </record>
 
     <record id="action_crisis_command_center" model="ir.actions.client">

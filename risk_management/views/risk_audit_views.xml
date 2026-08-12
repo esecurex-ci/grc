@@ -30,6 +30,39 @@
         <field name="model">risk.audit</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <!-- ⚠️ 'state' était un simple champ éditable dans le corps
+                         du formulaire (voir commentaire dans rm_risk_audit.py) :
+                         remplacé par un statusbar avec des transitions
+                         explicites, une étape à la fois. -->
+                    <button name="action_start_planning"
+                            string="Démarrer la planification"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_start_fieldwork"
+                            string="Démarrer le terrain"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'planning'"/>
+                    <button name="action_start_reporting"
+                            string="Passer en rédaction"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'fieldwork'"/>
+                    <button name="action_close"
+                            string="Clôturer"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'reporting'"/>
+                    <button name="action_reset_draft"
+                            string="Remettre en brouillon"
+                            type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,planning,fieldwork,reporting,closed"/>
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button type="object"
@@ -39,6 +72,17 @@
                             <field name="finding_count"
                                    widget="statinfo"
                                    string="Constats"/>
+                        </button>
+                        <!-- ✅ Périmètre d'audit structuré : le modèle et ses
+                             vues existaient déjà mais n'étaient accessibles
+                             depuis nulle part. -->
+                        <button type="object"
+                                name="action_view_scopes"
+                                class="oe_stat_button"
+                                icon="fa-crosshairs">
+                            <field name="scope_count"
+                                   widget="statinfo"
+                                   string="Périmètre"/>
                         </button>
                     </div>
                     <div class="oe_title">
@@ -59,7 +103,6 @@
                         <group>
                             <field name="start_date"/>
                             <field name="end_date"/>
-                            <field name="state"/>
                         </group>
 
                     </group>

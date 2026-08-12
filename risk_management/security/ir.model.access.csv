@@ -56,6 +56,8 @@ access_risk_compliance_kpi,access_risk_compliance_kpi,model_risk_compliance_kpi,
 access_risk_audit_plan,access_risk_audit_plan,model_risk_audit_plan,base.group_user,1,1,1,1
 access_risk_audit_scope,access_risk_audit_scope,model_risk_audit_scope,base.group_user,1,1,1,1
 access_risk_bcp_plan,access_risk_bcp_plan,model_risk_bcp_plan,base.group_user,1,1,1,1
+access_risk_bcp_plan_version,access_risk_bcp_plan_version,model_risk_bcp_plan_version,base.group_user,1,1,1,1
+access_risk_audit_dashboard,access_risk_audit_dashboard,model_risk_audit_dashboard,base.group_user,1,1,1,1
 access_risk_audit_recommendation,access_risk_audit_recommendation,model_risk_audit_recommendation,base.group_user,1,1,1,1
 access_risk_compliance_obligation,access_risk_compliance_obligation,model_risk_compliance_obligation,base.group_user,1,1,1,1
 access_risk_bcp_resource,access_risk_bcp_resource,model_risk_bcp_resource,base.group_user,1,1,1,1
